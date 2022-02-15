@@ -1,0 +1,5 @@
+query DataClip($id: ID!) {
+  dataClip(id: $id) {
+    ...DataClip
+  }
+}
