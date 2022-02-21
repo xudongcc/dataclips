@@ -7,16 +7,14 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { DatabaseModule } from "@nest-boot/database";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { TenantModule } from "@nest-boot/tenant";
 
 import * as entities from "./entities";
 import * as services from "./services";
+import { CryptoModule } from "../../crypto";
 
 const DatabaseDynamicModule = DatabaseModule.register({
   entities: Object.values(entities),
 });
-
-const TenantDynamicModule = TenantModule.forRoot();
 
 const RedisDynamicModule = RedisModule.registerAsync({
   imports: [],
@@ -52,15 +50,15 @@ const providers = [...Object.values(services)];
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, expandVariables: true }),
+    CryptoModule,
     LoggerModule.register(),
     TypeOrmModule.forFeature(Object.values(entities)),
     RedisDynamicModule,
     SearchDynamicModule,
     QueueDynamicModule,
     DatabaseDynamicModule,
-    TenantDynamicModule,
   ],
   providers,
-  exports: providers,
+  exports: [...providers],
 })
 export class CoreModule {}

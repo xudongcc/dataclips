@@ -11,6 +11,10 @@ export default defineConfig({
       target: SERVER_URL,
       changeOrigin: true,
     },
+    '/clips/*.{json,csv}': {
+      target: SERVER_URL,
+      changeOrigin: true,
+    },
   },
   webpack5: {},
   chainWebpack(config) {

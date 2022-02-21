@@ -26,107 +26,68 @@ export type Scalars = {
   Float: number;
   /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: any;
-  /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
-  JSONObject: any;
 };
 
-export type CreateDataClipInput = {
+export type Clip = {
+  __typename?: 'Clip';
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
   name: Scalars['String'];
+  slug: Scalars['String'];
   sql: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
 };
 
-export type CreateDataSourceInput = {
-  database: Scalars['String'];
-  host: Scalars['String'];
+export type ClipConnection = {
+  __typename?: 'ClipConnection';
+  edges?: Maybe<Array<ClipEdge>>;
+  nodes?: Maybe<Array<Clip>>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars['Int']>;
+};
+
+export type ClipEdge = {
+  __typename?: 'ClipEdge';
+  cursor: Scalars['String'];
+  node: Clip;
+};
+
+export type CreateClipInput = {
   name: Scalars['String'];
-  password: Scalars['String'];
-  port: Scalars['Int'];
-  type: DataSourceType;
-  username: Scalars['String'];
+  sourceId?: InputMaybe<Scalars['ID']>;
+  sql: Scalars['String'];
 };
 
 export type CreateProjectInput = {
   name: Scalars['String'];
 };
 
-export type DataClip = {
-  __typename?: 'DataClip';
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  result: Scalars['JSONObject'];
-  sql: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
-  uuid: Scalars['String'];
-};
-
-export type DataClipConnection = {
-  __typename?: 'DataClipConnection';
-  edges?: Maybe<Array<DataClipEdge>>;
-  nodes?: Maybe<Array<DataClip>>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars['Int']>;
-};
-
-export type DataClipEdge = {
-  __typename?: 'DataClipEdge';
-  cursor: Scalars['String'];
-  node: DataClip;
-};
-
-export type DataSource = {
-  __typename?: 'DataSource';
-  createdAt: Scalars['DateTime'];
+export type CreateSourceInput = {
   database: Scalars['String'];
   host: Scalars['String'];
-  id: Scalars['ID'];
   name: Scalars['String'];
-  port: Scalars['Float'];
-  type: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
+  password: Scalars['String'];
+  port: Scalars['Int'];
+  type: SourceType;
   username: Scalars['String'];
 };
 
-export type DataSourceConnection = {
-  __typename?: 'DataSourceConnection';
-  edges?: Maybe<Array<DataSourceEdge>>;
-  nodes?: Maybe<Array<DataSource>>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars['Int']>;
-};
-
-export type DataSourceEdge = {
-  __typename?: 'DataSourceEdge';
-  cursor: Scalars['String'];
-  node: DataSource;
-};
-
-export enum DataSourceType {
-  MYSQL = 'MYSQL',
-  POSTGRESQL = 'POSTGRESQL'
-}
-
 export type Mutation = {
   __typename?: 'Mutation';
-  createDataClip: DataClip;
-  createDataSource: DataSource;
+  createClip: Clip;
   createProject: Project;
-  deleteDataClip: Scalars['ID'];
-  deleteDataSource: Scalars['ID'];
+  createSource: Source;
+  deleteClip: Scalars['ID'];
   deleteProject: Scalars['ID'];
-  updateDataClip: DataClip;
-  updateDataSource: DataSource;
+  deleteSource: Scalars['ID'];
+  updateClip: Clip;
   updateProject: Project;
+  updateSource: Source;
 };
 
 
-export type MutationCreateDataClipArgs = {
-  input: CreateDataClipInput;
-};
-
-
-export type MutationCreateDataSourceArgs = {
-  input: CreateDataSourceInput;
+export type MutationCreateClipArgs = {
+  input: CreateClipInput;
 };
 
 
@@ -135,12 +96,12 @@ export type MutationCreateProjectArgs = {
 };
 
 
-export type MutationDeleteDataClipArgs = {
-  id: Scalars['ID'];
+export type MutationCreateSourceArgs = {
+  input: CreateSourceInput;
 };
 
 
-export type MutationDeleteDataSourceArgs = {
+export type MutationDeleteClipArgs = {
   id: Scalars['ID'];
 };
 
@@ -150,21 +111,26 @@ export type MutationDeleteProjectArgs = {
 };
 
 
-export type MutationUpdateDataClipArgs = {
+export type MutationDeleteSourceArgs = {
   id: Scalars['ID'];
-  input: UpdateDataClipInput;
 };
 
 
-export type MutationUpdateDataSourceArgs = {
+export type MutationUpdateClipArgs = {
   id: Scalars['ID'];
-  input: UpdateDataSourceInput;
+  input: UpdateClipInput;
 };
 
 
 export type MutationUpdateProjectArgs = {
   id: Scalars['ID'];
   input: UpdateProjectInput;
+};
+
+
+export type MutationUpdateSourceArgs = {
+  id: Scalars['ID'];
+  input: UpdateSourceInput;
 };
 
 export enum OrderDirection {
@@ -209,39 +175,21 @@ export type ProjectEdge = {
 
 export type Query = {
   __typename?: 'Query';
-  dataClip: DataClip;
-  dataClips: DataClipConnection;
-  dataSource: DataSource;
-  dataSources: DataSourceConnection;
+  clip: Clip;
+  clips: ClipConnection;
   project: Project;
   projects: ProjectConnection;
+  source: Source;
+  sources: SourceConnection;
 };
 
 
-export type QueryDataClipArgs = {
+export type QueryClipArgs = {
   id: Scalars['ID'];
 };
 
 
-export type QueryDataClipsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  filter?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Ordering>;
-  page?: InputMaybe<Scalars['Int']>;
-  pageSize?: InputMaybe<Scalars['Int']>;
-  query?: InputMaybe<Scalars['String']>;
-};
-
-
-export type QueryDataSourceArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryDataSourcesArgs = {
+export type QueryClipsArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
   filter?: InputMaybe<Scalars['String']>;
@@ -271,77 +219,127 @@ export type QueryProjectsArgs = {
   query?: InputMaybe<Scalars['String']>;
 };
 
-export type UpdateDataClipInput = {
-  name?: InputMaybe<Scalars['String']>;
-  sql?: InputMaybe<Scalars['String']>;
+
+export type QuerySourceArgs = {
+  id: Scalars['ID'];
 };
 
-export type UpdateDataSourceInput = {
-  database?: InputMaybe<Scalars['String']>;
-  host?: InputMaybe<Scalars['String']>;
+
+export type QuerySourcesArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  filter?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Ordering>;
+  page?: InputMaybe<Scalars['Int']>;
+  pageSize?: InputMaybe<Scalars['Int']>;
+  query?: InputMaybe<Scalars['String']>;
+};
+
+export type Source = {
+  __typename?: 'Source';
+  createdAt: Scalars['DateTime'];
+  database: Scalars['String'];
+  host: Scalars['String'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  port: Scalars['Float'];
+  type: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+  username: Scalars['String'];
+};
+
+export type SourceConnection = {
+  __typename?: 'SourceConnection';
+  edges?: Maybe<Array<SourceEdge>>;
+  nodes?: Maybe<Array<Source>>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars['Int']>;
+};
+
+export type SourceEdge = {
+  __typename?: 'SourceEdge';
+  cursor: Scalars['String'];
+  node: Source;
+};
+
+export enum SourceType {
+  MYSQL = 'MYSQL',
+  POSTGRESQL = 'POSTGRESQL'
+}
+
+export type UpdateClipInput = {
   name?: InputMaybe<Scalars['String']>;
-  password?: InputMaybe<Scalars['String']>;
-  port?: InputMaybe<Scalars['Int']>;
-  type?: InputMaybe<DataSourceType>;
-  username?: InputMaybe<Scalars['String']>;
+  sourceId?: InputMaybe<Scalars['ID']>;
+  sql?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateProjectInput = {
   name: Scalars['String'];
 };
 
-export type DataClipFragment = { __typename?: 'DataClip', id: string, uuid: string, name: string, sql: string, result: any, createdAt: any, updatedAt: any };
+export type UpdateSourceInput = {
+  database?: InputMaybe<Scalars['String']>;
+  host?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
+  password?: InputMaybe<Scalars['String']>;
+  port?: InputMaybe<Scalars['Int']>;
+  type?: InputMaybe<SourceType>;
+  username?: InputMaybe<Scalars['String']>;
+};
 
-export type DataClipQueryVariables = Exact<{
+export type ClipFragment = { __typename?: 'Clip', id: string, slug: string, name: string, sql: string, createdAt: any, updatedAt: any };
+
+export type ClipQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type DataClipQuery = { __typename?: 'Query', dataClip: { __typename?: 'DataClip', id: string, uuid: string, name: string, sql: string, result: any, createdAt: any, updatedAt: any } };
+export type ClipQuery = { __typename?: 'Query', clip: { __typename?: 'Clip', id: string, slug: string, name: string, sql: string, createdAt: any, updatedAt: any } };
 
-export const DataClipFragmentDoc = gql`
-    fragment DataClip on DataClip {
+export const ClipFragmentDoc = gql`
+    fragment Clip on Clip {
   id
-  uuid
+  slug
   name
   sql
-  result
   createdAt
   updatedAt
 }
     `;
-export const DataClipDocument = gql`
-    query DataClip($id: ID!) {
-  dataClip(id: $id) {
-    ...DataClip
+export const ClipDocument = gql`
+    query Clip($id: ID!) {
+  clip(id: $id) {
+    ...Clip
   }
 }
-    ${DataClipFragmentDoc}`;
+    ${ClipFragmentDoc}`;
 
 /**
- * __useDataClipQuery__
+ * __useClipQuery__
  *
- * To run a query within a React component, call `useDataClipQuery` and pass it any options that fit your needs.
- * When your component renders, `useDataClipQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useClipQuery` and pass it any options that fit your needs.
+ * When your component renders, `useClipQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useDataClipQuery({
+ * const { data, loading, error } = useClipQuery({
  *   variables: {
  *      id: // value for 'id'
  *   },
  * });
  */
-export function useDataClipQuery(baseOptions: Apollo.QueryHookOptions<DataClipQuery, DataClipQueryVariables>) {
+export function useClipQuery(baseOptions: Apollo.QueryHookOptions<ClipQuery, ClipQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<DataClipQuery, DataClipQueryVariables>(DataClipDocument, options);
+        return Apollo.useQuery<ClipQuery, ClipQueryVariables>(ClipDocument, options);
       }
-export function useDataClipLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<DataClipQuery, DataClipQueryVariables>) {
+export function useClipLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClipQuery, ClipQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<DataClipQuery, DataClipQueryVariables>(DataClipDocument, options);
+          return Apollo.useLazyQuery<ClipQuery, ClipQueryVariables>(ClipDocument, options);
         }
-export type DataClipQueryHookResult = ReturnType<typeof useDataClipQuery>;
-export type DataClipLazyQueryHookResult = ReturnType<typeof useDataClipLazyQuery>;
-export type DataClipQueryResult = Apollo.QueryResult<DataClipQuery, DataClipQueryVariables>;
+export type ClipQueryHookResult = ReturnType<typeof useClipQuery>;
+export type ClipLazyQueryHookResult = ReturnType<typeof useClipLazyQuery>;
+export type ClipQueryResult = Apollo.QueryResult<ClipQuery, ClipQueryVariables>;

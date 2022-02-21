@@ -1,9 +1,0 @@
-fragment DataClip on DataClip {
-  id
-  uuid
-  name
-  sql
-  result
-  createdAt
-  updatedAt
-}

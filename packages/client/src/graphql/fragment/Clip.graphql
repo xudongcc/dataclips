@@ -1,0 +1,8 @@
+fragment Clip on Clip {
+  id
+  slug
+  name
+  sql
+  createdAt
+  updatedAt
+}

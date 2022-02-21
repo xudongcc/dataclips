@@ -1,3 +1,4 @@
-export * from "./data-source.entity";
+export * from "./source.entity";
 export * from "./project.entity";
-export * from "./data-clip.entity";
+export * from "./clip.entity";
+export * from "./result.entity";
