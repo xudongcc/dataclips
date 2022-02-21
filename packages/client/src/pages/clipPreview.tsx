@@ -16,7 +16,14 @@ const ClipPreview: FC = () => {
     return <Spinner />;
   }
 
-  return <ResultPreview fields={data.fields} values={data.values} />;
+  return (
+    <ResultPreview
+      slug={slug}
+      fields={data.fields}
+      values={data.values}
+      finishedAt={data.finishedAt}
+    />
+  );
 };
 
 export default ClipPreview;
