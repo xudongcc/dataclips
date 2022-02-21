@@ -44,6 +44,9 @@ ENV PORT 80
 # 设置工作目录
 WORKDIR /app
 
+# 安装命令行工具
+RUN npm i -g @nest-boot/command
+
 # 复制客户端文件
 COPY --from=build-client /app/dist/ ./client/
 
