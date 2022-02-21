@@ -21,6 +21,7 @@ const ClipPreview: FC = () => {
       slug={slug}
       fields={data.fields}
       values={data.values}
+      duration={data.duration}
       finishedAt={data.finishedAt}
     />
   );

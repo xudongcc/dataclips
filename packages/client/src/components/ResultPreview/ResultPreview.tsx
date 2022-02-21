@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { DownloadIcon } from '@chakra-ui/icons';
 import moment from 'moment';
+import ms from 'ms';
 import { saveAs } from 'file-saver';
 
 export interface ResultPreviewProps {
@@ -21,12 +22,14 @@ export interface ResultPreviewProps {
   slug: string;
   fields: string[];
   values: (string | number | boolean | Date)[][];
+  duration: number;
   finishedAt: Date;
 }
 
 export const ResultPreview: FC<ResultPreviewProps> = ({
   size,
   slug,
+  duration,
   fields,
   values,
   finishedAt,
@@ -44,7 +47,19 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
   return (
     <Box p={4}>
       <Flex mb={4} justify="space-between">
-        <HStack spacing={2}>
+        <HStack spacing={4}>
+          <Box fontSize="xs" lineHeight="none">
+            <Box mb={2} color="gray.500">
+              计数
+            </Box>
+            <Box>{values.length} 行</Box>
+          </Box>
+          <Box fontSize="xs" lineHeight="none">
+            <Box mb={2} color="gray.500">
+              耗时
+            </Box>
+            <Box>{ms(duration)}</Box>
+          </Box>
           <Box fontSize="xs" lineHeight="none">
             <Box mb={2} color="gray.500">
               更新时间

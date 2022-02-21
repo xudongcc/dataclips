@@ -11,6 +11,7 @@ import Papa from "papaparse";
 import xlsx from "node-xlsx";
 import { ClipService } from "../../core/services";
 import { ResultService } from "../../core/services/result.service";
+import moment from "moment";
 
 @Controller("/clips")
 export class ClipController {
@@ -27,12 +28,14 @@ export class ClipController {
       throw new NotFoundException();
     }
 
-    await this.clipService.query(clip.id);
-
     const result = await this.resultService.findOne({
       where: { clip },
       order: { startedAt: "DESC" },
     });
+
+    if (!result || moment().subtract(1, "m").isAfter(result.finishedAt)) {
+      await this.clipService.query(clip.id);
+    }
 
     if (!result) {
       throw new NotFoundException();
@@ -50,12 +53,14 @@ export class ClipController {
       throw new NotFoundException();
     }
 
-    await this.clipService.query(clip.id);
-
     const result = await this.resultService.findOne({
       where: { clip },
       order: { startedAt: "DESC" },
     });
+
+    if (!result || moment().subtract(1, "m").isAfter(result.finishedAt)) {
+      await this.clipService.query(clip.id);
+    }
 
     if (!result) {
       throw new NotFoundException();
@@ -75,12 +80,14 @@ export class ClipController {
       throw new NotFoundException();
     }
 
-    await this.clipService.query(clip.id);
-
     const result = await this.resultService.findOne({
       where: { clip },
       order: { startedAt: "DESC" },
     });
+
+    if (!result || moment().subtract(1, "m").isAfter(result.finishedAt)) {
+      await this.clipService.query(clip.id);
+    }
 
     if (!result) {
       throw new NotFoundException();
