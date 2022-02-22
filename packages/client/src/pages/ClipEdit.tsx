@@ -1,12 +1,21 @@
 import { FC, useEffect } from 'react';
 
-import { useParams } from 'umi';
+import { useParams, useHistory } from 'umi';
 import { useQuery } from 'react-query';
 import { ResultPreview } from '@/components/ResultPreview';
-import { Box, Button, Select, Input, Spinner, Stack } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Select,
+  Input,
+  Stack,
+  Flex,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import {
   useClipQuery,
   useSourceConnectionQuery,
+  useCreateClipMutation,
   useUpdateClipMutation,
 } from '@/generated/graphql';
 import { SQLEditor } from '@/components/SQLEditor';
@@ -14,12 +23,15 @@ import { useFormik } from 'formik';
 import { Helmet } from 'react-helmet';
 
 const ClipEdit: FC = () => {
+  const history = useHistory();
   const { clipId } = useParams<{ clipId: string }>();
 
+  const [createClip, { loading: createClipLoading }] = useCreateClipMutation();
   const [updateClip, { loading: updateClipLoading }] = useUpdateClipMutation();
 
   const { data: { clip } = {}, loading: isClipLoading } = useClipQuery({
     variables: { id: clipId },
+    skip: !clipId,
   });
 
   const { data: { sourceConnection } = {}, loading: isSourcesLoading } =
@@ -38,7 +50,16 @@ const ClipEdit: FC = () => {
       sourceId: '',
     },
     onSubmit: async (input) => {
-      await updateClip({ variables: { id: clipId, input } });
+      if (clipId) {
+        await updateClip({ variables: { id: clipId, input } });
+      } else {
+        try {
+          const { data } = await createClip({ variables: { input } });
+          history.push(`/clips/${data?.createClip.id}/edit`);
+        } catch (err) {
+          //
+        }
+      }
     },
   });
 
@@ -52,71 +73,69 @@ const ClipEdit: FC = () => {
     }
   }, [clip]);
 
-  if (clip && result) {
-    return (
-      <>
-        <Helmet>
-          <title>{clip.name ? `${clip.name} | 数据剪藏` : `数据剪藏`}</title>
-        </Helmet>
+  return (
+    <>
+      <Helmet>
+        <title>{clip?.name ? `${clip.name} | 数据剪藏` : `数据剪藏`}</title>
+      </Helmet>
 
-        <Box bgColor="white">
-          <form onSubmit={form.handleSubmit}>
-            <Stack p={4} spacing={3} direction="row">
-              <Input
-                size="sm"
-                borderRadius="md"
-                placeholder="请输入剪辑名称"
-                name="name"
-                width="30%"
-                onChange={form.handleChange}
-                value={form.values.name}
-              />
+      <Flex h="full" direction="column">
+        <form onSubmit={form.handleSubmit}>
+          <Stack p={4} spacing={3} direction="row">
+            <Input
+              size="sm"
+              borderRadius="md"
+              placeholder="请输入剪辑名称"
+              name="name"
+              width="30%"
+              onChange={form.handleChange}
+              value={form.values.name}
+            />
 
-              <Select
-                size="sm"
-                borderRadius="md"
-                name="sourceId"
-                flex="1"
-                value={form.values.sourceId}
-                onChange={form.handleChange}
-                placeholder="选择数据源"
-              >
-                {sourceConnection?.edges?.map(({ node }) => {
-                  return <option value={node.id}>{node.name}</option>;
-                })}
-              </Select>
+            <Select
+              size="sm"
+              borderRadius="md"
+              name="sourceId"
+              flex="1"
+              value={form.values.sourceId}
+              onChange={form.handleChange}
+              placeholder="选择数据源"
+              isDisabled={isSourcesLoading}
+            >
+              {sourceConnection?.edges?.map(({ node }) => {
+                return <option value={node.id}>{node.name}</option>;
+              })}
+            </Select>
 
-              <Button
-                size="sm"
-                type="submit"
-                colorScheme="blue"
-                isLoading={updateClipLoading}
-              >
-                保存
-              </Button>
-            </Stack>
+            <Button
+              size="sm"
+              type="submit"
+              colorScheme="blue"
+              isLoading={createClipLoading && updateClipLoading}
+            >
+              保存
+            </Button>
+          </Stack>
 
-            <Box borderWidth={1} borderY="solid" borderColor="gray.200">
-              <SQLEditor
-                value={form.values.sql}
-                onChange={(value) => form.setFieldValue('sql', value)}
-              />
-            </Box>
-          </form>
+          <Box
+            borderTopWidth={1}
+            borderBottomWidth={1}
+            borderStyle="solid"
+            borderColor={useColorModeValue('gray.200', 'whiteAlpha.300')}
+          >
+            <SQLEditor
+              value={form.values.sql}
+              onChange={(value) => form.setFieldValue('sql', value)}
+            />
+          </Box>
+        </form>
 
-          <ResultPreview
-            slug={clip.slug}
-            fields={result.fields}
-            values={result.values}
-            duration={result.duration}
-            finishedAt={result.finishedAt}
-          />
+        <Box flex={1}>
+          {result ? <ResultPreview slug={clip?.slug} result={result} /> : null}
         </Box>
-      </>
-    );
-  }
-
-  return <Spinner />;
+      </Flex>
+    </>
+  );
 };
 
 export default ClipEdit;

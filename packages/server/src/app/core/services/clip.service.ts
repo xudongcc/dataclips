@@ -37,7 +37,7 @@ export class ClipService extends mixinConnection(
     const finishedAt = new Date();
 
     let fields: string[] = [];
-    let values: (string | number | boolean | Date)[][] = [[]];
+    let values: (string | number | boolean | Date)[][] = [];
     if (result?.[0]) {
       fields = Object.keys(result[0]);
       values = result.map((item: any) => Object.values(item));

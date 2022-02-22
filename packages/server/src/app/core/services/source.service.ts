@@ -52,7 +52,13 @@ export class SourceService extends mixinConnection(
             database: source.database,
           })
           .promise();
-        result = (await mysqlConnection.query(sql))?.[0];
+
+        try {
+          result = (await mysqlConnection.query(sql))?.[0];
+        } catch (err) {
+          throw new Error(`[${err.sqlState}][${err.errno}] ${err.message}`);
+        }
+
         await mysqlConnection.end();
         break;
       case SourceType.POSTGRESQL:
@@ -64,7 +70,15 @@ export class SourceService extends mixinConnection(
           database: source.database,
         });
         await pgClient.connect();
-        result = (await pgClient.query(sql))?.rows;
+
+        try {
+          result = (await pgClient.query(sql))?.rows;
+        } catch (err) {
+          throw new Error(
+            `[${err.code}] ERROR: ${err.message}\n位置：${err.position}`
+          );
+        }
+
         await pgClient.end();
         break;
     }

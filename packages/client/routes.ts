@@ -4,6 +4,10 @@ export default [
     component: '@/layouts/BaseLayout',
     routes: [
       {
+        path: '/clips/create',
+        component: '@/pages/ClipEdit',
+      },
+      {
         path: '/clips/:clipId/edit',
         component: '@/pages/ClipEdit',
       },

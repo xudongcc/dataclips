@@ -33,10 +33,24 @@ export type Clip = {
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
   name: Scalars['String'];
+  results: ResultConnection;
   slug: Scalars['String'];
   sourceId: Scalars['ID'];
   sql: Scalars['String'];
   updatedAt: Scalars['DateTime'];
+};
+
+
+export type ClipResultsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  filter?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Ordering>;
+  page?: InputMaybe<Scalars['Int']>;
+  pageSize?: InputMaybe<Scalars['Int']>;
+  query?: InputMaybe<Scalars['String']>;
 };
 
 export type ClipConnection = {
@@ -238,6 +252,34 @@ export type QuerySourcesArgs = {
   query?: InputMaybe<Scalars['String']>;
 };
 
+export type Result = {
+  __typename?: 'Result';
+  createdAt: Scalars['DateTime'];
+  duration: Scalars['Int'];
+  error?: Maybe<Scalars['String']>;
+  fields: Array<Scalars['String']>;
+  finishedAt?: Maybe<Scalars['DateTime']>;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  startedAt?: Maybe<Scalars['DateTime']>;
+  updatedAt: Scalars['DateTime'];
+  values: Array<Array<Scalars['String']>>;
+};
+
+export type ResultConnection = {
+  __typename?: 'ResultConnection';
+  edges?: Maybe<Array<ResultEdge>>;
+  nodes?: Maybe<Array<Result>>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars['Int']>;
+};
+
+export type ResultEdge = {
+  __typename?: 'ResultEdge';
+  cursor: Scalars['String'];
+  node: Result;
+};
+
 export type Source = {
   __typename?: 'Source';
   createdAt: Scalars['DateTime'];
@@ -291,6 +333,8 @@ export type UpdateSourceInput = {
 };
 
 export type ClipFragment = { __typename?: 'Clip', id: string, slug: string, name: string, sql: string, sourceId: string, createdAt: any, updatedAt: any };
+
+export type ResultFragment = { __typename?: 'Result', id: string, name: string, error?: string | null, fields: Array<string>, values: Array<Array<string>>, duration: number, startedAt?: any | null, finishedAt?: any | null };
 
 export type SourceFragment = { __typename?: 'Source', id: string, type: string, name: string, createdAt: any, updatedAt: any };
 
@@ -352,6 +396,18 @@ export const ClipFragmentDoc = gql`
   sourceId
   createdAt
   updatedAt
+}
+    `;
+export const ResultFragmentDoc = gql`
+    fragment Result on Result {
+  id
+  name
+  error
+  fields
+  values
+  duration
+  startedAt
+  finishedAt
 }
     `;
 export const SourceFragmentDoc = gql`
