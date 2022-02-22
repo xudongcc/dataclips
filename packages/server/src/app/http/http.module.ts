@@ -19,8 +19,7 @@ import { join } from "path";
       autoSchemaFile: true,
       context: ({ req, res }) => ({ req, res }),
       path: "/graphql",
-      playground: false,
-      plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      playground: true,
     }),
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), "client"),

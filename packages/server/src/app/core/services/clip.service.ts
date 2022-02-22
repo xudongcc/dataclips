@@ -7,6 +7,7 @@ import { Clip } from "../entities/clip.entity";
 import { SourceService } from "./source.service";
 import { ResultService } from "./result.service";
 import { Result } from "../entities/result.entity";
+import moment from "moment";
 
 @Injectable()
 export class ClipService extends mixinConnection(
@@ -51,5 +52,18 @@ export class ClipService extends mixinConnection(
       startedAt,
       finishedAt,
     });
+  }
+
+  async fetchResult(id: Clip["id"]) {
+    const result = await this.resultService.findOne({
+      where: { clip: { id } },
+      order: { startedAt: "DESC" },
+    });
+
+    if (!result || moment().subtract(1, "m").isAfter(result.finishedAt)) {
+      await this.query(id);
+    }
+
+    return result;
   }
 }
