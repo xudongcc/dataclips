@@ -43,18 +43,17 @@ export class SourceService extends mixinConnection(
     let result: any;
     switch (source.type) {
       case SourceType.MYSQL:
-        result = (
-          await mysql
-            .createConnection({
-              host: source.host,
-              port: source.port,
-              user: source.username,
-              password: this.cryptoService.decrypt(source.password),
-              database: source.database,
-            })
-            .promise()
-            .execute(sql)
-        )?.[0];
+        const mysqlConnection = mysql
+          .createConnection({
+            host: source.host,
+            port: source.port,
+            user: source.username,
+            password: this.cryptoService.decrypt(source.password),
+            database: source.database,
+          })
+          .promise();
+        result = (await mysqlConnection.query(sql))?.[0];
+        await mysqlConnection.end();
         break;
       case SourceType.POSTGRESQL:
         const pgClient = new pg.Client({
