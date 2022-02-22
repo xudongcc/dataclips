@@ -56,7 +56,7 @@ const ClipEdit: FC = () => {
     return (
       <>
         <Helmet>
-          <title>{clip.name ? `${clip.name} | Dataclips` : `Dataclips`}</title>
+          <title>{clip.name ? `${clip.name} | 数据剪藏` : `数据剪藏`}</title>
         </Helmet>
 
         <Box bgColor="white">

@@ -45,6 +45,7 @@ export class ClipService extends mixinConnection(
 
     return this.resultService.create({
       clip,
+      name: clip.name,
       fields,
       values,
       error,

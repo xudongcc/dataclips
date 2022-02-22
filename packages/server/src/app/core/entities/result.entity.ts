@@ -17,6 +17,10 @@ export class Result {
   @PrimarySnowflakeColumn()
   id: string;
 
+  @Field()
+  @Column()
+  name: string;
+
   @Field(() => [String])
   @Column({ type: "json", generator: () => [] })
   fields: string[];
