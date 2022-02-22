@@ -1,0 +1,30 @@
+query SourceConnection(
+  $first: Int
+  $last: Int
+  $before: String
+  $after: String
+  $query: String
+  $orderBy: Ordering
+) {
+  sourceConnection: sources(
+    first: $first
+    last: $last
+    before: $before
+    after: $after
+    query: $query
+    orderBy: $orderBy
+  ) {
+    edges {
+      node {
+        ...Source
+      }
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+    }
+    totalCount
+  }
+}

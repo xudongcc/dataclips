@@ -3,6 +3,7 @@ fragment Clip on Clip {
   slug
   name
   sql
+  sourceId
   createdAt
   updatedAt
 }

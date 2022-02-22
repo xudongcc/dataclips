@@ -34,6 +34,7 @@ export type Clip = {
   id: Scalars['ID'];
   name: Scalars['String'];
   slug: Scalars['String'];
+  sourceId: Scalars['ID'];
   sql: Scalars['String'];
   updatedAt: Scalars['DateTime'];
 };
@@ -289,14 +290,58 @@ export type UpdateSourceInput = {
   username?: InputMaybe<Scalars['String']>;
 };
 
-export type ClipFragment = { __typename?: 'Clip', id: string, slug: string, name: string, sql: string, createdAt: any, updatedAt: any };
+export type ClipFragment = { __typename?: 'Clip', id: string, slug: string, name: string, sql: string, sourceId: string, createdAt: any, updatedAt: any };
+
+export type SourceFragment = { __typename?: 'Source', id: string, type: string, name: string, createdAt: any, updatedAt: any };
+
+export type CreateClipMutationVariables = Exact<{
+  input: CreateClipInput;
+}>;
+
+
+export type CreateClipMutation = { __typename?: 'Mutation', createClip: { __typename?: 'Clip', id: string, slug: string, name: string, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
+
+export type CreateSourceMutationVariables = Exact<{
+  input: CreateSourceInput;
+}>;
+
+
+export type CreateSourceMutation = { __typename?: 'Mutation', createSource: { __typename?: 'Source', id: string, type: string, name: string, createdAt: any, updatedAt: any } };
+
+export type UpdateClipMutationVariables = Exact<{
+  id: Scalars['ID'];
+  input: UpdateClipInput;
+}>;
+
+
+export type UpdateClipMutation = { __typename?: 'Mutation', updateClip: { __typename?: 'Clip', id: string, slug: string, name: string, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
+
+export type UpdateSourceMutationVariables = Exact<{
+  id: Scalars['ID'];
+  input: UpdateSourceInput;
+}>;
+
+
+export type UpdateSourceMutation = { __typename?: 'Mutation', updateSource: { __typename?: 'Source', id: string, type: string, name: string, createdAt: any, updatedAt: any } };
 
 export type ClipQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type ClipQuery = { __typename?: 'Query', clip: { __typename?: 'Clip', id: string, slug: string, name: string, sql: string, createdAt: any, updatedAt: any } };
+export type ClipQuery = { __typename?: 'Query', clip: { __typename?: 'Clip', id: string, slug: string, name: string, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
+
+export type SourceConnectionQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  before?: InputMaybe<Scalars['String']>;
+  after?: InputMaybe<Scalars['String']>;
+  query?: InputMaybe<Scalars['String']>;
+  orderBy?: InputMaybe<Ordering>;
+}>;
+
+
+export type SourceConnectionQuery = { __typename?: 'Query', sourceConnection: { __typename?: 'SourceConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'SourceEdge', node: { __typename?: 'Source', id: string, type: string, name: string, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export const ClipFragmentDoc = gql`
     fragment Clip on Clip {
@@ -304,10 +349,154 @@ export const ClipFragmentDoc = gql`
   slug
   name
   sql
+  sourceId
   createdAt
   updatedAt
 }
     `;
+export const SourceFragmentDoc = gql`
+    fragment Source on Source {
+  id
+  type
+  name
+  createdAt
+  updatedAt
+}
+    `;
+export const CreateClipDocument = gql`
+    mutation CreateClip($input: CreateClipInput!) {
+  createClip(input: $input) {
+    ...Clip
+  }
+}
+    ${ClipFragmentDoc}`;
+export type CreateClipMutationFn = Apollo.MutationFunction<CreateClipMutation, CreateClipMutationVariables>;
+
+/**
+ * __useCreateClipMutation__
+ *
+ * To run a mutation, you first call `useCreateClipMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateClipMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createClipMutation, { data, loading, error }] = useCreateClipMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateClipMutation(baseOptions?: Apollo.MutationHookOptions<CreateClipMutation, CreateClipMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateClipMutation, CreateClipMutationVariables>(CreateClipDocument, options);
+      }
+export type CreateClipMutationHookResult = ReturnType<typeof useCreateClipMutation>;
+export type CreateClipMutationResult = Apollo.MutationResult<CreateClipMutation>;
+export type CreateClipMutationOptions = Apollo.BaseMutationOptions<CreateClipMutation, CreateClipMutationVariables>;
+export const CreateSourceDocument = gql`
+    mutation CreateSource($input: CreateSourceInput!) {
+  createSource(input: $input) {
+    ...Source
+  }
+}
+    ${SourceFragmentDoc}`;
+export type CreateSourceMutationFn = Apollo.MutationFunction<CreateSourceMutation, CreateSourceMutationVariables>;
+
+/**
+ * __useCreateSourceMutation__
+ *
+ * To run a mutation, you first call `useCreateSourceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSourceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createSourceMutation, { data, loading, error }] = useCreateSourceMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateSourceMutation(baseOptions?: Apollo.MutationHookOptions<CreateSourceMutation, CreateSourceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSourceMutation, CreateSourceMutationVariables>(CreateSourceDocument, options);
+      }
+export type CreateSourceMutationHookResult = ReturnType<typeof useCreateSourceMutation>;
+export type CreateSourceMutationResult = Apollo.MutationResult<CreateSourceMutation>;
+export type CreateSourceMutationOptions = Apollo.BaseMutationOptions<CreateSourceMutation, CreateSourceMutationVariables>;
+export const UpdateClipDocument = gql`
+    mutation UpdateClip($id: ID!, $input: UpdateClipInput!) {
+  updateClip(id: $id, input: $input) {
+    ...Clip
+  }
+}
+    ${ClipFragmentDoc}`;
+export type UpdateClipMutationFn = Apollo.MutationFunction<UpdateClipMutation, UpdateClipMutationVariables>;
+
+/**
+ * __useUpdateClipMutation__
+ *
+ * To run a mutation, you first call `useUpdateClipMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateClipMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateClipMutation, { data, loading, error }] = useUpdateClipMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateClipMutation(baseOptions?: Apollo.MutationHookOptions<UpdateClipMutation, UpdateClipMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateClipMutation, UpdateClipMutationVariables>(UpdateClipDocument, options);
+      }
+export type UpdateClipMutationHookResult = ReturnType<typeof useUpdateClipMutation>;
+export type UpdateClipMutationResult = Apollo.MutationResult<UpdateClipMutation>;
+export type UpdateClipMutationOptions = Apollo.BaseMutationOptions<UpdateClipMutation, UpdateClipMutationVariables>;
+export const UpdateSourceDocument = gql`
+    mutation UpdateSource($id: ID!, $input: UpdateSourceInput!) {
+  updateSource(id: $id, input: $input) {
+    ...Source
+  }
+}
+    ${SourceFragmentDoc}`;
+export type UpdateSourceMutationFn = Apollo.MutationFunction<UpdateSourceMutation, UpdateSourceMutationVariables>;
+
+/**
+ * __useUpdateSourceMutation__
+ *
+ * To run a mutation, you first call `useUpdateSourceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSourceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSourceMutation, { data, loading, error }] = useUpdateSourceMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateSourceMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSourceMutation, UpdateSourceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSourceMutation, UpdateSourceMutationVariables>(UpdateSourceDocument, options);
+      }
+export type UpdateSourceMutationHookResult = ReturnType<typeof useUpdateSourceMutation>;
+export type UpdateSourceMutationResult = Apollo.MutationResult<UpdateSourceMutation>;
+export type UpdateSourceMutationOptions = Apollo.BaseMutationOptions<UpdateSourceMutation, UpdateSourceMutationVariables>;
 export const ClipDocument = gql`
     query Clip($id: ID!) {
   clip(id: $id) {
@@ -343,3 +532,61 @@ export function useClipLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClipQ
 export type ClipQueryHookResult = ReturnType<typeof useClipQuery>;
 export type ClipLazyQueryHookResult = ReturnType<typeof useClipLazyQuery>;
 export type ClipQueryResult = Apollo.QueryResult<ClipQuery, ClipQueryVariables>;
+export const SourceConnectionDocument = gql`
+    query SourceConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering) {
+  sourceConnection: sources(
+    first: $first
+    last: $last
+    before: $before
+    after: $after
+    query: $query
+    orderBy: $orderBy
+  ) {
+    edges {
+      node {
+        ...Source
+      }
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+    }
+    totalCount
+  }
+}
+    ${SourceFragmentDoc}`;
+
+/**
+ * __useSourceConnectionQuery__
+ *
+ * To run a query within a React component, call `useSourceConnectionQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSourceConnectionQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSourceConnectionQuery({
+ *   variables: {
+ *      first: // value for 'first'
+ *      last: // value for 'last'
+ *      before: // value for 'before'
+ *      after: // value for 'after'
+ *      query: // value for 'query'
+ *      orderBy: // value for 'orderBy'
+ *   },
+ * });
+ */
+export function useSourceConnectionQuery(baseOptions?: Apollo.QueryHookOptions<SourceConnectionQuery, SourceConnectionQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SourceConnectionQuery, SourceConnectionQueryVariables>(SourceConnectionDocument, options);
+      }
+export function useSourceConnectionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SourceConnectionQuery, SourceConnectionQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SourceConnectionQuery, SourceConnectionQueryVariables>(SourceConnectionDocument, options);
+        }
+export type SourceConnectionQueryHookResult = ReturnType<typeof useSourceConnectionQuery>;
+export type SourceConnectionLazyQueryHookResult = ReturnType<typeof useSourceConnectionLazyQuery>;
+export type SourceConnectionQueryResult = Apollo.QueryResult<SourceConnectionQuery, SourceConnectionQueryVariables>;

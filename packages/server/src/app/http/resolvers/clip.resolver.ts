@@ -6,6 +6,8 @@ import { CreateClipInput } from "../inputs/create-clip.input";
 import { UpdateClipInput } from "../inputs/update-clip.input";
 import { ClipConnection } from "../objects/clip-connection.object";
 
+import _ from "lodash";
+
 @Resolver(() => Clip)
 export class ClipResolver {
   constructor(private readonly clipService: ClipService) {}
@@ -33,7 +35,16 @@ export class ClipResolver {
     @Args("id", { type: () => ID }) id: string,
     @Args("input") input: UpdateClipInput
   ): Promise<Clip> {
-    await this.clipService.update({ id }, input);
+    await this.clipService.update(
+      { id },
+      {
+        ..._.omit(input, "sourceId"),
+        ...(input.sourceId ? { source: { id: input.sourceId } } : {}),
+      }
+    );
+
+    await this.clipService.query(id);
+
     return this.clipService.findOne({ where: { id } });
   }
 

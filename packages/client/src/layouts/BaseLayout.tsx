@@ -1,6 +1,4 @@
-import '@fontsource/inter/variable.css';
-
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import { ApolloProvider } from '@apollo/client';
 import { apolloClient } from '@/apolloClient';

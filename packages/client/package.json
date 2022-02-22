@@ -31,7 +31,9 @@
     "@emotion/styled": "^11.6.0",
     "@fontsource/inter": "^4.5.4",
     "@monaco-editor/react": "^4.3.1",
+    "downshift": "^6.1.7",
     "file-saver": "^2.0.5",
+    "formik": "^2.2.9",
     "framer-motion": "^6.2.6",
     "graphql": "^16.3.0",
     "moment": "^2.29.1",
@@ -39,6 +41,7 @@
     "qs": "^6.10.3",
     "react": "17.x",
     "react-dom": "17.x",
+    "react-helmet": "^6.1.0",
     "react-icons": "^4.3.1",
     "react-query": "^3.34.16",
     "umi": "^3.5.20"

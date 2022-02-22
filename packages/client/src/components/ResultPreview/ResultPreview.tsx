@@ -11,6 +11,7 @@ import {
   ButtonGroup,
   Button,
   HStack,
+  Tfoot,
 } from '@chakra-ui/react';
 import { DownloadIcon } from '@chakra-ui/icons';
 import moment from 'moment';
@@ -18,7 +19,6 @@ import ms from 'ms';
 import { saveAs } from 'file-saver';
 
 export interface ResultPreviewProps {
-  size?: 'sm' | 'md' | 'lg';
   slug: string;
   fields: string[];
   values: (string | number | boolean | Date)[][];
@@ -27,7 +27,6 @@ export interface ResultPreviewProps {
 }
 
 export const ResultPreview: FC<ResultPreviewProps> = ({
-  size,
   slug,
   duration,
   fields,
@@ -90,22 +89,26 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
         </ButtonGroup>
       </Flex>
 
-      <Table variant="simple" size={size}>
+      <Table
+        borderWidth={1}
+        borderRadius="md"
+        sx={{ borderCollapse: 'separate', borderSpacing: 0 }}
+      >
         {/* <TableCaption>Imperial to metric conversion factors</TableCaption> */}
 
         <Thead>
           <Tr>
-            {fields.map((field) => (
-              <Th>{field}</Th>
+            {fields.map((field, cellIndex) => (
+              <Th key={cellIndex}>{field}</Th>
             ))}
           </Tr>
         </Thead>
 
         <Tbody>
-          {values?.map((row) => (
-            <Tr>
-              {row.map((value) => (
-                <Td>{value}</Td>
+          {values?.map((row, rowIndex) => (
+            <Tr key={rowIndex}>
+              {row.map((value, cellIndex) => (
+                <Td key={cellIndex}>{value}</Td>
               ))}
             </Tr>
           ))}

@@ -45,6 +45,7 @@ export class Clip {
   })
   source: Source;
 
+  @Field(() => ID)
   @RelationId((clip: Clip) => clip.source)
   sourceId: Source["id"];
 
