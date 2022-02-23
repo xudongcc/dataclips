@@ -85,7 +85,7 @@ const ClipEdit: FC = () => {
             <Input
               size="sm"
               borderRadius="md"
-              placeholder="请输入剪辑名称"
+              placeholder="请输入剪藏名称"
               name="name"
               width="30%"
               onChange={form.handleChange}
@@ -99,7 +99,7 @@ const ClipEdit: FC = () => {
               flex="1"
               value={form.values.sourceId}
               onChange={form.handleChange}
-              placeholder="选择数据源"
+              placeholder="请选择数据源"
               isDisabled={isSourcesLoading}
             >
               {sourceConnection?.edges?.map(({ node }) => {
