@@ -7,6 +7,12 @@ const { SERVER_URL } = process.env;
 export default defineConfig({
   favicon: '/favicon.png',
   routes,
+  copy: [
+    {
+      from: 'node_modules/monaco-editor/min/vs',
+      to: 'monaco-editor/min/vs',
+    },
+  ],
   proxy: {
     '/graphql': {
       target: SERVER_URL,

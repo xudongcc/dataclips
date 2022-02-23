@@ -1,7 +1,12 @@
 import Editor from '@monaco-editor/react';
+import loader from '@monaco-editor/loader';
 
 import { FC, useCallback } from 'react';
 import { Box, useColorModeValue, useToken } from '@chakra-ui/react';
+
+loader.config({
+  paths: { vs: '/monaco-editor/min/vs' },
+});
 
 export interface SQLEditorProps {
   value: string;
@@ -61,6 +66,7 @@ export const SQLEditor: FC<SQLEditorProps> = ({ value, onChange }) => {
         theme={theme}
         defaultLanguage="sql"
         options={{
+          contextmenu: false,
           suggestOnTriggerCharacters: true,
           minimap: {
             enabled: false,
