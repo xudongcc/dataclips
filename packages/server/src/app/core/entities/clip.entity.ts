@@ -9,8 +9,8 @@ import {
   UpdateDateColumn,
 } from "@nest-boot/database";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { nanoid } from "nanoid";
 import { Source } from "./source.entity";
-import { randomUUID } from "crypto";
 import { Result } from "./result.entity";
 
 @ObjectType()
@@ -25,7 +25,7 @@ export class Clip {
   name: string;
 
   @Field()
-  @Column({ generator: () => randomUUID() })
+  @Column({ generator: () => nanoid() })
   slug: string;
 
   @Field()
