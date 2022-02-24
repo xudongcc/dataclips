@@ -46,7 +46,10 @@
     "react-helmet": "^6.1.0",
     "react-icons": "^4.3.1",
     "react-query": "^3.34.16",
-    "umi": "^3.5.20"
+    "react-table": "^7.7.0",
+    "react-use": "^17.3.2",
+    "umi": "^3.5.20",
+    "use-url-search-params": "^2.5.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.6.1",
@@ -61,6 +64,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-helmet": "^6.1.5",
+    "@types/react-table": "^7.7.9",
     "@umijs/test": "^3.5.20",
     "lint-staged": "^12.3.4",
     "prettier": "^2.2.0",
