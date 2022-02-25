@@ -113,7 +113,7 @@ export const ResultPreview: FC<ResultPreviewProps> = ({ slug, result }) => {
         setUrlSearchParams(localSortParams as InitialType);
         setSortBy([
           {
-            id: localSortParams.order,
+            id: localSortParams.order as string,
             desc: localSortParams.orderDirection === 'desc',
           },
         ]);
@@ -225,52 +225,65 @@ export const ResultPreview: FC<ResultPreviewProps> = ({ slug, result }) => {
             ) : null}
           </Flex>
 
-          <Table
-            borderWidth={1}
-            {...getTableProps()}
+          <Box
             borderRadius="md"
-            sx={{ borderCollapse: 'separate', borderSpacing: 0 }}
+            borderColor="var(--chakra-colors-gray-100)"
+            borderWidth={1}
+            overflowY="auto"
+            maxHeight="calc(100vh - 80px)"
           >
-            <Thead>
-              {headerGroups.map((headerGroup) => (
-                <Tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => (
-                    <Th
-                      userSelect="none"
-                      {...column.getHeaderProps(column.getSortByToggleProps())}
-                    >
-                      <Flex alignItems="center">
-                        {column.render('Header')}
-                        {column.isSorted ? (
-                          column.isSortedDesc ? (
-                            <ChevronDownIcon ml={1} w={4} h={4} />
-                          ) : (
-                            <ChevronUpIcon ml={1} w={4} h={4} />
-                          )
-                        ) : (
-                          ''
+            <Table
+              {...getTableProps()}
+              sx={{ borderCollapse: 'separate', borderSpacing: 0 }}
+            >
+              <Thead position="sticky" top={0}>
+                {headerGroups.map((headerGroup) => (
+                  <Tr {...headerGroup.getHeaderGroupProps()}>
+                    {headerGroup.headers.map((column) => (
+                      <Th
+                        whiteSpace="nowrap"
+                        bg="var(--chakra-colors-bg-canvas)"
+                        userSelect="none"
+                        {...column.getHeaderProps(
+                          column.getSortByToggleProps(),
                         )}
-                      </Flex>
-                    </Th>
-                  ))}
-                </Tr>
-              ))}
-            </Thead>
-            <Tbody {...getTableBodyProps()}>
-              {rows.map((row, i) => {
-                prepareRow(row);
-                return (
-                  <Tr {...row.getRowProps()}>
-                    {row.cells.map((cell) => {
-                      return (
-                        <Td {...cell.getCellProps()}>{cell.render('Cell')}</Td>
-                      );
-                    })}
+                      >
+                        <Flex alignItems="center">
+                          {column.render('Header')}
+                          {column.isSorted ? (
+                            column.isSortedDesc ? (
+                              <ChevronDownIcon ml={1} w={4} h={4} />
+                            ) : (
+                              <ChevronUpIcon ml={1} w={4} h={4} />
+                            )
+                          ) : (
+                            ''
+                          )}
+                        </Flex>
+                      </Th>
+                    ))}
                   </Tr>
-                );
-              })}
-            </Tbody>
-          </Table>
+                ))}
+              </Thead>
+
+              <Tbody {...getTableBodyProps()}>
+                {rows.map((row, i) => {
+                  prepareRow(row);
+                  return (
+                    <Tr {...row.getRowProps()}>
+                      {row.cells.map((cell) => {
+                        return (
+                          <Td {...cell.getCellProps()}>
+                            {cell.render('Cell')}
+                          </Td>
+                        );
+                      })}
+                    </Tr>
+                  );
+                })}
+              </Tbody>
+            </Table>
+          </Box>
         </>
       )}
     </Box>
