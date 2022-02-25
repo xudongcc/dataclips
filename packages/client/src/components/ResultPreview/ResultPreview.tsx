@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef } from 'react';
+import { FC, useCallback, useEffect, useRef, useMemo } from 'react';
 import {
   chakra,
   Box,
@@ -27,7 +27,7 @@ import { useLocalStorage } from 'react-use';
 
 export interface ResultPreviewProps {
   slug?: string;
-  result: ResultFragment & { columns: Column<object>[]; tableValues: object[] };
+  result: ResultFragment;
 }
 
 interface SortType {
@@ -38,6 +38,11 @@ interface SortType {
 interface TableSortState {
   id: string;
   desc: boolean;
+}
+
+interface reactTableOptionData {
+  columns: Column<object>[];
+  data: object[];
 }
 
 export const ResultPreview: FC<ResultPreviewProps> = ({ slug, result }) => {
@@ -52,6 +57,34 @@ export const ResultPreview: FC<ResultPreviewProps> = ({ slug, result }) => {
   //  首次，url 没参数，本地有参数
   const paramsFromLocalRef = useRef(false);
 
+  const reactTableOptionData: reactTableOptionData = useMemo(() => {
+    const optionData: reactTableOptionData = {
+      columns: [],
+      data: [],
+    };
+
+    if (result) {
+      // table 的所需要的数据
+      optionData.data = result.values.map((value) => {
+        const item: Record<string, any> = {};
+
+        result.fields.forEach((key: string, index: number) => {
+          item[key] = value[index];
+        });
+
+        return item;
+      });
+
+      // 生成 columns
+      optionData.columns = result.fields.map((value: string) => ({
+        Header: value,
+        accessor: value,
+      }));
+    }
+
+    return optionData;
+  }, [result]);
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -62,8 +95,8 @@ export const ResultPreview: FC<ResultPreviewProps> = ({ slug, result }) => {
     state: { sortBy },
   } = useTable(
     {
-      columns: result.columns,
-      data: result.tableValues,
+      columns: reactTableOptionData.columns,
+      data: reactTableOptionData.data,
       // 默认排序状态
       initialState: urlSearchParams?.order
         ? {
@@ -273,7 +306,7 @@ export const ResultPreview: FC<ResultPreviewProps> = ({ slug, result }) => {
                     <Tr {...row.getRowProps()}>
                       {row.cells.map((cell) => {
                         return (
-                          <Td {...cell.getCellProps()}>
+                          <Td whiteSpace="nowrap" {...cell.getCellProps()}>
                             {cell.render('Cell')}
                           </Td>
                         );
