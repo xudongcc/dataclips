@@ -10,6 +10,8 @@ import { ClipResolver } from "./resolvers/clip.resolver";
 import { ClipController } from "./controllers/clip.controller";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
+import { DatabaseSourceResolver } from "./resolvers/database-source.resolver";
+import { VirtualSourceResolver } from "./resolvers/virtual-source.resolver";
 
 @Module({
   imports: [
@@ -25,7 +27,13 @@ import { join } from "path";
       rootPath: join(process.cwd(), "client"),
     }),
   ],
-  providers: [ProjectResolver, ClipResolver, SourceResolver],
+  providers: [
+    ProjectResolver,
+    ClipResolver,
+    SourceResolver,
+    DatabaseSourceResolver,
+    VirtualSourceResolver,
+  ],
   controllers: [ClipController],
 })
 export class HttpModule implements NestModule {

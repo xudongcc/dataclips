@@ -4,4 +4,6 @@ import { execCli } from "@nest-boot/command";
 
 import { ConsoleModule } from "./app/console/console.module";
 
-execCli(ConsoleModule);
+import { SourceObject } from "./app/http/objects/source.object";
+
+execCli(ConsoleModule.name);

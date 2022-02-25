@@ -2,56 +2,51 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimarySnowflakeColumn,
   UpdateDateColumn,
 } from "@nest-boot/database";
 import { SourceType } from "../enums/source-type.enum";
 import { Clip } from "./clip.entity";
-import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { VirtualSourceTable } from "./virtual-source-table.entity";
 
-@ObjectType()
 @Entity({ searchable: true })
 export class Source {
-  @Field(() => ID)
   @PrimarySnowflakeColumn()
   id: string;
 
-  @Field()
   @Column()
   name: string;
 
-  @Field()
   @Column()
   type: SourceType;
 
-  @Field()
-  @Column()
-  host: string;
+  @Column({ nullable: true })
+  host?: string;
 
-  @Field()
-  @Column({ type: "int" })
-  port: number;
+  @Column({ type: "int", nullable: true })
+  port?: number;
 
-  @Field()
-  @Column()
-  database: string;
+  @Column({ nullable: true })
+  database?: string;
 
-  @Field()
-  @Column()
+  @Column({ nullable: true })
   username: string;
 
-  @Column()
-  password: string;
+  @Column({ nullable: true })
+  password?: string;
 
-  @Field()
   @CreateDateColumn()
   createdAt: Date;
 
-  @Field()
   @UpdateDateColumn()
   updatedAt: Date;
 
   @OneToMany(() => Clip, (clip) => clip.source)
   clips: Clip[];
+
+  @OneToMany(() => VirtualSourceTable, (tables) => tables.source)
+  tables: VirtualSourceTable[];
 }

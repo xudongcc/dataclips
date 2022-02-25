@@ -12,6 +12,7 @@ import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { nanoid } from "nanoid";
 import { Source } from "./source.entity";
 import { Result } from "./result.entity";
+import { VirtualSourceTable } from "./virtual-source-table.entity";
 
 @ObjectType()
 @Entity({ searchable: true })
@@ -27,6 +28,10 @@ export class Clip {
   @Field()
   @Column({ generator: () => nanoid() })
   slug: string;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true, generator: () => nanoid() })
+  token: string;
 
   @Field()
   @Column()
@@ -51,4 +56,10 @@ export class Clip {
 
   @OneToMany(() => Result, (result) => result.clip)
   results: Result[];
+
+  @OneToMany(
+    () => VirtualSourceTable,
+    (virtualSourceTable) => virtualSourceTable.clip
+  )
+  virtualSourceTables: VirtualSourceTable[];
 }

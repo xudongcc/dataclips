@@ -1,9 +1,8 @@
 import { registerEnumType } from "@nestjs/graphql";
 
-export enum SourceType {
-  VIRTUAL = "VIRTUAL",
+export enum DatabaseType {
   MYSQL = "MYSQL",
   POSTGRESQL = "POSTGRESQL",
 }
 
-registerEnumType(SourceType, { name: "SourceType" });
+registerEnumType(DatabaseType, { name: "DatabaseType" });
