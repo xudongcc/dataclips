@@ -21,7 +21,9 @@ export class ClipController {
 
   @Get(":slug.json")
   async json(@Param("slug") slug: string) {
-    const clip = await this.clipService.findOne({ where: { slug } });
+    const clip = await this.clipService.findOne({
+      where: [{ id: slug }, { slug }],
+    });
 
     if (!clip) {
       throw new NotFoundException();
@@ -39,7 +41,9 @@ export class ClipController {
   @Get(":slug.csv")
   @Header("Content-Type", "text/csv")
   async csv(@Param("slug") slug: string) {
-    const clip = await this.clipService.findOne({ where: { slug } });
+    const clip = await this.clipService.findOne({
+      where: [{ id: slug }, { slug }],
+    });
 
     if (!clip) {
       throw new NotFoundException();
@@ -59,7 +63,9 @@ export class ClipController {
 
   @Get(":slug.xlsx")
   async xlsx(@Res() res: Response, @Param("slug") slug: string) {
-    const clip = await this.clipService.findOne({ where: { slug } });
+    const clip = await this.clipService.findOne({
+      where: [{ id: slug }, { slug }],
+    });
 
     if (!clip) {
       throw new NotFoundException();
