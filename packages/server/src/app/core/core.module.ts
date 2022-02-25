@@ -7,6 +7,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { DatabaseModule } from "@nest-boot/database";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { Parser as SQLParser } from "node-sql-parser";
 
 import * as entities from "./entities";
 import * as services from "./services";
@@ -45,7 +46,7 @@ const QueueDynamicModule = QueueModule.registerAsync({
   imports: [RedisDynamicModule],
 });
 
-const providers = [...Object.values(services)];
+const providers = [SQLParser, ...Object.values(services)];
 
 @Module({
   imports: [
