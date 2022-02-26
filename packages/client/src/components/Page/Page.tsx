@@ -2,13 +2,12 @@ import {
   Button,
   Heading,
   HStack,
-  SimpleGrid,
   Stack,
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
 import { FC } from 'react';
-import { FiDownloadCloud } from 'react-icons/fi';
+import { DownloadIcon } from '@chakra-ui/icons';
 
 export interface PageProps {
   title: string;
@@ -35,7 +34,7 @@ export const Page: FC<PageProps> = ({ title, children }) => {
         <HStack spacing="3">
           <Button
             variant="secondary"
-            leftIcon={<FiDownloadCloud fontSize="1.25rem" />}
+            leftIcon={<DownloadIcon fontSize="1.25rem" />}
           >
             Download
           </Button>

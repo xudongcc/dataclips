@@ -1,8 +1,8 @@
 import { FC, useEffect } from 'react';
 
-import { useParams, useHistory } from 'umi';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from 'react-query';
-import { ResultPreview } from '@/components/ResultPreview';
+import { ResultPreview } from '../components/ResultPreview';
 import {
   Box,
   Button,
@@ -17,20 +17,20 @@ import {
   useSourceConnectionQuery,
   useCreateClipMutation,
   useUpdateClipMutation,
-} from '@/generated/graphql';
-import { SQLEditor } from '@/components/SQLEditor';
+} from '../generated/graphql';
+import { SQLEditor } from '../components/SQLEditor';
 import { useFormik } from 'formik';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 const ClipEdit: FC = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { clipId } = useParams<{ clipId: string }>();
 
   const [createClip, { loading: createClipLoading }] = useCreateClipMutation();
   const [updateClip, { loading: updateClipLoading }] = useUpdateClipMutation();
 
   const { data: { clip } = {}, loading: isClipLoading } = useClipQuery({
-    variables: { id: clipId },
+    variables: { id: clipId! },
     skip: !clipId,
   });
 
@@ -55,7 +55,7 @@ const ClipEdit: FC = () => {
       } else {
         try {
           const { data } = await createClip({ variables: { input } });
-          history.push(`/clips/${data?.createClip.id}/edit`);
+          navigate(`/clips/${data?.createClip.id}/edit`);
         } catch (err) {
           //
         }
@@ -71,7 +71,7 @@ const ClipEdit: FC = () => {
         sourceId: clip.sourceId,
       });
     }
-  }, [clip]);
+  }, [clip, form]);
 
   return (
     <>
@@ -103,7 +103,11 @@ const ClipEdit: FC = () => {
               isDisabled={isSourcesLoading}
             >
               {sourceConnection?.edges?.map(({ node }) => {
-                return <option value={node.id}>{node.name}</option>;
+                return (
+                  <option key={node.id} value={node.id}>
+                    {node.name}
+                  </option>
+                );
               })}
             </Select>
 
@@ -131,7 +135,7 @@ const ClipEdit: FC = () => {
         </form>
 
         <Box flex={1}>
-          {result ? <ResultPreview slug={clip?.slug} result={result} /> : null}
+          {result ? <ResultPreview token={clip?.slug} result={result} /> : null}
         </Box>
       </Flex>
     </>

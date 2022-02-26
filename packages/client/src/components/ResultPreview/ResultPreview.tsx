@@ -1,71 +1,50 @@
-import { FC, useCallback, useEffect, useRef, useMemo } from 'react';
+import { FC, useCallback, useMemo, useState, useEffect } from 'react';
 import {
-  chakra,
   Box,
   Flex,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  ButtonGroup,
-  Button,
-  HStack,
-  Text,
-  useColorModeValue,
+  Input,
+  InputGroup,
+  InputLeftAddon,
+  useToast,
 } from '@chakra-ui/react';
-import { DownloadIcon } from '@chakra-ui/icons';
-import moment from 'moment';
-import ms from 'ms';
-import { saveAs } from 'file-saver';
-import { ResultFragment } from '@/generated/graphql';
-import { useTable, useSortBy, Column } from 'react-table';
-import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
-import { InitialType, useUrlSearchParams } from 'use-url-search-params';
-import { useLocalStorage } from 'react-use';
+import { TableOptions } from 'react-table';
+
+import { ResultFragment } from '../../generated/graphql';
+import { useSearchParams } from 'react-router-dom';
+
+import { Table } from '../Table';
+import { useDatabaseQuery } from '../../hooks/useDatabaseQuery';
+import { StatResult } from './components/StatResult';
+import { DownloadButtonGroup } from './components/DownloadButtonGroup';
+import { ResultError } from './components/ResultError';
 
 export interface ResultPreviewProps {
-  slug?: string;
+  token?: string;
   result: ResultFragment;
 }
 
-interface SortType {
-  order?: string;
-  orderDirection?: string;
-}
+export const ResultPreview: FC<ResultPreviewProps> = ({
+  token,
+  result: rawResult,
+}) => {
+  const toast = useToast();
 
-interface TableSortState {
-  id: string;
-  desc: boolean;
-}
+  const databaseQuery = useDatabaseQuery();
 
-interface reactTableOptionData {
-  columns: Column<object>[];
-  data: object[];
-}
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [where, setWhere] = useState<string>(searchParams.get('where') || '');
 
-export const ResultPreview: FC<ResultPreviewProps> = ({ slug, result }) => {
-  const [urlSearchParams, setUrlSearchParams]: [
-    SortType,
-    (nextQuery: InitialType) => void,
-  ] = useUrlSearchParams();
+  const [result, setResult] = useState<ResultFragment>(rawResult);
 
-  const [localSortParams, setLocalSortParams, remove] =
-    useLocalStorage<SortType>('sort');
-
-  //  首次，url 没参数，本地有参数
-  const paramsFromLocalRef = useRef(false);
-
-  const reactTableOptionData: reactTableOptionData = useMemo(() => {
-    const optionData: reactTableOptionData = {
+  const tableProps = useMemo<TableOptions<any>>(() => {
+    const options: TableOptions<any> = {
       columns: [],
       data: [],
     };
 
     if (result) {
       // table 的所需要的数据
-      optionData.data = result.values.map((value) => {
+      options.data = result.values.map((value) => {
         const item: Record<string, any> = {};
 
         result.fields.forEach((key: string, index: number) => {
@@ -76,247 +55,78 @@ export const ResultPreview: FC<ResultPreviewProps> = ({ slug, result }) => {
       });
 
       // 生成 columns
-      optionData.columns = result.fields.map((value: string) => ({
+      options.columns = result.fields.map((value: string) => ({
         Header: value,
         accessor: value,
       }));
     }
 
-    return optionData;
+    return options;
   }, [result]);
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    setSortBy,
-    state: { sortBy },
-  } = useTable(
-    {
-      columns: reactTableOptionData.columns,
-      data: reactTableOptionData.data,
-      // 默认排序状态
-      initialState: urlSearchParams?.order
-        ? {
-            sortBy: [
-              {
-                id: urlSearchParams.order,
-                desc: urlSearchParams?.orderDirection === 'desc' || false,
-              },
-            ],
-          }
-        : undefined,
-    },
-    useSortBy,
-  );
-
-  const handleDownload = useCallback(
-    (extname: string) => {
-      saveAs(
-        `/clips/${slug}${extname}`,
-        `${moment().format('YYYYMMDD-HHmmss')}${extname}`,
+  const handleQuery = useCallback(async () => {
+    try {
+      const { fields, values } = await databaseQuery(
+        rawResult.fields,
+        rawResult.values,
+        `SELECT * FROM preview ${
+          searchParams.get('where') ? `WHERE ${searchParams.get('where')}` : ``
+        };`,
       );
-    },
-    [slug],
-  );
 
-  // 排序发生变化的时候会触发 sortBy 的变化
+      setResult({
+        ...rawResult,
+        fields,
+        values: values as string[][],
+      });
+    } catch (err: any) {
+      console.error(err);
+
+      toast({
+        title: '查询错误',
+        status: 'error',
+        description: err.message,
+      });
+    }
+  }, [databaseQuery, rawResult, searchParams, toast]);
+
   useEffect(() => {
-    const sortParams: SortType = {
-      order: `${sortBy[0]?.id}`,
-      orderDirection: `${sortBy[0]?.desc ? 'desc' : 'asc'}`,
-    };
-
-    if (sortBy.length) {
-      setLocalSortParams(sortParams);
-      setUrlSearchParams(sortParams as InitialType);
-    } else {
-      remove();
-      setUrlSearchParams({ order: undefined, orderDirection: undefined });
-    }
-  }, [sortBy]);
-
-  // 第一次检查同步
-  useEffect(() => {
-    if (!urlSearchParams?.order && !urlSearchParams?.orderDirection) {
-      if (localSortParams) {
-        paramsFromLocalRef.current = true;
-        setUrlSearchParams(localSortParams as InitialType);
-        setSortBy([
-          {
-            id: localSortParams.order as string,
-            desc: localSortParams.orderDirection === 'desc',
-          },
-        ]);
-      }
-    }
-
-    if (!localSortParams) {
-      if (urlSearchParams?.order || urlSearchParams?.orderDirection) {
-        const sortParams: SortType = {};
-
-        if (urlSearchParams?.order) {
-          sortParams.order = urlSearchParams?.order;
-        }
-
-        if (urlSearchParams?.orderDirection) {
-          sortParams.orderDirection = urlSearchParams?.orderDirection;
-        }
-
-        setLocalSortParams(sortParams);
-      }
-    }
-  }, []);
-
-  // url 参数发生变化，重新设置排序
-  useEffect(() => {
-    // 没有判断首次的情况，会循环渲染
-    if (!paramsFromLocalRef.current) {
-      if (urlSearchParams?.orderDirection || urlSearchParams?.order) {
-        const sortState: Required<TableSortState> = { id: '', desc: false };
-
-        if (urlSearchParams?.order) {
-          sortState.id = urlSearchParams?.order;
-        }
-
-        if (urlSearchParams?.orderDirection) {
-          sortState.desc = urlSearchParams?.orderDirection === 'desc';
-        }
-
-        setSortBy?.([sortState]);
-      } else {
-        setSortBy?.([]);
-      }
-    } else {
-      paramsFromLocalRef.current = false;
-    }
-  }, [urlSearchParams]);
+    handleQuery();
+  }, [handleQuery, rawResult]);
 
   return (
     <Box p={4} minH="full">
       {result.error ? (
-        <Box
-          p={4}
-          bgColor="red.50"
-          borderWidth={1}
-          borderColor="red.500"
-          borderRadius="md"
-          color="red.500"
-        >
-          <Text fontWeight="bold">查询错误</Text>
-          <chakra.pre>{result.error}</chakra.pre>
-        </Box>
+        <ResultError error={result.error} />
       ) : (
         <>
           <Flex mb={4} justify="space-between">
-            <HStack spacing={4}>
-              <Box fontSize="xs" lineHeight="none">
-                <Box mb={2} color={useColorModeValue('gray.600', 'gray.400')}>
-                  计数
-                </Box>
-                <Box>{result.values.length} 行</Box>
-              </Box>
-              <Box fontSize="xs" lineHeight="none">
-                <Box mb={2} color={useColorModeValue('gray.600', 'gray.400')}>
-                  耗时
-                </Box>
-                <Box>{ms(result.duration)}</Box>
-              </Box>
-              <Box fontSize="xs" lineHeight="none">
-                <Box mb={2} color={useColorModeValue('gray.600', 'gray.400')}>
-                  更新时间
-                </Box>
-                <Box>
-                  {moment(result.finishedAt).format('YYYY-MM-DD HH:mm:ss')}
-                </Box>
-              </Box>
-            </HStack>
+            <StatResult result={result} />
 
-            {slug ? (
-              <ButtonGroup size="sm" isAttached variant="outline">
-                <Button
-                  leftIcon={<DownloadIcon />}
-                  onClick={() => handleDownload('.csv')}
-                >
-                  CSV
-                </Button>
-                <Button
-                  leftIcon={<DownloadIcon />}
-                  onClick={() => handleDownload('.xlsx')}
-                >
-                  XLSX
-                </Button>
-                <Button
-                  leftIcon={<DownloadIcon />}
-                  onClick={() => handleDownload('.json')}
-                >
-                  JSON
-                </Button>
-              </ButtonGroup>
-            ) : null}
+            {token ? <DownloadButtonGroup token={token} /> : null}
           </Flex>
 
-          <Box
-            borderRadius="md"
-            borderColor="var(--chakra-colors-gray-100)"
-            borderWidth={1}
-            overflowY="auto"
-            maxHeight="calc(100vh - 80px)"
-          >
-            <Table
-              {...getTableProps()}
-              sx={{ borderCollapse: 'separate', borderSpacing: 0 }}
-            >
-              <Thead position="sticky" top={0}>
-                {headerGroups.map((headerGroup) => (
-                  <Tr {...headerGroup.getHeaderGroupProps()}>
-                    {headerGroup.headers.map((column) => (
-                      <Th
-                        whiteSpace="nowrap"
-                        bg="var(--chakra-colors-bg-canvas)"
-                        userSelect="none"
-                        {...column.getHeaderProps(
-                          column.getSortByToggleProps(),
-                        )}
-                      >
-                        <Flex alignItems="center">
-                          {column.render('Header')}
-                          {column.isSorted ? (
-                            column.isSortedDesc ? (
-                              <ChevronDownIcon ml={1} w={4} h={4} />
-                            ) : (
-                              <ChevronUpIcon ml={1} w={4} h={4} />
-                            )
-                          ) : (
-                            ''
-                          )}
-                        </Flex>
-                      </Th>
-                    ))}
-                  </Tr>
-                ))}
-              </Thead>
+          <Flex mb={4}>
+            <InputGroup size="sm">
+              <InputLeftAddon borderRadius="md" children="过滤" />
+              <Input
+                borderRadius="md"
+                fontFamily={'Menlo, Monaco, "Courier New", monospace'}
+                fontSize="xs"
+                value={where}
+                onChange={(event) => setWhere(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    searchParams.set('where', where);
+                    setSearchParams(searchParams);
+                    handleQuery();
+                  }
+                }}
+              />
+            </InputGroup>
+          </Flex>
 
-              <Tbody {...getTableBodyProps()}>
-                {rows.map((row, i) => {
-                  prepareRow(row);
-                  return (
-                    <Tr {...row.getRowProps()}>
-                      {row.cells.map((cell) => {
-                        return (
-                          <Td whiteSpace="nowrap" {...cell.getCellProps()}>
-                            {cell.render('Cell')}
-                          </Td>
-                        );
-                      })}
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
-          </Box>
+          <Table {...tableProps} />
         </>
       )}
     </Box>
