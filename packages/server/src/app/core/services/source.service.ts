@@ -8,7 +8,6 @@ import { mixinConnection } from "@nest-boot/graphql";
 import { Injectable } from "@nestjs/common";
 import mysql from "mysql2";
 import pg from "pg";
-import { Parser as SQLParser } from "node-sql-parser";
 import { Source } from "../entities/source.entity";
 import { SourceType } from "../enums/source-type.enum";
 import { CryptoService } from "../../../crypto";
@@ -17,10 +16,7 @@ import { CryptoService } from "../../../crypto";
 export class SourceService extends mixinConnection(
   mixinSearchable(createEntityService(Source))
 ) {
-  constructor(
-    private readonly cryptoService: CryptoService,
-    private readonly sqlParser: SQLParser
-  ) {
+  constructor(private readonly cryptoService: CryptoService) {
     super();
   }
 
@@ -42,18 +38,6 @@ export class SourceService extends mixinConnection(
     sql: string
   ): Promise<Record<string, string | number | boolean>[]> {
     const source = await this.findOne({ where: { id } });
-
-    const sqlCheckError = this.sqlParser.whiteListCheck(
-      sql,
-      ["(select)::(.*)::(.*)"],
-      {
-        type: "table",
-      }
-    );
-
-    if (sqlCheckError) {
-      throw sqlCheckError;
-    }
 
     let result: any;
     switch (source.type) {
