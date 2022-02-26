@@ -1,5 +1,0 @@
-mutation CreateSource($input: CreateSourceInput!) {
-  createSource(input: $input) {
-    ...Source
-  }
-}

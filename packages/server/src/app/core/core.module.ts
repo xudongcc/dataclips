@@ -1,3 +1,4 @@
+import { DatabaseModule } from "@nest-boot/database";
 import { LoggerModule } from "@nest-boot/logger";
 import { QueueModule } from "@nest-boot/queue";
 import { RedisModule } from "@nest-boot/redis";
@@ -5,12 +6,29 @@ import { SearchModule } from "@nest-boot/search";
 import { MeiliSearchEngine } from "@nest-boot/search-engine-meilisearch";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { DatabaseModule } from "@nest-boot/database";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import * as entities from "./entities";
-import * as services from "./services";
 import { CryptoModule } from "../../crypto";
+import { Clip } from "./entities/clip.entity";
+import { Project } from "./entities/project.entity";
+import { Result } from "./entities/result.entity";
+import { Source } from "./entities/source.entity";
+import { VirtualSourceTable } from "./entities/virtual-source-table.entity";
+import { ClipService } from "./services/clip.service";
+import { ProjectService } from "./services/project.service";
+import { ResultService } from "./services/result.service";
+import { SourceService } from "./services/source.service";
+import { VirtualSourceTableService } from "./services/virtual-source-table.service";
+
+const entities = [Clip, Project, Source, Result, VirtualSourceTable];
+
+const services = [
+  ClipService,
+  ProjectService,
+  ResultService,
+  SourceService,
+  VirtualSourceTableService,
+];
 
 const DatabaseDynamicModule = DatabaseModule.register({
   entities: Object.values(entities),

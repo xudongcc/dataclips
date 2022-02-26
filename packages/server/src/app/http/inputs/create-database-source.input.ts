@@ -2,15 +2,15 @@ import { Field, InputType, Int } from "@nestjs/graphql";
 import { SourceType } from "../../core/enums/source-type.enum";
 
 @InputType()
-export class UpdateSourceInput {
-  @Field({ nullable: true })
-  name?: string;
+export class CreateDatabaseSourceInput {
+  @Field()
+  name: string;
 
-  @Field(() => SourceType, { nullable: true })
-  type?: SourceType;
+  @Field(() => SourceType)
+  type: SourceType;
 
-  @Field({ nullable: true })
-  host?: string;
+  @Field()
+  host: string;
 
   @Field(() => Int, { nullable: true })
   port?: number;
@@ -18,8 +18,8 @@ export class UpdateSourceInput {
   @Field({ nullable: true })
   database?: string;
 
-  @Field({ nullable: true })
-  username?: string;
+  @Field()
+  username: string;
 
   @Field({ nullable: true })
   password?: string;

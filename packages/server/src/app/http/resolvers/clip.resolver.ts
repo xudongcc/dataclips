@@ -8,14 +8,14 @@ import {
   ResolveField,
   Resolver,
 } from "@nestjs/graphql";
-import { Clip } from "../../core/entities";
+import _ from "lodash";
+
+import { Clip } from "../../core/entities/clip.entity";
 import { ClipService } from "../../core/services/clip.service";
 import { ResultService } from "../../core/services/result.service";
 import { CreateClipInput } from "../inputs/create-clip.input";
 import { UpdateClipInput } from "../inputs/update-clip.input";
 import { ClipConnection } from "../objects/clip-connection.object";
-
-import _ from "lodash";
 import { ResultConnection } from "../objects/result-connection.object";
 
 @Resolver(() => Clip)
@@ -27,17 +27,17 @@ export class ClipResolver {
 
   @Query(() => Clip)
   async clip(@Args("id", { type: () => ID }) id: string): Promise<Clip> {
-    return this.clipService.findOne({ where: { id } });
+    return await this.clipService.findOne({ where: { id } });
   }
 
   @Query(() => ClipConnection)
   async clips(@Args() args: QueryConnectionArgs): Promise<ClipConnection> {
-    return this.clipService.getConnection(args);
+    return await this.clipService.getConnection(args);
   }
 
   @Mutation(() => Clip)
   async createClip(@Args("input") input: CreateClipInput): Promise<Clip> {
-    return this.clipService.create({
+    return await this.clipService.create({
       ...input,
       source: { id: input.sourceId },
     });
@@ -58,7 +58,7 @@ export class ClipResolver {
 
     await this.clipService.query(id);
 
-    return this.clipService.findOne({ where: { id } });
+    return await this.clipService.findOne({ where: { id } });
   }
 
   @Mutation(() => ID)

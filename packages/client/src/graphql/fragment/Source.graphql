@@ -1,7 +1,0 @@
-fragment Source on Source {
-  id
-  type
-  name
-  createdAt
-  updatedAt
-}

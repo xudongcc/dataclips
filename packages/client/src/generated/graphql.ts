@@ -13,7 +13,12 @@ const defaultOptions = {} as const;
         }
       }
       const result: PossibleTypesResultData = {
-  "possibleTypes": {}
+  "possibleTypes": {
+    "Source": [
+      "DatabaseSource",
+      "VirtualSource"
+    ]
+  }
 };
       export default result;
     
@@ -36,7 +41,7 @@ export type Clip = {
   results: ResultConnection;
   sourceId: Scalars['ID'];
   sql: Scalars['String'];
-  token: Scalars['String'];
+  token?: Maybe<Scalars['String']>;
   updatedAt: Scalars['DateTime'];
 };
 
@@ -73,31 +78,62 @@ export type CreateClipInput = {
   sql: Scalars['String'];
 };
 
-export type CreateProjectInput = {
-  name: Scalars['String'];
-};
-
-export type CreateSourceInput = {
-  database: Scalars['String'];
+export type CreateDatabaseSourceInput = {
+  database?: InputMaybe<Scalars['String']>;
   host: Scalars['String'];
   name: Scalars['String'];
-  password: Scalars['String'];
-  port: Scalars['Int'];
+  password?: InputMaybe<Scalars['String']>;
+  port?: InputMaybe<Scalars['Int']>;
   type: SourceType;
   username: Scalars['String'];
 };
 
+export type CreateProjectInput = {
+  name: Scalars['String'];
+};
+
+export type CreateVirtualSourceInput = {
+  name: Scalars['String'];
+  tables: Array<CreateVirtualSourceTableInput>;
+};
+
+export type CreateVirtualSourceTableInput = {
+  clipId: Scalars['ID'];
+  name: Scalars['String'];
+};
+
+export type DatabaseSource = {
+  __typename?: 'DatabaseSource';
+  createdAt: Scalars['DateTime'];
+  database?: Maybe<Scalars['String']>;
+  host: Scalars['String'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  password?: Maybe<Scalars['String']>;
+  port?: Maybe<Scalars['Int']>;
+  type: DatabaseType;
+  updatedAt: Scalars['DateTime'];
+  username: Scalars['String'];
+};
+
+export enum DatabaseType {
+  MYSQL = 'MYSQL',
+  POSTGRESQL = 'POSTGRESQL'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   createClip: Clip;
+  createDatabaseSource: DatabaseSource;
   createProject: Project;
-  createSource: Source;
+  createVirtualSource: VirtualSource;
   deleteClip: Scalars['ID'];
   deleteProject: Scalars['ID'];
   deleteSource: Scalars['ID'];
   updateClip: Clip;
+  updateDatabaseSource: DatabaseSource;
   updateProject: Project;
-  updateSource: Source;
+  updateVirtualSource: VirtualSource;
 };
 
 
@@ -106,13 +142,18 @@ export type MutationCreateClipArgs = {
 };
 
 
+export type MutationCreateDatabaseSourceArgs = {
+  input: CreateDatabaseSourceInput;
+};
+
+
 export type MutationCreateProjectArgs = {
   input: CreateProjectInput;
 };
 
 
-export type MutationCreateSourceArgs = {
-  input: CreateSourceInput;
+export type MutationCreateVirtualSourceArgs = {
+  input: CreateVirtualSourceInput;
 };
 
 
@@ -137,15 +178,21 @@ export type MutationUpdateClipArgs = {
 };
 
 
+export type MutationUpdateDatabaseSourceArgs = {
+  id: Scalars['ID'];
+  input: UpdateDatabaseSourceInput;
+};
+
+
 export type MutationUpdateProjectArgs = {
   id: Scalars['ID'];
   input: UpdateProjectInput;
 };
 
 
-export type MutationUpdateSourceArgs = {
+export type MutationUpdateVirtualSourceArgs = {
   id: Scalars['ID'];
-  input: UpdateSourceInput;
+  input: UpdateVirtualSourceInput;
 };
 
 export enum OrderDirection {
@@ -280,18 +327,7 @@ export type ResultEdge = {
   node: Result;
 };
 
-export type Source = {
-  __typename?: 'Source';
-  createdAt: Scalars['DateTime'];
-  database: Scalars['String'];
-  host: Scalars['String'];
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  port: Scalars['Float'];
-  type: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
-  username: Scalars['String'];
-};
+export type Source = DatabaseSource | VirtualSource;
 
 export type SourceConnection = {
   __typename?: 'SourceConnection';
@@ -309,7 +345,8 @@ export type SourceEdge = {
 
 export enum SourceType {
   MYSQL = 'MYSQL',
-  POSTGRESQL = 'POSTGRESQL'
+  POSTGRESQL = 'POSTGRESQL',
+  VIRTUAL = 'VIRTUAL'
 }
 
 export type UpdateClipInput = {
@@ -318,11 +355,7 @@ export type UpdateClipInput = {
   sql?: InputMaybe<Scalars['String']>;
 };
 
-export type UpdateProjectInput = {
-  name: Scalars['String'];
-};
-
-export type UpdateSourceInput = {
+export type UpdateDatabaseSourceInput = {
   database?: InputMaybe<Scalars['String']>;
   host?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
@@ -332,25 +365,41 @@ export type UpdateSourceInput = {
   username?: InputMaybe<Scalars['String']>;
 };
 
-export type ClipFragment = { __typename?: 'Clip', id: string, name: string, token: string, sql: string, sourceId: string, createdAt: any, updatedAt: any };
+export type UpdateProjectInput = {
+  name: Scalars['String'];
+};
+
+export type UpdateVirtualSourceInput = {
+  name?: InputMaybe<Scalars['String']>;
+};
+
+export type VirtualSource = {
+  __typename?: 'VirtualSource';
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  tables: Array<VirtualSourceTable>;
+  updatedAt: Scalars['DateTime'];
+};
+
+export type VirtualSourceTable = {
+  __typename?: 'VirtualSourceTable';
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type ClipFragment = { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, sourceId: string, createdAt: any, updatedAt: any };
 
 export type ResultFragment = { __typename?: 'Result', id: string, name: string, error?: string | null, fields: Array<string>, values: Array<Array<string>>, duration: number, startedAt?: any | null, finishedAt?: any | null };
-
-export type SourceFragment = { __typename?: 'Source', id: string, type: string, name: string, createdAt: any, updatedAt: any };
 
 export type CreateClipMutationVariables = Exact<{
   input: CreateClipInput;
 }>;
 
 
-export type CreateClipMutation = { __typename?: 'Mutation', createClip: { __typename?: 'Clip', id: string, name: string, token: string, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
-
-export type CreateSourceMutationVariables = Exact<{
-  input: CreateSourceInput;
-}>;
-
-
-export type CreateSourceMutation = { __typename?: 'Mutation', createSource: { __typename?: 'Source', id: string, type: string, name: string, createdAt: any, updatedAt: any } };
+export type CreateClipMutation = { __typename?: 'Mutation', createClip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
 
 export type UpdateClipMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -358,22 +407,14 @@ export type UpdateClipMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClipMutation = { __typename?: 'Mutation', updateClip: { __typename?: 'Clip', id: string, name: string, token: string, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
-
-export type UpdateSourceMutationVariables = Exact<{
-  id: Scalars['ID'];
-  input: UpdateSourceInput;
-}>;
-
-
-export type UpdateSourceMutation = { __typename?: 'Mutation', updateSource: { __typename?: 'Source', id: string, type: string, name: string, createdAt: any, updatedAt: any } };
+export type UpdateClipMutation = { __typename?: 'Mutation', updateClip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
 
 export type ClipQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type ClipQuery = { __typename?: 'Query', clip: { __typename?: 'Clip', id: string, name: string, token: string, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
+export type ClipQuery = { __typename?: 'Query', clip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
 
 export type SourceConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
@@ -385,7 +426,7 @@ export type SourceConnectionQueryVariables = Exact<{
 }>;
 
 
-export type SourceConnectionQuery = { __typename?: 'Query', sourceConnection: { __typename?: 'SourceConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'SourceEdge', node: { __typename?: 'Source', id: string, type: string, name: string, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+export type SourceConnectionQuery = { __typename?: 'Query', sourceConnection: { __typename?: 'SourceConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'SourceEdge', node: { __typename: 'DatabaseSource', id: string, name: string } | { __typename: 'VirtualSource', id: string, name: string } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export const ClipFragmentDoc = gql`
     fragment Clip on Clip {
@@ -408,15 +449,6 @@ export const ResultFragmentDoc = gql`
   duration
   startedAt
   finishedAt
-}
-    `;
-export const SourceFragmentDoc = gql`
-    fragment Source on Source {
-  id
-  type
-  name
-  createdAt
-  updatedAt
 }
     `;
 export const CreateClipDocument = gql`
@@ -452,39 +484,6 @@ export function useCreateClipMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateClipMutationHookResult = ReturnType<typeof useCreateClipMutation>;
 export type CreateClipMutationResult = Apollo.MutationResult<CreateClipMutation>;
 export type CreateClipMutationOptions = Apollo.BaseMutationOptions<CreateClipMutation, CreateClipMutationVariables>;
-export const CreateSourceDocument = gql`
-    mutation CreateSource($input: CreateSourceInput!) {
-  createSource(input: $input) {
-    ...Source
-  }
-}
-    ${SourceFragmentDoc}`;
-export type CreateSourceMutationFn = Apollo.MutationFunction<CreateSourceMutation, CreateSourceMutationVariables>;
-
-/**
- * __useCreateSourceMutation__
- *
- * To run a mutation, you first call `useCreateSourceMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateSourceMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createSourceMutation, { data, loading, error }] = useCreateSourceMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useCreateSourceMutation(baseOptions?: Apollo.MutationHookOptions<CreateSourceMutation, CreateSourceMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateSourceMutation, CreateSourceMutationVariables>(CreateSourceDocument, options);
-      }
-export type CreateSourceMutationHookResult = ReturnType<typeof useCreateSourceMutation>;
-export type CreateSourceMutationResult = Apollo.MutationResult<CreateSourceMutation>;
-export type CreateSourceMutationOptions = Apollo.BaseMutationOptions<CreateSourceMutation, CreateSourceMutationVariables>;
 export const UpdateClipDocument = gql`
     mutation UpdateClip($id: ID!, $input: UpdateClipInput!) {
   updateClip(id: $id, input: $input) {
@@ -519,40 +518,6 @@ export function useUpdateClipMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateClipMutationHookResult = ReturnType<typeof useUpdateClipMutation>;
 export type UpdateClipMutationResult = Apollo.MutationResult<UpdateClipMutation>;
 export type UpdateClipMutationOptions = Apollo.BaseMutationOptions<UpdateClipMutation, UpdateClipMutationVariables>;
-export const UpdateSourceDocument = gql`
-    mutation UpdateSource($id: ID!, $input: UpdateSourceInput!) {
-  updateSource(id: $id, input: $input) {
-    ...Source
-  }
-}
-    ${SourceFragmentDoc}`;
-export type UpdateSourceMutationFn = Apollo.MutationFunction<UpdateSourceMutation, UpdateSourceMutationVariables>;
-
-/**
- * __useUpdateSourceMutation__
- *
- * To run a mutation, you first call `useUpdateSourceMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateSourceMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateSourceMutation, { data, loading, error }] = useUpdateSourceMutation({
- *   variables: {
- *      id: // value for 'id'
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useUpdateSourceMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSourceMutation, UpdateSourceMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateSourceMutation, UpdateSourceMutationVariables>(UpdateSourceDocument, options);
-      }
-export type UpdateSourceMutationHookResult = ReturnType<typeof useUpdateSourceMutation>;
-export type UpdateSourceMutationResult = Apollo.MutationResult<UpdateSourceMutation>;
-export type UpdateSourceMutationOptions = Apollo.BaseMutationOptions<UpdateSourceMutation, UpdateSourceMutationVariables>;
 export const ClipDocument = gql`
     query Clip($id: ID!) {
   clip(id: $id) {
@@ -600,7 +565,15 @@ export const SourceConnectionDocument = gql`
   ) {
     edges {
       node {
-        ...Source
+        __typename
+        ... on DatabaseSource {
+          id
+          name
+        }
+        ... on VirtualSource {
+          id
+          name
+        }
       }
     }
     pageInfo {
@@ -612,7 +585,7 @@ export const SourceConnectionDocument = gql`
     totalCount
   }
 }
-    ${SourceFragmentDoc}`;
+    `;
 
 /**
  * __useSourceConnectionQuery__

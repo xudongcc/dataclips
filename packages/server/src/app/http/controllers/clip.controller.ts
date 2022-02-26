@@ -9,15 +9,11 @@ import {
 import { Response } from "express";
 import Papa from "papaparse";
 import xlsx from "node-xlsx";
-import { ClipService } from "../../core/services";
-import { ResultService } from "../../core/services/result.service";
+import { ClipService } from "../../core/services/clip.service";
 
 @Controller("/clips")
 export class ClipController {
-  constructor(
-    private readonly clipService: ClipService,
-    private readonly resultService: ResultService
-  ) {}
+  constructor(private readonly clipService: ClipService) {}
 
   @Get(":token.json")
   async json(@Param("token") token: string) {

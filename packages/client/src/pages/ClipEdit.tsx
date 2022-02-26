@@ -71,17 +71,15 @@ const ClipEdit: FC = () => {
   });
 
   useEffect(() => {
-    if (
-      clip &&
-      !_.isEqual(form.values, _.pick(clip, ["name", "sql", "sourceId"]))
-    ) {
+    if (clip) {
       form.setValues({
         name: clip.name,
         sql: clip.sql,
         sourceId: clip.sourceId,
       });
     }
-  }, [clip, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clip]);
 
   return (
     <>
@@ -145,7 +143,7 @@ const ClipEdit: FC = () => {
 
         <Box flex={1}>
           {result ? (
-            <ResultPreview token={clip?.token} result={result} />
+            <ResultPreview token={clip?.token!} result={result} />
           ) : null}
         </Box>
       </Flex>

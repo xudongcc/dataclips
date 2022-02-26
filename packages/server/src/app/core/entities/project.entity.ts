@@ -6,7 +6,7 @@ import {
   PrimarySnowflakeColumn,
   UpdateDateColumn,
 } from "@nest-boot/database";
-import { ObjectType, Field, ID } from "@nestjs/graphql";
+import { Field, ID, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
 @Entity({ searchable: true })

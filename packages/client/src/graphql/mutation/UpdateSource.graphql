@@ -1,5 +1,0 @@
-mutation UpdateSource($id: ID!, $input: UpdateSourceInput!) {
-  updateSource(id: $id, input: $input) {
-    ...Source
-  }
-}

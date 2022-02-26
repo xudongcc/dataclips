@@ -1,37 +1,38 @@
 import { QueryConnectionArgs } from "@nest-boot/graphql";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { Source } from "../../core/entities";
-import { SourceService } from "../../core/services/source.service";
-import { CreateSourceInput } from "../inputs/create-source.input";
-import { UpdateSourceInput } from "../inputs/update-source.input";
-import { SourceConnection } from "../objects/source-connection.object";
+import { plainToInstance } from "class-transformer";
 
-@Resolver(() => Source)
+import { Source } from "../../core/entities/source.entity";
+import { SourceService } from "../../core/services/source.service";
+import { SourceObject } from "../objects/source.object";
+import { SourceConnection } from "../objects/source-connection.object";
+import { SourceType } from "../../core/enums/source-type.enum";
+import { VirtualSource } from "../objects/virtual-source.object";
+import { DatabaseSource } from "../objects/database-source.object";
+
+@Resolver(() => SourceObject)
 export class SourceResolver {
   constructor(private readonly sourceService: SourceService) {}
 
-  @Query(() => Source)
+  @Query(() => SourceObject)
   async source(@Args("id", { type: () => ID }) id: string): Promise<Source> {
     return await this.sourceService.findOne({ where: { id } });
   }
 
   @Query(() => SourceConnection)
   async sources(@Args() args: QueryConnectionArgs): Promise<SourceConnection> {
-    return this.sourceService.getConnection(args);
-  }
+    const connection = await this.sourceService.getConnection(args);
 
-  @Mutation(() => Source)
-  async createSource(@Args("input") input: CreateSourceInput): Promise<Source> {
-    return this.sourceService.create(input);
-  }
+    connection.edges = connection.edges.map((edge) => {
+      const node: any =
+        edge.node.type === SourceType.VIRTUAL
+          ? plainToInstance(VirtualSource, edge.node)
+          : plainToInstance(DatabaseSource, edge.node);
 
-  @Mutation(() => Source)
-  async updateSource(
-    @Args("id", { type: () => ID }) id: string,
-    @Args("input") input: UpdateSourceInput
-  ): Promise<Source> {
-    await this.sourceService.update({ id }, input);
-    return this.sourceService.findOne({ where: { id } });
+      return { ...edge, node };
+    });
+
+    return connection;
   }
 
   @Mutation(() => ID)

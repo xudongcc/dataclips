@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from "@nest-boot/database";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
+
 import { Clip } from "./clip.entity";
 
 @ObjectType()

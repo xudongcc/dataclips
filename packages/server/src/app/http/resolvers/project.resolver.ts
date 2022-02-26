@@ -1,7 +1,7 @@
 import { QueryConnectionArgs } from "@nest-boot/graphql";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { Project } from "../../core/entities";
 
+import { Project } from "../../core/entities/project.entity";
 import { ProjectService } from "../../core/services/project.service";
 import { CreateProjectInput } from "../inputs/create-project.input";
 import { UpdateProjectInput } from "../inputs/update-project.input";
@@ -13,21 +13,21 @@ export class ProjectResolver {
 
   @Query(() => Project)
   async project(@Args("id", { type: () => ID }) id: string): Promise<Project> {
-    return this.projectService.findOne({ where: { id } });
+    return await this.projectService.findOne({ where: { id } });
   }
 
   @Query(() => ProjectConnection)
   async projects(
     @Args() args: QueryConnectionArgs
   ): Promise<ProjectConnection> {
-    return this.projectService.getConnection(args);
+    return await this.projectService.getConnection(args);
   }
 
   @Mutation(() => Project)
   async createProject(
     @Args("input") input: CreateProjectInput
   ): Promise<Project> {
-    return this.projectService.create(input);
+    return await this.projectService.create(input);
   }
 
   @Mutation(() => Project)
@@ -36,7 +36,7 @@ export class ProjectResolver {
     @Args("input") input: UpdateProjectInput
   ): Promise<Project> {
     await this.projectService.update({ id }, input);
-    return this.projectService.findOne({ where: { id } });
+    return await this.projectService.findOne({ where: { id } });
   }
 
   @Mutation(() => ID)

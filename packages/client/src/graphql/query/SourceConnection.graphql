@@ -16,7 +16,15 @@ query SourceConnection(
   ) {
     edges {
       node {
-        ...Source
+        __typename
+        ... on DatabaseSource {
+          id
+          name
+        }
+        ... on VirtualSource {
+          id
+          name
+        }
       }
     }
     pageInfo {

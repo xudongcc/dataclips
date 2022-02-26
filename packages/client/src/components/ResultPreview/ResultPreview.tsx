@@ -64,8 +64,6 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
     return options;
   }, [result]);
 
-  console.log("ResultPreview", ResultPreview);
-
   const handleQuery = useCallback(async () => {
     try {
       const { fields, values } = await databaseQuery(

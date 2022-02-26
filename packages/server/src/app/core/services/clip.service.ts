@@ -1,19 +1,20 @@
 import { createEntityService, FindOneOptions } from "@nest-boot/database";
-import { mixinSearchable } from "@nest-boot/search";
 import { mixinConnection } from "@nest-boot/graphql";
-import { Injectable } from "@nestjs/common";
+import { mixinSearchable } from "@nest-boot/search";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import moment from "moment";
 
 import { Clip } from "../entities/clip.entity";
-import { SourceService } from "./source.service";
-import { ResultService } from "./result.service";
 import { Result } from "../entities/result.entity";
-import moment from "moment";
+import { ResultService } from "./result.service";
+import { SourceService } from "./source.service";
 
 @Injectable()
 export class ClipService extends mixinConnection(
   mixinSearchable(createEntityService(Clip))
 ) {
   constructor(
+    @Inject(forwardRef(() => SourceService))
     private readonly sourceService: SourceService,
     private readonly resultService: ResultService
   ) {
@@ -43,7 +44,7 @@ export class ClipService extends mixinConnection(
       values = result.map((item: any) => Object.values(item));
     }
 
-    return this.resultService.create({
+    return await this.resultService.create({
       clip,
       name: clip.name,
       fields,
