@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState, useEffect } from 'react';
+import { FC, useCallback, useMemo, useState, useEffect } from "react";
 import {
   Box,
   Flex,
@@ -6,17 +6,17 @@ import {
   InputGroup,
   InputLeftAddon,
   useToast,
-} from '@chakra-ui/react';
-import { TableOptions } from 'react-table';
+} from "@chakra-ui/react";
+import { TableOptions } from "react-table";
 
-import { ResultFragment } from '../../generated/graphql';
-import { useSearchParams } from 'react-router-dom';
+import { ResultFragment } from "../../generated/graphql";
+import { useSearchParams } from "react-router-dom";
 
-import { Table } from '../Table';
-import { useDatabaseQuery } from '../../hooks/useDatabaseQuery';
-import { StatResult } from './components/StatResult';
-import { DownloadButtonGroup } from './components/DownloadButtonGroup';
-import { ResultError } from './components/ResultError';
+import { Table } from "../Table";
+import { useDatabaseQuery } from "../../hooks/useDatabaseQuery";
+import { StatResult } from "./components/StatResult";
+import { DownloadButtonGroup } from "./components/DownloadButtonGroup";
+import { ResultError } from "./components/ResultError";
 
 export interface ResultPreviewProps {
   token?: string;
@@ -32,7 +32,7 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
   const databaseQuery = useDatabaseQuery();
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [where, setWhere] = useState<string>(searchParams.get('where') || '');
+  const [where, setWhere] = useState<string>(searchParams.get("where") || "");
 
   const [result, setResult] = useState<ResultFragment>(rawResult);
 
@@ -64,14 +64,16 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
     return options;
   }, [result]);
 
+  console.log("ResultPreview", ResultPreview);
+
   const handleQuery = useCallback(async () => {
     try {
       const { fields, values } = await databaseQuery(
         rawResult.fields,
         rawResult.values,
         `SELECT * FROM preview ${
-          searchParams.get('where') ? `WHERE ${searchParams.get('where')}` : ``
-        };`,
+          searchParams.get("where") ? `WHERE ${searchParams.get("where")}` : ``
+        };`
       );
 
       setResult({
@@ -83,8 +85,8 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
       console.error(err);
 
       toast({
-        title: '查询错误',
-        status: 'error',
+        title: "查询错误",
+        status: "error",
         description: err.message,
       });
     }
@@ -116,8 +118,8 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
                 value={where}
                 onChange={(event) => setWhere(event.target.value)}
                 onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
-                    searchParams.set('where', where);
+                  if (event.key === "Enter") {
+                    searchParams.set("where", where);
                     setSearchParams(searchParams);
                     handleQuery();
                   }

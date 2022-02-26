@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect } from "react";
 
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
@@ -18,9 +18,11 @@ import {
   useCreateClipMutation,
   useUpdateClipMutation,
 } from "../generated/graphql";
-import { SQLEditor } from "../components/SQLEditor";
+// import { SQLEditor } from "../components/SQLEditor";
 import { useFormik } from "formik";
 import { Helmet } from "react-helmet-async";
+import _ from "lodash";
+import { SQLEditor } from "../components/SQLEditor";
 
 const ClipEdit: FC = () => {
   const navigate = useNavigate();
@@ -43,13 +45,8 @@ const ClipEdit: FC = () => {
     { enabled: !!clip?.id }
   );
 
-  const form = useFormik({
-    initialValues: {
-      name: "",
-      sql: "",
-      sourceId: "",
-    },
-    onSubmit: async (input) => {
+  const handleSubmit = useCallback(
+    async (input) => {
       if (clipId) {
         await updateClip({ variables: { id: clipId, input } });
       } else {
@@ -61,10 +58,23 @@ const ClipEdit: FC = () => {
         }
       }
     },
+    [clipId, createClip, navigate, updateClip]
+  );
+
+  const form = useFormik({
+    initialValues: {
+      name: "",
+      sql: "",
+      sourceId: "",
+    },
+    onSubmit: handleSubmit,
   });
 
   useEffect(() => {
-    if (clip) {
+    if (
+      clip &&
+      !_.isEqual(form.values, _.pick(clip, ["name", "sql", "sourceId"]))
+    ) {
       form.setValues({
         name: clip.name,
         sql: clip.sql,
@@ -78,7 +88,6 @@ const ClipEdit: FC = () => {
       <Helmet>
         <title>{clip?.name ? `${clip.name} | 数据剪藏` : `数据剪藏`}</title>
       </Helmet>
-
       <Flex h="full" direction="column">
         <form onSubmit={form.handleSubmit}>
           <Stack p={4} spacing={3} direction="row">

@@ -1,11 +1,5 @@
 import { FC } from "react";
-import { ChakraProvider } from "@chakra-ui/react";
-import { ApolloProvider } from "@apollo/client";
-import { apolloClient } from "./libs/apolloClient";
-import { QueryClientProvider } from "react-query";
-import { queryClient } from "./libs/queryClient";
 import { useRoutes } from "react-router-dom";
-import { theme } from "./theme";
 import ClipPreview from "./pages/ClipPreview";
 import ClipEdit from "./pages/ClipEdit";
 
@@ -16,24 +10,16 @@ export const App: FC = () => {
       element: <ClipEdit />,
     },
     {
-      path: "/clips/:token",
-      element: <ClipPreview />,
-    },
-    {
       path: "/clips/:clipId/edit",
       element: <ClipEdit />,
     },
+    {
+      path: "/clips/:token",
+      element: <ClipPreview />,
+    },
   ]);
 
-  return (
-    <ChakraProvider theme={theme}>
-      <ApolloProvider client={apolloClient}>
-        <QueryClientProvider client={queryClient}>
-          {element}
-        </QueryClientProvider>
-      </ApolloProvider>
-    </ChakraProvider>
-  );
+  return element;
 };
 
 export default App;
