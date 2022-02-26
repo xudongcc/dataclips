@@ -1,8 +1,4 @@
-import {
-  createEntityService,
-  DeepPartial,
-  FindConditions,
-} from "@nest-boot/database";
+import { createEntityService, FindOneOptions } from "@nest-boot/database";
 import { mixinSearchable } from "@nest-boot/search";
 import { mixinConnection } from "@nest-boot/graphql";
 import { Injectable } from "@nestjs/common";
@@ -12,7 +8,6 @@ import { SourceService } from "./source.service";
 import { ResultService } from "./result.service";
 import { Result } from "../entities/result.entity";
 import moment from "moment";
-import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
 @Injectable()
 export class ClipService extends mixinConnection(
@@ -57,6 +52,16 @@ export class ClipService extends mixinConnection(
       duration: finishedAt.getTime() - startedAt.getTime(),
       startedAt,
       finishedAt,
+    });
+  }
+
+  async findOneByIdOrToken(
+    idOrToken: string,
+    options?: FindOneOptions<Clip>
+  ): Promise<Clip> {
+    return await this.findOne({
+      ...options,
+      where: /^\d+$/.test(idOrToken) ? { id: idOrToken } : { token: idOrToken },
     });
   }
 

@@ -1,7 +1,7 @@
 fragment Clip on Clip {
   id
-  slug
   name
+  token
   sql
   sourceId
   createdAt

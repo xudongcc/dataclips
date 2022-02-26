@@ -1,16 +1,16 @@
-import { FC } from 'react';
+import { FC } from "react";
 
-import { useParams } from 'react-router-dom';
-import { useQuery } from 'react-query';
-import { ResultPreview } from '../components/ResultPreview';
-import { Helmet } from 'react-helmet-async';
-import { Loading } from '../components/Loading';
+import { useParams } from "react-router-dom";
+import { useQuery } from "react-query";
+import { ResultPreview } from "../components/ResultPreview";
+import { Helmet } from "react-helmet-async";
+import { Loading } from "../components/Loading";
 
 const ClipPreview: FC = () => {
-  const { slug } = useParams<{ slug: string }>();
+  const { token } = useParams<{ token: string }>();
 
-  const { data: result, isLoading } = useQuery(['result', slug], () =>
-    fetch(`/clips/${slug}.json`).then((res) => res.json()),
+  const { data: result, isLoading } = useQuery(["result", token], () =>
+    fetch(`/clips/${token}.json`).then((res) => res.json())
   );
 
   if (isLoading) {
@@ -23,7 +23,7 @@ const ClipPreview: FC = () => {
         <title>{result.name ? `${result.name} | 数据剪藏` : `数据剪藏`}</title>
       </Helmet>
 
-      <ResultPreview token={slug} result={result} />
+      <ResultPreview token={token} result={result} />
     </>
   );
 };

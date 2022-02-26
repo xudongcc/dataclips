@@ -1,26 +1,26 @@
-import { FC } from 'react';
-import { ChakraProvider } from '@chakra-ui/react';
-import { ApolloProvider } from '@apollo/client';
-import { apolloClient } from './libs/apolloClient';
-import { QueryClientProvider } from 'react-query';
-import { queryClient } from './libs/queryClient';
-import { useRoutes } from 'react-router-dom';
-import { theme } from './theme';
-import ClipPreview from './pages/ClipPreview';
-import ClipEdit from './pages/ClipEdit';
+import { FC } from "react";
+import { ChakraProvider } from "@chakra-ui/react";
+import { ApolloProvider } from "@apollo/client";
+import { apolloClient } from "./libs/apolloClient";
+import { QueryClientProvider } from "react-query";
+import { queryClient } from "./libs/queryClient";
+import { useRoutes } from "react-router-dom";
+import { theme } from "./theme";
+import ClipPreview from "./pages/ClipPreview";
+import ClipEdit from "./pages/ClipEdit";
 
 export const App: FC = () => {
   const element = useRoutes([
     {
-      path: '/clips/create',
+      path: "/clips/create",
       element: <ClipEdit />,
     },
     {
-      path: '/clips/:slug',
+      path: "/clips/:token",
       element: <ClipPreview />,
     },
     {
-      path: '/clips/:clipId/edit',
+      path: "/clips/:clipId/edit",
       element: <ClipEdit />,
     },
   ]);

@@ -26,7 +26,7 @@ export class Clip {
 
   @Field()
   @Column({ generator: () => nanoid() })
-  slug: string;
+  token: string;
 
   @Field()
   @Column()

@@ -34,9 +34,9 @@ export type Clip = {
   id: Scalars['ID'];
   name: Scalars['String'];
   results: ResultConnection;
-  slug: Scalars['String'];
   sourceId: Scalars['ID'];
   sql: Scalars['String'];
+  token: Scalars['String'];
   updatedAt: Scalars['DateTime'];
 };
 
@@ -332,7 +332,7 @@ export type UpdateSourceInput = {
   username?: InputMaybe<Scalars['String']>;
 };
 
-export type ClipFragment = { __typename?: 'Clip', id: string, slug: string, name: string, sql: string, sourceId: string, createdAt: any, updatedAt: any };
+export type ClipFragment = { __typename?: 'Clip', id: string, name: string, token: string, sql: string, sourceId: string, createdAt: any, updatedAt: any };
 
 export type ResultFragment = { __typename?: 'Result', id: string, name: string, error?: string | null, fields: Array<string>, values: Array<Array<string>>, duration: number, startedAt?: any | null, finishedAt?: any | null };
 
@@ -343,7 +343,7 @@ export type CreateClipMutationVariables = Exact<{
 }>;
 
 
-export type CreateClipMutation = { __typename?: 'Mutation', createClip: { __typename?: 'Clip', id: string, slug: string, name: string, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
+export type CreateClipMutation = { __typename?: 'Mutation', createClip: { __typename?: 'Clip', id: string, name: string, token: string, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
 
 export type CreateSourceMutationVariables = Exact<{
   input: CreateSourceInput;
@@ -358,7 +358,7 @@ export type UpdateClipMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClipMutation = { __typename?: 'Mutation', updateClip: { __typename?: 'Clip', id: string, slug: string, name: string, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
+export type UpdateClipMutation = { __typename?: 'Mutation', updateClip: { __typename?: 'Clip', id: string, name: string, token: string, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
 
 export type UpdateSourceMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -373,7 +373,7 @@ export type ClipQueryVariables = Exact<{
 }>;
 
 
-export type ClipQuery = { __typename?: 'Query', clip: { __typename?: 'Clip', id: string, slug: string, name: string, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
+export type ClipQuery = { __typename?: 'Query', clip: { __typename?: 'Clip', id: string, name: string, token: string, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
 
 export type SourceConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
@@ -390,8 +390,8 @@ export type SourceConnectionQuery = { __typename?: 'Query', sourceConnection: { 
 export const ClipFragmentDoc = gql`
     fragment Clip on Clip {
   id
-  slug
   name
+  token
   sql
   sourceId
   createdAt

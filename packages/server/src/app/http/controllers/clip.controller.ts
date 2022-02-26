@@ -19,11 +19,9 @@ export class ClipController {
     private readonly resultService: ResultService
   ) {}
 
-  @Get(":slug.json")
-  async json(@Param("slug") slug: string) {
-    const clip = await this.clipService.findOne({
-      where: [{ id: slug }, { slug }],
-    });
+  @Get(":token.json")
+  async json(@Param("token") token: string) {
+    const clip = await this.clipService.findOneByIdOrToken(token);
 
     if (!clip) {
       throw new NotFoundException();
@@ -38,12 +36,10 @@ export class ClipController {
     return result;
   }
 
-  @Get(":slug.csv")
+  @Get(":token.csv")
   @Header("Content-Type", "text/csv")
-  async csv(@Param("slug") slug: string) {
-    const clip = await this.clipService.findOne({
-      where: [{ id: slug }, { slug }],
-    });
+  async csv(@Param("token") token: string) {
+    const clip = await this.clipService.findOneByIdOrToken(token);
 
     if (!clip) {
       throw new NotFoundException();
@@ -61,11 +57,9 @@ export class ClipController {
     });
   }
 
-  @Get(":slug.xlsx")
-  async xlsx(@Res() res: Response, @Param("slug") slug: string) {
-    const clip = await this.clipService.findOne({
-      where: [{ id: slug }, { slug }],
-    });
+  @Get(":token.xlsx")
+  async xlsx(@Res() res: Response, @Param("token") token: string) {
+    const clip = await this.clipService.findOneByIdOrToken(token);
 
     if (!clip) {
       throw new NotFoundException();

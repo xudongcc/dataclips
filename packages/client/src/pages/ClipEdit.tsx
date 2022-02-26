@@ -1,8 +1,8 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect } from "react";
 
-import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from 'react-query';
-import { ResultPreview } from '../components/ResultPreview';
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "react-query";
+import { ResultPreview } from "../components/ResultPreview";
 import {
   Box,
   Button,
@@ -11,16 +11,16 @@ import {
   Stack,
   Flex,
   useColorModeValue,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 import {
   useClipQuery,
   useSourceConnectionQuery,
   useCreateClipMutation,
   useUpdateClipMutation,
-} from '../generated/graphql';
-import { SQLEditor } from '../components/SQLEditor';
-import { useFormik } from 'formik';
-import { Helmet } from 'react-helmet-async';
+} from "../generated/graphql";
+import { SQLEditor } from "../components/SQLEditor";
+import { useFormik } from "formik";
+import { Helmet } from "react-helmet-async";
 
 const ClipEdit: FC = () => {
   const navigate = useNavigate();
@@ -38,16 +38,16 @@ const ClipEdit: FC = () => {
     useSourceConnectionQuery({ variables: { first: 20 } });
 
   const { data: result, isLoading: isResultLoading } = useQuery(
-    ['result', clip?.slug],
-    () => fetch(`/clips/${clip?.slug}.json`).then((res) => res.json()),
-    { enabled: !!clip?.slug },
+    ["result", clip?.id],
+    () => fetch(`/clips/${clip?.id}.json`).then((res) => res.json()),
+    { enabled: !!clip?.id }
   );
 
   const form = useFormik({
     initialValues: {
-      name: '',
-      sql: '',
-      sourceId: '',
+      name: "",
+      sql: "",
+      sourceId: "",
     },
     onSubmit: async (input) => {
       if (clipId) {
@@ -125,17 +125,19 @@ const ClipEdit: FC = () => {
             borderTopWidth={1}
             borderBottomWidth={1}
             borderStyle="solid"
-            borderColor={useColorModeValue('gray.200', 'whiteAlpha.300')}
+            borderColor={useColorModeValue("gray.200", "whiteAlpha.300")}
           >
             <SQLEditor
               value={form.values.sql}
-              onChange={(value) => form.setFieldValue('sql', value)}
+              onChange={(value) => form.setFieldValue("sql", value)}
             />
           </Box>
         </form>
 
         <Box flex={1}>
-          {result ? <ResultPreview token={clip?.slug} result={result} /> : null}
+          {result ? (
+            <ResultPreview token={clip?.token} result={result} />
+          ) : null}
         </Box>
       </Flex>
     </>

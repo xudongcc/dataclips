@@ -8,22 +8,22 @@ import {
   Thead,
   Tr,
   useColorModeValue,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 
-import { ResultFragment } from '../../generated/graphql';
-import { useTable, useSortBy, TableOptions } from 'react-table';
-import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
+import { ResultFragment } from "../../generated/graphql";
+import { useTable, useSortBy, TableOptions } from "react-table";
+import { ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
 
 export interface ResultPreviewProps {
-  slug?: string;
+  token?: string;
   result: ResultFragment;
 }
 
 export interface TableProps<T extends object = {}> extends TableOptions<T> {}
 
 export function Table<T extends object = {}>(props: TableProps<T>) {
-  const borderColorColor = useColorModeValue('gray.100', 'gray.700');
-  const headerBackgroundColor = useColorModeValue('gray.50', 'gray.800');
+  const borderColorColor = useColorModeValue("gray.100", "gray.700");
+  const headerBackgroundColor = useColorModeValue("gray.50", "gray.800");
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable(props, useSortBy);
@@ -36,7 +36,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       overflowY="scroll"
     >
       <BaseTable
-        sx={{ borderCollapse: 'separate', borderSpacing: 0 }}
+        sx={{ borderCollapse: "separate", borderSpacing: 0 }}
         {...getTableProps()}
       >
         <Thead position="sticky" top={0}>
@@ -50,7 +50,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
                   {...column.getHeaderProps(column.getSortByToggleProps())}
                 >
                   <Flex alignItems="center">
-                    {column.render('Header')}
+                    {column.render("Header")}
                     {column.isSorted ? (
                       column.isSortedDesc ? (
                         <ChevronDownIcon ml={1} w={4} h={4} />
@@ -58,7 +58,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
                         <ChevronUpIcon ml={1} w={4} h={4} />
                       )
                     ) : (
-                      ''
+                      ""
                     )}
                   </Flex>
                 </Th>
@@ -75,7 +75,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
                 {row.cells.map((cell) => {
                   return (
                     <Td whiteSpace="nowrap" {...cell.getCellProps()}>
-                      {cell.render('Cell')}
+                      {cell.render("Cell")}
                     </Td>
                   );
                 })}
