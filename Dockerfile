@@ -48,7 +48,7 @@ WORKDIR /app
 RUN npm i -g @nest-boot/command
 
 # 复制客户端文件
-COPY --from=build-client /app/dist/ ./client/
+COPY --from=build-client /app/build/ ./client/
 
 # 复制服务端文件
 COPY --from=build-server /app/package.json ./
