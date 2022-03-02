@@ -6,6 +6,7 @@ import moment from "moment";
 
 import { Clip } from "../entities/clip.entity";
 import { Result } from "../entities/result.entity";
+import { RefreshClipQueue } from "../queues/refresh-clip.queue";
 import { ResultService } from "./result.service";
 import { SourceService } from "./source.service";
 
@@ -16,7 +17,9 @@ export class ClipService extends mixinConnection(
   constructor(
     @Inject(forwardRef(() => SourceService))
     private readonly sourceService: SourceService,
-    private readonly resultService: ResultService
+    private readonly resultService: ResultService,
+    @Inject(forwardRef(() => RefreshClipQueue))
+    private readonly refreshClipQueue: RefreshClipQueue
   ) {
     super();
   }
@@ -66,14 +69,14 @@ export class ClipService extends mixinConnection(
     });
   }
 
-  async fetchResult(id: Clip["id"]) {
+  async fetchResult(id: Clip["id"], sync = false) {
     const result = await this.resultService.findOne({
       where: { clip: { id } },
       order: { startedAt: "DESC" },
     });
 
     if (!result || moment().subtract(1, "m").isAfter(result.finishedAt)) {
-      await this.query(id);
+      await this.refreshClipQueue.add("", { clipId: id });
     }
 
     return result;
