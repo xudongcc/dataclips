@@ -1,7 +1,6 @@
 import { FC, useCallback, useEffect } from "react";
 
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "react-query";
 import { ResultPreview } from "../components/ResultPreview";
 import {
   Box,
@@ -21,8 +20,8 @@ import {
 // import { SQLEditor } from "../components/SQLEditor";
 import { useFormik } from "formik";
 import { Helmet } from "react-helmet-async";
-import _ from "lodash";
 import { SQLEditor } from "../components/SQLEditor";
+import { useQueryResult } from "../hooks/useQueryResult";
 
 const ClipEdit: FC = () => {
   const navigate = useNavigate();
@@ -39,11 +38,7 @@ const ClipEdit: FC = () => {
   const { data: { sourceConnection } = {}, loading: isSourcesLoading } =
     useSourceConnectionQuery({ variables: { first: 20 } });
 
-  const { data: result, isLoading: isResultLoading } = useQuery(
-    ["result", clip?.id],
-    () => fetch(`/clips/${clip?.id}.json`).then((res) => res.json()),
-    { enabled: !!clip?.id }
-  );
+  const { data: result, isLoading: isResultLoading } = useQueryResult(clipId);
 
   const handleSubmit = useCallback(
     async (input) => {

@@ -1,17 +1,15 @@
 import { FC } from "react";
 
-import { useParams } from "react-router-dom";
-import { useQuery } from "react-query";
-import { ResultPreview } from "../components/ResultPreview";
 import { Helmet } from "react-helmet-async";
+import { useParams } from "react-router-dom";
+import { ResultPreview } from "../components/ResultPreview";
 import { Loading } from "../components/Loading";
+import { useQueryResult } from "../hooks/useQueryResult";
 
 const ClipPreview: FC = () => {
   const { token } = useParams<{ token: string }>();
 
-  const { data: result, isLoading } = useQuery(["result", token], () =>
-    fetch(`/clips/${token}.json`).then((res) => res.json())
-  );
+  const { data: result, isLoading } = useQueryResult(token);
 
   if (isLoading) {
     return <Loading />;
