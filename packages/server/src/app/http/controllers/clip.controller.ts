@@ -23,7 +23,10 @@ export class ClipController {
       throw new NotFoundException();
     }
 
-    const result = await this.clipService.fetchResult(clip.id);
+    const [result] = await Promise.all([
+      this.clipService.fetchResult(clip.id),
+      this.clipService.update({ id: clip.id }, { lastViewedAt: new Date() }),
+    ]);
 
     if (!result) {
       throw new NotFoundException();
@@ -41,7 +44,10 @@ export class ClipController {
       throw new NotFoundException();
     }
 
-    const result = await this.clipService.fetchResult(clip.id);
+    const [result] = await Promise.all([
+      this.clipService.fetchResult(clip.id),
+      this.clipService.update({ id: clip.id }, { lastViewedAt: new Date() }),
+    ]);
 
     if (!result) {
       throw new NotFoundException();
@@ -61,7 +67,10 @@ export class ClipController {
       throw new NotFoundException();
     }
 
-    const result = await this.clipService.fetchResult(clip.id);
+    const [result] = await Promise.all([
+      this.clipService.fetchResult(clip.id),
+      this.clipService.update({ id: clip.id }, { lastViewedAt: new Date() }),
+    ]);
 
     if (!result) {
       throw new NotFoundException();
