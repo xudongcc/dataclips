@@ -34,6 +34,14 @@ export class Clip {
   @Column()
   sql: string;
 
+  @Field({ nullable: true })
+  @Column({ type: "timestamp", precision: 3, nullable: true })
+  lastViewedAt: Date;
+
+  @Field({ nullable: true })
+  @Column({ type: "timestamp", precision: 3, nullable: true })
+  latestResultAt: Date;
+
   @Field()
   @CreateDateColumn()
   createdAt: Date;

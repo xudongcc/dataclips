@@ -1,18 +1,22 @@
 import { PinoLogger } from "@nest-boot/logger";
 import { BaseQueue, Queue, Job } from "@nest-boot/queue";
-import { forwardRef, Inject } from "@nestjs/common";
+import { forwardRef, Inject, OnModuleInit } from "@nestjs/common";
+import Bluebird from "bluebird";
 import ms from "ms";
 import { ClipService } from "../services/clip.service";
 
+type RefreshClipQueryJob = Job<{ clipId: string }, void, "query">;
+type RefreshClipScheduleJob = Job<{}, void, "schedule">;
+
 @Queue({
-  concurrency: 5,
+  concurrency: 10,
   defaultJobOptions: {
-    timeout: ms("20m"),
+    timeout: ms("30m"),
     removeOnComplete: true,
     removeOnFail: true,
   },
 })
-export class RefreshClipQueue extends BaseQueue<{ clipId: string }> {
+export class RefreshClipQueue extends BaseQueue implements OnModuleInit {
   constructor(
     readonly logger: PinoLogger,
     @Inject(forwardRef(() => ClipService))
@@ -22,7 +26,40 @@ export class RefreshClipQueue extends BaseQueue<{ clipId: string }> {
     this.logger.setContext(this.constructor.name);
   }
 
-  async processor(job: Job<{ clipId: string }>): Promise<void> {
-    await this.clipService.query(job.data.clipId);
+  async onModuleInit() {
+    const name = "schedule";
+    const jobId = "1";
+    const every = ms("15m");
+
+    await this.add(name, {}, { jobId, repeat: { every } });
+
+    await Bluebird.map(
+      await this.getRepeatableJobs(),
+      async (repeatableJob) => {
+        if (
+          repeatableJob.name === name &&
+          repeatableJob.id === jobId &&
+          repeatableJob.cron === `${every}`
+        ) {
+          await this.removeRepeatableByKey(repeatableJob.key);
+        }
+      },
+      {
+        concurrency: 5,
+      }
+    );
+  }
+
+  async processor(
+    job: RefreshClipScheduleJob | RefreshClipQueryJob
+  ): Promise<void> {
+    switch (job.name) {
+      case "schedule":
+        await this.clipService.schedule();
+        break;
+      case "query":
+        await this.clipService.query(job.data.clipId);
+        break;
+    }
   }
 }

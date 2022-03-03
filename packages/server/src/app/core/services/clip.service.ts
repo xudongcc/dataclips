@@ -1,7 +1,13 @@
-import { createEntityService, FindOneOptions } from "@nest-boot/database";
+import {
+  createEntityService,
+  FindOneOptions,
+  LessThan,
+  MoreThan,
+} from "@nest-boot/database";
 import { mixinConnection } from "@nest-boot/graphql";
 import { mixinSearchable } from "@nest-boot/search";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import _ from "lodash";
 import moment from "moment";
 
 import { Clip } from "../entities/clip.entity";
@@ -27,13 +33,13 @@ export class ClipService extends mixinConnection(
   async query(id: Clip["id"]): Promise<Result> {
     const clip = await this.findOne({ where: { id } });
 
-    let result: Record<string, string | number | boolean>[] = [];
+    let queryResult: Record<string, string | number | boolean>[] = [];
     let error: any = null;
 
     const startedAt = new Date();
 
     try {
-      result = await this.sourceService.query(clip.sourceId, clip.sql);
+      queryResult = await this.sourceService.query(clip.sourceId, clip.sql);
     } catch (err) {
       error = err.message;
     }
@@ -42,21 +48,26 @@ export class ClipService extends mixinConnection(
 
     let fields: string[] = [];
     let values: (string | number | boolean | Date)[][] = [];
-    if (result?.[0]) {
-      fields = Object.keys(result[0]);
-      values = result.map((item: any) => Object.values(item));
+    if (queryResult?.[0]) {
+      fields = Object.keys(queryResult[0]);
+      values = queryResult.map((item: any) => Object.values(item));
     }
 
-    return await this.resultService.create({
-      clip,
-      name: clip.name,
-      fields,
-      values,
-      error,
-      duration: finishedAt.getTime() - startedAt.getTime(),
-      startedAt,
-      finishedAt,
-    });
+    const [result] = await Promise.all([
+      this.resultService.create({
+        clip,
+        name: clip.name,
+        fields,
+        values,
+        error,
+        duration: finishedAt.getTime() - startedAt.getTime(),
+        startedAt,
+        finishedAt,
+      }),
+      this.update({ id }, { latestResultAt: finishedAt }),
+    ]);
+
+    return result;
   }
 
   async findOneByIdOrToken(
@@ -76,9 +87,29 @@ export class ClipService extends mixinConnection(
     });
 
     if (!result || moment().subtract(1, "m").isAfter(result.finishedAt)) {
-      await this.refreshClipQueue.add("", { clipId: id });
+      await this.refreshClipQueue.add("query", { clipId: id });
     }
 
     return result;
+  }
+
+  async schedule() {
+    await this.chunkById(
+      {
+        where: {
+          lastViewedAt: MoreThan(moment().subtract(7, "d").toDate()),
+          latestResultAt: LessThan(moment().subtract(1, "h").toDate()),
+        },
+      },
+      500,
+      async (clips) => {
+        await this.refreshClipQueue.addBulk(
+          clips.map((clip) => ({
+            name: "query",
+            data: { clipId: clip.id },
+          }))
+        );
+      }
+    );
   }
 }
