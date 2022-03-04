@@ -3,10 +3,11 @@ import {
   ApolloLink,
   createHttpLink,
   InMemoryCache,
-} from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
-import { onError } from '@apollo/client/link/error';
-import { toast } from './toast';
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { onError } from "@apollo/client/link/error";
+
+import { toast } from "./toast";
 
 const tenantIdRegexp = /^\/projects\/(\d+)(\/?)/;
 
@@ -18,12 +19,12 @@ export const apolloClient = new ApolloClient({
         graphQLErrors.forEach((graphQLError) => {
           toast({
             title: graphQLError.message,
-            status: 'error',
+            status: "error",
           });
-          if (graphQLError.extensions?.code === 'UNAUTHORIZED') {
+          if (graphQLError.extensions?.code === "UNAUTHORIZED") {
             //
           }
-          if (graphQLError.extensions?.code === 'FORBIDDEN') {
+          if (graphQLError.extensions?.code === "FORBIDDEN") {
             //
           }
         });
@@ -32,7 +33,7 @@ export const apolloClient = new ApolloClient({
       if (networkError) {
         toast({
           title: networkError.message,
-          status: 'error',
+          status: "error",
         });
         throw networkError;
       }
@@ -41,10 +42,10 @@ export const apolloClient = new ApolloClient({
       return {
         headers: {
           ...headers,
-          'x-timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+          "x-timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
           ...(tenantIdRegexp.test(window.location.pathname)
             ? {
-                'x-tenant-id': (
+                "x-tenant-id": (
                   tenantIdRegexp.exec(window.location.pathname) as string[]
                 )[1],
               }
@@ -54,7 +55,7 @@ export const apolloClient = new ApolloClient({
     }),
     createHttpLink({
       uri: `/graphql`,
-      credentials: 'include',
+      credentials: "include",
     }),
   ]),
 });

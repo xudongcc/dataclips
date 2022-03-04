@@ -1,3 +1,4 @@
+import { DownloadIcon } from "@chakra-ui/icons";
 import {
   Button,
   Heading,
@@ -5,9 +6,8 @@ import {
   Stack,
   Text,
   useBreakpointValue,
-} from '@chakra-ui/react';
-import { FC } from 'react';
-import { DownloadIcon } from '@chakra-ui/icons';
+} from "@chakra-ui/react";
+import { FC } from "react";
 
 export interface PageProps {
   title: string;
@@ -15,16 +15,16 @@ export interface PageProps {
 
 export const Page: FC<PageProps> = ({ title, children }) => {
   return (
-    <Stack spacing={{ base: '8', lg: '6' }}>
+    <Stack spacing={{ base: "8", lg: "6" }}>
       <Stack
         spacing="4"
-        direction={{ base: 'column', lg: 'row' }}
+        direction={{ base: "column", lg: "row" }}
         justify="space-between"
-        align={{ base: 'start', lg: 'center' }}
+        align={{ base: "start", lg: "center" }}
       >
         <Stack spacing="1">
           <Heading
-            size={useBreakpointValue({ base: 'xs', lg: 'sm' })}
+            size={useBreakpointValue({ base: "xs", lg: "sm" })}
             fontWeight="medium"
           >
             {title}
@@ -41,7 +41,7 @@ export const Page: FC<PageProps> = ({ title, children }) => {
           <Button variant="primary">Create</Button>
         </HStack>
       </Stack>
-      <Stack spacing={{ base: '5', lg: '6' }}>{children}</Stack>
+      <Stack spacing={{ base: "5", lg: "6" }}>{children}</Stack>
     </Stack>
   );
 };

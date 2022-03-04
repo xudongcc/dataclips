@@ -1,7 +1,8 @@
 import { FC } from "react";
 import { useRoutes } from "react-router-dom";
-import ClipPreview from "./pages/ClipPreview";
+
 import ClipEdit from "./pages/ClipEdit";
+import ClipPreview from "./pages/ClipPreview";
 
 export const App: FC = () => {
   const element = useRoutes([

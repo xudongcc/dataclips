@@ -1,8 +1,9 @@
 import { PinoLogger } from "@nest-boot/logger";
-import { BaseQueue, Queue, Job } from "@nest-boot/queue";
+import { BaseQueue, Job, Queue } from "@nest-boot/queue";
 import { forwardRef, Inject, OnModuleInit } from "@nestjs/common";
 import Bluebird from "bluebird";
 import ms from "ms";
+
 import { ClipService } from "../services/clip.service";
 
 type RefreshClipQueryJob = Job<{ clipId: string }, void, "query">;

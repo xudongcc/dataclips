@@ -1,9 +1,9 @@
-import { useCallback } from 'react';
-import initSqlJs from 'sql.js';
+import { useCallback } from "react";
+import initSqlJs from "sql.js";
 
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import sqlWasm from '!!file-loader?name=sql-wasm-[contenthash].wasm!sql.js/dist/sql-wasm.wasm';
+import sqlWasm from "!!file-loader?name=sql-wasm-[contenthash].wasm!sql.js/dist/sql-wasm.wasm";
 
 export interface DatabaseQueryResult {
   fields: string[];
@@ -13,9 +13,9 @@ export interface DatabaseQueryResult {
 export const useDatabaseQuery = () => {
   return useCallback(
     async (
-      fields: DatabaseQueryResult['fields'],
-      values: DatabaseQueryResult['values'],
-      sql: string,
+      fields: DatabaseQueryResult["fields"],
+      values: DatabaseQueryResult["values"],
+      sql: string
     ): Promise<DatabaseQueryResult> => {
       const SQL = await initSqlJs({ locateFile: () => sqlWasm });
       const db = new SQL.Database();
@@ -25,7 +25,7 @@ export const useDatabaseQuery = () => {
       db.run(
         /* SQL */ `CREATE TABLE preview (${fields
           .map((field) => `\`${field}\``)
-          .join(',')});`,
+          .join(",")});`
       );
 
       db.run(
@@ -35,19 +35,19 @@ export const useDatabaseQuery = () => {
               `(${value
                 .map((val) => {
                   if (val === null) {
-                    return 'null';
+                    return "null";
                   }
 
                   switch (typeof val) {
-                    case 'number':
+                    case "number":
                       return val;
                     default:
                       return `'${val}'`;
                   }
                 })
-                .join(',')})`,
+                .join(",")})`
           )
-          .join(',')};`,
+          .join(",")};`
       );
 
       const [queryExecResult] = db.exec(sql);
@@ -61,9 +61,9 @@ export const useDatabaseQuery = () => {
 
       return {
         fields: queryExecResult.columns,
-        values: queryExecResult.values as DatabaseQueryResult['values'],
+        values: queryExecResult.values as DatabaseQueryResult["values"],
       };
     },
-    [],
+    []
   );
 };

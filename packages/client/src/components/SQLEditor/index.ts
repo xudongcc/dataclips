@@ -1,1 +1,1 @@
-export * from './SQLEditor';
+export * from "./SQLEditor";

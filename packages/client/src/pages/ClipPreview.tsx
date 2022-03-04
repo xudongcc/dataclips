@@ -1,9 +1,9 @@
 import { FC } from "react";
-
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
-import { ResultPreview } from "../components/ResultPreview";
+
 import { Loading } from "../components/Loading";
+import { ResultPreview } from "../components/ResultPreview";
 import { useQueryResult } from "../hooks/useQueryResult";
 
 const ClipPreview: FC = () => {

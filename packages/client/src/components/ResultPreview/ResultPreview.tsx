@@ -1,4 +1,3 @@
-import { FC, useCallback, useMemo, useState, useEffect } from "react";
 import {
   Box,
   Flex,
@@ -7,16 +6,16 @@ import {
   InputLeftAddon,
   useToast,
 } from "@chakra-ui/react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { TableOptions } from "react-table";
 
 import { ResultFragment } from "../../generated/graphql";
-import { useSearchParams } from "react-router-dom";
-
-import { Table } from "../Table";
 import { useDatabaseQuery } from "../../hooks/useDatabaseQuery";
-import { StatResult } from "./components/StatResult";
+import { Table } from "../Table";
 import { DownloadButtonGroup } from "./components/DownloadButtonGroup";
 import { ResultError } from "./components/ResultError";
+import { StatResult } from "./components/StatResult";
 
 export interface ResultPreviewProps {
   token?: string;

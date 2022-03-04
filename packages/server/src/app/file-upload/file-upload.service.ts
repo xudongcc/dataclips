@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-
-import { FileUpload } from "./file-upload.object";
-import { FileUploadInput } from "./file-upload.input";
-import { randomUUID } from "crypto";
-import { FileUploadLimit, FileUploadModuleOptions } from "./file-upload.module";
 import { S3 } from "aws-sdk";
+import { randomUUID } from "crypto";
+
+import { FileUploadInput } from "./file-upload.input";
+import { FileUploadLimit, FileUploadModuleOptions } from "./file-upload.module";
+import { FileUpload } from "./file-upload.object";
 
 @Injectable()
 export class FileUploadService {

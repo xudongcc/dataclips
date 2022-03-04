@@ -1,3 +1,4 @@
+import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import {
   Box,
   Flex,
@@ -9,17 +10,16 @@ import {
   Tr,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { TableOptions, useSortBy, useTable } from "react-table";
 
 import { ResultFragment } from "../../generated/graphql";
-import { useTable, useSortBy, TableOptions } from "react-table";
-import { ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
 
 export interface ResultPreviewProps {
   token?: string;
   result: ResultFragment;
 }
 
-export interface TableProps<T extends object = {}> extends TableOptions<T> {}
+export type TableProps<T extends object = {}> = TableOptions<T>;
 
 export function Table<T extends object = {}>(props: TableProps<T>) {
   const borderColorColor = useColorModeValue("gray.100", "gray.700");

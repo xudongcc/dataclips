@@ -1,29 +1,30 @@
-import { FC, useCallback, useEffect } from "react";
-
-import { useParams, useNavigate } from "react-router-dom";
-import { ResultPreview } from "../components/ResultPreview";
 import {
   Box,
   Button,
-  Select,
-  Input,
-  Stack,
   Flex,
+  Input,
+  Select,
+  Stack,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
+import { useFormik } from "formik";
+import { FC, useCallback, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
+import { useNavigate, useParams } from "react-router-dom";
+
+import { ResultPreview } from "../components/ResultPreview";
+import { SQLEditor } from "../components/SQLEditor";
 import {
   useClipQuery,
-  useSourceConnectionQuery,
   useCreateClipMutation,
+  useSourceConnectionQuery,
   useUpdateClipMutation,
 } from "../generated/graphql";
-// import { SQLEditor } from "../components/SQLEditor";
-import { useFormik } from "formik";
-import { Helmet } from "react-helmet-async";
-import { SQLEditor } from "../components/SQLEditor";
 import { useQueryResult } from "../hooks/useQueryResult";
 
 const ClipEdit: FC = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const { clipId } = useParams<{ clipId: string }>();
 
@@ -44,6 +45,11 @@ const ClipEdit: FC = () => {
     async (input) => {
       if (clipId) {
         await updateClip({ variables: { id: clipId, input } });
+
+        toast({
+          title: "保存成功",
+          status: "success",
+        });
       } else {
         try {
           const { data } = await createClip({ variables: { input } });

@@ -1,6 +1,6 @@
 import { Args, Mutation, Resolver } from "@nestjs/graphql";
-import { FileUploadInput } from "./file-upload.input";
 
+import { FileUploadInput } from "./file-upload.input";
 import { FileUpload } from "./file-upload.object";
 import { FileUploadService } from "./file-upload.service";
 
@@ -13,6 +13,6 @@ export class FileUploadResolver {
     @Args({ type: () => [FileUploadInput], name: "input" })
     input: FileUploadInput[]
   ): Promise<FileUpload[]> {
-    return this.fileUploadService.create(input);
+    return await this.fileUploadService.create(input);
   }
 }

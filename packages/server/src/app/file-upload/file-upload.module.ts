@@ -4,9 +4,10 @@ import {
   ModuleMetadata,
   Provider,
 } from "@nestjs/common";
-import { FileUploadService } from "./file-upload.service";
-import { FileUploadResolver } from "./file-upload.resolver";
 import { S3 } from "aws-sdk";
+
+import { FileUploadResolver } from "./file-upload.resolver";
+import { FileUploadService } from "./file-upload.service";
 
 export interface FileUploadLimit {
   fileSize: number;

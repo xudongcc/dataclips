@@ -62,12 +62,6 @@
     "test": "craco test",
     "graphql-codegen": "graphql-codegen"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",

@@ -1,5 +1,5 @@
-import { Flex, Spinner } from '@chakra-ui/react';
-import { FC } from 'react';
+import { Flex, Spinner } from "@chakra-ui/react";
+import { FC } from "react";
 
 export const Loading: FC = () => {
   return (

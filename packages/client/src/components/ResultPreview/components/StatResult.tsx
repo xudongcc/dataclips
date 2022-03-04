@@ -1,15 +1,16 @@
-import { FC } from 'react';
-import { Box, HStack, useColorModeValue } from '@chakra-ui/react';
-import { ResultFragment } from '../../../generated/graphql';
-import moment from 'moment';
-import ms from 'ms';
+import { Box, HStack, useColorModeValue } from "@chakra-ui/react";
+import moment from "moment";
+import ms from "ms";
+import { FC } from "react";
+
+import { ResultFragment } from "../../../generated/graphql";
 
 export interface StatResultProps {
   result: ResultFragment;
 }
 
 export const StatResult: FC<StatResultProps> = ({ result }) => {
-  const infoLabelColor = useColorModeValue('gray.600', 'gray.400');
+  const infoLabelColor = useColorModeValue("gray.600", "gray.400");
 
   return (
     <HStack spacing={4}>
@@ -29,7 +30,7 @@ export const StatResult: FC<StatResultProps> = ({ result }) => {
         <Box mb={2} color={infoLabelColor}>
           更新时间
         </Box>
-        <Box>{moment(result.finishedAt).format('YYYY-MM-DD HH:mm:ss')}</Box>
+        <Box>{moment(result.finishedAt).format("YYYY-MM-DD HH:mm:ss")}</Box>
       </Box>
     </HStack>
   );

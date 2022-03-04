@@ -1,7 +1,6 @@
-import { FC, useState } from 'react';
-import { Input, InputGroup, InputLeftAddon } from '@chakra-ui/react';
-
-import { useSearchParams } from 'react-router-dom';
+import { Input, InputGroup, InputLeftAddon } from "@chakra-ui/react";
+import { FC, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export interface WhereInputProps {
   value: string;
@@ -19,7 +18,7 @@ export const WhereInput: FC<WhereInputProps> = ({ value, onEnter }) => {
         defaultValue={where}
         onChange={(event) => setWhere(event.target.value)}
         onKeyDown={(event) => {
-          if (event.key === 'Enter') {
+          if (event.key === "Enter") {
             onEnter(where);
           }
         }}

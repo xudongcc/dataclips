@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import { chakra, Box, Text } from '@chakra-ui/react';
+import { Box, chakra, Text } from "@chakra-ui/react";
+import { FC } from "react";
 
 export interface ResultErrorProps {
   error: string;
