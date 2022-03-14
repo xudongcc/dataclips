@@ -79,7 +79,6 @@ const ClipEdit: FC = () => {
         sourceId: clip.sourceId,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clip]);
 
   return (
@@ -144,6 +143,7 @@ const ClipEdit: FC = () => {
 
         <Box flex={1}>
           {result ? (
+            // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
             <ResultPreview token={clip?.token!} result={result} />
           ) : null}
         </Box>

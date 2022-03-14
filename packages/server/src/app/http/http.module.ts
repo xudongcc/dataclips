@@ -7,6 +7,7 @@ import { join } from "path";
 
 import { CoreModule } from "../core/core.module";
 import { ClipController } from "./controllers/clip.controller";
+import { ChartResolver } from "./resolvers/chart.resolver";
 import { ClipResolver } from "./resolvers/clip.resolver";
 import { DatabaseSourceResolver } from "./resolvers/database-source.resolver";
 import { ProjectResolver } from "./resolvers/project.resolver";
@@ -33,6 +34,7 @@ import { VirtualSourceResolver } from "./resolvers/virtual-source.resolver";
     SourceResolver,
     DatabaseSourceResolver,
     VirtualSourceResolver,
+    ChartResolver,
   ],
   controllers: [ClipController],
 })

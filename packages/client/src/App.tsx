@@ -1,26 +1,33 @@
+import { Box, Container } from "@chakra-ui/react";
 import { FC } from "react";
-import { useRoutes } from "react-router-dom";
+import { useMatch, useRoutes } from "react-router-dom";
 
-import ClipEdit from "./pages/ClipEdit";
-import ClipPreview from "./pages/ClipPreview";
+import { Navbar } from "./layouts/components";
+import { routes } from "./routes";
 
 export const App: FC = () => {
-  const element = useRoutes([
-    {
-      path: "/clips/create",
-      element: <ClipEdit />,
-    },
-    {
-      path: "/clips/:clipId/edit",
-      element: <ClipEdit />,
-    },
-    {
-      path: "/clips/:token",
-      element: <ClipPreview />,
-    },
-  ]);
+  // 预览路由不需要布局外壳，v6 不支持精确匹配属性，create 路由也会包含其中
+  const previewAndCreateRoute = useMatch("/charts/:chartId");
 
-  return element;
+  const element = useRoutes(routes);
+
+  return (
+    <Box as="section" height="100vh" overflowY="auto">
+      {(previewAndCreateRoute &&
+        previewAndCreateRoute.params.chartId === "create") ||
+      !previewAndCreateRoute ? (
+        <>
+          <Navbar />
+
+          <Container maxW="var(--chakra-sizes-7xl)" p={4}>
+            {element}
+          </Container>
+        </>
+      ) : (
+        element
+      )}
+    </Box>
+  );
 };
 
 export default App;

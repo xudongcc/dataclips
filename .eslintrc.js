@@ -33,6 +33,9 @@ module.exports = {
         tsx: "never",
       },
     ],
+    "prefer-const": ["off"],
+    radix: ["off"],
+    "no-bitwise": ["off"],
     "import/no-extraneous-dependencies": [
       "error",
       {

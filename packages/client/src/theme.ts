@@ -7,6 +7,13 @@ export const theme = extendTheme({
   },
   styles: {
     global: () => ({
+      // 去除 chakra 的 focus 样式
+      '[class^="chakra"][data-focus], [class^="chakra"]:focus': {
+        boxShadow: "none !important",
+      },
+      "html, body": {
+        height: "100%",
+      },
       "#root": {
         height: "full",
       },
