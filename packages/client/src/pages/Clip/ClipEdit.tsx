@@ -31,7 +31,7 @@ const ClipEdit: FC = () => {
   const [createClip, { loading: createClipLoading }] = useCreateClipMutation();
   const [updateClip, { loading: updateClipLoading }] = useUpdateClipMutation();
 
-  const { data: { clip } = {}, loading: isClipLoading } = useClipQuery({
+  const { data: { clip } = {} } = useClipQuery({
     variables: { id: clipId! },
     skip: !clipId,
   });
@@ -39,7 +39,7 @@ const ClipEdit: FC = () => {
   const { data: { sourceConnection } = {}, loading: isSourcesLoading } =
     useSourceConnectionQuery({ variables: { first: 20 } });
 
-  const { data: result, isLoading: isResultLoading } = useQueryResult(clipId);
+  const { data: result } = useQueryResult(clipId);
 
   const handleSubmit = useCallback(
     async (input) => {

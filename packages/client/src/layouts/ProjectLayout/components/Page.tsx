@@ -46,7 +46,7 @@ export const Page: FC<PageProps> = ({
               size={useBreakpointValue({ base: "xs", md: "sm" })}
               fontWeight="medium"
             >
-              Member overview
+              {header}
             </Heading>
           )}
           {description && <Text color="muted">{description}</Text>}

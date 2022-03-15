@@ -12,6 +12,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import moment from "moment";
 import { FC, useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Column, TableOptions } from "react-table";
@@ -19,47 +20,32 @@ import { Column, TableOptions } from "react-table";
 import { Table } from "../../components/Table";
 import { useChartConnectionQuery } from "../../generated/graphql";
 import { useDeleteChartMutation } from "../../hooks/useDeleteChartMutation";
-import { Page } from "../../layouts/components";
+import { Page } from "../../layouts/ProjectLayout/components/Page";
 
 export const ChartList: FC = () => {
   let navigate = useNavigate();
   const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedChartId, setSelectedChartId] = useState<string>("");
 
   const { data } = useChartConnectionQuery({
     variables: { first: 100 },
   });
   const [deleteChart, { loading }] = useDeleteChartMutation();
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedChartId, setSelectedChartId] = useState<string>("");
-
-  const handleDeleteChart = useCallback(async () => {
-    try {
-      if (selectedChartId) {
-        await deleteChart({ variables: { id: selectedChartId } });
-
-        toast({
-          description: "删除成功",
-          status: "success",
-          isClosable: true,
-        });
-
-        setSelectedChartId("");
-        onClose();
-      }
-    } catch (err) {
-      console.log("err", err);
-    }
-  }, [deleteChart, onClose, selectedChartId, toast]);
+  const handleCloseDeleteModal = useCallback(() => {
+    onClose();
+    setSelectedChartId("");
+  }, [onClose]);
 
   const tableProps = useMemo<TableOptions<any>>(() => {
     const columns: Column<any>[] = [
       {
-        Header: "id",
-        accessor: "id",
+        Header: "name",
+        accessor: "name",
         Cell: ({
           row: {
-            values: { id },
+            original: { id, name },
           },
         }) => {
           return (
@@ -69,25 +55,43 @@ export const ChartList: FC = () => {
               }}
               color="blue.500"
             >
-              {id}
+              {name}
             </Link>
           );
         },
-      },
-      {
-        Header: "name",
-        accessor: "name",
       },
       {
         Header: "type",
         accessor: "type",
       },
       {
+        Header: "createdAt",
+        accessor: "createdAt",
+        Cell: ({
+          row: {
+            values: { createdAt },
+          },
+        }) => {
+          return moment(createdAt).format("YYYY-MM-DD HH:mm:ss");
+        },
+      },
+      {
+        Header: "updatedAt",
+        accessor: "updatedAt",
+        Cell: ({
+          row: {
+            values: { updatedAt },
+          },
+        }) => {
+          return moment(updatedAt).format("YYYY-MM-DD HH:mm:ss");
+        },
+      },
+      {
         Header: "operation",
         accessor: "operation",
         Cell: ({
           row: {
-            values: { id },
+            original: { id },
           },
         }) => {
           return (
@@ -115,6 +119,24 @@ export const ChartList: FC = () => {
     return options;
   }, [data?.chartConnection.edges, navigate, onOpen]);
 
+  const handleDeleteChart = useCallback(async () => {
+    try {
+      if (selectedChartId) {
+        await deleteChart({ variables: { id: selectedChartId } });
+
+        toast({
+          description: "删除成功",
+          status: "success",
+          isClosable: true,
+        });
+
+        handleCloseDeleteModal();
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  }, [deleteChart, onClose, selectedChartId, toast, handleCloseDeleteModal]);
+
   return (
     <Page
       primaryAction={{
@@ -132,13 +154,7 @@ export const ChartList: FC = () => {
         </Flex>
       )}
 
-      <Modal
-        isOpen={isOpen}
-        onClose={() => {
-          onClose();
-          setSelectedChartId("");
-        }}
-      >
+      <Modal isOpen={isOpen} onClose={handleCloseDeleteModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>删除图表</ModalHeader>
@@ -146,14 +162,7 @@ export const ChartList: FC = () => {
           <ModalBody>确定删除 id 为 {selectedChartId} 的图表？</ModalBody>
 
           <ModalFooter>
-            <Button
-              colorScheme="blue"
-              mr={3}
-              onClick={() => {
-                onClose();
-                setSelectedChartId("");
-              }}
-            >
+            <Button colorScheme="blue" mr={3} onClick={handleCloseDeleteModal}>
               取消
             </Button>
             <Button

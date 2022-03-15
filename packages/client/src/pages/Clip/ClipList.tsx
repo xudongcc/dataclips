@@ -12,6 +12,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import moment from "moment";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Column, TableOptions } from "react-table";
@@ -19,7 +20,7 @@ import { Column, TableOptions } from "react-table";
 import { Table } from "../../components/Table";
 import { useClipConnectionQuery } from "../../generated/graphql";
 import { useDeleteClipMutation } from "../../hooks/useDeleteClipMutation";
-import { Page } from "../../layouts/components";
+import { Page } from "../../layouts/ProjectLayout/components/Page";
 
 export const ClipList = () => {
   let navigate = useNavigate();
@@ -33,29 +34,14 @@ export const ClipList = () => {
 
   const [deleteClip, { loading }] = useDeleteClipMutation();
 
-  const handleDeleteClip = useCallback(async () => {
-    if (selectedClipId) {
-      await deleteClip({ variables: { id: selectedClipId } });
-
-      toast({
-        description: "删除成功",
-        status: "success",
-        isClosable: true,
-      });
-
-      setSelectedClipId("");
-      onClose();
-    }
-  }, [deleteClip, onClose, selectedClipId, toast]);
-
   const tableProps = useMemo<TableOptions<any>>(() => {
     const columns: Column<any>[] = [
       {
-        Header: "id",
-        accessor: "id",
+        Header: "name",
+        accessor: "name",
         Cell: ({
           row: {
-            values: { id },
+            original: { id, name },
           },
         }) => {
           return (
@@ -65,21 +51,39 @@ export const ClipList = () => {
               }}
               color="blue.500"
             >
-              {id}
+              {name}
             </Link>
           );
         },
       },
       {
-        Header: "name",
-        accessor: "name",
+        Header: "createdAt",
+        accessor: "createdAt",
+        Cell: ({
+          row: {
+            values: { createdAt },
+          },
+        }) => {
+          return moment(createdAt).format("YYYY-MM-DD HH:mm:ss");
+        },
+      },
+      {
+        Header: "updatedAt",
+        accessor: "updatedAt",
+        Cell: ({
+          row: {
+            values: { updatedAt },
+          },
+        }) => {
+          return moment(updatedAt).format("YYYY-MM-DD HH:mm:ss");
+        },
       },
       {
         Header: "operation",
         accessor: "operation",
         Cell: ({
           row: {
-            values: { id },
+            original: { id },
           },
         }) => {
           return (
@@ -107,6 +111,25 @@ export const ClipList = () => {
     return options;
   }, [data?.clipConnection.edges, navigate, onOpen]);
 
+  const handleCloseDeleteModal = useCallback(() => {
+    setSelectedClipId("");
+    onClose();
+  }, [onClose]);
+
+  const handleDeleteClip = useCallback(async () => {
+    if (selectedClipId) {
+      await deleteClip({ variables: { id: selectedClipId } });
+
+      toast({
+        description: "删除成功",
+        status: "success",
+        isClosable: true,
+      });
+
+      handleCloseDeleteModal();
+    }
+  }, [deleteClip, onClose, selectedClipId, toast, handleCloseDeleteModal]);
+
   return (
     <Page
       primaryAction={{
@@ -124,13 +147,7 @@ export const ClipList = () => {
         </Flex>
       )}
 
-      <Modal
-        isOpen={isOpen}
-        onClose={() => {
-          onClose();
-          setSelectedClipId("");
-        }}
-      >
+      <Modal isOpen={isOpen} onClose={handleCloseDeleteModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>删除数据集</ModalHeader>
@@ -138,14 +155,7 @@ export const ClipList = () => {
           <ModalBody>确定删除 id 为 {selectedClipId} 的数据集？</ModalBody>
 
           <ModalFooter>
-            <Button
-              colorScheme="blue"
-              mr={3}
-              onClick={() => {
-                onClose();
-                setSelectedClipId("");
-              }}
-            >
+            <Button colorScheme="blue" mr={3} onClick={handleCloseDeleteModal}>
               取消
             </Button>
             <Button

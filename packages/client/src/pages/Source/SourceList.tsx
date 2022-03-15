@@ -14,6 +14,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
+import { omit } from "lodash";
+import moment from "moment";
 import { FC, useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Column, TableOptions } from "react-table";
@@ -23,12 +25,13 @@ import { Table } from "../../components/Table";
 import {
   DatabaseSource,
   DatabaseType,
+  UpdateDatabaseSourceInput,
   useSourceConnectionQuery,
   useSourceLazyQuery,
   useUpdateDatabaseSourceMutation,
 } from "../../generated/graphql";
 import { useDeleteSourceMutation } from "../../hooks/useDeleteSourceMutation";
-import { Page } from "../../layouts/components";
+import { Page } from "../../layouts/ProjectLayout/components/Page";
 import { DataSourceForm } from "./components/DataSourceForm";
 
 export const SourceList: FC = () => {
@@ -38,12 +41,6 @@ export const SourceList: FC = () => {
   const { data } = useSourceConnectionQuery({
     variables: { first: 100 },
   });
-  const [getSource, { data: sourceData, loading: sourceLoading }] =
-    useSourceLazyQuery();
-  const [deleteSource, { loading: deleteSourceLoading }] =
-    useDeleteSourceMutation();
-  const [updateDatabaseSource, { loading: updateDatabaseSourceLoading }] =
-    useUpdateDatabaseSourceMutation();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -53,6 +50,20 @@ export const SourceList: FC = () => {
   } = useDisclosure();
 
   const [selectedSourceId, setSelectedSourceId] = useState<string>("");
+
+  const [getSource, { data: sourceData, loading: sourceLoading }] =
+    useSourceLazyQuery();
+
+  const [deleteSource, { loading: deleteSourceLoading }] =
+    useDeleteSourceMutation();
+
+  const [updateDatabaseSource, { loading: updateDatabaseSourceLoading }] =
+    useUpdateDatabaseSourceMutation();
+
+  const handleCloseEditModal = useCallback(() => {
+    onEditClose();
+    setSelectedSourceId("");
+  }, [onEditClose]);
 
   const form = useFormik({
     initialValues: {
@@ -71,20 +82,25 @@ export const SourceList: FC = () => {
     validateOnChange: false,
     validateOnMount: false,
     onSubmit: async (values) => {
+      const input: Record<string, any> = omit(values.dataSource, ["password"]);
+
+      if (values.dataSource.password) {
+        input.password = values.dataSource.password;
+      }
+
       try {
         await updateDatabaseSource({
           variables: {
             id: selectedSourceId,
             input: {
-              ...(values.dataSource as any),
+              ...(input as UpdateDatabaseSourceInput),
             },
           },
         });
 
-        onEditClose();
-        setSelectedSourceId("");
-        form.setValues(form.initialValues);
+        handleCloseEditModal();
 
+        form.setValues(form.initialValues);
         toast({
           description: "更新成功",
           status: "success",
@@ -101,39 +117,19 @@ export const SourceList: FC = () => {
         port: Yup.number().required(),
         database: Yup.string().required(),
         username: Yup.string().required(),
-        password: Yup.string().required(),
         type: Yup.string().required(),
       }),
     }),
   });
 
-  const handleDeleteSource = useCallback(async () => {
-    try {
-      if (selectedSourceId) {
-        await deleteSource({ variables: { id: selectedSourceId } });
-
-        toast({
-          description: "删除成功",
-          status: "success",
-          isClosable: true,
-        });
-
-        setSelectedSourceId("");
-        onClose();
-      }
-    } catch (err) {
-      console.log("err", err);
-    }
-  }, [deleteSource, onClose, selectedSourceId, toast]);
-
   const tableProps = useMemo<TableOptions<any>>(() => {
     const columns: Column<any>[] = [
       {
-        Header: "id",
-        accessor: "id",
+        Header: "name",
+        accessor: "name",
         Cell: ({
           row: {
-            values: { id },
+            original: { id, name },
           },
         }) => {
           return (
@@ -166,21 +162,39 @@ export const SourceList: FC = () => {
               }}
               color="blue.500"
             >
-              {id}
+              {name}
             </Link>
           );
         },
       },
       {
-        Header: "name",
-        accessor: "name",
+        Header: "createdAt",
+        accessor: "createdAt",
+        Cell: ({
+          row: {
+            values: { createdAt },
+          },
+        }) => {
+          return moment(createdAt).format("YYYY-MM-DD HH:mm:ss");
+        },
+      },
+      {
+        Header: "updatedAt",
+        accessor: "updatedAt",
+        Cell: ({
+          row: {
+            values: { updatedAt },
+          },
+        }) => {
+          return moment(updatedAt).format("YYYY-MM-DD HH:mm:ss");
+        },
       },
       {
         Header: "operation",
         accessor: "operation",
         Cell: ({
           row: {
-            values: { id },
+            original: { id },
           },
         }) => {
           return (
@@ -208,6 +222,31 @@ export const SourceList: FC = () => {
     return options;
   }, [data?.sourceConnection.edges, navigate, onOpen]);
 
+  const handleDeleteSource = useCallback(async () => {
+    try {
+      if (selectedSourceId) {
+        await deleteSource({ variables: { id: selectedSourceId } });
+
+        toast({
+          description: "删除成功",
+          status: "success",
+          isClosable: true,
+        });
+
+        setSelectedSourceId("");
+        onClose();
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  }, [deleteSource, onClose, selectedSourceId, toast]);
+
+  const handleCloseDeleteModal = useCallback(() => {
+    onClose();
+    setSelectedSourceId("");
+    form.setValues(form.initialValues);
+  }, [onClose, form]);
+
   return (
     <Page
       primaryAction={{
@@ -226,13 +265,7 @@ export const SourceList: FC = () => {
       )}
 
       {/* 编辑 modal */}
-      <Modal
-        isOpen={isEditOpen}
-        onClose={() => {
-          onEditClose();
-          setSelectedSourceId("");
-        }}
-      >
+      <Modal isOpen={isEditOpen} onClose={handleCloseEditModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>编辑数据源</ModalHeader>
@@ -250,14 +283,7 @@ export const SourceList: FC = () => {
             </ModalBody>
 
             <ModalFooter>
-              <Button
-                colorScheme="blue"
-                mr={3}
-                onClick={() => {
-                  onEditClose();
-                  setSelectedSourceId("");
-                }}
-              >
+              <Button colorScheme="blue" mr={3} onClick={handleCloseEditModal}>
                 取消
               </Button>
               <Button
@@ -273,14 +299,7 @@ export const SourceList: FC = () => {
       </Modal>
 
       {/* 删除 modal */}
-      <Modal
-        isOpen={isOpen}
-        onClose={() => {
-          onClose();
-          setSelectedSourceId("");
-          form.setValues(form.initialValues);
-        }}
-      >
+      <Modal isOpen={isOpen} onClose={handleCloseDeleteModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>删除数据源</ModalHeader>
@@ -288,15 +307,7 @@ export const SourceList: FC = () => {
           <ModalBody>确定删除 id 为 {selectedSourceId} 的数据源？</ModalBody>
 
           <ModalFooter>
-            <Button
-              colorScheme="blue"
-              mr={3}
-              onClick={() => {
-                onClose();
-                setSelectedSourceId("");
-                form.setValues(form.initialValues);
-              }}
-            >
+            <Button colorScheme="blue" mr={3} onClick={handleCloseDeleteModal}>
               取消
             </Button>
             <Button

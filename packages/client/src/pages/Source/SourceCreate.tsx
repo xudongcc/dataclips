@@ -95,8 +95,15 @@ export const SourceCreate = () => {
           {[...Array(numberOfSteps)].map((_, step) => (
             <Step
               key={step}
-              cursor="pointer"
-              onClick={() => setStep(step)}
+              cursor={!form.values.type ? "not-allowed" : "pointer"}
+              onClick={() => {
+                if (!form.values.type) {
+                  return;
+                }
+
+                form.setErrors({});
+                setStep(step);
+              }}
               isActive={currentStep === step}
               isCompleted={currentStep > step}
               isLastStep={numberOfSteps === step + 1}

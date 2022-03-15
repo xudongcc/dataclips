@@ -1,5 +1,4 @@
 import { Box, chakra, IconButton, IconButtonProps } from "@chakra-ui/react";
-import * as React from "react";
 
 const Bar = chakra("span", {
   baseStyle: {

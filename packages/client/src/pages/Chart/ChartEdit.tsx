@@ -76,6 +76,7 @@ const ChartEdit: FC = () => {
               input,
             },
           });
+
           toast({
             description: "更新成功",
             status: "success",
@@ -148,7 +149,7 @@ const ChartEdit: FC = () => {
     <>
       <Helmet>
         <title>
-          {result?.name ? `${result?.name} | 数据剪藏` : `数据剪藏`}
+          {result?.name ? `${result?.name} | 图表编辑` : `图表编辑`}
         </title>
       </Helmet>
 
