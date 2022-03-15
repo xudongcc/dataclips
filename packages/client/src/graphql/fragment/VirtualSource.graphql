@@ -1,0 +1,12 @@
+fragment VirtualSource on VirtualSource {
+  id
+  name
+  tables {
+    id
+    name
+    createdAt
+    updatedAt
+  }
+  createdAt
+  updatedAt
+}

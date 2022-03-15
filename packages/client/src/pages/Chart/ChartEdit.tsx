@@ -17,17 +17,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useUpdateEffect } from "react-use";
 import * as Yup from "yup";
 
-import { ChartEditTab } from "../components/ChartEditTab";
-import { ChartResultPreview } from "../components/ChartResultPreview";
-import { Loading } from "../components/Loading";
+import { ChartEditTab } from "../../components/ChartEditTab";
+import { ChartResultPreview } from "../../components/ChartResultPreview";
+import { Loading } from "../../components/Loading";
 import {
   useChartQuery,
   useClipConnectionQuery,
   useCreateChartMutation,
   useUpdateChartMutation,
-} from "../generated/graphql";
-import { useQueryResult } from "../hooks/useQueryResult";
-import { ChartType } from "../types";
+} from "../../generated/graphql";
+import { useQueryResult } from "../../hooks/useQueryResult";
+import { ChartType } from "../../types";
 
 const ChartEdit: FC = () => {
   let navigate = useNavigate();

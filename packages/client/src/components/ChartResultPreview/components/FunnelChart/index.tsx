@@ -65,6 +65,7 @@ export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
       }
       return [];
     }
+
     return [];
   }, [config, result]);
 

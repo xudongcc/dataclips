@@ -8,6 +8,7 @@ import {
 } from "@nest-boot/database";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 
+import { DatabaseType } from "../enums/database-type.enum";
 import { SourceType } from "../enums/source-type.enum";
 import { Clip } from "./clip.entity";
 import { VirtualSourceTable } from "./virtual-source-table.entity";
@@ -23,7 +24,7 @@ export class Source {
   name: string;
 
   @Column()
-  type: SourceType;
+  type: SourceType | DatabaseType;
 
   @Column({ nullable: true })
   host?: string;

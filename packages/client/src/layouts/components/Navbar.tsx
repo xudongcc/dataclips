@@ -8,13 +8,14 @@ import {
   DrawerOverlay,
   Flex,
   HStack,
+  Image,
   useBreakpointValue,
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
-import { Logo } from "./Logo";
+import Logo from "../../assets/dataclip.png";
 import { Sidebar } from "./Sidebar";
 import { ToggleButton } from "./ToggleButton";
 
@@ -28,7 +29,7 @@ export const Navbar = () => {
       <Container py={4} maxW="var(--chakra-sizes-7xl)">
         <Flex justify="space-between">
           <HStack spacing="4">
-            <Logo />
+            <Image h="32px" src={Logo}></Image>
             {isDesktop && (
               <ButtonGroup variant="ghost" spacing="1">
                 <Button
@@ -46,6 +47,15 @@ export const Navbar = () => {
                   }}
                 >
                   数据集
+                </Button>
+
+                <Button
+                  isActive={window.location.pathname === "/sources"}
+                  onClick={() => {
+                    navigate("/sources");
+                  }}
+                >
+                  数据源
                 </Button>
               </ButtonGroup>
             )}

@@ -16,10 +16,10 @@ import { FC, useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Column, TableOptions } from "react-table";
 
-import { Table } from "../components/Table";
-import { useChartConnectionQuery } from "../generated/graphql";
-import { useDeleteChartMutation } from "../hooks/useDeleteChartMutation";
-import { Page } from "../layouts/components";
+import { Table } from "../../components/Table";
+import { useChartConnectionQuery } from "../../generated/graphql";
+import { useDeleteChartMutation } from "../../hooks/useDeleteChartMutation";
+import { Page } from "../../layouts/components";
 
 export const ChartList: FC = () => {
   let navigate = useNavigate();

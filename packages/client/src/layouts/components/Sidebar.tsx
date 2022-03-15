@@ -37,6 +37,13 @@ export const Sidebar = () => {
                 label="数据集"
                 isActive={window.location.pathname === "/clips"}
               ></NavButton>
+              <NavButton
+                onClick={() => {
+                  navigate("/sources");
+                }}
+                label="数据源"
+                isActive={window.location.pathname === "/sources"}
+              ></NavButton>
             </Stack>
           </Stack>
         </Stack>

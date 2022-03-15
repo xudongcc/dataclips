@@ -3,10 +3,10 @@ import { FC } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 
-import { ChartResultPreview } from "../components/ChartResultPreview";
-import { Loading } from "../components/Loading";
-import { useChartQuery } from "../generated/graphql";
-import { useQueryResult } from "../hooks/useQueryResult";
+import { ChartResultPreview } from "../../components/ChartResultPreview";
+import { Loading } from "../../components/Loading";
+import { useChartQuery } from "../../generated/graphql";
+import { useQueryResult } from "../../hooks/useQueryResult";
 
 const ChartPreview: FC = () => {
   const { chartId } = useParams<{ chartId: string }>();

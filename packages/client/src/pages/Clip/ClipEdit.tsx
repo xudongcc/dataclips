@@ -13,15 +13,15 @@ import { FC, useCallback, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { ResultPreview } from "../components/ResultPreview";
-import { SQLEditor } from "../components/SQLEditor";
+import { ResultPreview } from "../../components/ResultPreview";
+import { SQLEditor } from "../../components/SQLEditor";
 import {
   useClipQuery,
   useCreateClipMutation,
   useSourceConnectionQuery,
   useUpdateClipMutation,
-} from "../generated/graphql";
-import { useQueryResult } from "../hooks/useQueryResult";
+} from "../../generated/graphql";
+import { useQueryResult } from "../../hooks/useQueryResult";
 
 const ClipEdit: FC = () => {
   const toast = useToast();

@@ -1,0 +1,11 @@
+fragment DatabaseSource on DatabaseSource {
+  id
+  name
+  type
+  host
+  port
+  database
+  username
+  createdAt
+  updatedAt
+}

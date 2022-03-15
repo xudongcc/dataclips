@@ -38,16 +38,14 @@ export class ChartResolver {
     @Args("id", { type: () => ID }) id: string,
     @Args("input") input: UpdateChartInput
   ): Promise<Chart> {
-    await this.chartService.update({ id }, input);
-    // await this.chartService.update(
-    //   { id },
-    //   {
-    //     ..._.omit(input, "clipId"),
-    //     ...(input.clipId ? { source: { id: input.clipId } } : {}),
-    //   }
-    // );
-
-    // await this.chartService.query(id);
+    // await this.chartService.update({ id }, input);
+    await this.chartService.update(
+      { id },
+      {
+        ..._.omit(input, "clipId"),
+        ...(input.clipId ? { clip: { id: input.clipId } } : {}),
+      }
+    );
 
     // eslint-disable-next-line @typescript-eslint/return-await
     return await this.chartService.findOne({ where: { id } });

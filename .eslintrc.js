@@ -33,9 +33,7 @@ module.exports = {
         tsx: "never",
       },
     ],
-    "prefer-const": ["off"],
-    radix: ["off"],
-    "no-bitwise": ["off"],
+
     "import/no-extraneous-dependencies": [
       "error",
       {
@@ -60,6 +58,12 @@ module.exports = {
     // https://github.com/goldbergyoni/nodebestpractices/blob/master/sections/errorhandling/returningpromises.md
     "no-return-await": "off",
     "@typescript-eslint/return-await": ["error", "always"],
+
+    "prefer-const": "off",
+    radix: "off",
+    "no-bitwise": "off",
+    camelcase: "off",
+    "no-underscore-dangle": "off",
   },
   parserOptions: {
     project: "./tsconfig.json",

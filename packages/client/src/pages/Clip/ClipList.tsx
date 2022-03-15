@@ -16,10 +16,10 @@ import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Column, TableOptions } from "react-table";
 
-import { Table } from "../components/Table";
-import { useClipConnectionQuery } from "../generated/graphql";
-import { useDeleteClipMutation } from "../hooks/useDeleteClipMutation";
-import { Page } from "../layouts/components";
+import { Table } from "../../components/Table";
+import { useClipConnectionQuery } from "../../generated/graphql";
+import { useDeleteClipMutation } from "../../hooks/useDeleteClipMutation";
+import { Page } from "../../layouts/components";
 
 export const ClipList = () => {
   let navigate = useNavigate();

@@ -128,7 +128,7 @@ export type CreateDatabaseSourceInput = {
   name: Scalars["String"];
   password?: InputMaybe<Scalars["String"]>;
   port?: InputMaybe<Scalars["Int"]>;
-  type: SourceType;
+  type: DatabaseType;
   username: Scalars["String"];
 };
 
@@ -153,7 +153,6 @@ export type DatabaseSource = {
   host: Scalars["String"];
   id: Scalars["ID"];
   name: Scalars["String"];
-  password?: Maybe<Scalars["String"]>;
   port?: Maybe<Scalars["Int"]>;
   type: DatabaseType;
   updatedAt: Scalars["DateTime"];
@@ -481,6 +480,19 @@ export type ClipFragment = {
   updatedAt: any;
 };
 
+export type DatabaseSourceFragment = {
+  __typename?: "DatabaseSource";
+  id: string;
+  name: string;
+  type: DatabaseType;
+  host: string;
+  port?: number | null;
+  database?: string | null;
+  username: string;
+  createdAt: any;
+  updatedAt: any;
+};
+
 export type ResultFragment = {
   __typename?: "Result";
   id: string;
@@ -491,6 +503,53 @@ export type ResultFragment = {
   duration: number;
   startedAt?: any | null;
   finishedAt?: any | null;
+};
+
+type Source_DatabaseSource_Fragment = {
+  __typename?: "DatabaseSource";
+  id: string;
+  name: string;
+  type: DatabaseType;
+  host: string;
+  port?: number | null;
+  database?: string | null;
+  username: string;
+  createdAt: any;
+  updatedAt: any;
+};
+
+type Source_VirtualSource_Fragment = {
+  __typename?: "VirtualSource";
+  id: string;
+  name: string;
+  createdAt: any;
+  updatedAt: any;
+  tables: Array<{
+    __typename?: "VirtualSourceTable";
+    id: string;
+    name: string;
+    createdAt: any;
+    updatedAt: any;
+  }>;
+};
+
+export type SourceFragment =
+  | Source_DatabaseSource_Fragment
+  | Source_VirtualSource_Fragment;
+
+export type VirtualSourceFragment = {
+  __typename?: "VirtualSource";
+  id: string;
+  name: string;
+  createdAt: any;
+  updatedAt: any;
+  tables: Array<{
+    __typename?: "VirtualSourceTable";
+    id: string;
+    name: string;
+    createdAt: any;
+    updatedAt: any;
+  }>;
 };
 
 export type CreateChartMutationVariables = Exact<{
@@ -530,6 +589,26 @@ export type CreateClipMutation = {
   };
 };
 
+export type CreateDatabaseSourceMutationVariables = Exact<{
+  input: CreateDatabaseSourceInput;
+}>;
+
+export type CreateDatabaseSourceMutation = {
+  __typename?: "Mutation";
+  createDatabaseSource: {
+    __typename?: "DatabaseSource";
+    id: string;
+    name: string;
+    type: DatabaseType;
+    host: string;
+    port?: number | null;
+    database?: string | null;
+    username: string;
+    createdAt: any;
+    updatedAt: any;
+  };
+};
+
 export type DeleteChartMutationVariables = Exact<{
   id: Scalars["ID"];
 }>;
@@ -546,6 +625,15 @@ export type DeleteClipMutationVariables = Exact<{
 export type DeleteClipMutation = {
   __typename?: "Mutation";
   deleteClip: string;
+};
+
+export type DeleteSourceMutationVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type DeleteSourceMutation = {
+  __typename?: "Mutation";
+  deleteSource: string;
 };
 
 export type UpdateChartMutationVariables = Exact<{
@@ -584,6 +672,50 @@ export type UpdateClipMutation = {
     sourceId: string;
     createdAt: any;
     updatedAt: any;
+  };
+};
+
+export type UpdateDatabaseSourceMutationVariables = Exact<{
+  id: Scalars["ID"];
+  input: UpdateDatabaseSourceInput;
+}>;
+
+export type UpdateDatabaseSourceMutation = {
+  __typename?: "Mutation";
+  updateDatabaseSource: {
+    __typename?: "DatabaseSource";
+    id: string;
+    name: string;
+    type: DatabaseType;
+    host: string;
+    port?: number | null;
+    database?: string | null;
+    username: string;
+    createdAt: any;
+    updatedAt: any;
+  };
+};
+
+export type UpdateVirtualSourceMutationVariables = Exact<{
+  id: Scalars["ID"];
+  input: UpdateVirtualSourceInput;
+}>;
+
+export type UpdateVirtualSourceMutation = {
+  __typename?: "Mutation";
+  updateVirtualSource: {
+    __typename?: "VirtualSource";
+    id: string;
+    name: string;
+    createdAt: any;
+    updatedAt: any;
+    tables: Array<{
+      __typename?: "VirtualSourceTable";
+      id: string;
+      name: string;
+      createdAt: any;
+      updatedAt: any;
+    }>;
   };
 };
 
@@ -690,6 +822,41 @@ export type ClipConnectionQuery = {
   };
 };
 
+export type SourceQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type SourceQuery = {
+  __typename?: "Query";
+  source:
+    | {
+        __typename?: "DatabaseSource";
+        id: string;
+        name: string;
+        type: DatabaseType;
+        host: string;
+        port?: number | null;
+        database?: string | null;
+        username: string;
+        createdAt: any;
+        updatedAt: any;
+      }
+    | {
+        __typename?: "VirtualSource";
+        id: string;
+        name: string;
+        createdAt: any;
+        updatedAt: any;
+        tables: Array<{
+          __typename?: "VirtualSourceTable";
+          id: string;
+          name: string;
+          createdAt: any;
+          updatedAt: any;
+        }>;
+      };
+};
+
 export type SourceConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars["Int"]>;
   last?: InputMaybe<Scalars["Int"]>;
@@ -754,6 +921,41 @@ export const ResultFragmentDoc = gql`
     startedAt
     finishedAt
   }
+`;
+export const DatabaseSourceFragmentDoc = gql`
+  fragment DatabaseSource on DatabaseSource {
+    id
+    name
+    type
+    host
+    port
+    database
+    username
+    createdAt
+    updatedAt
+  }
+`;
+export const VirtualSourceFragmentDoc = gql`
+  fragment VirtualSource on VirtualSource {
+    id
+    name
+    tables {
+      id
+      name
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+`;
+export const SourceFragmentDoc = gql`
+  fragment Source on Source {
+    ...DatabaseSource
+    ...VirtualSource
+  }
+  ${DatabaseSourceFragmentDoc}
+  ${VirtualSourceFragmentDoc}
 `;
 export const CreateChartDocument = gql`
   mutation CreateChart($input: CreateChartInput!) {
@@ -857,6 +1059,57 @@ export type CreateClipMutationOptions = Apollo.BaseMutationOptions<
   CreateClipMutation,
   CreateClipMutationVariables
 >;
+export const CreateDatabaseSourceDocument = gql`
+  mutation CreateDatabaseSource($input: CreateDatabaseSourceInput!) {
+    createDatabaseSource(input: $input) {
+      ...DatabaseSource
+    }
+  }
+  ${DatabaseSourceFragmentDoc}
+`;
+export type CreateDatabaseSourceMutationFn = Apollo.MutationFunction<
+  CreateDatabaseSourceMutation,
+  CreateDatabaseSourceMutationVariables
+>;
+
+/**
+ * __useCreateDatabaseSourceMutation__
+ *
+ * To run a mutation, you first call `useCreateDatabaseSourceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateDatabaseSourceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createDatabaseSourceMutation, { data, loading, error }] = useCreateDatabaseSourceMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateDatabaseSourceMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateDatabaseSourceMutation,
+    CreateDatabaseSourceMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateDatabaseSourceMutation,
+    CreateDatabaseSourceMutationVariables
+  >(CreateDatabaseSourceDocument, options);
+}
+export type CreateDatabaseSourceMutationHookResult = ReturnType<
+  typeof useCreateDatabaseSourceMutation
+>;
+export type CreateDatabaseSourceMutationResult =
+  Apollo.MutationResult<CreateDatabaseSourceMutation>;
+export type CreateDatabaseSourceMutationOptions = Apollo.BaseMutationOptions<
+  CreateDatabaseSourceMutation,
+  CreateDatabaseSourceMutationVariables
+>;
 export const DeleteChartDocument = gql`
   mutation DeleteChart($id: ID!) {
     deleteChart(id: $id)
@@ -952,6 +1205,54 @@ export type DeleteClipMutationResult =
 export type DeleteClipMutationOptions = Apollo.BaseMutationOptions<
   DeleteClipMutation,
   DeleteClipMutationVariables
+>;
+export const DeleteSourceDocument = gql`
+  mutation DeleteSource($id: ID!) {
+    deleteSource(id: $id)
+  }
+`;
+export type DeleteSourceMutationFn = Apollo.MutationFunction<
+  DeleteSourceMutation,
+  DeleteSourceMutationVariables
+>;
+
+/**
+ * __useDeleteSourceMutation__
+ *
+ * To run a mutation, you first call `useDeleteSourceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteSourceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteSourceMutation, { data, loading, error }] = useDeleteSourceMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteSourceMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DeleteSourceMutation,
+    DeleteSourceMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    DeleteSourceMutation,
+    DeleteSourceMutationVariables
+  >(DeleteSourceDocument, options);
+}
+export type DeleteSourceMutationHookResult = ReturnType<
+  typeof useDeleteSourceMutation
+>;
+export type DeleteSourceMutationResult =
+  Apollo.MutationResult<DeleteSourceMutation>;
+export type DeleteSourceMutationOptions = Apollo.BaseMutationOptions<
+  DeleteSourceMutation,
+  DeleteSourceMutationVariables
 >;
 export const UpdateChartDocument = gql`
   mutation UpdateChart($id: ID!, $input: UpdateChartInput!) {
@@ -1056,6 +1357,125 @@ export type UpdateClipMutationResult =
 export type UpdateClipMutationOptions = Apollo.BaseMutationOptions<
   UpdateClipMutation,
   UpdateClipMutationVariables
+>;
+export const UpdateDatabaseSourceDocument = gql`
+  mutation UpdateDatabaseSource($id: ID!, $input: UpdateDatabaseSourceInput!) {
+    updateDatabaseSource(id: $id, input: $input) {
+      id
+      name
+      type
+      host
+      port
+      database
+      username
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export type UpdateDatabaseSourceMutationFn = Apollo.MutationFunction<
+  UpdateDatabaseSourceMutation,
+  UpdateDatabaseSourceMutationVariables
+>;
+
+/**
+ * __useUpdateDatabaseSourceMutation__
+ *
+ * To run a mutation, you first call `useUpdateDatabaseSourceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateDatabaseSourceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateDatabaseSourceMutation, { data, loading, error }] = useUpdateDatabaseSourceMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateDatabaseSourceMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateDatabaseSourceMutation,
+    UpdateDatabaseSourceMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UpdateDatabaseSourceMutation,
+    UpdateDatabaseSourceMutationVariables
+  >(UpdateDatabaseSourceDocument, options);
+}
+export type UpdateDatabaseSourceMutationHookResult = ReturnType<
+  typeof useUpdateDatabaseSourceMutation
+>;
+export type UpdateDatabaseSourceMutationResult =
+  Apollo.MutationResult<UpdateDatabaseSourceMutation>;
+export type UpdateDatabaseSourceMutationOptions = Apollo.BaseMutationOptions<
+  UpdateDatabaseSourceMutation,
+  UpdateDatabaseSourceMutationVariables
+>;
+export const UpdateVirtualSourceDocument = gql`
+  mutation UpdateVirtualSource($id: ID!, $input: UpdateVirtualSourceInput!) {
+    updateVirtualSource(id: $id, input: $input) {
+      id
+      name
+      tables {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export type UpdateVirtualSourceMutationFn = Apollo.MutationFunction<
+  UpdateVirtualSourceMutation,
+  UpdateVirtualSourceMutationVariables
+>;
+
+/**
+ * __useUpdateVirtualSourceMutation__
+ *
+ * To run a mutation, you first call `useUpdateVirtualSourceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateVirtualSourceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateVirtualSourceMutation, { data, loading, error }] = useUpdateVirtualSourceMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateVirtualSourceMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateVirtualSourceMutation,
+    UpdateVirtualSourceMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UpdateVirtualSourceMutation,
+    UpdateVirtualSourceMutationVariables
+  >(UpdateVirtualSourceDocument, options);
+}
+export type UpdateVirtualSourceMutationHookResult = ReturnType<
+  typeof useUpdateVirtualSourceMutation
+>;
+export type UpdateVirtualSourceMutationResult =
+  Apollo.MutationResult<UpdateVirtualSourceMutation>;
+export type UpdateVirtualSourceMutationOptions = Apollo.BaseMutationOptions<
+  UpdateVirtualSourceMutation,
+  UpdateVirtualSourceMutationVariables
 >;
 export const ChartDocument = gql`
   query Chart($id: ID!) {
@@ -1326,6 +1746,57 @@ export type ClipConnectionLazyQueryHookResult = ReturnType<
 export type ClipConnectionQueryResult = Apollo.QueryResult<
   ClipConnectionQuery,
   ClipConnectionQueryVariables
+>;
+export const SourceDocument = gql`
+  query Source($id: ID!) {
+    source(id: $id) {
+      ...VirtualSource
+      ...DatabaseSource
+    }
+  }
+  ${VirtualSourceFragmentDoc}
+  ${DatabaseSourceFragmentDoc}
+`;
+
+/**
+ * __useSourceQuery__
+ *
+ * To run a query within a React component, call `useSourceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSourceQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSourceQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSourceQuery(
+  baseOptions: Apollo.QueryHookOptions<SourceQuery, SourceQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<SourceQuery, SourceQueryVariables>(
+    SourceDocument,
+    options
+  );
+}
+export function useSourceLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<SourceQuery, SourceQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<SourceQuery, SourceQueryVariables>(
+    SourceDocument,
+    options
+  );
+}
+export type SourceQueryHookResult = ReturnType<typeof useSourceQuery>;
+export type SourceLazyQueryHookResult = ReturnType<typeof useSourceLazyQuery>;
+export type SourceQueryResult = Apollo.QueryResult<
+  SourceQuery,
+  SourceQueryVariables
 >;
 export const SourceConnectionDocument = gql`
   query SourceConnection(
