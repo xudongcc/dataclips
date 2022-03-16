@@ -35,7 +35,7 @@ import { Page } from "../../layouts/ProjectLayout/components/Page";
 import { DataSourceForm } from "./components/DataSourceForm";
 
 export const SourceList: FC = () => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const toast = useToast();
 
   const { data } = useSourceConnectionQuery({
@@ -141,18 +141,20 @@ export const SourceList: FC = () => {
                 try {
                   const result = await getSource({ variables: { id } });
 
-                  if (result.data) {
+                  const source = result.data?.source as
+                    | DatabaseSource
+                    | undefined;
+
+                  if (source) {
                     form.setValues({
                       dataSource: {
-                        name: (result.data.source as DatabaseSource).name,
-                        host: (result.data.source as DatabaseSource).host,
-                        port: (result.data.source as DatabaseSource).port!,
-                        database: (result.data.source as DatabaseSource)
-                          .database!,
-                        username: (result.data.source as DatabaseSource)
-                          .username,
+                        name: source.name,
+                        host: source.host,
+                        port: source.port!,
+                        database: source.database!,
+                        username: source.username,
                         password: "",
-                        type: (result.data.source as DatabaseSource).type,
+                        type: source.type,
                       },
                     });
                   }

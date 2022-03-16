@@ -23,7 +23,7 @@ import { useDeleteClipMutation } from "../../hooks/useDeleteClipMutation";
 import { Page } from "../../layouts/ProjectLayout/components/Page";
 
 export const ClipList = () => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedClipId, setSelectedClipId] = useState<string>("");

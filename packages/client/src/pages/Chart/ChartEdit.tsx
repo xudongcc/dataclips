@@ -30,7 +30,7 @@ import { useQueryResult } from "../../hooks/useQueryResult";
 import { ChartType } from "../../types";
 
 const ChartEdit: FC = () => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const toast = useToast();
   const { chartId } = useParams<{ chartId: string }>();
 

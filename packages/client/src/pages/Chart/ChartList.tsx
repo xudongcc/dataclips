@@ -23,7 +23,7 @@ import { useDeleteChartMutation } from "../../hooks/useDeleteChartMutation";
 import { Page } from "../../layouts/ProjectLayout/components/Page";
 
 export const ChartList: FC = () => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedChartId, setSelectedChartId] = useState<string>("");

@@ -24,7 +24,7 @@ import { useStep } from "./components/StepsWithCircles/useStep";
 
 export const SourceCreate = () => {
   const toast = useToast();
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const numberOfSteps = 2;
   const [currentStep, { setStep }] = useStep({

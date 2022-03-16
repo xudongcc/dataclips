@@ -1,13 +1,14 @@
 const rgbToHex = (r: number, g: number, b: number) => {
-  let hex = ((r << 16) | (g << 8) | b).toString(16);
+  // eslint-disable-next-line no-bitwise
+  const hex = ((r << 16) | (g << 8) | b).toString(16);
   return `#${new Array(Math.abs(hex.length - 7)).join("0")}${hex}`;
 };
 
 // hex to rgb
 const hexToRgb = (hex: string) => {
-  let rgb = [];
+  const rgb = [];
   for (let i = 1; i < 7; i += 2) {
-    rgb.push(parseInt(`0x${hex.slice(i, i + 2)}`));
+    rgb.push(parseInt(`0x${hex.slice(i, i + 2)}`, 16));
   }
   return rgb;
 };
@@ -18,15 +19,15 @@ export const getGradientColors = (
   step: number
 ) => {
   // 将 hex 转换为rgb
-  let sColor = hexToRgb(startColor);
-  let eColor = hexToRgb(endColor);
+  const sColor = hexToRgb(startColor);
+  const eColor = hexToRgb(endColor);
 
   // 计算R\G\B每一步的差值
-  let rStep = (eColor[0] - sColor[0]) / step;
-  let gStep = (eColor[1] - sColor[1]) / step;
-  let bStep = (eColor[2] - sColor[2]) / step;
+  const rStep = (eColor[0] - sColor[0]) / step;
+  const gStep = (eColor[1] - sColor[1]) / step;
+  const bStep = (eColor[2] - sColor[2]) / step;
 
-  let gradientColorArr = [];
+  const gradientColorArr = [];
 
   // eslint-disable-next-line no-plusplus
   for (let i = 0; i < step; i++) {
