@@ -1,4 +1,5 @@
 import { In } from "@nest-boot/database";
+import { BadRequestException } from "@nestjs/common";
 import {
   Args,
   ID,
@@ -31,30 +32,30 @@ export class VirtualSourceResolver {
     @Args("input") input: CreateVirtualSourceInput
   ): Promise<Source> {
     if (
-      _.uniq(input.tables.map((item) => item.clipId)).length ===
+      _.uniq(input.tables.map((item) => item.clipId)).length !==
       input.tables.length
     ) {
-      const source = await this.sourceService.create({
-        ..._.omit(input, "tables"),
-        type: SourceType.VIRTUAL,
-      });
-
-      await Bluebird.map(
-        input.tables,
-        async (table) => {
-          await this.virtualSourceTableService.create({
-            name: table.name,
-            clip: { id: table.clipId },
-            source,
-          });
-        },
-        { concurrency: 5 }
-      );
-
-      return source;
+      throw new BadRequestException("44444");
     }
 
-    return null;
+    const source = await this.sourceService.create({
+      ..._.omit(input, "tables"),
+      type: SourceType.VIRTUAL,
+    });
+
+    await Bluebird.map(
+      input.tables,
+      async (table) => {
+        await this.virtualSourceTableService.create({
+          name: table.name,
+          clip: { id: table.clipId },
+          source,
+        });
+      },
+      { concurrency: 5 }
+    );
+
+    return source;
   }
 
   @Mutation(() => VirtualSource)
