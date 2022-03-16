@@ -1,3 +1,4 @@
+import { In } from "@nest-boot/database";
 import {
   Args,
   ID,
@@ -8,7 +9,6 @@ import {
 } from "@nestjs/graphql";
 import Bluebird from "bluebird";
 import _ from "lodash";
-import { In } from "@nest-boot/database";
 
 import { Source } from "../../core/entities/source.entity";
 import { VirtualSourceTable } from "../../core/entities/virtual-source-table.entity";
@@ -30,24 +30,31 @@ export class VirtualSourceResolver {
   async createVirtualSource(
     @Args("input") input: CreateVirtualSourceInput
   ): Promise<Source> {
-    const source = await this.sourceService.create({
-      ..._.omit(input, "tables"),
-      type: SourceType.VIRTUAL,
-    });
+    if (
+      _.uniq(input.tables.map((item) => item.clipId)).length ===
+      input.tables.length
+    ) {
+      const source = await this.sourceService.create({
+        ..._.omit(input, "tables"),
+        type: SourceType.VIRTUAL,
+      });
 
-    await Bluebird.map(
-      input.tables,
-      async (table) => {
-        await this.virtualSourceTableService.create({
-          name: table.name,
-          clip: { id: table.clipId },
-          source,
-        });
-      },
-      { concurrency: 5 }
-    );
+      await Bluebird.map(
+        input.tables,
+        async (table) => {
+          await this.virtualSourceTableService.create({
+            name: table.name,
+            clip: { id: table.clipId },
+            source,
+          });
+        },
+        { concurrency: 5 }
+      );
 
-    return source;
+      return source;
+    }
+
+    return null;
   }
 
   @Mutation(() => VirtualSource)
