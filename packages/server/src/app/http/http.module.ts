@@ -13,6 +13,7 @@ import { DatabaseSourceResolver } from "./resolvers/database-source.resolver";
 import { ProjectResolver } from "./resolvers/project.resolver";
 import { SourceResolver } from "./resolvers/source.resolver";
 import { VirtualSourceResolver } from "./resolvers/virtual-source.resolver";
+import { VirtualSourceTableResolver } from "./resolvers/virtual-source-table.resolver";
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { VirtualSourceResolver } from "./resolvers/virtual-source.resolver";
     SourceResolver,
     DatabaseSourceResolver,
     VirtualSourceResolver,
+    VirtualSourceTableResolver,
     ChartResolver,
   ],
   controllers: [ClipController],

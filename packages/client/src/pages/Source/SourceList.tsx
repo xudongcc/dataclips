@@ -29,10 +29,36 @@ import {
   useSourceConnectionQuery,
   useSourceLazyQuery,
   useUpdateDatabaseSourceMutation,
+  useUpdateVirtualSourceMutation,
+  VirtualSource,
 } from "../../generated/graphql";
 import { useDeleteSourceMutation } from "../../hooks/useDeleteSourceMutation";
 import { Page } from "../../layouts/ProjectLayout/components/Page";
 import { DataSourceForm } from "./components/DataSourceForm";
+import { VirtualSourceForm } from "./components/VirtualSourceForm";
+
+const dataSourceValidObj = {
+  dataSource: Yup.object({
+    name: Yup.string().required(),
+    host: Yup.string().required(),
+    port: Yup.number().required(),
+    database: Yup.string().required(),
+    username: Yup.string().required(),
+    type: Yup.string().required(),
+  }),
+};
+
+const virtualSourceValidObj = {
+  virtualSource: Yup.object().shape({
+    name: Yup.string().required(),
+    tables: Yup.array().of(
+      Yup.object().shape({
+        name: Yup.string().required(),
+        clipId: Yup.string().required(),
+      })
+    ),
+  }),
+};
 
 export const SourceList: FC = () => {
   const navigate = useNavigate();
@@ -49,7 +75,13 @@ export const SourceList: FC = () => {
     onClose: onEditClose,
   } = useDisclosure();
 
-  const [selectedSourceId, setSelectedSourceId] = useState<string>("");
+  const [selectedSource, setSelectedSource] = useState<{
+    type: "DatabaseSource" | "VirtualSource";
+    id: string;
+  }>();
+
+  const [validationDatabaseTypeSchema, setValidationDatabaseTypeSchema] =
+    useState<Record<string, any>>({});
 
   const [getSource, { data: sourceData, loading: sourceLoading }] =
     useSourceLazyQuery();
@@ -60,10 +92,8 @@ export const SourceList: FC = () => {
   const [updateDatabaseSource, { loading: updateDatabaseSourceLoading }] =
     useUpdateDatabaseSourceMutation();
 
-  const handleCloseEditModal = useCallback(() => {
-    onEditClose();
-    setSelectedSourceId("");
-  }, [onEditClose]);
+  const [updateVirtualSource, { loading: updateVirtualSourceLoading }] =
+    useUpdateVirtualSourceMutation();
 
   const form = useFormik({
     initialValues: {
@@ -76,51 +106,71 @@ export const SourceList: FC = () => {
         password: "",
         type: "" as DatabaseType,
       },
+      virtualSource: {
+        name: "",
+        tables: [{ name: "", clipId: "", id: "" }],
+      },
     },
     isInitialValid: false,
     validateOnBlur: false,
     validateOnChange: false,
     validateOnMount: false,
     onSubmit: async (values) => {
-      const input: Record<string, any> = omit(values.dataSource, ["password"]);
-
-      if (values.dataSource.password) {
-        input.password = values.dataSource.password;
-      }
-
       try {
-        await updateDatabaseSource({
-          variables: {
-            id: selectedSourceId,
-            input: {
-              ...(input as UpdateDatabaseSourceInput),
-            },
-          },
-        });
+        if (selectedSource?.id) {
+          if (selectedSource?.type === "DatabaseSource") {
+            const input: Record<string, any> = omit(values.dataSource, [
+              "password",
+            ]);
 
-        handleCloseEditModal();
+            if (values.dataSource.password) {
+              input.password = values.dataSource.password;
+            }
 
-        form.setValues(form.initialValues);
-        toast({
-          description: "更新成功",
-          status: "success",
-          isClosable: true,
-        });
+            await updateDatabaseSource({
+              variables: {
+                id: selectedSource.id,
+                input: {
+                  ...(input as UpdateDatabaseSourceInput),
+                },
+              },
+            });
+          }
+
+          if (selectedSource?.type === "VirtualSource") {
+            await updateVirtualSource({
+              variables: {
+                id: selectedSource.id,
+                input: values.virtualSource,
+              },
+            });
+          }
+
+          // 因为 handleCloseEditModal 有清空错误步骤，这里使用不了，所以不调用函数了
+          onEditClose();
+          setSelectedSource(undefined);
+
+          form.setValues(form.initialValues);
+          toast({
+            description: "更新成功",
+            status: "success",
+            isClosable: true,
+          });
+        }
       } catch (err) {
         console.log("err", err);
       }
     },
     validationSchema: Yup.object().shape({
-      dataSource: Yup.object({
-        name: Yup.string().required(),
-        host: Yup.string().required(),
-        port: Yup.number().required(),
-        database: Yup.string().required(),
-        username: Yup.string().required(),
-        type: Yup.string().required(),
-      }),
+      ...validationDatabaseTypeSchema,
     }),
   });
+
+  const handleCloseEditModal = useCallback(() => {
+    onEditClose();
+    setSelectedSource(undefined);
+    form.setErrors({});
+  }, [onEditClose, form]);
 
   const tableProps = useMemo<TableOptions<any>>(() => {
     const columns: Column<any>[] = [
@@ -129,34 +179,61 @@ export const SourceList: FC = () => {
         accessor: "name",
         Cell: ({
           row: {
-            original: { id, name },
+            original: { id, name, typename },
           },
         }) => {
           return (
             <Link
               onClick={async () => {
                 onEditOpen();
-                setSelectedSourceId(id);
+                setSelectedSource({ id, type: typename });
+
+                const result = await getSource({ variables: { id } });
+
+                const source = result.data?.source as
+                  | DatabaseSource
+                  | VirtualSource
+                  | undefined;
 
                 try {
-                  const result = await getSource({ variables: { id } });
+                  if (typename === "DatabaseSource") {
+                    setValidationDatabaseTypeSchema(dataSourceValidObj);
 
-                  const source = result.data?.source as
-                    | DatabaseSource
-                    | undefined;
+                    if (source) {
+                      form.setValues({
+                        ...form.values,
+                        dataSource: {
+                          name: (source as DatabaseSource).name,
+                          host: (source as DatabaseSource).host,
+                          port: (source as DatabaseSource).port!,
+                          database: (source as DatabaseSource).database!,
+                          username: (source as DatabaseSource).username,
+                          password: "",
+                          type: (source as DatabaseSource).type,
+                        },
+                      });
+                    }
+                  }
 
-                  if (source) {
-                    form.setValues({
-                      dataSource: {
-                        name: source.name,
-                        host: source.host,
-                        port: source.port!,
-                        database: source.database!,
-                        username: source.username,
-                        password: "",
-                        type: source.type,
-                      },
-                    });
+                  if (typename === "VirtualSource") {
+                    setValidationDatabaseTypeSchema(virtualSourceValidObj);
+
+                    if (source) {
+                      console.log("source", source);
+                      form.setValues({
+                        ...form.values,
+                        virtualSource: {
+                          name: (source as VirtualSource).name,
+                          tables: (source as VirtualSource).tables.map(
+                            (table) => ({
+                              name: table.name,
+                              clipId: table.clipId,
+                              id: table.id,
+                            })
+                          ),
+                        },
+                      });
+                    }
                   }
                 } catch (err) {
                   console.log("err", err);
@@ -196,13 +273,13 @@ export const SourceList: FC = () => {
         accessor: "operation",
         Cell: ({
           row: {
-            original: { id },
+            original: { id, typename },
           },
         }) => {
           return (
             <Link
               onClick={() => {
-                setSelectedSourceId(id);
+                setSelectedSource({ id, type: typename });
                 onOpen();
               }}
               color="red.500"
@@ -224,10 +301,12 @@ export const SourceList: FC = () => {
     return options;
   }, [data?.sourceConnection.edges, navigate, onOpen]);
 
+  console.log(form.values);
+
   const handleDeleteSource = useCallback(async () => {
     try {
-      if (selectedSourceId) {
-        await deleteSource({ variables: { id: selectedSourceId } });
+      if (selectedSource?.id) {
+        await deleteSource({ variables: { id: selectedSource.id } });
 
         toast({
           description: "删除成功",
@@ -235,19 +314,35 @@ export const SourceList: FC = () => {
           isClosable: true,
         });
 
-        setSelectedSourceId("");
+        setSelectedSource(undefined);
         onClose();
       }
     } catch (err) {
       console.log("err", err);
     }
-  }, [deleteSource, onClose, selectedSourceId, toast]);
+  }, [deleteSource, onClose, selectedSource, toast]);
 
   const handleCloseDeleteModal = useCallback(() => {
     onClose();
-    setSelectedSourceId("");
+    setSelectedSource(undefined);
     form.setValues(form.initialValues);
   }, [onClose, form]);
+
+  const handleGetCurrentTypeEditForm = useCallback(
+    (f: any) => {
+      return [
+        {
+          type: "DatabaseSource",
+          component: <DataSourceForm form={f}></DataSourceForm>,
+        },
+        {
+          type: "VirtualSource",
+          component: <VirtualSourceForm form={f}></VirtualSourceForm>,
+        },
+      ].find((item) => item.type === selectedSource?.type)?.component;
+    },
+    [selectedSource?.type]
+  );
 
   return (
     <Page
@@ -276,11 +371,9 @@ export const SourceList: FC = () => {
           <form onSubmit={form.handleSubmit}>
             <ModalBody>
               <VStack spacing={4} pt={4}>
-                {!sourceLoading && sourceData ? (
-                  <DataSourceForm form={form}></DataSourceForm>
-                ) : (
-                  "请稍后"
-                )}
+                {!sourceLoading && sourceData
+                  ? handleGetCurrentTypeEditForm(form)
+                  : "请稍后"}
               </VStack>
             </ModalBody>
 
@@ -291,7 +384,11 @@ export const SourceList: FC = () => {
               <Button
                 colorScheme="red"
                 type="submit"
-                isLoading={updateDatabaseSourceLoading || sourceLoading}
+                isLoading={
+                  updateDatabaseSourceLoading ||
+                  sourceLoading ||
+                  updateVirtualSourceLoading
+                }
               >
                 确定
               </Button>
@@ -306,7 +403,7 @@ export const SourceList: FC = () => {
         <ModalContent>
           <ModalHeader>删除数据源</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>确定删除 id 为 {selectedSourceId} 的数据源？</ModalBody>
+          <ModalBody>确定删除 id 为 {selectedSource?.id} 的数据源？</ModalBody>
 
           <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={handleCloseDeleteModal}>

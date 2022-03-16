@@ -438,6 +438,13 @@ export type UpdateProjectInput = {
 
 export type UpdateVirtualSourceInput = {
   name?: InputMaybe<Scalars["String"]>;
+  tables: Array<UpdateVirtualSourceTableInput>;
+};
+
+export type UpdateVirtualSourceTableInput = {
+  clipId: Scalars["ID"];
+  id?: InputMaybe<Scalars["ID"]>;
+  name: Scalars["String"];
 };
 
 export type VirtualSource = {
@@ -451,10 +458,14 @@ export type VirtualSource = {
 
 export type VirtualSourceTable = {
   __typename?: "VirtualSourceTable";
+  clip: Clip;
+  clipId: Scalars["ID"];
   createdAt: Scalars["DateTime"];
   id: Scalars["ID"];
   name: Scalars["String"];
   updatedAt: Scalars["DateTime"];
+  virtualSource: VirtualSource;
+  virtualSourceId: Scalars["ID"];
 };
 
 export type ChartFragment = {
@@ -528,6 +539,7 @@ type Source_VirtualSource_Fragment = {
     __typename?: "VirtualSourceTable";
     id: string;
     name: string;
+    clipId: string;
     createdAt: any;
     updatedAt: any;
   }>;
@@ -547,6 +559,7 @@ export type VirtualSourceFragment = {
     __typename?: "VirtualSourceTable";
     id: string;
     name: string;
+    clipId: string;
     createdAt: any;
     updatedAt: any;
   }>;
@@ -606,6 +619,29 @@ export type CreateDatabaseSourceMutation = {
     username: string;
     createdAt: any;
     updatedAt: any;
+  };
+};
+
+export type CreateVirtualSourceMutationVariables = Exact<{
+  input: CreateVirtualSourceInput;
+}>;
+
+export type CreateVirtualSourceMutation = {
+  __typename?: "Mutation";
+  createVirtualSource: {
+    __typename?: "VirtualSource";
+    id: string;
+    name: string;
+    createdAt: any;
+    updatedAt: any;
+    tables: Array<{
+      __typename?: "VirtualSourceTable";
+      id: string;
+      name: string;
+      clipId: string;
+      createdAt: any;
+      updatedAt: any;
+    }>;
   };
 };
 
@@ -851,6 +887,7 @@ export type SourceQuery = {
           __typename?: "VirtualSourceTable";
           id: string;
           name: string;
+          clipId: string;
           createdAt: any;
           updatedAt: any;
         }>;
@@ -874,8 +911,23 @@ export type SourceConnectionQuery = {
     edges?: Array<{
       __typename?: "SourceEdge";
       node:
-        | { __typename: "DatabaseSource"; id: string; name: string }
-        | { __typename: "VirtualSource"; id: string; name: string };
+        | {
+            __typename: "DatabaseSource";
+            id: string;
+            name: string;
+            typename: "DatabaseSource";
+          }
+        | {
+            __typename: "VirtualSource";
+            id: string;
+            name: string;
+            typename: "VirtualSource";
+            tables: Array<{
+              __typename?: "VirtualSourceTable";
+              name: string;
+              clipId: string;
+            }>;
+          };
     }> | null;
     pageInfo: {
       __typename?: "PageInfo";
@@ -942,6 +994,7 @@ export const VirtualSourceFragmentDoc = gql`
     tables {
       id
       name
+      clipId
       createdAt
       updatedAt
     }
@@ -1109,6 +1162,57 @@ export type CreateDatabaseSourceMutationResult =
 export type CreateDatabaseSourceMutationOptions = Apollo.BaseMutationOptions<
   CreateDatabaseSourceMutation,
   CreateDatabaseSourceMutationVariables
+>;
+export const CreateVirtualSourceDocument = gql`
+  mutation CreateVirtualSource($input: CreateVirtualSourceInput!) {
+    createVirtualSource(input: $input) {
+      ...VirtualSource
+    }
+  }
+  ${VirtualSourceFragmentDoc}
+`;
+export type CreateVirtualSourceMutationFn = Apollo.MutationFunction<
+  CreateVirtualSourceMutation,
+  CreateVirtualSourceMutationVariables
+>;
+
+/**
+ * __useCreateVirtualSourceMutation__
+ *
+ * To run a mutation, you first call `useCreateVirtualSourceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateVirtualSourceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createVirtualSourceMutation, { data, loading, error }] = useCreateVirtualSourceMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateVirtualSourceMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateVirtualSourceMutation,
+    CreateVirtualSourceMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateVirtualSourceMutation,
+    CreateVirtualSourceMutationVariables
+  >(CreateVirtualSourceDocument, options);
+}
+export type CreateVirtualSourceMutationHookResult = ReturnType<
+  typeof useCreateVirtualSourceMutation
+>;
+export type CreateVirtualSourceMutationResult =
+  Apollo.MutationResult<CreateVirtualSourceMutation>;
+export type CreateVirtualSourceMutationOptions = Apollo.BaseMutationOptions<
+  CreateVirtualSourceMutation,
+  CreateVirtualSourceMutationVariables
 >;
 export const DeleteChartDocument = gql`
   mutation DeleteChart($id: ID!) {
@@ -1818,6 +1922,7 @@ export const SourceConnectionDocument = gql`
       edges {
         node {
           __typename
+          typename: __typename
           ... on DatabaseSource {
             id
             name
@@ -1825,6 +1930,10 @@ export const SourceConnectionDocument = gql`
           ... on VirtualSource {
             id
             name
+            tables {
+              name
+              clipId
+            }
           }
         }
       }

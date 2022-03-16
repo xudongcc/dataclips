@@ -11,16 +11,43 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 
 import {
   DatabaseType,
   useCreateDatabaseSourceMutation,
+  useCreateVirtualSourceMutation,
 } from "../../generated/graphql";
 import { DataSourceForm } from "./components/DataSourceForm";
 import { Step } from "./components/StepsWithCircles/Step";
 import { useStep } from "./components/StepsWithCircles/useStep";
+import { VirtualSourceForm } from "./components/VirtualSourceForm";
+
+const dataSourceValidObj = {
+  dataSource: Yup.object({
+    name: Yup.string().required(),
+    host: Yup.string().required(),
+    port: Yup.number().required(),
+    database: Yup.string().required(),
+    username: Yup.string().required(),
+    password: Yup.string().required(),
+    type: Yup.string().required(),
+  }),
+};
+
+const virtualSourceValidObj = {
+  virtualSource: Yup.object().shape({
+    name: Yup.string().required(),
+    tables: Yup.array().of(
+      Yup.object().shape({
+        name: Yup.string().required(),
+        clipId: Yup.string().required(),
+      })
+    ),
+  }),
+};
 
 export const SourceCreate = () => {
   const toast = useToast();
@@ -32,7 +59,13 @@ export const SourceCreate = () => {
     initialStep: 0,
   });
 
-  const [createDataBaseSource, { loading }] = useCreateDatabaseSourceMutation();
+  const [validationDatabaseTypeSchema, setValidationDatabaseTypeSchema] =
+    useState<Record<string, any>>({});
+
+  const [createDataBaseSource, { loading: createDataBaseSourceLoading }] =
+    useCreateDatabaseSourceMutation();
+  const [createVirtualSource, { loading: createVirtualSourceLoading }] =
+    useCreateVirtualSourceMutation();
 
   const form = useFormik({
     initialValues: {
@@ -45,6 +78,10 @@ export const SourceCreate = () => {
         username: "",
         password: "",
         type: "" as DatabaseType,
+      },
+      virtualSource: {
+        name: "",
+        tables: [{ name: "", clipId: "" }],
       },
     },
     isInitialValid: false,
@@ -61,30 +98,32 @@ export const SourceCreate = () => {
               },
             },
           });
-
-          toast({
-            description: "创建成功",
-            status: "success",
-            isClosable: true,
-          });
-
-          navigate(`/sources`);
         }
+
+        if (values.type === "VirtualSource") {
+          await createVirtualSource({
+            variables: {
+              input: {
+                ...values.virtualSource,
+              },
+            },
+          });
+        }
+
+        toast({
+          description: "创建成功",
+          status: "success",
+          isClosable: true,
+        });
+
+        navigate(`/sources`);
       } catch (err) {
         console.log("err", err);
       }
     },
     validationSchema: Yup.object().shape({
       type: Yup.string().required(),
-      dataSource: Yup.object({
-        name: Yup.string().required(),
-        host: Yup.string().required(),
-        port: Yup.number().required(),
-        database: Yup.string().required(),
-        username: Yup.string().required(),
-        password: Yup.string().required(),
-        type: Yup.string().required(),
-      }),
+      ...validationDatabaseTypeSchema,
     }),
   });
 
@@ -94,6 +133,7 @@ export const SourceCreate = () => {
         <HStack spacing="0" justify="space-evenly">
           {[...Array(numberOfSteps)].map((_, step) => (
             <Step
+              stepDescription={step === 0 ? "数据源" : "配置"}
               key={step}
               cursor={!form.values.type ? "not-allowed" : "pointer"}
               onClick={() => {
@@ -101,6 +141,11 @@ export const SourceCreate = () => {
                   return;
                 }
 
+                setValidationDatabaseTypeSchema(
+                  form.values.type === "DatabaseSource"
+                    ? dataSourceValidObj
+                    : virtualSourceValidObj
+                );
                 form.setErrors({});
                 setStep(step);
               }}
@@ -114,7 +159,7 @@ export const SourceCreate = () => {
         <form onSubmit={form.handleSubmit}>
           {currentStep === 0 && (
             <VStack spacing={4} pt={4}>
-              <Text textAlign="center">请选择数据类型</Text>
+              <Text textAlign="center">请选择数据源类型</Text>
 
               <FormControl isInvalid={!!form.errors.type}>
                 <Select
@@ -124,6 +169,7 @@ export const SourceCreate = () => {
                   placeholder="请选择数据源"
                 >
                   <option value="DatabaseSource">DatabaseSource</option>
+                  <option value="VirtualSource">VirtualSource</option>
                 </Select>
 
                 <FormErrorMessage>请选择数据源</FormErrorMessage>
@@ -134,6 +180,12 @@ export const SourceCreate = () => {
                   const res = await form.validateForm();
 
                   if (!res.type) {
+                    setValidationDatabaseTypeSchema(
+                      form.values.type === "DatabaseSource"
+                        ? dataSourceValidObj
+                        : virtualSourceValidObj
+                    );
+
                     setStep(1);
                     form.setErrors({});
                   }
@@ -146,9 +198,20 @@ export const SourceCreate = () => {
 
           {currentStep === 1 && (
             <VStack spacing={4} pt={4}>
-              <DataSourceForm form={form}></DataSourceForm>
+              {form.values.type === "DatabaseSource" && (
+                <DataSourceForm form={form}></DataSourceForm>
+              )}
 
-              <Button isLoading={loading} type="submit">
+              {form.values.type === "VirtualSource" && (
+                <VirtualSourceForm form={form}></VirtualSourceForm>
+              )}
+
+              <Button
+                isLoading={
+                  createDataBaseSourceLoading || createVirtualSourceLoading
+                }
+                type="submit"
+              >
                 创建
               </Button>
             </VStack>
