@@ -62,6 +62,8 @@ export class VirtualSourceResolver {
     @Args("id", { type: () => ID }) id: string,
     @Args("input") input: UpdateVirtualSourceInput
   ): Promise<Source> {
+    let hasDuplicateClipId = false;
+
     await this.sourceService.update({ id }, _.pick(input, ["name"]));
 
     const tables = await this.virtualSourceTableService.findAll({
@@ -85,17 +87,24 @@ export class VirtualSourceResolver {
     const willAddTables = input.tables.filter((item) => !item?.id);
 
     if (willAddTables.length) {
-      await Bluebird.map(
-        willAddTables,
-        async (table) => {
-          await this.virtualSourceTableService.create({
-            name: table.name,
-            clip: { id: table.clipId },
-            source: { id },
-          });
-        },
-        { concurrency: 5 }
-      );
+      if (
+        _.uniq(input.tables.map((item) => item.clipId)).length ===
+        input.tables.length
+      ) {
+        await Bluebird.map(
+          willAddTables,
+          async (table) => {
+            await this.virtualSourceTableService.create({
+              name: table.name,
+              clip: { id: table.clipId },
+              source: { id },
+            });
+          },
+          { concurrency: 5 }
+        );
+      } else {
+        hasDuplicateClipId = true;
+      }
     }
 
     // 将要更新的项
@@ -108,19 +117,28 @@ export class VirtualSourceResolver {
         willUpdateTableIds.includes(item.id)
       );
 
-      await Bluebird.map(
-        willUpdateInputTables,
-        async (table) => {
-          await this.virtualSourceTableService.update(
-            { id: table.id },
-            { name: table.name }
-          );
-        },
-        { concurrency: 5 }
-      );
+      if (
+        _.uniq(willUpdateInputTables.map((item) => item.clipId)).length ===
+        willUpdateInputTables.length
+      ) {
+        await Bluebird.map(
+          willUpdateInputTables,
+          async (table) => {
+            await this.virtualSourceTableService.update(
+              { id: table.id },
+              { name: table.name }
+            );
+          },
+          { concurrency: 5 }
+        );
+      } else {
+        hasDuplicateClipId = true;
+      }
     }
 
-    return await this.sourceService.findOne({ where: { id } });
+    return hasDuplicateClipId
+      ? null
+      : await this.sourceService.findOne({ where: { id } });
   }
 
   @ResolveField(() => [VirtualSourceTable])
