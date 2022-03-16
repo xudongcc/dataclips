@@ -54,7 +54,7 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
               color={form.errors.type ? "red.500" : undefined}
               value={form.values.type}
             >
-              {["FUNNEL"].map((item) => (
+              {[ChartType.FUNNEL].map((item) => (
                 <option value={item} key={item}>
                   {item}
                 </option>

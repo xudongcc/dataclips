@@ -199,11 +199,11 @@ export const SourceCreate = () => {
           {currentStep === 1 && (
             <VStack spacing={4} pt={4}>
               {form.values.type === "DatabaseSource" && (
-                <DataSourceForm form={form}></DataSourceForm>
+                <DataSourceForm form={form} />
               )}
 
               {form.values.type === "VirtualSource" && (
-                <VirtualSourceForm form={form}></VirtualSourceForm>
+                <VirtualSourceForm form={form} />
               )}
 
               <Button

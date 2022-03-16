@@ -140,7 +140,7 @@ export const ClipList = () => {
       }}
     >
       {tableProps.data.length ? (
-        <Table {...tableProps}></Table>
+        <Table {...tableProps} />
       ) : (
         <Flex h="calc(100vh - 104px)" align="center" justify="center">
           暂无数据

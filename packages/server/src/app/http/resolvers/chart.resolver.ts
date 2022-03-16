@@ -38,7 +38,6 @@ export class ChartResolver {
     @Args("id", { type: () => ID }) id: string,
     @Args("input") input: UpdateChartInput
   ): Promise<Chart> {
-    // await this.chartService.update({ id }, input);
     await this.chartService.update(
       { id },
       {

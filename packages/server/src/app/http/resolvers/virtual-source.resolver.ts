@@ -35,7 +35,7 @@ export class VirtualSourceResolver {
       _.uniq(input.tables.map((item) => item.clipId)).length !==
       input.tables.length
     ) {
-      throw new BadRequestException("44444");
+      throw new BadRequestException("存在重复的数据裁剪选项");
     }
 
     const source = await this.sourceService.create({
@@ -63,7 +63,12 @@ export class VirtualSourceResolver {
     @Args("id", { type: () => ID }) id: string,
     @Args("input") input: UpdateVirtualSourceInput
   ): Promise<Source> {
-    let hasDuplicateClipId = false;
+    if (
+      _.uniq(input.tables.map((item) => item.clipId)).length ===
+      input.tables.length
+    ) {
+      throw new BadRequestException("存在重复的数据裁剪选项");
+    }
 
     await this.sourceService.update({ id }, _.pick(input, ["name"]));
 
@@ -88,24 +93,17 @@ export class VirtualSourceResolver {
     const willAddTables = input.tables.filter((item) => !item?.id);
 
     if (willAddTables.length) {
-      if (
-        _.uniq(input.tables.map((item) => item.clipId)).length ===
-        input.tables.length
-      ) {
-        await Bluebird.map(
-          willAddTables,
-          async (table) => {
-            await this.virtualSourceTableService.create({
-              name: table.name,
-              clip: { id: table.clipId },
-              source: { id },
-            });
-          },
-          { concurrency: 5 }
-        );
-      } else {
-        hasDuplicateClipId = true;
-      }
+      await Bluebird.map(
+        willAddTables,
+        async (table) => {
+          await this.virtualSourceTableService.create({
+            name: table.name,
+            clip: { id: table.clipId },
+            source: { id },
+          });
+        },
+        { concurrency: 5 }
+      );
     }
 
     // 将要更新的项
@@ -118,28 +116,19 @@ export class VirtualSourceResolver {
         willUpdateTableIds.includes(item.id)
       );
 
-      if (
-        _.uniq(willUpdateInputTables.map((item) => item.clipId)).length ===
-        willUpdateInputTables.length
-      ) {
-        await Bluebird.map(
-          willUpdateInputTables,
-          async (table) => {
-            await this.virtualSourceTableService.update(
-              { id: table.id },
-              { name: table.name }
-            );
-          },
-          { concurrency: 5 }
-        );
-      } else {
-        hasDuplicateClipId = true;
-      }
+      await Bluebird.map(
+        willUpdateInputTables,
+        async (table) => {
+          await this.virtualSourceTableService.update(
+            { id: table.id },
+            { name: table.name }
+          );
+        },
+        { concurrency: 5 }
+      );
     }
 
-    return hasDuplicateClipId
-      ? null
-      : await this.sourceService.findOne({ where: { id } });
+    return await this.sourceService.findOne({ where: { id } });
   }
 
   @ResolveField(() => [VirtualSourceTable])
