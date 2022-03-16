@@ -1,0 +1,2 @@
+export const JOB_METADATA_KEY = "__JOB_METADATA_KEY__";
+export const QUEUE_METADATA_KEY = "__QUEUE_METADATA_KEY__";

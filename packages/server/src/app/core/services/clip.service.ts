@@ -1,9 +1,4 @@
-import {
-  createEntityService,
-  FindOneOptions,
-  LessThan,
-  MoreThan,
-} from "@nest-boot/database";
+import { createEntityService, FindOneOptions } from "@nest-boot/database";
 import { mixinConnection } from "@nest-boot/graphql";
 import { mixinSearchable } from "@nest-boot/search";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
@@ -12,7 +7,7 @@ import moment from "moment";
 
 import { Clip } from "../entities/clip.entity";
 import { Result } from "../entities/result.entity";
-import { RefreshClipQueue } from "../queues/refresh-clip.queue";
+import { RefreshClipJob } from "../jobs/refresh-clip.job";
 import { ResultService } from "./result.service";
 import { SourceService } from "./source.service";
 
@@ -24,8 +19,8 @@ export class ClipService extends mixinConnection(
     @Inject(forwardRef(() => SourceService))
     private readonly sourceService: SourceService,
     private readonly resultService: ResultService,
-    @Inject(forwardRef(() => RefreshClipQueue))
-    private readonly refreshClipQueue: RefreshClipQueue
+    @Inject(forwardRef(() => RefreshClipJob))
+    private readonly refreshClipJob: RefreshClipJob
   ) {
     super();
   }
@@ -80,36 +75,18 @@ export class ClipService extends mixinConnection(
     });
   }
 
-  async fetchResult(id: Clip["id"], sync = false) {
+  async fetchResult(id: Clip["id"]) {
     const result = await this.resultService.findOne({
       where: { clip: { id } },
       order: { startedAt: "DESC" },
     });
 
-    if (!result || moment().subtract(1, "m").isAfter(result.finishedAt)) {
-      await this.refreshClipQueue.add("query", { clipId: id });
-    }
+    await this.refreshClipJob.dispatch({ clipId: id });
+
+    // if (!result || moment().subtract(1, "m").isAfter(result.finishedAt)) {
+    //   await this.refreshClipJob.dispatch({ clipId: id });
+    // }
 
     return result;
-  }
-
-  async schedule() {
-    await this.chunkById(
-      {
-        where: {
-          lastViewedAt: MoreThan(moment().subtract(7, "d").toDate()),
-          latestResultAt: LessThan(moment().subtract(1, "h").toDate()),
-        },
-      },
-      500,
-      async (clips) => {
-        await this.refreshClipQueue.addBulk(
-          clips.map((clip) => ({
-            name: "query",
-            data: { clipId: clip.id },
-          }))
-        );
-      }
-    );
   }
 }

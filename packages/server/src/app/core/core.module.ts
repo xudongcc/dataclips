@@ -14,7 +14,8 @@ import { Project } from "./entities/project.entity";
 import { Result } from "./entities/result.entity";
 import { Source } from "./entities/source.entity";
 import { VirtualSourceTable } from "./entities/virtual-source-table.entity";
-import { RefreshClipQueue } from "./queues/refresh-clip.queue";
+import { RefreshClipJob } from "./jobs/refresh-clip.job";
+import { DefaultQueue } from "./queues/default.queue";
 import { ClipService } from "./services/clip.service";
 import { ProjectService } from "./services/project.service";
 import { ResultService } from "./services/result.service";
@@ -31,7 +32,8 @@ const services = [
   VirtualSourceTableService,
 ];
 
-const queues = [RefreshClipQueue];
+const queues = [DefaultQueue];
+const jobs = [RefreshClipJob];
 
 const DatabaseDynamicModule = DatabaseModule.register({
   entities: Object.values(entities),
@@ -66,7 +68,7 @@ const QueueDynamicModule = QueueModule.registerAsync({
   imports: [RedisDynamicModule],
 });
 
-const providers = [...services, ...queues];
+const providers = [...services, ...queues, ...jobs];
 
 @Module({
   imports: [
