@@ -64,7 +64,7 @@ export class VirtualSourceResolver {
     @Args("input") input: UpdateVirtualSourceInput
   ): Promise<Source> {
     if (
-      _.uniq(input.tables.map((item) => item.clipId)).length ===
+      _.uniq(input.tables.map((item) => item.clipId)).length !==
       input.tables.length
     ) {
       throw new BadRequestException("存在重复的数据裁剪选项");
