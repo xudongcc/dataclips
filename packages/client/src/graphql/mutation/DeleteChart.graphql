@@ -1,3 +1,0 @@
-mutation DeleteChart($id: ID!) {
-  deleteChart(id: $id)
-}

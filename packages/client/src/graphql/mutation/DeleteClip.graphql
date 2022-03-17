@@ -1,3 +1,0 @@
-mutation DeleteClip($id: ID!) {
-  deleteClip(id: $id)
-}

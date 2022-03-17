@@ -1,5 +1,0 @@
-mutation UpdateChart($id: ID!, $input: UpdateChartInput!) {
-  updateChart(id: $id, input: $input) {
-    ...Chart
-  }
-}

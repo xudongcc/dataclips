@@ -1,9 +1,0 @@
-fragment Clip on Clip {
-  id
-  name
-  token
-  sql
-  sourceId
-  createdAt
-  updatedAt
-}

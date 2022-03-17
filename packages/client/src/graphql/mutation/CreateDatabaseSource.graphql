@@ -1,5 +1,0 @@
-mutation CreateDatabaseSource($input: CreateDatabaseSourceInput!) {
-  createDatabaseSource(input: $input) {
-    ...DatabaseSource
-  }
-}

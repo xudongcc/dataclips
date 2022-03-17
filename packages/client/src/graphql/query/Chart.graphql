@@ -1,5 +1,0 @@
-query Chart($id: ID!) {
-  chart(id: $id) {
-    ...Chart
-  }
-}

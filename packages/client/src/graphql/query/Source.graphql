@@ -1,6 +1,0 @@
-query Source($id: ID!) {
-  source(id: $id) {
-    ...VirtualSource
-    ...DatabaseSource
-  }
-}
