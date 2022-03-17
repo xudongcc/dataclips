@@ -11,7 +11,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 
@@ -49,7 +49,7 @@ const virtualSourceValidObj = {
   }),
 };
 
-export const SourceCreate = () => {
+export const SourceCreate: FC = () => {
   const toast = useToast();
   const navigate = useNavigate();
 
