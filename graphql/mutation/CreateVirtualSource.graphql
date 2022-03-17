@@ -1,0 +1,5 @@
+mutation CreateVirtualSource($input: CreateVirtualSourceInput!) {
+  createVirtualSource(input: $input) {
+    ...VirtualSource
+  }
+}

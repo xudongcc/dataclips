@@ -1,0 +1,4 @@
+fragment Source on Source {
+  ...DatabaseSource
+  ...VirtualSource
+}

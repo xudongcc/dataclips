@@ -1,0 +1,5 @@
+mutation CreateChart($input: CreateChartInput!) {
+  createChart(input: $input) {
+    ...Chart
+  }
+}

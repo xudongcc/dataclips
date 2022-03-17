@@ -1,0 +1,10 @@
+fragment Chart on Chart {
+  id
+  name
+  token
+  type
+  config
+  clipId
+  createdAt
+  updatedAt
+}

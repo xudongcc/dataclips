@@ -1,0 +1,5 @@
+query Clip($id: ID!) {
+  clip(id: $id) {
+    ...Clip
+  }
+}

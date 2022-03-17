@@ -1,0 +1,5 @@
+mutation UpdateClip($id: ID!, $input: UpdateClipInput!) {
+  updateClip(id: $id, input: $input) {
+    ...Clip
+  }
+}

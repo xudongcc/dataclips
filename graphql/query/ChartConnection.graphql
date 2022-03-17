@@ -1,0 +1,30 @@
+query ChartConnection(
+  $first: Int
+  $last: Int
+  $before: String
+  $after: String
+  $query: String
+  $orderBy: Ordering
+) {
+  chartConnection: charts(
+    first: $first
+    last: $last
+    before: $before
+    after: $after
+    query: $query
+    orderBy: $orderBy
+  ) {
+    edges {
+      node {
+        ...Chart
+      }
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+    }
+    totalCount
+  }
+}

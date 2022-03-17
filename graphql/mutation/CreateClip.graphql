@@ -1,0 +1,5 @@
+mutation CreateClip($input: CreateClipInput!) {
+  createClip(input: $input) {
+    ...Clip
+  }
+}

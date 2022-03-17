@@ -1,0 +1,43 @@
+query SourceConnection(
+  $first: Int
+  $last: Int
+  $before: String
+  $after: String
+  $query: String
+  $orderBy: Ordering
+) {
+  sourceConnection: sources(
+    first: $first
+    last: $last
+    before: $before
+    after: $after
+    query: $query
+    orderBy: $orderBy
+  ) {
+    edges {
+      node {
+        __typename
+        typename: __typename
+        ... on DatabaseSource {
+          id
+          name
+        }
+        ... on VirtualSource {
+          id
+          name
+          tables {
+            name
+            clipId
+          }
+        }
+      }
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+    }
+    totalCount
+  }
+}
