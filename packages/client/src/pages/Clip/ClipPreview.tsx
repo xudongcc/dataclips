@@ -2,9 +2,9 @@ import { FC } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 
-import { Loading } from "../components/Loading";
-import { ResultPreview } from "../components/ResultPreview";
-import { useQueryResult } from "../hooks/useQueryResult";
+import { Loading } from "../../components/Loading";
+import { ResultPreview } from "../../components/ResultPreview";
+import { useQueryResult } from "../../hooks/useQueryResult";
 
 const ClipPreview: FC = () => {
   const { token } = useParams<{ token: string }>();

@@ -25,9 +25,6 @@ export class DatabaseSource {
   @Field()
   username: string;
 
-  @Field({ nullable: true })
-  password?: string;
-
   @Field()
   createdAt: Date;
 

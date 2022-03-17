@@ -13,15 +13,15 @@ import { FC, useCallback, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { ResultPreview } from "../components/ResultPreview";
-import { SQLEditor } from "../components/SQLEditor";
+import { ResultPreview } from "../../components/ResultPreview";
+import { SQLEditor } from "../../components/SQLEditor";
 import {
   useClipQuery,
   useCreateClipMutation,
   useSourceConnectionQuery,
   useUpdateClipMutation,
-} from "../generated/graphql";
-import { useQueryResult } from "../hooks/useQueryResult";
+} from "../../generated/graphql";
+import { useQueryResult } from "../../hooks/useQueryResult";
 
 const ClipEdit: FC = () => {
   const toast = useToast();
@@ -31,7 +31,7 @@ const ClipEdit: FC = () => {
   const [createClip, { loading: createClipLoading }] = useCreateClipMutation();
   const [updateClip, { loading: updateClipLoading }] = useUpdateClipMutation();
 
-  const { data: { clip } = {}, loading: isClipLoading } = useClipQuery({
+  const { data: { clip } = {} } = useClipQuery({
     variables: { id: clipId! },
     skip: !clipId,
   });
@@ -39,7 +39,7 @@ const ClipEdit: FC = () => {
   const { data: { sourceConnection } = {}, loading: isSourcesLoading } =
     useSourceConnectionQuery({ variables: { first: 20 } });
 
-  const { data: result, isLoading: isResultLoading } = useQueryResult(clipId);
+  const { data: result } = useQueryResult(clipId);
 
   const handleSubmit = useCallback(
     async (input) => {
@@ -79,7 +79,6 @@ const ClipEdit: FC = () => {
         sourceId: clip.sourceId,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clip]);
 
   return (
@@ -144,6 +143,7 @@ const ClipEdit: FC = () => {
 
         <Box flex={1}>
           {result ? (
+            // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
             <ResultPreview token={clip?.token!} result={result} />
           ) : null}
         </Box>

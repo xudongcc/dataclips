@@ -19,9 +19,9 @@ export interface ResultPreviewProps {
   result: ResultFragment;
 }
 
-export type TableProps<T extends object = {}> = TableOptions<T>;
+export type TableProps<T extends Record<string, any>> = TableOptions<T>;
 
-export function Table<T extends object = {}>(props: TableProps<T>) {
+export function Table<T extends Record<string, any>>(props: TableProps<T>) {
   const borderColorColor = useColorModeValue("gray.100", "gray.700");
   const headerBackgroundColor = useColorModeValue("gray.50", "gray.800");
 
@@ -51,6 +51,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
                 >
                   <Flex alignItems="center">
                     {column.render("Header")}
+                    {/* eslint-disable-next-line no-nested-ternary */}
                     {column.isSorted ? (
                       column.isSortedDesc ? (
                         <ChevronDownIcon ml={1} w={4} h={4} />

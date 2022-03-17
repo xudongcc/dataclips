@@ -6,7 +6,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { QueryClientProvider } from "react-query";
 import { BrowserRouter } from "react-router-dom";
 
-import App from "./App";
+import { App } from "./App";
 import { apolloClient } from "./libs/apolloClient";
 import { queryClient } from "./libs/queryClient";
 import { theme } from "./theme";

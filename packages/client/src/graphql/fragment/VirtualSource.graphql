@@ -1,0 +1,13 @@
+fragment VirtualSource on VirtualSource {
+  id
+  name
+  tables {
+    id
+    name
+    clipId
+    createdAt
+    updatedAt
+  }
+  createdAt
+  updatedAt
+}

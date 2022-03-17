@@ -11,6 +11,7 @@ import {
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { nanoid } from "nanoid";
 
+import { Chart } from "./chart.entity";
 import { Result } from "./result.entity";
 import { Source } from "./source.entity";
 import { VirtualSourceTable } from "./virtual-source-table.entity";
@@ -67,4 +68,7 @@ export class Clip {
     (virtualSourceTable) => virtualSourceTable.clip
   )
   virtualSourceTables: VirtualSourceTable[];
+
+  @OneToMany(() => Chart, (chart) => chart.clip)
+  charts: Chart[];
 }

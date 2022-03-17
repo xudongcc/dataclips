@@ -17,6 +17,7 @@ query SourceConnection(
     edges {
       node {
         __typename
+        typename: __typename
         ... on DatabaseSource {
           id
           name
@@ -24,6 +25,10 @@ query SourceConnection(
         ... on VirtualSource {
           id
           name
+          tables {
+            name
+            clipId
+          }
         }
       }
     }

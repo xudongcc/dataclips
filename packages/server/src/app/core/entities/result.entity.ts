@@ -55,7 +55,8 @@ export class Result {
   updatedAt: Date;
 
   @ManyToOne(() => Clip, (clip) => clip.results, {
-    cascade: true,
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   })
   clip: Clip;
 

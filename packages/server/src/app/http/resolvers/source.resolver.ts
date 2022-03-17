@@ -2,7 +2,6 @@ import { QueryConnectionArgs } from "@nest-boot/graphql";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { plainToInstance } from "class-transformer";
 
-import { Source } from "../../core/entities/source.entity";
 import { SourceType } from "../../core/enums/source-type.enum";
 import { SourceService } from "../../core/services/source.service";
 import { DatabaseSource } from "../objects/database-source.object";
@@ -15,8 +14,14 @@ export class SourceResolver {
   constructor(private readonly sourceService: SourceService) {}
 
   @Query(() => SourceObject)
-  async source(@Args("id", { type: () => ID }) id: string): Promise<Source> {
-    return await this.sourceService.findOne({ where: { id } });
+  async source(
+    @Args("id", { type: () => ID }) id: string
+  ): Promise<DatabaseSource | VirtualSource> {
+    const source = await this.sourceService.findOne({ where: { id } });
+
+    return source.type === SourceType.VIRTUAL
+      ? plainToInstance(VirtualSource, source)
+      : plainToInstance(DatabaseSource, source);
   }
 
   @Query(() => SourceConnection)
