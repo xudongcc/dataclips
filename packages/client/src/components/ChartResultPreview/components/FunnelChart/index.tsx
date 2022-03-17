@@ -122,7 +122,7 @@ export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
             <Annotation.Text
               key={index}
               top={true}
-              position={[item[config.keyField], 335]}
+              position={[item[config.keyField], 315]}
               content={item.percent}
               style={{
                 fill: readableColor(funnelGradientColors[index]),
