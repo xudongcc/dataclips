@@ -65,7 +65,7 @@ const createIsomorphLink = (
       //   })
       // ),
       createHttpLink({
-        uri: `/graphql`,
+        uri: `/api/graphql`,
         credentials: "same-origin",
       }),
     ]);
@@ -100,7 +100,7 @@ const createIsomorphLink = (
         };
       }),
       createHttpLink({
-        uri: `${process.env.SERVER_URL}/graphql`,
+        uri: `${process.env.APP_URL}/api/graphql`,
       }),
     ]);
   }

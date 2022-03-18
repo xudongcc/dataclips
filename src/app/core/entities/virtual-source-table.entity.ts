@@ -31,7 +31,10 @@ export class VirtualSourceTable {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Source, (source) => source.tables)
+  @ManyToOne(() => Source, (source) => source.tables, {
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  })
   source: Source;
 
   @RelationId((table: VirtualSourceTable) => table.source)

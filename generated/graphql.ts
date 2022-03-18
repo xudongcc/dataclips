@@ -62,7 +62,8 @@ export type ChartEdge = {
 };
 
 export enum ChartType {
-  FUNNEL = 'FUNNEL'
+  FUNNEL = 'FUNNEL',
+  METRIC = 'METRIC'
 }
 
 export type Clip = {
