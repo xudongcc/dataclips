@@ -1,3 +1,5 @@
+import "@fontsource/inter/variable.css";
+
 import React, { useMemo, Fragment, FC } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { AppProps } from "next/app";
