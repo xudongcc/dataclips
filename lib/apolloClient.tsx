@@ -51,19 +51,23 @@ const createIsomorphLink = (
           throw networkError;
         }
       }),
-      split(
-        ({ query }) => {
-          const definition = getMainDefinition(query);
-          return (
-            definition.kind === "OperationDefinition" &&
-            definition.operation === "subscription"
-          );
-        },
-        createHttpLink({
-          uri: `/graphql`,
-          credentials: "same-origin",
-        })
-      ),
+      // split(
+      //   ({ query }) => {
+      //     const definition = getMainDefinition(query);
+      //     return (
+      //       definition.kind === "OperationDefinition" &&
+      //       definition.operation === "subscription"
+      //     );
+      //   },
+      //   createHttpLink({
+      //     uri: `/graphql`,
+      //     credentials: "same-origin",
+      //   })
+      // ),
+      createHttpLink({
+        uri: `/graphql`,
+        credentials: "same-origin",
+      }),
     ]);
   } else {
     return ApolloLink.from([
