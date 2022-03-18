@@ -8,6 +8,8 @@ import { theme } from "../theme";
 import { ApolloProvider } from "@apollo/client";
 import { SessionProvider } from "next-auth/react";
 import { getApolloClient } from "../lib/apolloClient";
+import { QueryClientProvider } from "react-query";
+import { queryClient } from "../lib/queryClient";
 
 const App: FC<AppProps & { Component: PC }> = ({
   Component,
@@ -23,9 +25,11 @@ const App: FC<AppProps & { Component: PC }> = ({
       <ChakraProvider theme={theme}>
         <SessionProvider session={session}>
           <ApolloProvider client={getApolloClient(null, apolloState)}>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
+            <QueryClientProvider client={queryClient}>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </QueryClientProvider>
           </ApolloProvider>
         </SessionProvider>
       </ChakraProvider>
