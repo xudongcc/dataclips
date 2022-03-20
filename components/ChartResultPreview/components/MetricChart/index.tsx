@@ -1,7 +1,8 @@
-import { Flex, HStack, Box } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { FC, useMemo } from "react";
 
 import { ResultFragment } from "../../../../generated/graphql";
+import { Stat } from "../../../Stat";
 
 export interface MetricChartConfig {
   type: string;
@@ -18,9 +19,13 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
   result,
   config = { type: "", valueCol: "", compareCol: "" },
 }) => {
-  console.log("result", result);
-
   const component = useMemo(() => {
+    const stat = {
+      label: "",
+      value: "",
+      delta: { value: "", isUpwardsTrend: undefined },
+    };
+
     const valueColIndex = result.fields.findIndex(
       (value) => value === config.valueCol
     );
@@ -29,17 +34,20 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
       (c) => c === config.compareCol
     );
 
-    if (valueColIndex !== -1 && compareColIndex !== -1) {
-      return (
-        <HStack>
-          <Box>{result.values[valueColIndex]?.[0]}</Box>
-
-          <Box>{result.values[compareColIndex]?.[0]}</Box>
-        </HStack>
-      );
+    if (valueColIndex !== -1) {
+      stat.value = result.values[0]?.[valueColIndex];
     }
 
-    return <></>;
+    if (valueColIndex !== -1 && compareColIndex !== -1) {
+      stat.delta = {
+        value: result.values[1]?.[compareColIndex],
+        isUpwardsTrend:
+          Number(result.values[0]?.[valueColIndex]) >
+          Number(result.values[1]?.[compareColIndex]),
+      };
+    }
+
+    return <Stat {...stat} />;
   }, [result, config]);
 
   return (

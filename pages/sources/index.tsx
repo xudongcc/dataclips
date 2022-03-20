@@ -220,7 +220,6 @@ const SourceList = () => {
                     setValidationDatabaseTypeSchema(virtualSourceValidObj);
 
                     if (source) {
-                      console.log("source", source);
                       form.setValues({
                         ...form.values,
                         virtualSource: {

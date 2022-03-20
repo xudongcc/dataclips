@@ -16,13 +16,12 @@ import {
 } from "@chakra-ui/react";
 import { useState, useCallback, useMemo } from "react";
 import { Table } from "../../components/Table";
-import {
-  useChartConnectionQuery,
-  useDeleteChartMutation,
-} from "../../generated/graphql";
+import { useChartConnectionQuery } from "../../generated/graphql";
+
 import moment from "moment";
 import { Column, TableOptions } from "react-table";
 import { Page } from "../../layouts/ProjectLayout/components/Page";
+import { useDeleteChartMutation } from "../../hooks/useDeleteChartMutation";
 
 const ChartList = () => {
   const router = useRouter();
@@ -121,8 +120,6 @@ const ChartList = () => {
 
     return options;
   }, [data?.chartConnection.edges, onOpen, router]);
-
-  console.log("tableProps", tableProps);
 
   const handleDeleteChart = useCallback(async () => {
     try {

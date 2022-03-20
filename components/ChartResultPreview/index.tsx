@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 
 import { ResultFragment } from "../../generated/graphql";
 import { ChartServerConfig, ChartType } from "../../types";
@@ -20,26 +20,28 @@ export const ChartResultPreview: FC<ChartResultPreviewProps> = ({
   config,
   type,
 }) => {
-  return (
-    [
-      {
-        type: ChartType.FUNNEL,
-        component: (
-          <FunnelChartPreview
-            config={config as FunnelChartConfig}
-            result={result}
-          />
-        ),
-      },
-      {
-        type: ChartType.METRIC,
-        component: (
-          <MetricChartPreview
-            config={config as MetricChartConfig}
-            result={result}
-          />
-        ),
-      },
-    ].find((item) => item.type === type)?.component || <></>
-  );
+  return useMemo(() => {
+    return (
+      [
+        {
+          type: ChartType.FUNNEL,
+          component: (
+            <FunnelChartPreview
+              config={config as FunnelChartConfig}
+              result={result}
+            />
+          ),
+        },
+        {
+          type: ChartType.METRIC,
+          component: (
+            <MetricChartPreview
+              config={config as MetricChartConfig}
+              result={result}
+            />
+          ),
+        },
+      ].find((item) => item.type === type)?.component || <></>
+    );
+  }, [type, result, config]);
 };
