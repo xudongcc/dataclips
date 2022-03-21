@@ -4,6 +4,10 @@ import { useQueryResult } from "../../../hooks/useQueryResult";
 import { Loading } from "../../../components/Loading";
 import { Box } from "@chakra-ui/react";
 import { ChartResultPreview } from "../../../components/ChartResultPreview";
+import { useCallback } from "react";
+import { ChartType } from "../../../types";
+import { FunnelChartConfig } from "../../../components/ChartResultPreview/components/FunnelChart";
+import { MetricChartConfig } from "../../../components/ChartResultPreview/components/MetricChart";
 
 const ChartPreview = () => {
   const router = useRouter();
@@ -17,6 +21,24 @@ const ChartPreview = () => {
 
   const { data: result, isLoading } = useQueryResult(data?.chart.clipId);
 
+  const getChartTypePreviewConfig = useCallback(() => {
+    if (data?.chart.type === ChartType.FUNNEL) {
+      return {
+        groupCol: data.chart.config.groupCol,
+        valueCol: data.chart.config.valueCol,
+      } as FunnelChartConfig;
+    }
+
+    if (data?.chart.type === ChartType.METRIC) {
+      return {
+        valueCol: data.chart.config.valueCol || "",
+        compareCol: data.chart.config.compareCol || "",
+      } as MetricChartConfig;
+    }
+
+    return undefined;
+  }, [data]);
+
   if (isLoading || loading) {
     return <Loading />;
   }
@@ -27,10 +49,7 @@ const ChartPreview = () => {
         <Box h="100vh">
           <ChartResultPreview
             type={data.chart.type}
-            config={{
-              groupCol: data.chart.config.groupCol,
-              valueCol: data.chart.config.valueCol,
-            }}
+            config={getChartTypePreviewConfig()}
             result={result}
           />
         </Box>

@@ -19,9 +19,9 @@ export interface ResultPreviewProps {
   result: ResultFragment;
 }
 
-export type TableProps<T extends object> = TableOptions<T>;
+export type TableProps<T extends object = {}> = TableOptions<T>;
 
-export function Table<T extends object>(props: TableProps<T>) {
+export function Table<T extends object = {}>(props: TableProps<T>) {
   const borderColorColor = useColorModeValue("gray.100", "gray.700");
   const headerBackgroundColor = useColorModeValue("gray.50", "gray.800");
 

@@ -32,8 +32,6 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
 
   const [searchParams, setSearchParams] = useUrlSearchParams();
 
-  console.log("searchParams", searchParams);
-
   const [where, setWhere] = useState<string>(
     (searchParams?.where as string) || ""
   );

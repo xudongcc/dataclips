@@ -114,6 +114,7 @@ const ChartEdit = () => {
     }
 
     return undefined;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
 
   // 初始配置
@@ -169,7 +170,7 @@ const ChartEdit = () => {
               size="sm"
               borderRadius="md"
               placeholder="请输入图表名称"
-              {...form.getFieldProps("name")}
+              name="name"
               onChange={form.handleChange}
               value={form.values.name}
             />
@@ -181,7 +182,7 @@ const ChartEdit = () => {
               size="sm"
               borderRadius="md"
               flex="1"
-              {...form.getFieldProps("clipId")}
+              name="clipId"
               placeholder="请选择数据源"
               value={form.values.clipId}
               onChange={form.handleChange}

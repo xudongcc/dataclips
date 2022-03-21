@@ -15,15 +15,13 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import {
-  DatabaseType,
-  useCreateDatabaseSourceMutation,
-  useCreateVirtualSourceMutation,
-} from "../../generated/graphql";
+import { DatabaseType } from "../../generated/graphql";
 import { useFormik } from "formik";
 import { Step } from "../../components/StepsWithCircles/Step";
 import { DataSourceForm } from "../../components/DataSourceForm";
 import { VirtualSourceForm } from "../../components/VirtualSourceForm";
+import { useCreateVirtualSourceMutation } from "../../hooks/useCreateVirtualSourceMutation";
+import { useCreateDatabaseSourceMutation } from "../../hooks/useCreateDatabaseSourceMutation";
 
 const dataSourceValidObj = {
   dataSource: Yup.object({

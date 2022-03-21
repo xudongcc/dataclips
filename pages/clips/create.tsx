@@ -10,13 +10,11 @@ import {
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
-import {
-  useCreateClipMutation,
-  useSourceConnectionQuery,
-} from "../../generated/graphql";
+import { useSourceConnectionQuery } from "../../generated/graphql";
 import { useCallback } from "react";
 import { useFormik } from "formik";
 import { SQLEditor } from "../../components/SQLEditor";
+import { useCreateClipMutation } from "../../hooks/useCreateClipMutation";
 
 const ClipCreate = () => {
   const toast = useToast();

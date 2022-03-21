@@ -23,10 +23,11 @@ import { Loading } from "../../components/Loading";
 import {
   CreateChartInput,
   useClipConnectionQuery,
-  useCreateChartMutation,
 } from "../../generated/graphql";
+
 import { useQueryResult } from "../../hooks/useQueryResult";
 import { useRouter } from "next/router";
+import { useCreateChartMutation } from "../../hooks/useCreateChartMutation";
 
 const ChartCreate = () => {
   const router = useRouter();
