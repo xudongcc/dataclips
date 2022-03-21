@@ -115,7 +115,7 @@ const ChartEdit = () => {
 
     return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [form]);
 
   // 初始配置
   useUpdateEffect(() => {

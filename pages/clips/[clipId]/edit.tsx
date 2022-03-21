@@ -129,7 +129,9 @@ const ClipEdit = () => {
       </form>
 
       <Box flex={1}>
-        {result ? <ResultPreview token={clip?.token!} result={result} /> : null}
+        {result && !result?.message ? (
+          <ResultPreview token={clip?.token!} result={result} />
+        ) : null}
       </Box>
     </Flex>
   );

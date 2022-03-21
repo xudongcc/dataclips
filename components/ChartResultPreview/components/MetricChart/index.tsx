@@ -40,10 +40,10 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
 
     if (valueColIndex !== -1 && compareColIndex !== -1) {
       stat.delta = {
-        value: result.values[1]?.[compareColIndex],
+        value: result.values[0]?.[compareColIndex],
         isUpwardsTrend:
-          Number(result.values[0]?.[valueColIndex]) >
-          Number(result.values[1]?.[compareColIndex]),
+          Number(result.values[0]?.[valueColIndex]) >=
+          Number(result.values[0]?.[compareColIndex]),
       };
     }
 
