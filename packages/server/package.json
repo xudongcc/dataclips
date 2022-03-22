@@ -44,7 +44,6 @@
     "apollo-server-errors": "^3.3.1",
     "apollo-server-express": "^3.6.2",
     "argon2": "^0.28.5",
-    "aws-sdk": "^2.1085.0",
     "bluebird": "^3.7.2",
     "bullmq": "^1.76.0",
     "bytes": "^3.1.2",

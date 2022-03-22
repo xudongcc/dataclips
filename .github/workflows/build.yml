@@ -5,17 +5,27 @@ on:
     types: [published]
 
 jobs:
-  docker-build:
+  docker:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Docker meta
-        id: docker-meta
+      - name: Docker meta client
+        id: docker-meta-client
         uses: docker/metadata-action@v3
         with:
           images: |
-            ${{ secrets.DOCKER_REPOSITORY }}
+            ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_CLIENT_REPOSITORY }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+      - name: Docker meta server
+        id: docker-meta-server
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_SERVER_REPOSITORY }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -27,12 +37,20 @@ jobs:
       - name: Login to Docker Registry
         uses: docker/login-action@v1
         with:
+          registry: ${{ secrets.DOCKER_REGISTRY }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Build and push image
+      - name: Build and push client image
         uses: docker/build-push-action@v2
         with:
-          context: .
+          context: ./packages/client
           push: true
-          tags: ${{ steps.docker-meta.outputs.tags }}
-          labels: ${{ steps.docker-meta.outputs.labels }}
+          tags: ${{ steps.docker-meta-client.outputs.tags }}
+          labels: ${{ steps.docker-meta-client.outputs.labels }}
+      - name: Build and push server image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./packages/server
+          push: true
+          tags: ${{ steps.docker-meta-server.outputs.tags }}
+          labels: ${{ steps.docker-meta-server.outputs.labels }}

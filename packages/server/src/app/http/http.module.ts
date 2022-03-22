@@ -2,7 +2,6 @@ import { ContextMiddleware } from "@nest-boot/common";
 import { ApolloDriver } from "@nestjs/apollo";
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
-import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 
 import { CoreModule } from "../core/core.module";
@@ -22,11 +21,8 @@ import { VirtualSourceTableResolver } from "./resolvers/virtual-source-table.res
       driver: ApolloDriver,
       autoSchemaFile: true,
       context: ({ req, res }) => ({ req, res }),
-      path: "/graphql",
+      path: "/api/graphql",
       playground: true,
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), "client"),
     }),
   ],
   providers: [

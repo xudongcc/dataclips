@@ -1,7 +1,7 @@
 import { QueryConnectionArgs } from "@nest-boot/graphql";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 import _ from "lodash";
-import { ChartService } from "src/app/core/services/chart.service";
+import { ChartService } from "../../core/services/chart.service";
 
 import { Chart } from "../../core/entities/chart.entity";
 import { CreateChartInput } from "../inputs/create-chart.input";
@@ -14,19 +14,16 @@ export class ChartResolver {
 
   @Query(() => Chart)
   async chart(@Args("id", { type: () => ID }) id: string): Promise<Chart> {
-    // eslint-disable-next-line @typescript-eslint/return-await
     return await this.chartService.findOne({ where: { id } });
   }
 
   @Query(() => ChartConnection)
   async charts(@Args() args: QueryConnectionArgs): Promise<ChartConnection> {
-    // eslint-disable-next-line @typescript-eslint/return-await
     return await this.chartService.getConnection(args);
   }
 
   @Mutation(() => Chart)
   async createChart(@Args("input") input: CreateChartInput): Promise<Chart> {
-    // eslint-disable-next-line @typescript-eslint/return-await
     return await this.chartService.create({
       ...input,
       clip: { id: input.clipId },
@@ -46,7 +43,6 @@ export class ChartResolver {
       }
     );
 
-    // eslint-disable-next-line @typescript-eslint/return-await
     return await this.chartService.findOne({ where: { id } });
   }
 

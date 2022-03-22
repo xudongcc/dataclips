@@ -1,5 +1,5 @@
 import { Field, InputType, Int } from "@nestjs/graphql";
-import { DatabaseType } from "src/app/core/enums/database-type.enum";
+import { DatabaseType } from "../../core/enums/database-type.enum";
 
 @InputType()
 export class CreateDatabaseSourceInput {

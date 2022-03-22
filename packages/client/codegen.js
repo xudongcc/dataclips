@@ -1,18 +1,18 @@
-require('dotenv').config();
+require("dotenv").config();
 
 const { SERVER_URL } = process.env;
 
 module.exports = {
-  schema: `${SERVER_URL}/graphql`,
-  documents: ['./src/**/*.ts', './src/**/*.graphql'],
+  schema: `${SERVER_URL}/api/graphql`,
+  documents: ["./graphql/**/*.graphql"],
   overwrite: true,
   generates: {
-    './src/generated/graphql.ts': {
+    "./generated/graphql.ts": {
       plugins: [
-        'fragment-matcher',
-        'typescript',
-        'typescript-operations',
-        'typescript-react-apollo',
+        "fragment-matcher",
+        "typescript",
+        "typescript-operations",
+        "typescript-react-apollo",
       ],
       config: {
         reactApolloVersion: 3,
@@ -21,7 +21,7 @@ module.exports = {
         withComponent: false,
         minify: true,
         namingConvention: {
-          enumValues: 'keep',
+          enumValues: "keep",
         },
       },
     },
