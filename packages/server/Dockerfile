@@ -5,7 +5,7 @@ WORKDIR /app
 
 # 拷贝依赖文件
 COPY package.json ./
-COPY package-lock.json ./
+COPY yarn.lock ./
 
 # 安装依赖
 RUN yarn
@@ -30,8 +30,8 @@ RUN npm install @nest-boot/command -g
 # 复制文件
 COPY --from=build /app/dist/ ./dist/
 COPY --from=build /app/node_modules/ ./node_modules/
-COPY --from=build /app/yarn.lock ./
 COPY --from=build /app/package.json ./
+COPY --from=build /app/yarn.lock ./
 
 # 暴露端口
 EXPOSE 80
