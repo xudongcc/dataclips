@@ -1,5 +1,5 @@
 # ===== build ===== #
-FROM node:16-alpine as build
+FROM node:16-alpine as builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ COPY ./ ./
 RUN yarn build
 
 # ===== runtime ===== #
-FROM node:16-alpine as runtime
+FROM node:16-alpine as runner
 
 # 设置环境变量
 ENV PORT 80

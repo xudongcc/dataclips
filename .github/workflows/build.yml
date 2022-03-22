@@ -15,7 +15,7 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: |
-            ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_CLIENT_REPOSITORY }}
+            index.docker.io/xudongdev/dataclips-client
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -25,7 +25,7 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: |
-            ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_SERVER_REPOSITORY }}
+            index.docker.io/xudongdev/dataclips-server
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
