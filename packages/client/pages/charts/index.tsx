@@ -17,7 +17,7 @@ import {
 import { useState, useCallback, useMemo } from "react";
 import { Table } from "../../components/Table";
 import { useChartConnectionQuery } from "../../generated/graphql";
-
+import { chartTypeMap } from "../../components/ChartEditTab";
 import moment from "moment";
 import { Column, TableOptions } from "react-table";
 import { Page } from "../../components/Page";
@@ -65,6 +65,13 @@ const ChartList = () => {
       {
         Header: "type",
         accessor: "type",
+        Cell: ({
+          row: {
+            values: { type },
+          },
+        }) => {
+          return chartTypeMap[type];
+        },
       },
       {
         Header: "createdAt",

@@ -22,13 +22,17 @@ import { useCallback, useEffect } from "react";
 import { useFormik } from "formik";
 import { ChartType } from "../../../types";
 import { useQueryResult } from "../../../hooks/useQueryResult";
-import { FunnelChartConfig } from "../../../components/ChartResultPreview/components/FunnelChart";
-import { MetricChartConfig } from "../../../components/ChartResultPreview/components/MetricChart";
 import { useUpdateEffect } from "react-use";
 import { omit } from "lodash";
 import { Loading } from "../../../components/Loading";
 import { ChartEditTab } from "../../../components/ChartEditTab";
 import { ChartResultPreview } from "../../../components/ChartResultPreview";
+import {
+  LineChartConfig,
+  IntervalChartConfig,
+  FunnelChartConfig,
+  MetricChartConfig,
+} from "../../../components/ChartResultPreview/components/";
 
 const ChartEdit = () => {
   const toast = useToast();
@@ -55,6 +59,8 @@ const ChartEdit = () => {
       clipId: "",
       funnelConfig: { groupCol: "", valueCol: "" },
       metricConfig: { valueCol: "", compareCol: "" },
+      lineConfig: { xCol: "", yCol: [] },
+      intervalConfig: { xCol: "", yCol: [] },
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -64,10 +70,15 @@ const ChartEdit = () => {
       const input = {
         name: form.values.name,
         type: form.values.type,
-        config:
-          form.values.type === ChartType.FUNNEL
-            ? form.values.funnelConfig
-            : form.values.metricConfig,
+        config: [
+          {
+            type: ChartType.FUNNEL,
+            config: form.values.funnelConfig,
+          },
+          { type: ChartType.METRIC, config: form.values.metricConfig },
+          { type: ChartType.LINE, config: form.values.lineConfig },
+          { type: ChartType.INTERVAL, config: form.values.intervalConfig },
+        ].find((item) => item.type === form.values.type).config,
         clipId: form.values.clipId,
       } as UpdateChartInput;
 
@@ -101,16 +112,30 @@ const ChartEdit = () => {
   const getChartTypePreviewConfig = useCallback(() => {
     if (form.values.type === ChartType.FUNNEL) {
       return {
-        groupCol: form.values.funnelConfig.groupCol || "",
-        valueCol: form.values.funnelConfig.valueCol || "",
+        groupCol: form.values.funnelConfig?.groupCol || "",
+        valueCol: form.values.funnelConfig?.valueCol || "",
       } as FunnelChartConfig;
     }
 
     if (form.values.type === ChartType.METRIC) {
       return {
-        valueCol: form.values.metricConfig.valueCol || "",
-        compareCol: form.values.metricConfig.compareCol || "",
+        valueCol: form.values.metricConfig?.valueCol || "",
+        compareCol: form.values.metricConfig?.compareCol || "",
       } as MetricChartConfig;
+    }
+
+    if (form.values.type === ChartType.LINE) {
+      return {
+        xCol: form.values.lineConfig?.xCol || "",
+        yCol: form.values.lineConfig?.yCol || [],
+      } as LineChartConfig;
+    }
+
+    if (form.values.type === ChartType.INTERVAL) {
+      return {
+        xCol: form.values.intervalConfig?.xCol || "",
+        yCol: form.values.intervalConfig?.yCol || [],
+      } as IntervalChartConfig;
     }
 
     return undefined;
@@ -149,6 +174,20 @@ const ChartEdit = () => {
         initialValues.metricConfig = {
           valueCol: data.chart.config?.valueCol || "",
           compareCol: data.chart.config?.compareCol || "",
+        };
+      }
+
+      if (data.chart.type === ChartType.LINE) {
+        initialValues.lineConfig = {
+          xCol: data.chart.config?.xCol || "",
+          yCol: data.chart.config?.yCol || [],
+        };
+      }
+
+      if (data.chart.type === ChartType.INTERVAL) {
+        initialValues.intervalConfig = {
+          xCol: data.chart.config?.xCol || "",
+          yCol: data.chart.config?.yCol || [],
         };
       }
 

@@ -5,7 +5,6 @@ import { ResultFragment } from "../../../../generated/graphql";
 import { Stat } from "../../../Stat";
 
 export interface MetricChartConfig {
-  type: string;
   valueCol: string;
   compareCol: string;
 }

@@ -28,6 +28,7 @@ import {
 import { useQueryResult } from "../../hooks/useQueryResult";
 import { useRouter } from "next/router";
 import { useCreateChartMutation } from "../../hooks/useCreateChartMutation";
+import { LineChartConfig } from "../../components/ChartResultPreview/components/LineChart";
 
 const ChartCreate = () => {
   const router = useRouter();
@@ -47,6 +48,8 @@ const ChartCreate = () => {
       clipId: "",
       funnelConfig: { groupCol: "", valueCol: "" },
       metricConfig: { valueCol: "", compareCol: "" },
+      lineConfig: { xCol: "", yCol: [] },
+      intervalConfig: { xCol: "", yCol: [] },
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -56,10 +59,15 @@ const ChartCreate = () => {
       const input = {
         name: form.values.name,
         type: form.values.type,
-        config:
-          form.values.type === ChartType.FUNNEL
-            ? form.values.funnelConfig
-            : form.values.metricConfig,
+        config: [
+          {
+            type: ChartType.FUNNEL,
+            config: form.values.funnelConfig,
+          },
+          { type: ChartType.METRIC, config: form.values.metricConfig },
+          { type: ChartType.LINE, config: form.values.lineConfig },
+          { type: ChartType.INTERVAL, config: form.values.intervalConfig },
+        ].find((item) => item.type === form.values.type).config,
         clipId: form.values.clipId,
       } as CreateChartInput;
 
@@ -103,6 +111,20 @@ const ChartCreate = () => {
         valueCol: form.values.metricConfig.valueCol || "",
         compareCol: form.values.metricConfig.compareCol || "",
       } as MetricChartConfig;
+    }
+
+    if (form.values.type === ChartType.LINE) {
+      return {
+        xCol: form.values.lineConfig?.xCol || "",
+        yCol: form.values.lineConfig?.yCol || [],
+      } as LineChartConfig;
+    }
+
+    if (form.values.type === ChartType.INTERVAL) {
+      return {
+        xCol: form.values.intervalConfig?.xCol || "",
+        yCol: form.values.intervalConfig?.yCol || [],
+      } as LineChartConfig;
     }
 
     return undefined;

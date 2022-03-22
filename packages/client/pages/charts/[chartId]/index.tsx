@@ -6,8 +6,12 @@ import { Box } from "@chakra-ui/react";
 import { ChartResultPreview } from "../../../components/ChartResultPreview";
 import { useCallback } from "react";
 import { ChartType } from "../../../types";
-import { FunnelChartConfig } from "../../../components/ChartResultPreview/components/FunnelChart";
-import { MetricChartConfig } from "../../../components/ChartResultPreview/components/MetricChart";
+import {
+  LineChartConfig,
+  MetricChartConfig,
+  FunnelChartConfig,
+  IntervalChartConfig,
+} from "../../../components/ChartResultPreview/components/";
 
 const ChartPreview = () => {
   const router = useRouter();
@@ -34,6 +38,20 @@ const ChartPreview = () => {
         valueCol: data.chart.config.valueCol || "",
         compareCol: data.chart.config.compareCol || "",
       } as MetricChartConfig;
+    }
+
+    if (data?.chart.type === ChartType.LINE) {
+      return {
+        xCol: data.chart.config?.xCol || "",
+        yCol: data.chart.config?.yCol || [],
+      } as LineChartConfig;
+    }
+
+    if (data?.chart.type === ChartType.INTERVAL) {
+      return {
+        xCol: data.chart.config?.xCol || "",
+        yCol: data.chart.config?.yCol || [],
+      } as IntervalChartConfig;
     }
 
     return undefined;

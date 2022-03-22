@@ -5,11 +5,13 @@ import { ChartServerConfig, ChartType } from "../../types";
 import {
   FunnelChartConfig,
   FunnelChartPreview,
-} from "./components/FunnelChart";
-import {
   MetricChartConfig,
   MetricChartPreview,
-} from "./components/MetricChart";
+  IntervalChartConfig,
+  IntervalChartPreview,
+  LineChartConfig,
+  LineChartPreview,
+} from "./components";
 
 interface ChartResultPreviewProps extends ChartServerConfig {
   result: ResultFragment;
@@ -38,6 +40,24 @@ export const ChartResultPreview: FC<ChartResultPreviewProps> = ({
             <MetricChartPreview
               config={config as MetricChartConfig}
               result={result}
+            />
+          ),
+        },
+        {
+          type: ChartType.LINE,
+          component: (
+            <LineChartPreview
+              result={result}
+              config={config as LineChartConfig}
+            />
+          ),
+        },
+        {
+          type: ChartType.INTERVAL,
+          component: (
+            <IntervalChartPreview
+              result={result}
+              config={config as IntervalChartConfig}
             />
           ),
         },

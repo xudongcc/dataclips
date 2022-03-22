@@ -63,6 +63,8 @@ export type ChartEdge = {
 
 export enum ChartType {
   FUNNEL = 'FUNNEL',
+  INTERVAL = 'INTERVAL',
+  LINE = 'LINE',
   METRIC = 'METRIC'
 }
 
