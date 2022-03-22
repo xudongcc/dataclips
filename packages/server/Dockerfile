@@ -28,10 +28,10 @@ WORKDIR /app
 RUN npm install @nest-boot/command -g
 
 # 复制文件
-COPY --from=build /app/dist/ ./dist/
-COPY --from=build /app/node_modules/ ./node_modules/
-COPY --from=build /app/package.json ./
-COPY --from=build /app/yarn.lock ./
+COPY --from=builder /app/dist/ ./dist/
+COPY --from=builder /app/node_modules/ ./node_modules/
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/yarn.lock ./
 
 # 暴露端口
 EXPOSE 80
