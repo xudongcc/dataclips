@@ -71,10 +71,7 @@ const ChartEdit = () => {
         name: form.values.name,
         type: form.values.type,
         config: [
-          {
-            type: ChartType.FUNNEL,
-            config: form.values.funnelConfig,
-          },
+          { type: ChartType.FUNNEL, config: form.values.funnelConfig },
           { type: ChartType.METRIC, config: form.values.metricConfig },
           { type: ChartType.LINE, config: form.values.lineConfig },
           { type: ChartType.INTERVAL, config: form.values.intervalConfig },

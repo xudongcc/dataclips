@@ -16,8 +16,12 @@ import { ChartResultPreview } from "../../components/ChartResultPreview";
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { FunnelChartConfig } from "../../components/ChartResultPreview/components/FunnelChart";
-import { MetricChartConfig } from "../../components/ChartResultPreview/components/MetricChart";
+import {
+  FunnelChartConfig,
+  MetricChartConfig,
+  LineChartConfig,
+  IntervalChartConfig,
+} from "../../components/ChartResultPreview/components";
 import { ChartType } from "../../types";
 import { Loading } from "../../components/Loading";
 import {
@@ -28,7 +32,6 @@ import {
 import { useQueryResult } from "../../hooks/useQueryResult";
 import { useRouter } from "next/router";
 import { useCreateChartMutation } from "../../hooks/useCreateChartMutation";
-import { LineChartConfig } from "../../components/ChartResultPreview/components/LineChart";
 
 const ChartCreate = () => {
   const router = useRouter();
@@ -60,10 +63,7 @@ const ChartCreate = () => {
         name: form.values.name,
         type: form.values.type,
         config: [
-          {
-            type: ChartType.FUNNEL,
-            config: form.values.funnelConfig,
-          },
+          { type: ChartType.FUNNEL, config: form.values.funnelConfig },
           { type: ChartType.METRIC, config: form.values.metricConfig },
           { type: ChartType.LINE, config: form.values.lineConfig },
           { type: ChartType.INTERVAL, config: form.values.intervalConfig },
@@ -124,7 +124,7 @@ const ChartCreate = () => {
       return {
         xCol: form.values.intervalConfig?.xCol || "",
         yCol: form.values.intervalConfig?.yCol || [],
-      } as LineChartConfig;
+      } as IntervalChartConfig;
     }
 
     return undefined;
