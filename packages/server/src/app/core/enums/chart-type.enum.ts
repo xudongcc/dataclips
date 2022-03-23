@@ -4,7 +4,7 @@ export enum ChartType {
   FUNNEL = "FUNNEL",
   METRIC = "METRIC",
   LINE = "LINE",
-  INTERVAL = "INTERVAL",
+  BAR = "BAR",
 }
 
 registerEnumType(ChartType, { name: "ChartType" });

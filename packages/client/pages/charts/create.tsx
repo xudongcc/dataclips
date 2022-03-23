@@ -20,7 +20,7 @@ import {
   FunnelChartConfig,
   MetricChartConfig,
   LineChartConfig,
-  IntervalChartConfig,
+  BarChartConfig,
 } from "../../components/ChartResultPreview/components";
 import { ChartType } from "../../types";
 import { Loading } from "../../components/Loading";
@@ -52,7 +52,7 @@ const ChartCreate = () => {
       funnelConfig: { groupCol: "", valueCol: "" },
       metricConfig: { valueCol: "", compareCol: "" },
       lineConfig: { xCol: "", yCol: [] },
-      intervalConfig: { xCol: "", yCol: [] },
+      barConfig: { variant: "", xCol: "", yCol: [] },
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -66,7 +66,7 @@ const ChartCreate = () => {
           { type: ChartType.FUNNEL, config: form.values.funnelConfig },
           { type: ChartType.METRIC, config: form.values.metricConfig },
           { type: ChartType.LINE, config: form.values.lineConfig },
-          { type: ChartType.INTERVAL, config: form.values.intervalConfig },
+          { type: ChartType.BAR, config: form.values.barConfig },
         ].find((item) => item.type === form.values.type).config,
         clipId: form.values.clipId,
       } as CreateChartInput;
@@ -120,11 +120,12 @@ const ChartCreate = () => {
       } as LineChartConfig;
     }
 
-    if (form.values.type === ChartType.INTERVAL) {
+    if (form.values.type === ChartType.BAR) {
       return {
-        xCol: form.values.intervalConfig?.xCol || "",
-        yCol: form.values.intervalConfig?.yCol || [],
-      } as IntervalChartConfig;
+        variant: form.values.barConfig?.variant || "",
+        xCol: form.values.barConfig?.xCol || "",
+        yCol: form.values.barConfig?.yCol || [],
+      } as BarChartConfig;
     }
 
     return undefined;

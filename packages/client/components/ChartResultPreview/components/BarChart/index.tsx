@@ -1,18 +1,19 @@
-import { Chart, Interval } from "bizcharts";
+import { Chart, Coordinate, Interval } from "bizcharts";
 import { FC, useMemo } from "react";
 import { ResultFragment } from "../../../../generated/graphql";
 
-export interface IntervalChartConfig {
+export interface BarChartConfig {
+  variant: string;
   xCol: string;
   yCol: { label: string; value: string }[];
 }
 
-interface IntervalChartPreviewProps {
+interface BarChartPreviewProps {
   result: ResultFragment;
-  config: IntervalChartConfig;
+  config: BarChartConfig;
 }
 
-export const IntervalChartPreview: FC<IntervalChartPreviewProps> = ({
+export const BarChartPreview: FC<BarChartPreviewProps> = ({
   result,
   config,
 }) => {
@@ -65,10 +66,12 @@ export const IntervalChartPreview: FC<IntervalChartPreviewProps> = ({
           range: [0, 1],
         },
       }}
-      padding={[20, 20, 80, 50]}
+      padding={[20, 20, 80, 80]}
       autoFit
       data={data}
     >
+      <Coordinate transpose={config.variant === "horizontal"} />
+
       <Interval
         adjust={[
           {

@@ -29,7 +29,7 @@ import { ChartEditTab } from "../../../components/ChartEditTab";
 import { ChartResultPreview } from "../../../components/ChartResultPreview";
 import {
   LineChartConfig,
-  IntervalChartConfig,
+  BarChartConfig,
   FunnelChartConfig,
   MetricChartConfig,
 } from "../../../components/ChartResultPreview/components/";
@@ -60,7 +60,7 @@ const ChartEdit = () => {
       funnelConfig: { groupCol: "", valueCol: "" },
       metricConfig: { valueCol: "", compareCol: "" },
       lineConfig: { xCol: "", yCol: [] },
-      intervalConfig: { xCol: "", yCol: [] },
+      barConfig: { variant: "", xCol: "", yCol: [] },
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -74,7 +74,7 @@ const ChartEdit = () => {
           { type: ChartType.FUNNEL, config: form.values.funnelConfig },
           { type: ChartType.METRIC, config: form.values.metricConfig },
           { type: ChartType.LINE, config: form.values.lineConfig },
-          { type: ChartType.INTERVAL, config: form.values.intervalConfig },
+          { type: ChartType.BAR, config: form.values.barConfig },
         ].find((item) => item.type === form.values.type).config,
         clipId: form.values.clipId,
       } as UpdateChartInput;
@@ -128,11 +128,12 @@ const ChartEdit = () => {
       } as LineChartConfig;
     }
 
-    if (form.values.type === ChartType.INTERVAL) {
+    if (form.values.type === ChartType.BAR) {
       return {
-        xCol: form.values.intervalConfig?.xCol || "",
-        yCol: form.values.intervalConfig?.yCol || [],
-      } as IntervalChartConfig;
+        variant: form.values.barConfig.variant || "",
+        xCol: form.values.barConfig?.xCol || "",
+        yCol: form.values.barConfig?.yCol || [],
+      } as BarChartConfig;
     }
 
     return undefined;
@@ -181,8 +182,9 @@ const ChartEdit = () => {
         };
       }
 
-      if (data.chart.type === ChartType.INTERVAL) {
-        initialValues.intervalConfig = {
+      if (data.chart.type === ChartType.BAR) {
+        initialValues.barConfig = {
+          variant: data.chart.config?.variant || "",
           xCol: data.chart.config?.xCol || "",
           yCol: data.chart.config?.yCol || [],
         };

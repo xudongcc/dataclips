@@ -10,7 +10,7 @@ import {
   LineChartConfig,
   MetricChartConfig,
   FunnelChartConfig,
-  IntervalChartConfig,
+  BarChartConfig,
 } from "../../../components/ChartResultPreview/components/";
 
 const ChartPreview = () => {
@@ -47,11 +47,12 @@ const ChartPreview = () => {
       } as LineChartConfig;
     }
 
-    if (data?.chart.type === ChartType.INTERVAL) {
+    if (data?.chart.type === ChartType.BAR) {
       return {
+        variant: data.chart.config?.variant || "",
         xCol: data.chart.config?.xCol || "",
         yCol: data.chart.config?.yCol || [],
-      } as IntervalChartConfig;
+      } as BarChartConfig;
     }
 
     return undefined;

@@ -7,8 +7,8 @@ import {
   FunnelChartPreview,
   MetricChartConfig,
   MetricChartPreview,
-  IntervalChartConfig,
-  IntervalChartPreview,
+  BarChartConfig,
+  BarChartPreview,
   LineChartConfig,
   LineChartPreview,
 } from "./components";
@@ -53,11 +53,11 @@ export const ChartResultPreview: FC<ChartResultPreviewProps> = ({
           ),
         },
         {
-          type: ChartType.INTERVAL,
+          type: ChartType.BAR,
           component: (
-            <IntervalChartPreview
+            <BarChartPreview
               result={result}
-              config={config as IntervalChartConfig}
+              config={config as BarChartConfig}
             />
           ),
         },

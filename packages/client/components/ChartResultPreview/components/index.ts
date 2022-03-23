@@ -1,4 +1,4 @@
 export * from "./FunnelChart";
-export * from "./IntervalChart";
+export * from "./BarChart";
 export * from "./MetricChart";
 export * from "./LineChart";

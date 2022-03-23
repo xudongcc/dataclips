@@ -2,21 +2,21 @@ import {
   FunnelChartConfig,
   MetricChartConfig,
   LineChartConfig,
-  IntervalChartConfig,
+  BarChartConfig,
 } from "../components/ChartResultPreview/components";
 
 export enum ChartType {
   FUNNEL = "FUNNEL",
   METRIC = "METRIC",
   LINE = "LINE",
-  INTERVAL = "INTERVAL",
+  BAR = "BAR",
 }
 
 export type ChartConfig =
   | FunnelChartConfig
   | MetricChartConfig
   | LineChartConfig
-  | IntervalChartConfig;
+  | BarChartConfig;
 
 export interface ChartServerConfig {
   config?: ChartConfig;

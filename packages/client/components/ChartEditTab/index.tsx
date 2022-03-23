@@ -16,8 +16,8 @@ import {
   FunnelChartEditConfig,
   MetricChartConfigForm,
   MetricChartEditConfig,
-  IntervalChartConfigForm,
-  IntervalChartEditConfig,
+  BarChartConfigForm,
+  BarChartEditConfig,
   LineChartEditConfig,
   LineChartConfigForm,
 } from "./components";
@@ -26,7 +26,7 @@ export const chartTypeMap = {
   [ChartType.FUNNEL]: "漏斗图",
   [ChartType.METRIC]: "指标图",
   [ChartType.LINE]: "折线图",
-  [ChartType.INTERVAL]: "柱状图",
+  [ChartType.BAR]: "柱状图",
 };
 
 interface ChartEditTabProps extends Partial<ChartServerConfig> {
@@ -61,7 +61,7 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
           config: { xCol: result.fields, yCol: result.fields },
         },
         {
-          type: ChartType.INTERVAL,
+          type: ChartType.BAR,
           config: { xCol: result.fields, yCol: result.fields },
         },
       ].find((item) => item.type === form.values.type)?.config || undefined
@@ -90,7 +90,7 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
                 ChartType.FUNNEL,
                 ChartType.METRIC,
                 ChartType.LINE,
-                ChartType.INTERVAL,
+                ChartType.BAR,
               ].map((item) => (
                 <option value={item} key={item}>
                   {chartTypeMap[item]}
@@ -124,10 +124,10 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
           )}
 
           {/* 柱状图配置选项 */}
-          {form.values.type === ChartType.INTERVAL && (
-            <IntervalChartConfigForm
+          {form.values.type === ChartType.BAR && (
+            <BarChartConfigForm
               form={form}
-              editOptionConfig={editOptionConfig as IntervalChartEditConfig}
+              editOptionConfig={editOptionConfig as BarChartEditConfig}
             />
           )}
         </TabPanel>

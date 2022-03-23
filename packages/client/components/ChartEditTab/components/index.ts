@@ -1,4 +1,4 @@
 export * from "./FunnelChartConfigForm";
 export * from "./MetricChartConfigForm";
 export * from "./LineChartConfigForm";
-export * from "./IntervalChartConfigForm";
+export * from "./BarChartConfigForm";
