@@ -19,7 +19,8 @@ export type ChartConfig =
   | MetricChartConfig
   | LineChartConfig
   | BarChartConfig
-  | PieChartConfig;
+  | PieChartConfig
+  | BarChartConfig;
 
 export interface ChartServerConfig {
   config?: ChartConfig;
