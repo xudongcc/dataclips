@@ -20,6 +20,8 @@ import {
   BarChartEditConfig,
   LineChartEditConfig,
   LineChartConfigForm,
+  PieChartConfigForm,
+  PieChartEditConfig,
 } from "./components";
 
 export const chartTypeMap = {
@@ -27,6 +29,7 @@ export const chartTypeMap = {
   [ChartType.METRIC]: "指标图",
   [ChartType.LINE]: "折线图",
   [ChartType.BAR]: "柱状图",
+  [ChartType.PIE]: "饼图",
 };
 
 interface ChartEditTabProps extends Partial<ChartServerConfig> {
@@ -64,6 +67,10 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
           type: ChartType.BAR,
           config: { xCol: result.fields, yCol: result.fields },
         },
+        {
+          type: ChartType.PIE,
+          config: { keys: result.fields, values: result.fields },
+        },
       ].find((item) => item.type === form.values.type)?.config || undefined
     );
   }, [form, result]);
@@ -91,6 +98,7 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
                 ChartType.METRIC,
                 ChartType.LINE,
                 ChartType.BAR,
+                ChartType.PIE,
               ].map((item) => (
                 <option value={item} key={item}>
                   {chartTypeMap[item]}
@@ -128,6 +136,14 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
             <BarChartConfigForm
               form={form}
               editOptionConfig={editOptionConfig as BarChartEditConfig}
+            />
+          )}
+
+          {/* 饼图配置选项 */}
+          {form.values.type === ChartType.PIE && (
+            <PieChartConfigForm
+              form={form}
+              editOptionConfig={editOptionConfig as PieChartEditConfig}
             />
           )}
         </TabPanel>

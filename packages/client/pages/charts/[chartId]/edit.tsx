@@ -22,7 +22,6 @@ import { useCallback, useEffect } from "react";
 import { useFormik } from "formik";
 import { ChartType } from "../../../types";
 import { useQueryResult } from "../../../hooks/useQueryResult";
-import { useUpdateEffect } from "react-use";
 import { omit } from "lodash";
 import { Loading } from "../../../components/Loading";
 import { ChartEditTab } from "../../../components/ChartEditTab";
@@ -32,6 +31,7 @@ import {
   BarChartConfig,
   FunnelChartConfig,
   MetricChartConfig,
+  PieChartConfig,
 } from "../../../components/ChartResultPreview/components/";
 
 const ChartEdit = () => {
@@ -61,6 +61,7 @@ const ChartEdit = () => {
       metricConfig: { valueCol: "", compareCol: "" },
       lineConfig: { xCol: "", yCol: [] },
       barConfig: { variant: "", xCol: "", yCol: [] },
+      pieConfig: { variant: "", key: "", value: "" },
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -75,6 +76,7 @@ const ChartEdit = () => {
           { type: ChartType.METRIC, config: form.values.metricConfig },
           { type: ChartType.LINE, config: form.values.lineConfig },
           { type: ChartType.BAR, config: form.values.barConfig },
+          { type: ChartType.PIE, config: form.values.pieConfig },
         ].find((item) => item.type === form.values.type).config,
         clipId: form.values.clipId,
       } as UpdateChartInput;
@@ -136,15 +138,24 @@ const ChartEdit = () => {
       } as BarChartConfig;
     }
 
+    if (form.values.type === ChartType.PIE) {
+      return {
+        variant: form.values.pieConfig.variant || "",
+        key: form.values.pieConfig.key || "",
+        value: form.values.pieConfig?.value || "",
+      } as PieChartConfig;
+    }
+
     return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
 
   // 初始配置
-  useUpdateEffect(() => {
+  useEffect(() => {
     if (!form.values.clipId) {
       form.setValues(form.initialValues);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -187,6 +198,14 @@ const ChartEdit = () => {
           variant: data.chart.config?.variant || "",
           xCol: data.chart.config?.xCol || "",
           yCol: data.chart.config?.yCol || [],
+        };
+      }
+
+      if (data.chart.type === ChartType.PIE) {
+        initialValues.pieConfig = {
+          variant: data.chart.config?.variant || "",
+          key: data.chart.config?.key || "",
+          value: data.chart.config?.value || "",
         };
       }
 
