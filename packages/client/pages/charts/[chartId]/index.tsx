@@ -11,6 +11,7 @@ import {
   MetricChartConfig,
   FunnelChartConfig,
   BarChartConfig,
+  PieChartConfig,
 } from "../../../components/ChartResultPreview/components/";
 
 const ChartPreview = () => {
@@ -53,6 +54,14 @@ const ChartPreview = () => {
         xCol: data.chart.config?.xCol || "",
         yCol: data.chart.config?.yCol || [],
       } as BarChartConfig;
+    }
+
+    if (data?.chart.type === ChartType.PIE) {
+      return {
+        variant: data.chart.config?.variant || "",
+        key: data.chart.config?.key || "",
+        value: data.chart.config?.value || "",
+      } as PieChartConfig;
     }
 
     return undefined;

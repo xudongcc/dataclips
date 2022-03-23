@@ -1,7 +1,15 @@
-import { Flex, Image, Stack, useColorModeValue } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Image,
+  Stack,
+  useColorModeValue,
+  VStack,
+} from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import { menu } from "./Navbar";
 
-import { NavButton } from "./NavButton";
+import Link from "next/link";
 
 export const Sidebar = () => {
   const router = useRouter();
@@ -21,29 +29,21 @@ export const Sidebar = () => {
           <Stack spacing={{ base: "5", sm: "6" }} shouldWrapChildren>
             <Image h="32px" alt="logo" src="/dataclip.png" />
 
-            <Stack spacing="1">
-              <NavButton
-                label="图表"
-                onClick={() => {
-                  router.push("/charts");
-                }}
-                isActive={router.pathname === "/charts"}
-              ></NavButton>
-              <NavButton
-                onClick={() => {
-                  router.push("/clips");
-                }}
-                label="数据集"
-                isActive={router.pathname === "/clips"}
-              ></NavButton>
-              <NavButton
-                onClick={() => {
-                  router.push("/sources");
-                }}
-                label="数据源"
-                isActive={router.pathname === "/sources"}
-              ></NavButton>
-            </Stack>
+            <VStack spacing="1">
+              {menu.map((item) => (
+                <Link key={item.path} href={item.path} passHref>
+                  <Button
+                    as="a"
+                    variant="ghost"
+                    justifyContent="flex-start"
+                    w="100%"
+                    isActive={router.pathname === item.path}
+                  >
+                    {item.name}
+                  </Button>
+                </Link>
+              ))}
+            </VStack>
           </Stack>
         </Stack>
       </Flex>

@@ -19,7 +19,11 @@ import { useRouter } from "next/router";
 import { Sidebar } from "./Sidebar";
 import { ToggleButton } from "./ToggleButton";
 
-const menu = [
+export const menu = [
+  {
+    name: "仪表盘",
+    path: "/dashboards",
+  },
   {
     name: "图表",
     path: "/charts",
@@ -50,7 +54,7 @@ export const Navbar = () => {
           <HStack spacing="4">
             <Image h="32px" alt="logo" src="/dataclip.png" />
             {isDesktop && (
-              <ButtonGroup variant="ghost" spacing="2">
+              <ButtonGroup variant="ghost">
                 {menu.map((item) => (
                   <Link key={item.path} href={item.path} passHref>
                     <Button as="a" isActive={router.pathname === item.path}>

@@ -2,12 +2,12 @@ import { ContextMiddleware } from "@nest-boot/common";
 import { ApolloDriver } from "@nestjs/apollo";
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
-import { join } from "path";
 
 import { CoreModule } from "../core/core.module";
 import { ClipController } from "./controllers/clip.controller";
 import { ChartResolver } from "./resolvers/chart.resolver";
 import { ClipResolver } from "./resolvers/clip.resolver";
+import { DashboardResolver } from "./resolvers/dashboard.resolver";
 import { DatabaseSourceResolver } from "./resolvers/database-source.resolver";
 import { ProjectResolver } from "./resolvers/project.resolver";
 import { SourceResolver } from "./resolvers/source.resolver";
@@ -33,6 +33,7 @@ import { VirtualSourceTableResolver } from "./resolvers/virtual-source-table.res
     VirtualSourceResolver,
     VirtualSourceTableResolver,
     ChartResolver,
+    DashboardResolver,
   ],
   controllers: [ClipController],
 })

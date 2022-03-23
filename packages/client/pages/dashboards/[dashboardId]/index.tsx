@@ -1,5 +1,5 @@
-import { PC } from "../../interfaces/PageComponent";
-import { AdminLayout } from "../../layouts/AdminLayout/AdminLayout";
+import { PC } from "../../../interfaces/PageComponent";
+import { AdminLayout } from "../../../layouts/AdminLayout/AdminLayout";
 
 const DashboardShow: PC = () => {
   return <div>DashboardShow</div>;

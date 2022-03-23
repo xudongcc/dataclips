@@ -9,8 +9,7 @@ import {
   Flex,
   Box,
 } from "@chakra-ui/react";
-import { useUpdateEffect } from "react-use";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { ChartEditTab } from "../../components/ChartEditTab";
 import { ChartResultPreview } from "../../components/ChartResultPreview";
 import ProjectLayout from "../../layouts/ProjectLayout";
@@ -21,6 +20,7 @@ import {
   MetricChartConfig,
   LineChartConfig,
   BarChartConfig,
+  PieChartConfig,
 } from "../../components/ChartResultPreview/components";
 import { ChartType } from "../../types";
 import { Loading } from "../../components/Loading";
@@ -53,6 +53,7 @@ const ChartCreate = () => {
       metricConfig: { valueCol: "", compareCol: "" },
       lineConfig: { xCol: "", yCol: [] },
       barConfig: { variant: "", xCol: "", yCol: [] },
+      pieConfig: { variant: "", key: "", value: "" },
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -67,6 +68,7 @@ const ChartCreate = () => {
           { type: ChartType.METRIC, config: form.values.metricConfig },
           { type: ChartType.LINE, config: form.values.lineConfig },
           { type: ChartType.BAR, config: form.values.barConfig },
+          { type: ChartType.PIE, config: form.values.pieConfig },
         ].find((item) => item.type === form.values.type).config,
         clipId: form.values.clipId,
       } as CreateChartInput;
@@ -128,14 +130,23 @@ const ChartCreate = () => {
       } as BarChartConfig;
     }
 
+    if (form.values.type === ChartType.PIE) {
+      return {
+        variant: form.values.pieConfig?.variant || "",
+        key: form.values.pieConfig?.key || "",
+        value: form.values.pieConfig?.value || "",
+      } as PieChartConfig;
+    }
+
     return undefined;
   }, [form]);
 
   // 初始配置
-  useUpdateEffect(() => {
+  useEffect(() => {
     if (!form.values.clipId) {
       form.setValues(form.initialValues);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading) {

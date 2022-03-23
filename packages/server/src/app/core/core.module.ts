@@ -11,6 +11,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { CryptoModule } from "../../crypto";
 import { Chart } from "./entities/chart.entity";
 import { Clip } from "./entities/clip.entity";
+import { Dashboard } from "./entities/dashboard.entity";
 import { Project } from "./entities/project.entity";
 import { Result } from "./entities/result.entity";
 import { Source } from "./entities/source.entity";
@@ -18,12 +19,21 @@ import { VirtualSourceTable } from "./entities/virtual-source-table.entity";
 import { RefreshClipQueue } from "./queues/refresh-clip.queue";
 import { ChartService } from "./services/chart.service";
 import { ClipService } from "./services/clip.service";
+import { DashboardService } from "./services/dashboard.service";
 import { ProjectService } from "./services/project.service";
 import { ResultService } from "./services/result.service";
 import { SourceService } from "./services/source.service";
 import { VirtualSourceTableService } from "./services/virtual-source-table.service";
 
-const entities = [Clip, Project, Source, Result, VirtualSourceTable, Chart];
+const entities = [
+  Clip,
+  Project,
+  Source,
+  Result,
+  VirtualSourceTable,
+  Chart,
+  Dashboard,
+];
 
 const services = [
   ClipService,
@@ -32,6 +42,7 @@ const services = [
   SourceService,
   VirtualSourceTableService,
   ChartService,
+  DashboardService,
 ];
 
 const queues = [RefreshClipQueue];
