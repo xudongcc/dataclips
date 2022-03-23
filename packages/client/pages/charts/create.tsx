@@ -21,6 +21,7 @@ import {
   MetricChartConfig,
   LineChartConfig,
   BarChartConfig,
+  PieChartConfig,
 } from "../../components/ChartResultPreview/components";
 import { ChartType } from "../../types";
 import { Loading } from "../../components/Loading";
@@ -53,6 +54,7 @@ const ChartCreate = () => {
       metricConfig: { valueCol: "", compareCol: "" },
       lineConfig: { xCol: "", yCol: [] },
       barConfig: { variant: "", xCol: "", yCol: [] },
+      pieConfig: { variant: "", key: "", value: "" },
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -67,6 +69,7 @@ const ChartCreate = () => {
           { type: ChartType.METRIC, config: form.values.metricConfig },
           { type: ChartType.LINE, config: form.values.lineConfig },
           { type: ChartType.BAR, config: form.values.barConfig },
+          { type: ChartType.PIE, config: form.values.pieConfig },
         ].find((item) => item.type === form.values.type).config,
         clipId: form.values.clipId,
       } as CreateChartInput;
@@ -95,6 +98,8 @@ const ChartCreate = () => {
       type: Yup.string().required(),
     }),
   });
+
+  console.log("form", form.values);
 
   const { data: result, isLoading } = useQueryResult(form.values.clipId);
 
@@ -126,6 +131,14 @@ const ChartCreate = () => {
         xCol: form.values.barConfig?.xCol || "",
         yCol: form.values.barConfig?.yCol || [],
       } as BarChartConfig;
+    }
+
+    if (form.values.type === ChartType.PIE) {
+      return {
+        variant: form.values.pieConfig?.variant || "",
+        key: form.values.pieConfig?.key || "",
+        value: form.values.pieConfig?.value || "",
+      } as PieChartConfig;
     }
 
     return undefined;

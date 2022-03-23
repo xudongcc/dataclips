@@ -3,6 +3,7 @@ import {
   MetricChartConfig,
   LineChartConfig,
   BarChartConfig,
+  PieChartConfig,
 } from "../components/ChartResultPreview/components";
 
 export enum ChartType {
@@ -10,13 +11,15 @@ export enum ChartType {
   METRIC = "METRIC",
   LINE = "LINE",
   BAR = "BAR",
+  PIE = "PIE",
 }
 
 export type ChartConfig =
   | FunnelChartConfig
   | MetricChartConfig
   | LineChartConfig
-  | BarChartConfig;
+  | BarChartConfig
+  | PieChartConfig;
 
 export interface ChartServerConfig {
   config?: ChartConfig;

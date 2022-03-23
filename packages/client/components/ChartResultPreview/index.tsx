@@ -11,6 +11,8 @@ import {
   BarChartPreview,
   LineChartConfig,
   LineChartPreview,
+  PieChartPreview,
+  PieChartConfig,
 } from "./components";
 
 interface ChartResultPreviewProps extends ChartServerConfig {
@@ -58,6 +60,15 @@ export const ChartResultPreview: FC<ChartResultPreviewProps> = ({
             <BarChartPreview
               result={result}
               config={config as BarChartConfig}
+            />
+          ),
+        },
+        {
+          type: ChartType.PIE,
+          component: (
+            <PieChartPreview
+              result={result}
+              config={config as PieChartConfig}
             />
           ),
         },
