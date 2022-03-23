@@ -2,7 +2,6 @@ import { Grid, Select, VStack } from "@chakra-ui/react";
 import { FC } from "react";
 
 export interface PieChartEditConfig {
-  variant: string;
   keys: string[];
   values: string[];
 }

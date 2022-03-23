@@ -99,8 +99,6 @@ const ChartCreate = () => {
     }),
   });
 
-  console.log("form", form.values);
-
   const { data: result, isLoading } = useQueryResult(form.values.clipId);
 
   const getChartTypePreviewConfig = useCallback(() => {
