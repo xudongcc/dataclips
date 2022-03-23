@@ -22,7 +22,6 @@ import { useCallback, useEffect } from "react";
 import { useFormik } from "formik";
 import { ChartType } from "../../../types";
 import { useQueryResult } from "../../../hooks/useQueryResult";
-import { useUpdateEffect } from "react-use";
 import { omit } from "lodash";
 import { Loading } from "../../../components/Loading";
 import { ChartEditTab } from "../../../components/ChartEditTab";
@@ -152,10 +151,11 @@ const ChartEdit = () => {
   }, [form]);
 
   // 初始配置
-  useUpdateEffect(() => {
+  useEffect(() => {
     if (!form.values.clipId) {
       form.setValues(form.initialValues);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

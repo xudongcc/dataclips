@@ -9,8 +9,7 @@ import {
   Flex,
   Box,
 } from "@chakra-ui/react";
-import { useUpdateEffect } from "react-use";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { ChartEditTab } from "../../components/ChartEditTab";
 import { ChartResultPreview } from "../../components/ChartResultPreview";
 import ProjectLayout from "../../layouts/ProjectLayout";
@@ -143,10 +142,11 @@ const ChartCreate = () => {
   }, [form]);
 
   // 初始配置
-  useUpdateEffect(() => {
+  useEffect(() => {
     if (!form.values.clipId) {
       form.setValues(form.initialValues);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading) {
