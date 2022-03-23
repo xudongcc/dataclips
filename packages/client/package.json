@@ -21,6 +21,7 @@
     "@monaco-editor/loader": "^1.2.0",
     "@monaco-editor/react": "^4.3.1",
     "bizcharts": "^4.1.15",
+    "chakra-react-select": "^3.1.2",
     "crypto-browserify": "^3.12.0",
     "downshift": "^6.1.7",
     "file-saver": "^2.0.5",

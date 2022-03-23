@@ -21,10 +21,14 @@ query SourceConnection(
         ... on DatabaseSource {
           id
           name
+          createdAt
+          updatedAt
         }
         ... on VirtualSource {
           id
           name
+          createdAt
+          updatedAt
           tables {
             name
             clipId

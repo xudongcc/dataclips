@@ -2,17 +2,16 @@ import { Grid, Select, VStack } from "@chakra-ui/react";
 import { FC } from "react";
 
 export interface MetricChartEditConfig {
-  type: string;
   compareCol: string[];
   valueCol: string[];
 }
 
-interface MetricChartConfigForm {
+interface MetricChartConfigFormProps {
   form: any;
   editOptionConfig?: MetricChartEditConfig;
 }
 
-export const MetricChartConfigForm: FC<MetricChartConfigForm> = ({
+export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
   form,
   editOptionConfig,
 }) => {

@@ -1,12 +1,22 @@
-import { FunnelChartConfig } from "../components/ChartResultPreview/components/FunnelChart";
-import { MetricChartConfig } from "../components/ChartResultPreview/components/MetricChart";
+import {
+  FunnelChartConfig,
+  MetricChartConfig,
+  LineChartConfig,
+  BarChartConfig,
+} from "../components/ChartResultPreview/components";
 
 export enum ChartType {
   FUNNEL = "FUNNEL",
   METRIC = "METRIC",
+  LINE = "LINE",
+  BAR = "BAR",
 }
 
-export type ChartConfig = FunnelChartConfig | MetricChartConfig;
+export type ChartConfig =
+  | FunnelChartConfig
+  | MetricChartConfig
+  | LineChartConfig
+  | BarChartConfig;
 
 export interface ChartServerConfig {
   config?: ChartConfig;

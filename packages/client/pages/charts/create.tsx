@@ -16,8 +16,12 @@ import { ChartResultPreview } from "../../components/ChartResultPreview";
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { FunnelChartConfig } from "../../components/ChartResultPreview/components/FunnelChart";
-import { MetricChartConfig } from "../../components/ChartResultPreview/components/MetricChart";
+import {
+  FunnelChartConfig,
+  MetricChartConfig,
+  LineChartConfig,
+  BarChartConfig,
+} from "../../components/ChartResultPreview/components";
 import { ChartType } from "../../types";
 import { Loading } from "../../components/Loading";
 import {
@@ -47,6 +51,8 @@ const ChartCreate = () => {
       clipId: "",
       funnelConfig: { groupCol: "", valueCol: "" },
       metricConfig: { valueCol: "", compareCol: "" },
+      lineConfig: { xCol: "", yCol: [] },
+      barConfig: { variant: "", xCol: "", yCol: [] },
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -56,10 +62,12 @@ const ChartCreate = () => {
       const input = {
         name: form.values.name,
         type: form.values.type,
-        config:
-          form.values.type === ChartType.FUNNEL
-            ? form.values.funnelConfig
-            : form.values.metricConfig,
+        config: [
+          { type: ChartType.FUNNEL, config: form.values.funnelConfig },
+          { type: ChartType.METRIC, config: form.values.metricConfig },
+          { type: ChartType.LINE, config: form.values.lineConfig },
+          { type: ChartType.BAR, config: form.values.barConfig },
+        ].find((item) => item.type === form.values.type).config,
         clipId: form.values.clipId,
       } as CreateChartInput;
 
@@ -103,6 +111,21 @@ const ChartCreate = () => {
         valueCol: form.values.metricConfig.valueCol || "",
         compareCol: form.values.metricConfig.compareCol || "",
       } as MetricChartConfig;
+    }
+
+    if (form.values.type === ChartType.LINE) {
+      return {
+        xCol: form.values.lineConfig?.xCol || "",
+        yCol: form.values.lineConfig?.yCol || [],
+      } as LineChartConfig;
+    }
+
+    if (form.values.type === ChartType.BAR) {
+      return {
+        variant: form.values.barConfig?.variant || "",
+        xCol: form.values.barConfig?.xCol || "",
+        yCol: form.values.barConfig?.yCol || [],
+      } as BarChartConfig;
     }
 
     return undefined;

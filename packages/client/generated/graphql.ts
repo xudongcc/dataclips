@@ -62,7 +62,9 @@ export type ChartEdge = {
 };
 
 export enum ChartType {
+  BAR = 'BAR',
   FUNNEL = 'FUNNEL',
+  LINE = 'LINE',
   METRIC = 'METRIC'
 }
 
@@ -621,7 +623,7 @@ export type ClipConnectionQueryVariables = Exact<{
 }>;
 
 
-export type ClipConnectionQuery = { __typename?: 'Query', clipConnection: { __typename?: 'ClipConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ClipEdge', node: { __typename?: 'Clip', id: string, name: string } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+export type ClipConnectionQuery = { __typename?: 'Query', clipConnection: { __typename?: 'ClipConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ClipEdge', node: { __typename?: 'Clip', id: string, name: string, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export type SourceQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -640,7 +642,7 @@ export type SourceConnectionQueryVariables = Exact<{
 }>;
 
 
-export type SourceConnectionQuery = { __typename?: 'Query', sourceConnection: { __typename?: 'SourceConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'SourceEdge', node: { __typename: 'DatabaseSource', id: string, name: string, typename: 'DatabaseSource' } | { __typename: 'VirtualSource', id: string, name: string, typename: 'VirtualSource', tables: Array<{ __typename?: 'VirtualSourceTable', name: string, clipId: string }> } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+export type SourceConnectionQuery = { __typename?: 'Query', sourceConnection: { __typename?: 'SourceConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'SourceEdge', node: { __typename: 'DatabaseSource', id: string, name: string, createdAt: any, updatedAt: any, typename: 'DatabaseSource' } | { __typename: 'VirtualSource', id: string, name: string, createdAt: any, updatedAt: any, typename: 'VirtualSource', tables: Array<{ __typename?: 'VirtualSourceTable', name: string, clipId: string }> } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export const ChartFragmentDoc = gql`
     fragment Chart on Chart {
@@ -1232,6 +1234,8 @@ export const ClipConnectionDocument = gql`
       node {
         id
         name
+        createdAt
+        updatedAt
       }
     }
     pageInfo {
@@ -1331,10 +1335,14 @@ export const SourceConnectionDocument = gql`
         ... on DatabaseSource {
           id
           name
+          createdAt
+          updatedAt
         }
         ... on VirtualSource {
           id
           name
+          createdAt
+          updatedAt
           tables {
             name
             clipId

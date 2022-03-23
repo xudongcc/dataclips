@@ -818,9 +818,9 @@
     lodash.omit "4.5.0"
     tslib "2.3.1"
 
-"@nestjs/cli@^8.2.0":
+"@nestjs/cli@^8.2.4":
   version "8.2.4"
-  resolved "https://registry.npmjs.org/@nestjs/cli/-/cli-8.2.4.tgz"
+  resolved "https://registry.yarnpkg.com/@nestjs/cli/-/cli-8.2.4.tgz#3d27cc8c98d0c87a0bf2f19d90fcefde54103b7a"
   integrity sha512-9zNV9oMtaz1vwLO3WXviD0wzRpyiaLWJZ7KCIZLk62U22RDNRsbtLLDS52Wkig5L8UU7Z1xRfrEv+s3f9keysQ==
   dependencies:
     "@angular-devkit/core" "13.3.0"
