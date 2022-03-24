@@ -6,8 +6,9 @@ import {
   Select,
   Button,
   useToast,
-  Flex,
   Box,
+  Grid,
+  GridItem,
 } from "@chakra-ui/react";
 import { useCallback, useEffect } from "react";
 import { ChartEditTab } from "../../components/ChartEditTab";
@@ -32,6 +33,8 @@ import {
 import { useQueryResult } from "../../hooks/useQueryResult";
 import { useRouter } from "next/router";
 import { useCreateChartMutation } from "../../hooks/useCreateChartMutation";
+import { Page } from "../../components/Page";
+import { Card } from "../../components/Card";
 
 const ChartCreate = () => {
   const router = useRouter();
@@ -154,66 +157,72 @@ const ChartCreate = () => {
   }
 
   return (
-    <>
-      <form onSubmit={form.handleSubmit}>
-        <Stack pb={4} spacing={3} direction="row">
-          <FormControl width="30%" isInvalid={!!form.errors.name}>
-            <Input
-              placeholder="请输入图表名称"
-              {...form.getFieldProps("name")}
-              onChange={form.handleChange}
-              value={form.values.name}
-            />
-            <FormErrorMessage>请输入图表名字</FormErrorMessage>
-          </FormControl>
+    <Page title="编辑图表">
+      <Grid templateColumns="repeat(3, 1fr)" gap={4}>
+        <GridItem colSpan={3}>
+          <Card>
+            <form onSubmit={form.handleSubmit}>
+              <Stack spacing={3} direction="row">
+                <FormControl width="30%" isInvalid={!!form.errors.name}>
+                  <Input
+                    placeholder="请输入图表名称"
+                    {...form.getFieldProps("name")}
+                    onChange={form.handleChange}
+                    value={form.values.name}
+                  />
+                  <FormErrorMessage>请输入图表名字</FormErrorMessage>
+                </FormControl>
 
-          <FormControl isInvalid={!!form.errors.clipId}>
-            <Select
-              flex="1"
-              {...form.getFieldProps("clipId")}
-              placeholder="请选择数据集"
-              value={form.values.clipId}
-              onChange={form.handleChange}
-            >
-              {clipsData?.clipConnection.edges?.map(
-                ({ node: { id, name } }) => {
-                  return (
-                    <option key={id} value={id}>
-                      {name}
-                    </option>
-                  );
-                }
-              )}
-            </Select>
-            <FormErrorMessage>请选择数据集</FormErrorMessage>
-          </FormControl>
+                <FormControl isInvalid={!!form.errors.clipId}>
+                  <Select
+                    flex="1"
+                    {...form.getFieldProps("clipId")}
+                    placeholder="请选择数据集"
+                    value={form.values.clipId}
+                    onChange={form.handleChange}
+                  >
+                    {clipsData?.clipConnection.edges?.map(
+                      ({ node: { id, name } }) => {
+                        return (
+                          <option key={id} value={id}>
+                            {name}
+                          </option>
+                        );
+                      }
+                    )}
+                  </Select>
+                  <FormErrorMessage>请选择数据集</FormErrorMessage>
+                </FormControl>
 
-          <Button
-            type="submit"
-            variant="primary"
-            isLoading={createChartLoading}
-          >
-            保存
-          </Button>
-        </Stack>
-      </form>
-
-      <Flex flexWrap="nowrap">
-        <Box h="calc(100vh - 152px)" w="70%">
-          {result && (
-            <ChartResultPreview
-              config={getChartTypePreviewConfig()}
-              type={form.values.type}
-              result={result}
-            />
-          )}
-        </Box>
-
-        <Box w="30%">
-          <ChartEditTab form={form} result={result}></ChartEditTab>
-        </Box>
-      </Flex>
-    </>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  isLoading={createChartLoading}
+                >
+                  保存
+                </Button>
+              </Stack>
+            </form>
+          </Card>
+        </GridItem>
+        <GridItem colSpan={2}>
+          <Box h="500px">
+            {result && (
+              <ChartResultPreview
+                config={getChartTypePreviewConfig()}
+                type={form.values.type}
+                result={result}
+              />
+            )}
+          </Box>
+        </GridItem>
+        <GridItem colSpan={1}>
+          <Card>
+            <ChartEditTab form={form} result={result}></ChartEditTab>
+          </Card>
+        </GridItem>
+      </Grid>
+    </Page>
   );
 };
 

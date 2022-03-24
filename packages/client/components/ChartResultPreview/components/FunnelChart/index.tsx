@@ -107,6 +107,7 @@ export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
         </Tooltip>
 
         <Axis name={config.valueCol} grid={null} label={null} />
+
         <Axis
           name={config.groupCol}
           label={null}
@@ -124,7 +125,7 @@ export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
             <Annotation.Text
               key={index}
               top={true}
-              position={[item[config.groupCol], 315]}
+              position={[item[config.groupCol], "center"]}
               content={item.percent}
               style={{
                 fill: readableColor(funnelGradientColors[index]),

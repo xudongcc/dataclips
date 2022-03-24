@@ -20,38 +20,39 @@ export const Card: FC<CardProps> = ({
   children,
   ...otherProps
 }) => (
-  <Box
+  <Stack
     as="section"
     bg="bg-surface"
     boxShadow={useColorModeValue("sm", "sm-dark")}
     borderRadius="lg"
-    p={{ base: "4", md: "6" }}
     className="card"
+    spacing="5"
+    p={{ base: "4", md: "6" }}
     {...otherProps}
   >
-    <Stack spacing="5">
-      {title || description ? (
-        <Stack spacing="1" className="card-head">
-          {title ? (
-            <Text fontSize="lg" fontWeight="medium">
-              {title}
-            </Text>
-          ) : null}
+    {title || description ? (
+      <Stack spacing="1" className="card-head">
+        {title ? (
+          <Text fontSize="lg" fontWeight="medium">
+            {title}
+          </Text>
+        ) : null}
 
-          {description ? (
-            <Text fontSize="sm" color="muted">
-              {description}
-            </Text>
-          ) : null}
-        </Stack>
-      ) : null}
+        {description ? (
+          <Text fontSize="sm" color="muted">
+            {description}
+          </Text>
+        ) : null}
+      </Stack>
+    ) : null}
 
-      <Box className="card-body">{children}</Box>
+    <Box flex={1} className="card-body">
+      {children}
+    </Box>
 
-      {/* <Stack direction={{ base: "column", md: "row" }} spacing="3">
+    {/* <Stack direction={{ base: "column", md: "row" }} spacing="3">
           <Button variant="secondary">Skip</Button>
           <Button variant="primary">Download</Button>
         </Stack> */}
-    </Stack>
-  </Box>
+  </Stack>
 );

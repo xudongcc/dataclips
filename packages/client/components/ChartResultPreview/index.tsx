@@ -1,7 +1,9 @@
+import { Box } from "@chakra-ui/react";
 import { FC, useMemo } from "react";
 
 import { ResultFragment } from "../../generated/graphql";
 import { ChartServerConfig, ChartType } from "../../types";
+import { Card } from "../Card";
 import {
   FunnelChartConfig,
   FunnelChartPreview,
@@ -24,55 +26,61 @@ export const ChartResultPreview: FC<ChartResultPreviewProps> = ({
   config,
   type,
 }) => {
-  return useMemo(() => {
-    return (
-      [
-        {
-          type: ChartType.FUNNEL,
-          component: (
-            <FunnelChartPreview
-              config={config as FunnelChartConfig}
-              result={result}
-            />
-          ),
-        },
-        {
-          type: ChartType.METRIC,
-          component: (
-            <MetricChartPreview
-              config={config as MetricChartConfig}
-              result={result}
-            />
-          ),
-        },
-        {
-          type: ChartType.LINE,
-          component: (
-            <LineChartPreview
-              result={result}
-              config={config as LineChartConfig}
-            />
-          ),
-        },
-        {
-          type: ChartType.BAR,
-          component: (
-            <BarChartPreview
-              result={result}
-              config={config as BarChartConfig}
-            />
-          ),
-        },
-        {
-          type: ChartType.PIE,
-          component: (
-            <PieChartPreview
-              result={result}
-              config={config as PieChartConfig}
-            />
-          ),
-        },
-      ].find((item) => item.type === type)?.component || <></>
-    );
-  }, [type, result, config]);
+  return (
+    <Card overflow="hidden" h="full">
+      <Box h="full">
+        {useMemo(() => {
+          return (
+            [
+              {
+                type: ChartType.FUNNEL,
+                component: (
+                  <FunnelChartPreview
+                    config={config as FunnelChartConfig}
+                    result={result}
+                  />
+                ),
+              },
+              {
+                type: ChartType.METRIC,
+                component: (
+                  <MetricChartPreview
+                    config={config as MetricChartConfig}
+                    result={result}
+                  />
+                ),
+              },
+              {
+                type: ChartType.LINE,
+                component: (
+                  <LineChartPreview
+                    result={result}
+                    config={config as LineChartConfig}
+                  />
+                ),
+              },
+              {
+                type: ChartType.BAR,
+                component: (
+                  <BarChartPreview
+                    result={result}
+                    config={config as BarChartConfig}
+                  />
+                ),
+              },
+              {
+                type: ChartType.PIE,
+                component: (
+                  <PieChartPreview
+                    result={result}
+                    config={config as PieChartConfig}
+                  />
+                ),
+              },
+            ].find((item) => item.type === type)?.component || <></>
+          );
+        }, [type, result, config])}
+      </Box>
+    </Card>
+  );
 };

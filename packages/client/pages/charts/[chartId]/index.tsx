@@ -13,6 +13,8 @@ import {
   BarChartConfig,
   PieChartConfig,
 } from "../../../components/ChartResultPreview/components/";
+import { Page } from "../../../components/Page";
+import PreviewLayout from "../../../layouts/PreviewLayout";
 
 const ChartPreview = () => {
   const router = useRouter();
@@ -72,9 +74,9 @@ const ChartPreview = () => {
   }
 
   return (
-    <>
+    <Page title={result?.name}>
       {data?.chart.type && data?.chart.config && result && (
-        <Box h="100vh">
+        <Box h="800px">
           <ChartResultPreview
             type={data.chart.type}
             config={getChartTypePreviewConfig()}
@@ -82,8 +84,10 @@ const ChartPreview = () => {
           />
         </Box>
       )}
-    </>
+    </Page>
   );
 };
+
+ChartPreview.layout = PreviewLayout;
 
 export default ChartPreview;
