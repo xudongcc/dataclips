@@ -82,8 +82,6 @@ const ClipEdit = () => {
             <form onSubmit={form.handleSubmit}>
               <Stack mb={4} spacing={3} direction="row">
                 <Input
-                  size="sm"
-                  borderRadius="md"
                   placeholder="请输入剪藏名称"
                   name="name"
                   width="30%"
@@ -92,8 +90,6 @@ const ClipEdit = () => {
                 />
 
                 <Select
-                  size="sm"
-                  borderRadius="md"
                   name="sourceId"
                   flex="1"
                   value={form.values.sourceId}
@@ -111,9 +107,8 @@ const ClipEdit = () => {
                 </Select>
 
                 <Button
-                  size="sm"
                   type="submit"
-                  colorScheme="blue"
+                  variant="primary"
                   isLoading={updateClipLoading}
                 >
                   保存
@@ -124,7 +119,7 @@ const ClipEdit = () => {
                 borderWidth={1}
                 borderStyle="solid"
                 borderColor={useColorModeValue("gray.200", "whiteAlpha.300")}
-                borderRadius="md"
+                borderRadius="lg"
                 overflow="hidden"
               >
                 <SQLEditor

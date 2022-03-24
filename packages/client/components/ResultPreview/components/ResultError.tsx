@@ -12,7 +12,7 @@ export const ResultError: FC<ResultErrorProps> = ({ error }) => {
       bgColor="red.50"
       borderWidth={1}
       borderColor="red.500"
-      borderRadius="md"
+      borderRadius="lg"
       color="red.500"
     >
       <Text fontWeight="bold">查询错误</Text>

@@ -116,10 +116,9 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
         {token ? <DownloadButtonGroup token={token} /> : null}
       </Flex>
 
-      <InputGroup size="sm" mb={4}>
-        <InputLeftAddon borderRadius="md">过滤</InputLeftAddon>
+      <InputGroup mb={4}>
+        <InputLeftAddon>过滤</InputLeftAddon>
         <Input
-          borderRadius="md"
           fontFamily={'Menlo, Monaco, "Courier New", monospace'}
           fontSize="xs"
           value={where}

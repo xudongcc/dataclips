@@ -60,7 +60,6 @@ const ClipCreate = () => {
           <form onSubmit={form.handleSubmit}>
             <Stack mb={4} spacing={3} direction="row">
               <Input
-                borderRadius="md"
                 placeholder="请输入名称"
                 name="name"
                 width="30%"
@@ -69,7 +68,6 @@ const ClipCreate = () => {
               />
 
               <Select
-                borderRadius="md"
                 name="sourceId"
                 flex="1"
                 value={form.values.sourceId}
@@ -99,7 +97,7 @@ const ClipCreate = () => {
               borderWidth={1}
               borderStyle="solid"
               borderColor={useColorModeValue("gray.200", "whiteAlpha.300")}
-              borderRadius="md"
+              borderRadius="lg"
               overflow="hidden"
             >
               <SQLEditor

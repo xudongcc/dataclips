@@ -172,7 +172,7 @@ const ChartList = () => {
           <ModalBody>确定删除 id 为 {selectedChartId} 的图表？</ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleCloseDeleteModal}>
+            <Button mr={3} onClick={handleCloseDeleteModal}>
               取消
             </Button>
             <Button

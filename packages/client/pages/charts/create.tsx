@@ -159,8 +159,6 @@ const ChartCreate = () => {
         <Stack pb={4} spacing={3} direction="row">
           <FormControl width="30%" isInvalid={!!form.errors.name}>
             <Input
-              size="sm"
-              borderRadius="md"
               placeholder="请输入图表名称"
               {...form.getFieldProps("name")}
               onChange={form.handleChange}
@@ -171,11 +169,9 @@ const ChartCreate = () => {
 
           <FormControl isInvalid={!!form.errors.clipId}>
             <Select
-              size="sm"
-              borderRadius="md"
               flex="1"
               {...form.getFieldProps("clipId")}
-              placeholder="请选择数据源"
+              placeholder="请选择数据集"
               value={form.values.clipId}
               onChange={form.handleChange}
             >
@@ -189,13 +185,12 @@ const ChartCreate = () => {
                 }
               )}
             </Select>
-            <FormErrorMessage>请选择数据源</FormErrorMessage>
+            <FormErrorMessage>请选择数据集</FormErrorMessage>
           </FormControl>
 
           <Button
-            size="sm"
             type="submit"
-            colorScheme="blue"
+            variant="primary"
             isLoading={createChartLoading}
           >
             保存
