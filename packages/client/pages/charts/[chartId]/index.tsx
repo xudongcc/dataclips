@@ -4,7 +4,7 @@ import { useQueryResult } from "../../../hooks/useQueryResult";
 import { Loading } from "../../../components/Loading";
 import { Box } from "@chakra-ui/react";
 import { ChartResultPreview } from "../../../components/ChartResultPreview";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { ChartType } from "../../../types";
 import {
   LineChartConfig,
@@ -15,9 +15,12 @@ import {
 } from "../../../components/ChartResultPreview/components/";
 import { Page } from "../../../components/Page";
 import PreviewLayout from "../../../layouts/PreviewLayout";
+import ProjectLayout from "../../../layouts/ProjectLayout";
+import { useSession } from "next-auth/react";
 
 const ChartPreview = () => {
   const router = useRouter();
+  const session = useSession();
 
   const { chartId } = router.query as { chartId: string };
 
@@ -69,25 +72,31 @@ const ChartPreview = () => {
     return undefined;
   }, [data]);
 
-  if (isLoading || loading) {
-    return <Loading />;
+  const content = useMemo(() => {
+    if (isLoading) {
+      return <Loading />;
+    }
+
+    return (
+      <Page title={result?.name}>
+        {data?.chart.type && data?.chart.config && result && (
+          <Box h="800px">
+            <ChartResultPreview
+              type={data.chart.type}
+              config={getChartTypePreviewConfig()}
+              result={result}
+            />
+          </Box>
+        )}
+      </Page>
+    );
+  }, [data, getChartTypePreviewConfig, isLoading, result]);
+
+  if (session.status === "authenticated") {
+    return <ProjectLayout>{content}</ProjectLayout>;
   }
 
-  return (
-    <Page title={result?.name}>
-      {data?.chart.type && data?.chart.config && result && (
-        <Box h="800px">
-          <ChartResultPreview
-            type={data.chart.type}
-            config={getChartTypePreviewConfig()}
-            result={result}
-          />
-        </Box>
-      )}
-    </Page>
-  );
+  return <PreviewLayout>{content}</PreviewLayout>;
 };
-
-ChartPreview.layout = PreviewLayout;
 
 export default ChartPreview;
