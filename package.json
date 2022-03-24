@@ -7,7 +7,8 @@
   "scripts": {
     "start:server": "node dist/main.js",
     "dev:client": "cd packages/client && npm run dev",
-    "dev:server": "cd packages/server && npm run dev",
+    "dev:server": "cd packages/server && npm run dev:server",
+    "dev:worker": "cd packages/server && npm run dev:worker",
     "lint": "eslint packages/*/src --fix",
     "semantic-release": "semantic-release"
   },

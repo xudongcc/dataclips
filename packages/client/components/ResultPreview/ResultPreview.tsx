@@ -4,6 +4,7 @@ import {
   Input,
   InputGroup,
   InputLeftAddon,
+  useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
@@ -99,41 +100,44 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
     handleQuery();
   }, [handleQuery, rawResult]);
 
+  if (result?.error) {
+    return (
+      <Card>
+        <ResultError error={result.error} />;
+      </Card>
+    );
+  }
+
   return (
-    <Box p={4} minH="full">
-      {result?.error ? (
-        <ResultError error={result.error} />
-      ) : (
-        <>
-          <Flex mb={4} justify="space-between">
-            <StatResult result={result} />
+    <Card overflow="hidden">
+      <Flex mb={4} justify="space-between">
+        <StatResult result={result} />
 
-            {token ? <DownloadButtonGroup token={token} /> : null}
-          </Flex>
+        {token ? <DownloadButtonGroup token={token} /> : null}
+      </Flex>
 
-          <Card>
-            <InputGroup size="sm">
-              {/* eslint-disable-next-line react/no-children-prop */}
-              <InputLeftAddon borderRadius="md" children="过滤" />
-              <Input
-                borderRadius="md"
-                fontFamily={'Menlo, Monaco, "Courier New", monospace'}
-                fontSize="xs"
-                value={where}
-                onChange={(event) => setWhere(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    setSearchParams({ where });
-                    handleQuery();
-                  }
-                }}
-              />
-            </InputGroup>
-          </Card>
+      <InputGroup size="sm" mb={4}>
+        <InputLeftAddon borderRadius="md">过滤</InputLeftAddon>
+        <Input
+          borderRadius="md"
+          fontFamily={'Menlo, Monaco, "Courier New", monospace'}
+          fontSize="xs"
+          value={where}
+          onChange={(event) => setWhere(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              setSearchParams({ where });
+              handleQuery();
+            }
+          }}
+        />
+      </InputGroup>
 
-          <Table {...tableProps} />
-        </>
-      )}
-    </Box>
+      <Table
+        mx={{ base: -4, md: -6 }}
+        mb={{ base: -4, md: -6 }}
+        {...tableProps}
+      />
+    </Card>
   );
 };

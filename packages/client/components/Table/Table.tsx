@@ -1,6 +1,7 @@
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import {
   Box,
+  BoxProps,
   Flex,
   Table as BaseTable,
   Tbody,
@@ -19,22 +20,18 @@ export interface ResultPreviewProps {
   result: ResultFragment;
 }
 
-export type TableProps<T extends object = {}> = TableOptions<T>;
+export interface TableProps<T extends object = {}>
+  extends TableOptions<T>,
+    BoxProps {}
 
 export const Table = (props: TableProps) => {
-  const borderColorColor = useColorModeValue("gray.100", "gray.700");
   const headerBackgroundColor = useColorModeValue("gray.50", "gray.800");
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable(props, useSortBy);
 
   return (
-    <Box
-      borderRadius="md"
-      borderColor={borderColorColor}
-      borderWidth={1}
-      overflowY="scroll"
-    >
+    <Box overflowY="scroll" {...props}>
       <BaseTable
         sx={{ borderCollapse: "separate", borderSpacing: 0 }}
         {...getTableProps()}
