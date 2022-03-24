@@ -1,12 +1,8 @@
 import {
   Button,
-  chakra,
   Container,
   createIcon,
-  Divider,
   Heading,
-  HStack,
-  Input,
   Stack,
   Text,
   useBreakpointValue,
@@ -19,6 +15,9 @@ import {
   signIn,
   useSession,
 } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { Router } from "react-router";
 import { PC } from "../interfaces/PageComponent";
 
 const GitHubIcon = createIcon({
@@ -36,10 +35,15 @@ interface LoginPageProps {
   providers: Record<string, ClientSafeProvider>;
 }
 
-const LoginPage: PC<LoginPageProps> = ({ csrfToken }) => {
-  const { data, status } = useSession();
+const LoginPage: PC<LoginPageProps> = () => {
+  const router = useRouter();
+  const { status } = useSession();
 
-  console.log("status", data, status);
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/");
+    }
+  }, [router, status]);
 
   return (
     <Container maxW="md" py={{ base: "12", md: "24" }}>

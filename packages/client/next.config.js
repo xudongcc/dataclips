@@ -4,7 +4,16 @@ const nextConfig = {
   experimental: {
     outputStandalone: true,
   },
-  async rewrites() {
+  redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/clips",
+        permanent: false,
+      },
+    ];
+  },
+  rewrites() {
     return [
       ...(process.env.SERVER_URL
         ? [
