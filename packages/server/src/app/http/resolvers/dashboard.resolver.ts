@@ -1,24 +1,15 @@
 import { QueryConnectionArgs } from "@nest-boot/graphql";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
-import _ from "lodash";
 
 import { Dashboard } from "../../core/entities/dashboard.entity";
-import { ChartService } from "../../core/services/chart.service";
-import { ClipService } from "../../core/services/clip.service";
 import { DashboardService } from "../../core/services/dashboard.service";
-import { ChartResultInput } from "../inputs/chart-result.input";
 import { CreateDashboardInput } from "../inputs/create-dashboard.input";
 import { UpdateDashboardInput } from "../inputs/update-dashboard.input";
-import { ChartResult } from "../objects/chart-result.object";
 import { DashboardConnection } from "../objects/dashboard.connection.object";
 
 @Resolver(() => Dashboard)
 export class DashboardResolver {
-  constructor(
-    private readonly dashboardService: DashboardService,
-    private readonly chartService: ChartService,
-    private readonly clipService: ClipService
-  ) {}
+  constructor(private readonly dashboardService: DashboardService) {}
 
   @Query(() => Dashboard)
   async dashboard(
@@ -33,24 +24,6 @@ export class DashboardResolver {
     @Args() args: QueryConnectionArgs
   ): Promise<DashboardConnection> {
     return await this.dashboardService.getConnection(args);
-  }
-
-  // 查询 chart 所对应的配置信息及 clip 的结果结合进行返回，在创建最终仪表盘前需要
-  @Query(() => ChartResult)
-  async chartResult(
-    @Args("input") input: ChartResultInput
-  ): Promise<ChartResult> {
-    const chart = await this.chartService.findOne({
-      where: { id: input.chartId },
-    });
-
-    const result = await this.clipService.fetchResult(chart.clipId);
-
-    return {
-      name: input.name,
-      chart,
-      result,
-    };
   }
 
   // 创建最终的 dashboard 的数据

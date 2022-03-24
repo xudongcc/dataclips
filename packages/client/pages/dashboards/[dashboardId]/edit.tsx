@@ -30,18 +30,22 @@ import * as Yup from "yup";
 import {
   useDashboardQuery,
   useChartConnectionQuery,
-  useChartResultLazyQuery,
   useUpdateDashboardMutation,
+  useChartLazyQuery,
 } from "../../../generated/graphql";
 import { isEmpty } from "lodash";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { ChartResultPreview } from "../../../components/ChartResultPreview";
+import { useLazyQueryResult } from "../../../hooks/useLazyQueryResult";
+import { compact } from "lodash";
+import { Loading } from "../../../components/Loading";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
 const DashBoardEdit: PC = () => {
   const toast = useToast();
   const router = useRouter();
+  const startRequest = useRef(false);
 
   const { dashboardId } = router.query as { dashboardId: string };
 
@@ -54,8 +58,9 @@ const DashBoardEdit: PC = () => {
     variables: { first: 100 },
   });
 
-  const [getChartResult, { loading: getChartResultLoading }] =
-    useChartResultLazyQuery();
+  const [getChart, { loading: getChartLoading }] = useChartLazyQuery();
+
+  const [getQueryResult, { isFetching }] = useLazyQueryResult();
 
   const [updateDashboard, { loading: updateDashboardLoading }] =
     useUpdateDashboardMutation();
@@ -79,10 +84,6 @@ const DashBoardEdit: PC = () => {
       chartId: Yup.string().required(),
     }),
   });
-
-  console.log("data", data);
-
-  console.log("仪表盘的 chart", charts);
 
   const handleCloseAddChartModal = useCallback(() => {
     onClose();
@@ -127,6 +128,53 @@ const DashBoardEdit: PC = () => {
     },
     [charts]
   );
+
+  useEffect(() => {
+    if (data?.dashboard?.config?.length) {
+      if (!startRequest.current) {
+        Promise.allSettled(
+          data.dashboard.config.map(async (item) => {
+            if (item?.chartId) {
+              const { data } = await getChart({
+                variables: { id: item.chartId },
+              });
+
+              if (data?.chart.clipId) {
+                const result: any = await getQueryResult(data.chart.clipId);
+
+                if (result?.fields && result?.values && !result?.error) {
+                  return {
+                    name: item.name,
+                    chartId: item.chartId,
+                    data: {
+                      result: result,
+                      chart: data?.chart,
+                    },
+                    layout: item.layout,
+                  };
+                }
+              }
+            }
+          })
+        ).then((res) => {
+          const successRes = res
+            .filter((p) => p.status === "fulfilled")
+            .map((item: any) => item.value);
+
+          if (compact(successRes).length) {
+            startRequest.current = true;
+
+            setCharts(successRes);
+          }
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
+  if (!startRequest.current) {
+    return <Loading />;
+  }
 
   return (
     <Box>
@@ -225,35 +273,29 @@ const DashBoardEdit: PC = () => {
             </Button>
             <Button
               colorScheme="red"
-              isLoading={getChartResultLoading}
+              isLoading={isFetching || getChartLoading}
               onClick={async () => {
                 try {
                   const error = await form.validateForm();
 
                   if (isEmpty(error)) {
-                    // 发请求，查询当前 chart 相关结果
-                    const { data } = await getChartResult({
+                    const { data } = await getChart({
                       variables: {
-                        input: {
-                          ...form.values,
-                        },
+                        id: form.values.chartId,
                       },
                     });
 
-                    if (
-                      data &&
-                      data?.chartResult?.chart &&
-                      data.chartResult?.result &&
-                      data.chartResult?.name
-                    ) {
+                    if (data?.chart) {
+                      const result = await getQueryResult(data.chart.clipId);
+
                       setCharts([
                         ...charts,
                         {
-                          name: data.chartResult.name,
-                          chartId: data.chartResult.chart.id,
+                          name: form.values.name,
+                          chartId: data.chart.id,
                           data: {
-                            result: data.chartResult.result,
-                            chart: data?.chartResult.chart,
+                            result: result,
+                            chart: data?.chart,
                           },
                           layout: {
                             i: `${charts.length}`,

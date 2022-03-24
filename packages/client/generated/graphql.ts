@@ -61,18 +61,6 @@ export type ChartEdge = {
   node: Chart;
 };
 
-export type ChartResult = {
-  __typename?: 'ChartResult';
-  chart: Chart;
-  name: Scalars['String'];
-  result: Result;
-};
-
-export type ChartResultInput = {
-  chartId: Scalars['ID'];
-  name: Scalars['String'];
-};
-
 export enum ChartType {
   BAR = 'BAR',
   FUNNEL = 'FUNNEL',
@@ -361,7 +349,6 @@ export type ProjectEdge = {
 export type Query = {
   __typename?: 'Query';
   chart: Chart;
-  chartResult: ChartResult;
   charts: ChartConnection;
   clip: Clip;
   clips: ClipConnection;
@@ -376,11 +363,6 @@ export type Query = {
 
 export type QueryChartArgs = {
   id: Scalars['ID'];
-};
-
-
-export type QueryChartResultArgs = {
-  input: ChartResultInput;
 };
 
 
@@ -721,13 +703,6 @@ export type ChartConnectionQueryVariables = Exact<{
 
 
 export type ChartConnectionQuery = { __typename?: 'Query', chartConnection: { __typename?: 'ChartConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ChartEdge', node: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
-
-export type ChartResultQueryVariables = Exact<{
-  input: ChartResultInput;
-}>;
-
-
-export type ChartResultQuery = { __typename?: 'Query', chartResult: { __typename?: 'ChartResult', name: string, result: { __typename?: 'Result', error?: string | null, fields: Array<string>, values: Array<Array<string>> }, chart: { __typename?: 'Chart', id: string, type: ChartType, config: any } } };
 
 export type ClipQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -1435,51 +1410,6 @@ export function useChartConnectionLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type ChartConnectionQueryHookResult = ReturnType<typeof useChartConnectionQuery>;
 export type ChartConnectionLazyQueryHookResult = ReturnType<typeof useChartConnectionLazyQuery>;
 export type ChartConnectionQueryResult = Apollo.QueryResult<ChartConnectionQuery, ChartConnectionQueryVariables>;
-export const ChartResultDocument = gql`
-    query ChartResult($input: ChartResultInput!) {
-  chartResult(input: $input) {
-    name
-    result {
-      error
-      fields
-      values
-    }
-    chart {
-      id
-      type
-      config
-    }
-  }
-}
-    `;
-
-/**
- * __useChartResultQuery__
- *
- * To run a query within a React component, call `useChartResultQuery` and pass it any options that fit your needs.
- * When your component renders, `useChartResultQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useChartResultQuery({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useChartResultQuery(baseOptions: Apollo.QueryHookOptions<ChartResultQuery, ChartResultQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ChartResultQuery, ChartResultQueryVariables>(ChartResultDocument, options);
-      }
-export function useChartResultLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ChartResultQuery, ChartResultQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ChartResultQuery, ChartResultQueryVariables>(ChartResultDocument, options);
-        }
-export type ChartResultQueryHookResult = ReturnType<typeof useChartResultQuery>;
-export type ChartResultLazyQueryHookResult = ReturnType<typeof useChartResultLazyQuery>;
-export type ChartResultQueryResult = Apollo.QueryResult<ChartResultQuery, ChartResultQueryVariables>;
 export const ClipDocument = gql`
     query Clip($id: ID!) {
   clip(id: $id) {
