@@ -1,0 +1,5 @@
+query Dashboard($id: ID!) {
+  dashboard(id: $id) {
+    ...Dashboard
+  }
+}

@@ -1,0 +1,30 @@
+query DashboardConnection(
+  $first: Int
+  $last: Int
+  $before: String
+  $after: String
+  $query: String
+  $orderBy: Ordering
+) {
+  dashboardConnection: dashboards(
+    first: $first
+    last: $last
+    before: $before
+    after: $after
+    query: $query
+    orderBy: $orderBy
+  ) {
+    edges {
+      node {
+        ...Dashboard
+      }
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+    }
+    totalCount
+  }
+}

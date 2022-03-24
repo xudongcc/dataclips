@@ -61,6 +61,18 @@ export type ChartEdge = {
   node: Chart;
 };
 
+export type ChartResult = {
+  __typename?: 'ChartResult';
+  chart: Chart;
+  name: Scalars['String'];
+  result: Result;
+};
+
+export type ChartResultInput = {
+  chartId: Scalars['ID'];
+  name: Scalars['String'];
+};
+
 export enum ChartType {
   BAR = 'BAR',
   FUNNEL = 'FUNNEL',
@@ -123,6 +135,11 @@ export type CreateClipInput = {
   sql: Scalars['String'];
 };
 
+export type CreateDashboardInput = {
+  config?: InputMaybe<Array<Scalars['JSONObject']>>;
+  name: Scalars['String'];
+};
+
 export type CreateDatabaseSourceInput = {
   database?: InputMaybe<Scalars['String']>;
   host: Scalars['String'];
@@ -147,6 +164,30 @@ export type CreateVirtualSourceTableInput = {
   name: Scalars['String'];
 };
 
+export type Dashboard = {
+  __typename?: 'Dashboard';
+  config?: Maybe<Array<Scalars['JSONObject']>>;
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  token?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['DateTime'];
+};
+
+export type DashboardConnection = {
+  __typename?: 'DashboardConnection';
+  edges?: Maybe<Array<DashboardEdge>>;
+  nodes?: Maybe<Array<Dashboard>>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars['Int']>;
+};
+
+export type DashboardEdge = {
+  __typename?: 'DashboardEdge';
+  cursor: Scalars['String'];
+  node: Dashboard;
+};
+
 export type DatabaseSource = {
   __typename?: 'DatabaseSource';
   createdAt: Scalars['DateTime'];
@@ -169,15 +210,18 @@ export type Mutation = {
   __typename?: 'Mutation';
   createChart: Chart;
   createClip: Clip;
+  createDashboard: Dashboard;
   createDatabaseSource: DatabaseSource;
   createProject: Project;
   createVirtualSource: VirtualSource;
   deleteChart: Scalars['ID'];
   deleteClip: Scalars['ID'];
+  deleteDashboard: Scalars['ID'];
   deleteProject: Scalars['ID'];
   deleteSource: Scalars['ID'];
   updateChart: Chart;
   updateClip: Clip;
+  updateDashboard: Dashboard;
   updateDatabaseSource: DatabaseSource;
   updateProject: Project;
   updateVirtualSource: VirtualSource;
@@ -191,6 +235,11 @@ export type MutationCreateChartArgs = {
 
 export type MutationCreateClipArgs = {
   input: CreateClipInput;
+};
+
+
+export type MutationCreateDashboardArgs = {
+  input: CreateDashboardInput;
 };
 
 
@@ -219,6 +268,11 @@ export type MutationDeleteClipArgs = {
 };
 
 
+export type MutationDeleteDashboardArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type MutationDeleteProjectArgs = {
   id: Scalars['ID'];
 };
@@ -238,6 +292,12 @@ export type MutationUpdateChartArgs = {
 export type MutationUpdateClipArgs = {
   id: Scalars['ID'];
   input: UpdateClipInput;
+};
+
+
+export type MutationUpdateDashboardArgs = {
+  id: Scalars['ID'];
+  input: UpdateDashboardInput;
 };
 
 
@@ -301,9 +361,12 @@ export type ProjectEdge = {
 export type Query = {
   __typename?: 'Query';
   chart: Chart;
+  chartResult: ChartResult;
   charts: ChartConnection;
   clip: Clip;
   clips: ClipConnection;
+  dashboard: Dashboard;
+  dashboards: DashboardConnection;
   project: Project;
   projects: ProjectConnection;
   source: Source;
@@ -313,6 +376,11 @@ export type Query = {
 
 export type QueryChartArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryChartResultArgs = {
+  input: ChartResultInput;
 };
 
 
@@ -335,6 +403,24 @@ export type QueryClipArgs = {
 
 
 export type QueryClipsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  filter?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Ordering>;
+  page?: InputMaybe<Scalars['Int']>;
+  pageSize?: InputMaybe<Scalars['Int']>;
+  query?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryDashboardArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryDashboardsArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
   filter?: InputMaybe<Scalars['String']>;
@@ -445,6 +531,11 @@ export type UpdateClipInput = {
   sql?: InputMaybe<Scalars['String']>;
 };
 
+export type UpdateDashboardInput = {
+  config?: InputMaybe<Array<Scalars['JSONObject']>>;
+  name?: InputMaybe<Scalars['String']>;
+};
+
 export type UpdateDatabaseSourceInput = {
   database?: InputMaybe<Scalars['String']>;
   host?: InputMaybe<Scalars['String']>;
@@ -495,6 +586,8 @@ export type ChartFragment = { __typename?: 'Chart', id: string, name: string, to
 
 export type ClipFragment = { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, sourceId: string, createdAt: any, updatedAt: any };
 
+export type DashboardFragment = { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config?: Array<any> | null, createdAt: any, updatedAt: any };
+
 export type DatabaseSourceFragment = { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any };
 
 export type ResultFragment = { __typename?: 'Result', id: string, name: string, error?: string | null, fields: Array<string>, values: Array<Array<string>>, duration: number, startedAt?: any | null, finishedAt?: any | null };
@@ -520,6 +613,13 @@ export type CreateClipMutationVariables = Exact<{
 
 
 export type CreateClipMutation = { __typename?: 'Mutation', createClip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
+
+export type CreateDashboardMutationVariables = Exact<{
+  input: CreateDashboardInput;
+}>;
+
+
+export type CreateDashboardMutation = { __typename?: 'Mutation', createDashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config?: Array<any> | null, createdAt: any, updatedAt: any } };
 
 export type CreateDatabaseSourceMutationVariables = Exact<{
   input: CreateDatabaseSourceInput;
@@ -549,6 +649,13 @@ export type DeleteClipMutationVariables = Exact<{
 
 export type DeleteClipMutation = { __typename?: 'Mutation', deleteClip: string };
 
+export type DeleteDashboardMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeleteDashboardMutation = { __typename?: 'Mutation', deleteDashboard: string };
+
 export type DeleteSourceMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -571,6 +678,14 @@ export type UpdateClipMutationVariables = Exact<{
 
 
 export type UpdateClipMutation = { __typename?: 'Mutation', updateClip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, sourceId: string, createdAt: any, updatedAt: any } };
+
+export type UpdateDashboardMutationVariables = Exact<{
+  id: Scalars['ID'];
+  input: UpdateDashboardInput;
+}>;
+
+
+export type UpdateDashboardMutation = { __typename?: 'Mutation', updateDashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config?: Array<any> | null, createdAt: any, updatedAt: any } };
 
 export type UpdateDatabaseSourceMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -607,6 +722,13 @@ export type ChartConnectionQueryVariables = Exact<{
 
 export type ChartConnectionQuery = { __typename?: 'Query', chartConnection: { __typename?: 'ChartConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ChartEdge', node: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
+export type ChartResultQueryVariables = Exact<{
+  input: ChartResultInput;
+}>;
+
+
+export type ChartResultQuery = { __typename?: 'Query', chartResult: { __typename?: 'ChartResult', name: string, result: { __typename?: 'Result', error?: string | null, fields: Array<string>, values: Array<Array<string>> }, chart: { __typename?: 'Chart', id: string, type: ChartType, config: any } } };
+
 export type ClipQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -625,6 +747,25 @@ export type ClipConnectionQueryVariables = Exact<{
 
 
 export type ClipConnectionQuery = { __typename?: 'Query', clipConnection: { __typename?: 'ClipConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ClipEdge', node: { __typename?: 'Clip', id: string, name: string, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+
+export type DashboardQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DashboardQuery = { __typename?: 'Query', dashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config?: Array<any> | null, createdAt: any, updatedAt: any } };
+
+export type DashboardConnectionQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  before?: InputMaybe<Scalars['String']>;
+  after?: InputMaybe<Scalars['String']>;
+  query?: InputMaybe<Scalars['String']>;
+  orderBy?: InputMaybe<Ordering>;
+}>;
+
+
+export type DashboardConnectionQuery = { __typename?: 'Query', dashboardConnection: { __typename?: 'DashboardConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'DashboardEdge', node: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config?: Array<any> | null, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export type SourceQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -664,6 +805,16 @@ export const ClipFragmentDoc = gql`
   token
   sql
   sourceId
+  createdAt
+  updatedAt
+}
+    `;
+export const DashboardFragmentDoc = gql`
+    fragment Dashboard on Dashboard {
+  id
+  name
+  token
+  config
   createdAt
   updatedAt
 }
@@ -781,6 +932,39 @@ export function useCreateClipMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateClipMutationHookResult = ReturnType<typeof useCreateClipMutation>;
 export type CreateClipMutationResult = Apollo.MutationResult<CreateClipMutation>;
 export type CreateClipMutationOptions = Apollo.BaseMutationOptions<CreateClipMutation, CreateClipMutationVariables>;
+export const CreateDashboardDocument = gql`
+    mutation CreateDashboard($input: CreateDashboardInput!) {
+  createDashboard(input: $input) {
+    ...Dashboard
+  }
+}
+    ${DashboardFragmentDoc}`;
+export type CreateDashboardMutationFn = Apollo.MutationFunction<CreateDashboardMutation, CreateDashboardMutationVariables>;
+
+/**
+ * __useCreateDashboardMutation__
+ *
+ * To run a mutation, you first call `useCreateDashboardMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateDashboardMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createDashboardMutation, { data, loading, error }] = useCreateDashboardMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateDashboardMutation(baseOptions?: Apollo.MutationHookOptions<CreateDashboardMutation, CreateDashboardMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateDashboardMutation, CreateDashboardMutationVariables>(CreateDashboardDocument, options);
+      }
+export type CreateDashboardMutationHookResult = ReturnType<typeof useCreateDashboardMutation>;
+export type CreateDashboardMutationResult = Apollo.MutationResult<CreateDashboardMutation>;
+export type CreateDashboardMutationOptions = Apollo.BaseMutationOptions<CreateDashboardMutation, CreateDashboardMutationVariables>;
 export const CreateDatabaseSourceDocument = gql`
     mutation CreateDatabaseSource($input: CreateDatabaseSourceInput!) {
   createDatabaseSource(input: $input) {
@@ -909,6 +1093,37 @@ export function useDeleteClipMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteClipMutationHookResult = ReturnType<typeof useDeleteClipMutation>;
 export type DeleteClipMutationResult = Apollo.MutationResult<DeleteClipMutation>;
 export type DeleteClipMutationOptions = Apollo.BaseMutationOptions<DeleteClipMutation, DeleteClipMutationVariables>;
+export const DeleteDashboardDocument = gql`
+    mutation DeleteDashboard($id: ID!) {
+  deleteDashboard(id: $id)
+}
+    `;
+export type DeleteDashboardMutationFn = Apollo.MutationFunction<DeleteDashboardMutation, DeleteDashboardMutationVariables>;
+
+/**
+ * __useDeleteDashboardMutation__
+ *
+ * To run a mutation, you first call `useDeleteDashboardMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteDashboardMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteDashboardMutation, { data, loading, error }] = useDeleteDashboardMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteDashboardMutation(baseOptions?: Apollo.MutationHookOptions<DeleteDashboardMutation, DeleteDashboardMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteDashboardMutation, DeleteDashboardMutationVariables>(DeleteDashboardDocument, options);
+      }
+export type DeleteDashboardMutationHookResult = ReturnType<typeof useDeleteDashboardMutation>;
+export type DeleteDashboardMutationResult = Apollo.MutationResult<DeleteDashboardMutation>;
+export type DeleteDashboardMutationOptions = Apollo.BaseMutationOptions<DeleteDashboardMutation, DeleteDashboardMutationVariables>;
 export const DeleteSourceDocument = gql`
     mutation DeleteSource($id: ID!) {
   deleteSource(id: $id)
@@ -1008,6 +1223,40 @@ export function useUpdateClipMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateClipMutationHookResult = ReturnType<typeof useUpdateClipMutation>;
 export type UpdateClipMutationResult = Apollo.MutationResult<UpdateClipMutation>;
 export type UpdateClipMutationOptions = Apollo.BaseMutationOptions<UpdateClipMutation, UpdateClipMutationVariables>;
+export const UpdateDashboardDocument = gql`
+    mutation UpdateDashboard($id: ID!, $input: UpdateDashboardInput!) {
+  updateDashboard(id: $id, input: $input) {
+    ...Dashboard
+  }
+}
+    ${DashboardFragmentDoc}`;
+export type UpdateDashboardMutationFn = Apollo.MutationFunction<UpdateDashboardMutation, UpdateDashboardMutationVariables>;
+
+/**
+ * __useUpdateDashboardMutation__
+ *
+ * To run a mutation, you first call `useUpdateDashboardMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateDashboardMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateDashboardMutation, { data, loading, error }] = useUpdateDashboardMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateDashboardMutation(baseOptions?: Apollo.MutationHookOptions<UpdateDashboardMutation, UpdateDashboardMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateDashboardMutation, UpdateDashboardMutationVariables>(UpdateDashboardDocument, options);
+      }
+export type UpdateDashboardMutationHookResult = ReturnType<typeof useUpdateDashboardMutation>;
+export type UpdateDashboardMutationResult = Apollo.MutationResult<UpdateDashboardMutation>;
+export type UpdateDashboardMutationOptions = Apollo.BaseMutationOptions<UpdateDashboardMutation, UpdateDashboardMutationVariables>;
 export const UpdateDatabaseSourceDocument = gql`
     mutation UpdateDatabaseSource($id: ID!, $input: UpdateDatabaseSourceInput!) {
   updateDatabaseSource(id: $id, input: $input) {
@@ -1186,6 +1435,51 @@ export function useChartConnectionLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type ChartConnectionQueryHookResult = ReturnType<typeof useChartConnectionQuery>;
 export type ChartConnectionLazyQueryHookResult = ReturnType<typeof useChartConnectionLazyQuery>;
 export type ChartConnectionQueryResult = Apollo.QueryResult<ChartConnectionQuery, ChartConnectionQueryVariables>;
+export const ChartResultDocument = gql`
+    query ChartResult($input: ChartResultInput!) {
+  chartResult(input: $input) {
+    name
+    result {
+      error
+      fields
+      values
+    }
+    chart {
+      id
+      type
+      config
+    }
+  }
+}
+    `;
+
+/**
+ * __useChartResultQuery__
+ *
+ * To run a query within a React component, call `useChartResultQuery` and pass it any options that fit your needs.
+ * When your component renders, `useChartResultQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useChartResultQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useChartResultQuery(baseOptions: Apollo.QueryHookOptions<ChartResultQuery, ChartResultQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ChartResultQuery, ChartResultQueryVariables>(ChartResultDocument, options);
+      }
+export function useChartResultLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ChartResultQuery, ChartResultQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ChartResultQuery, ChartResultQueryVariables>(ChartResultDocument, options);
+        }
+export type ChartResultQueryHookResult = ReturnType<typeof useChartResultQuery>;
+export type ChartResultLazyQueryHookResult = ReturnType<typeof useChartResultLazyQuery>;
+export type ChartResultQueryResult = Apollo.QueryResult<ChartResultQuery, ChartResultQueryVariables>;
 export const ClipDocument = gql`
     query Clip($id: ID!) {
   clip(id: $id) {
@@ -1282,6 +1576,99 @@ export function useClipConnectionLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type ClipConnectionQueryHookResult = ReturnType<typeof useClipConnectionQuery>;
 export type ClipConnectionLazyQueryHookResult = ReturnType<typeof useClipConnectionLazyQuery>;
 export type ClipConnectionQueryResult = Apollo.QueryResult<ClipConnectionQuery, ClipConnectionQueryVariables>;
+export const DashboardDocument = gql`
+    query Dashboard($id: ID!) {
+  dashboard(id: $id) {
+    ...Dashboard
+  }
+}
+    ${DashboardFragmentDoc}`;
+
+/**
+ * __useDashboardQuery__
+ *
+ * To run a query within a React component, call `useDashboardQuery` and pass it any options that fit your needs.
+ * When your component renders, `useDashboardQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useDashboardQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDashboardQuery(baseOptions: Apollo.QueryHookOptions<DashboardQuery, DashboardQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<DashboardQuery, DashboardQueryVariables>(DashboardDocument, options);
+      }
+export function useDashboardLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<DashboardQuery, DashboardQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<DashboardQuery, DashboardQueryVariables>(DashboardDocument, options);
+        }
+export type DashboardQueryHookResult = ReturnType<typeof useDashboardQuery>;
+export type DashboardLazyQueryHookResult = ReturnType<typeof useDashboardLazyQuery>;
+export type DashboardQueryResult = Apollo.QueryResult<DashboardQuery, DashboardQueryVariables>;
+export const DashboardConnectionDocument = gql`
+    query DashboardConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering) {
+  dashboardConnection: dashboards(
+    first: $first
+    last: $last
+    before: $before
+    after: $after
+    query: $query
+    orderBy: $orderBy
+  ) {
+    edges {
+      node {
+        ...Dashboard
+      }
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+    }
+    totalCount
+  }
+}
+    ${DashboardFragmentDoc}`;
+
+/**
+ * __useDashboardConnectionQuery__
+ *
+ * To run a query within a React component, call `useDashboardConnectionQuery` and pass it any options that fit your needs.
+ * When your component renders, `useDashboardConnectionQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useDashboardConnectionQuery({
+ *   variables: {
+ *      first: // value for 'first'
+ *      last: // value for 'last'
+ *      before: // value for 'before'
+ *      after: // value for 'after'
+ *      query: // value for 'query'
+ *      orderBy: // value for 'orderBy'
+ *   },
+ * });
+ */
+export function useDashboardConnectionQuery(baseOptions?: Apollo.QueryHookOptions<DashboardConnectionQuery, DashboardConnectionQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<DashboardConnectionQuery, DashboardConnectionQueryVariables>(DashboardConnectionDocument, options);
+      }
+export function useDashboardConnectionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<DashboardConnectionQuery, DashboardConnectionQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<DashboardConnectionQuery, DashboardConnectionQueryVariables>(DashboardConnectionDocument, options);
+        }
+export type DashboardConnectionQueryHookResult = ReturnType<typeof useDashboardConnectionQuery>;
+export type DashboardConnectionLazyQueryHookResult = ReturnType<typeof useDashboardConnectionLazyQuery>;
+export type DashboardConnectionQueryResult = Apollo.QueryResult<DashboardConnectionQuery, DashboardConnectionQueryVariables>;
 export const SourceDocument = gql`
     query Source($id: ID!) {
   source(id: $id) {

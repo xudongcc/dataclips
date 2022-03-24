@@ -24,9 +24,9 @@ export class Dashboard {
   @Column({ nullable: true, generator: () => nanoid() })
   token: string;
 
-  @Field(() => GraphQLJSONObject)
-  @Column({ type: "json" })
-  config: Record<string, any>;
+  @Field(() => [GraphQLJSONObject], { nullable: true })
+  @Column({ type: "json", nullable: true })
+  config?: Record<string, any>[];
 
   @Field()
   @CreateDateColumn()

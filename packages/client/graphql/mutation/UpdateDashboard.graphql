@@ -1,0 +1,5 @@
+mutation UpdateDashboard($id: ID!, $input: UpdateDashboardInput!) {
+  updateDashboard(id: $id, input: $input) {
+    ...Dashboard
+  }
+}

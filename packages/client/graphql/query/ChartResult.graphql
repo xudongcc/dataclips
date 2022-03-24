@@ -1,0 +1,15 @@
+query ChartResult($input: ChartResultInput!) {
+  chartResult(input: $input) {
+    name
+    result {
+      error
+      fields
+      values
+    }
+    chart {
+      id
+      type
+      config
+    }
+  }
+}

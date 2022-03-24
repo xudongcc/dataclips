@@ -1,0 +1,8 @@
+fragment Dashboard on Dashboard {
+  id
+  name
+  token
+  config
+  createdAt
+  updatedAt
+}
