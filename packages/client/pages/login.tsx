@@ -1,15 +1,20 @@
 import {
+  Box,
   Button,
-  chakra,
   Container,
   createIcon,
   Divider,
+  FormControl,
+  FormLabel,
   Heading,
   HStack,
   Input,
   Stack,
+  Image,
   Text,
   useBreakpointValue,
+  useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import {
@@ -19,6 +24,9 @@ import {
   signIn,
   useSession,
 } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { Router } from "react-router";
 import { PC } from "../interfaces/PageComponent";
 
 const GitHubIcon = createIcon({
@@ -36,63 +44,80 @@ interface LoginPageProps {
   providers: Record<string, ClientSafeProvider>;
 }
 
-const LoginPage: PC<LoginPageProps> = ({ csrfToken }) => {
-  const { data, status } = useSession();
+const LoginPage: PC<LoginPageProps> = () => {
+  const router = useRouter();
+  const { status } = useSession();
+  const toast = useToast();
 
-  console.log("status", data, status);
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/");
+    }
+  }, [router, status]);
 
   return (
-    <Container maxW="md" py={{ base: "12", md: "24" }}>
+    <Container
+      maxW="lg"
+      py={{ base: "12", md: "24" }}
+      px={{ base: "0", sm: "8" }}
+    >
       <Stack spacing="8">
-        <Stack spacing="6">
+        <Stack spacing="6" align="center">
+          <Image w="48px" h="48px" alt="logo" src="/dataclip.png" />
+
           <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
             <Heading size={useBreakpointValue({ base: "xs", md: "sm" })}>
-              登录
+              登录账号
             </Heading>
-            <Text color="muted">不需要密码，这样更安全。</Text>
+            <HStack spacing="1" justify="center">
+              <Text color="muted">不使用密码登录更加安全。</Text>
+            </HStack>
           </Stack>
         </Stack>
-
-        <Stack spacing="6">
-          {/* <chakra.form method="post" action="/api/auth/signin/email">
-            <Stack spacing="4">
-              <chakra.input
-                type="hidden"
-                name="csrfToken"
-                defaultValue={csrfToken}
-              />
-              <Input
-                required
-                type="email"
-                name="email"
-                autoComplete="email"
-                placeholder="输入你的邮箱"
-              />
-              <Button type="submit" variant="primary">
+        <Box
+          py={{ base: "0", sm: "8" }}
+          px={{ base: "4", sm: "10" }}
+          bg={useBreakpointValue({ base: "transparent", sm: "bg-surface" })}
+          boxShadow={{ base: "none", sm: useColorModeValue("md", "md-dark") }}
+          borderRadius={{ base: "none", sm: "xl" }}
+        >
+          <Stack spacing="6">
+            <Stack spacing="5">
+              <FormControl>
+                <FormLabel htmlFor="email">邮箱</FormLabel>
+                <Input id="email" type="email" />
+              </FormControl>
+            </Stack>
+            <Stack spacing="6">
+              <Button
+                variant="primary"
+                onClick={() => {
+                  toast({ title: "暂不支持邮箱登录" });
+                }}
+              >
                 登录
               </Button>
+              <HStack>
+                <Divider />
+                <Text fontSize="sm" whiteSpace="nowrap" color="muted">
+                  或
+                </Text>
+                <Divider />
+              </HStack>
+
+              <Stack spacing="3">
+                <Button
+                  variant="secondary"
+                  leftIcon={<GitHubIcon boxSize="5" />}
+                  iconSpacing="3"
+                  onClick={() => signIn("github")}
+                >
+                  GitHub
+                </Button>
+              </Stack>
             </Stack>
-          </chakra.form> */}
-
-          {/* <HStack>
-            <Divider />
-            <Text fontSize="sm" color="muted">
-              或
-            </Text>
-            <Divider />
-          </HStack> */}
-
-          <Stack spacing="3">
-            <Button
-              variant="secondary"
-              leftIcon={<GitHubIcon boxSize="5" />}
-              iconSpacing="3"
-              onClick={() => signIn("github")}
-            >
-              GitHub
-            </Button>
           </Stack>
-        </Stack>
+        </Box>
       </Stack>
     </Container>
   );

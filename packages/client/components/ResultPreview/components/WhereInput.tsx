@@ -10,11 +10,9 @@ export const WhereInput: FC<WhereInputProps> = ({ value, onEnter }) => {
   const [where, setWhere] = useState<string>(value);
 
   return (
-    <InputGroup size="sm">
-      {/* eslint-disable-next-line react/no-children-prop */}
-      <InputLeftAddon borderRadius="md" children="WHERE" />
+    <InputGroup>
+      <InputLeftAddon>WHERE</InputLeftAddon>
       <Input
-        borderRadius="md"
         defaultValue={where}
         onChange={(event) => setWhere(event.target.value)}
         onKeyDown={(event) => {

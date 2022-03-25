@@ -20,6 +20,8 @@ import { useQueryResult } from "../../../hooks/useQueryResult";
 import { useFormik } from "formik";
 import { ResultPreview } from "../../../components/ResultPreview";
 import { SQLEditor } from "../../../components/SQLEditor";
+import { Page } from "../../../components/Page";
+import { Card } from "../../../components/Card";
 
 const ClipEdit = () => {
   const toast = useToast();
@@ -73,67 +75,69 @@ const ClipEdit = () => {
   }, [clip]);
 
   return (
-    <Flex h="full" direction="column">
-      <form onSubmit={form.handleSubmit}>
-        <Stack p={4} spacing={3} direction="row">
-          <Input
-            size="sm"
-            borderRadius="md"
-            placeholder="请输入剪藏名称"
-            name="name"
-            width="30%"
-            onChange={form.handleChange}
-            value={form.values.name}
-          />
+    <Page title={result?.name}>
+      <Stack spacing={4}>
+        <Card>
+          <Flex h="full" direction="column">
+            <form onSubmit={form.handleSubmit}>
+              <Stack mb={4} spacing={3} direction="row">
+                <Input
+                  placeholder="请输入剪藏名称"
+                  name="name"
+                  width="30%"
+                  onChange={form.handleChange}
+                  value={form.values.name}
+                />
 
-          <Select
-            size="sm"
-            borderRadius="md"
-            name="sourceId"
-            flex="1"
-            value={form.values.sourceId}
-            onChange={form.handleChange}
-            placeholder="请选择数据源"
-            isDisabled={isSourcesLoading}
-          >
-            {sourceConnection?.edges?.map(({ node }) => {
-              return (
-                <option key={node.id} value={node.id}>
-                  {node.name}
-                </option>
-              );
-            })}
-          </Select>
+                <Select
+                  name="sourceId"
+                  flex="1"
+                  value={form.values.sourceId}
+                  onChange={form.handleChange}
+                  placeholder="请选择数据源"
+                  isDisabled={isSourcesLoading}
+                >
+                  {sourceConnection?.edges?.map(({ node }) => {
+                    return (
+                      <option key={node.id} value={node.id}>
+                        {node.name}
+                      </option>
+                    );
+                  })}
+                </Select>
 
-          <Button
-            size="sm"
-            type="submit"
-            colorScheme="blue"
-            isLoading={updateClipLoading}
-          >
-            保存
-          </Button>
-        </Stack>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  isLoading={updateClipLoading}
+                >
+                  保存
+                </Button>
+              </Stack>
 
-        <Box
-          borderTopWidth={1}
-          borderBottomWidth={1}
-          borderStyle="solid"
-          borderColor={useColorModeValue("gray.200", "whiteAlpha.300")}
-        >
-          <SQLEditor
-            value={form.values.sql}
-            onChange={(value) => form.setFieldValue("sql", value)}
-          />
+              <Box
+                borderWidth={1}
+                borderStyle="solid"
+                borderColor={useColorModeValue("gray.200", "whiteAlpha.300")}
+                borderRadius="lg"
+                overflow="hidden"
+              >
+                <SQLEditor
+                  value={form.values.sql}
+                  onChange={(value) => form.setFieldValue("sql", value)}
+                />
+              </Box>
+            </form>
+          </Flex>
+        </Card>
+
+        <Box flex={1}>
+          {result && !result?.message ? (
+            <ResultPreview token={clip?.token!} result={result} />
+          ) : null}
         </Box>
-      </form>
-
-      <Box flex={1}>
-        {result && !result?.message ? (
-          <ResultPreview token={clip?.token!} result={result} />
-        ) : null}
-      </Box>
-    </Flex>
+      </Stack>
+    </Page>
   );
 };
 

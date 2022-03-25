@@ -7,7 +7,7 @@ export const theme = extendTheme(
       initialColorMode: "system",
       useSystemColorMode: true,
     },
-    colors: { ...baseTheme.colors, brand: baseTheme.colors.green },
+    colors: { ...baseTheme.colors, brand: baseTheme.colors.blue },
     styles: {
       global: () => ({
         // 去除 chakra 的 focus 样式

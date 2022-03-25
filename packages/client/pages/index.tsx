@@ -1,18 +1,30 @@
-import type { NextPage } from "next";
+import { Box } from "@chakra-ui/react";
 import Head from "next/head";
-import Image from "next/image";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { PC } from "../interfaces/PageComponent";
+import ProjectLayout from "../layouts/ProjectLayout";
 
-const Home: NextPage = () => {
+const HomePage: PC = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/clips");
+  });
+
   return (
-    <div>
+    <>
       <Head>
         <title>Dataclips</title>
         <meta name="description" content="Dataclips" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      123
-    </div>
+
+      <Box>Home</Box>
+    </>
   );
 };
 
-export default Home;
+HomePage.layout = ProjectLayout;
+
+export default HomePage;

@@ -29,7 +29,7 @@ export const Page: FC<PageProps> = ({
   secondaryActions,
 }) => {
   return (
-    <Box as="section" pb={{ base: "12", md: "24" }}>
+    <Box as="section" pb={{ base: "6", md: "12" }}>
       <Stack
         spacing="4"
         direction={{ base: "column", md: "row" }}

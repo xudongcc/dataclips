@@ -378,11 +378,11 @@ const SourceList = () => {
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={handleCloseEditModal}>
+              <Button mr={3} onClick={handleCloseEditModal}>
                 取消
               </Button>
               <Button
-                colorScheme="red"
+                variant="primary"
                 type="submit"
                 isLoading={
                   updateDatabaseSourceLoading ||
@@ -390,7 +390,7 @@ const SourceList = () => {
                   updateVirtualSourceLoading
                 }
               >
-                确定
+                保存
               </Button>
             </ModalFooter>
           </form>
@@ -406,7 +406,7 @@ const SourceList = () => {
           <ModalBody>确定删除 id 为 {selectedSource?.id} 的数据源？</ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleCloseDeleteModal}>
+            <Button mr={3} onClick={handleCloseDeleteModal}>
               取消
             </Button>
             <Button

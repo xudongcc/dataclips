@@ -157,7 +157,7 @@ const ClipList = () => {
           <ModalBody>确定删除 id 为 {selectedClipId} 的数据集？</ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleCloseDeleteModal}>
+            <Button mr={3} onClick={handleCloseDeleteModal}>
               取消
             </Button>
             <Button
