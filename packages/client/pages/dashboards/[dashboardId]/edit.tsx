@@ -325,7 +325,7 @@ const DashBoardEdit: PC = () => {
           className="layout"
           onLayoutChange={handleSetChartItemLayout}
           cols={12}
-          style={{}}
+          containerPadding={[0, 0]}
           width={1200}
           layout={chartCards.map((item) => item?.layout)}
         >
