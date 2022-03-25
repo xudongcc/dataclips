@@ -191,7 +191,10 @@ const DashBoardEdit: PC = () => {
               );
 
               if (updateIndex !== -1) {
-                chartCards[updateIndex] = current;
+                chartCards[updateIndex] = {
+                  ...current,
+                  layout: chartCards[updateIndex].layout,
+                };
               }
 
               setChartCards([...chartCards]);
