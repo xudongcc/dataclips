@@ -15,7 +15,6 @@ export class DashboardResolver {
   async dashboard(
     @Args("id", { type: () => ID }) id: string
   ): Promise<Dashboard> {
-    // 预计创建时配置只传递 name 和 chartId，查询返回的数据由后端先从 chartResult 进行遍历，生成好后再返回
     return await this.dashboardService.findOne({ where: { id } });
   }
 
@@ -26,7 +25,6 @@ export class DashboardResolver {
     return await this.dashboardService.getConnection(args);
   }
 
-  // 创建最终的 dashboard 的数据
   @Mutation(() => Dashboard)
   async createDashboard(
     @Args("input") input: CreateDashboardInput
