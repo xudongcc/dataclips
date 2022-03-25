@@ -17,6 +17,7 @@ import { Page } from "../../../components/Page";
 import PreviewLayout from "../../../layouts/PreviewLayout";
 import ProjectLayout from "../../../layouts/ProjectLayout";
 import { useSession } from "next-auth/react";
+import { Card } from "../../../components/Card";
 
 const ChartPreview = () => {
   const router = useRouter();
@@ -81,11 +82,13 @@ const ChartPreview = () => {
       <Page title={result?.name}>
         {data?.chart.type && data?.chart.config && result && (
           <Box h="800px">
-            <ChartResultPreview
-              type={data.chart.type}
-              config={getChartTypePreviewConfig()}
-              result={result}
-            />
+            <Card overflow="hidden" h="full">
+              <ChartResultPreview
+                type={data.chart.type}
+                config={getChartTypePreviewConfig()}
+                result={result}
+              />
+            </Card>
           </Box>
         )}
       </Page>

@@ -1,9 +1,19 @@
 import { Flex, Spinner } from "@chakra-ui/react";
 import { FC } from "react";
 
-export const Loading: FC = () => {
+interface LoadingProps {
+  width?: string | number;
+  height?: string | number;
+}
+
+export const Loading: FC<LoadingProps> = ({ width, height }) => {
   return (
-    <Flex w="100vw" h="100vh" align="center" justify="center">
+    <Flex
+      w={width || "100vw"}
+      h={height || "100vh"}
+      align="center"
+      justify="center"
+    >
       <Spinner />
     </Flex>
   );

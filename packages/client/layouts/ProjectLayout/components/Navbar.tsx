@@ -28,7 +28,11 @@ import { Loading } from "../../../components/Loading";
 import { NavButton } from "./NavButton";
 import { ToggleButton } from "./ToggleButton";
 
-const menu = [
+export const menu = [
+  {
+    name: "仪表盘",
+    path: "/dashboards",
+  },
   {
     name: "图表",
     path: "/charts",

@@ -1,9 +1,9 @@
 import { QueryConnectionArgs } from "@nest-boot/graphql";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 import _ from "lodash";
-import { ChartService } from "../../core/services/chart.service";
 
 import { Chart } from "../../core/entities/chart.entity";
+import { ChartService } from "../../core/services/chart.service";
 import { CreateChartInput } from "../inputs/create-chart.input";
 import { UpdateChartInput } from "../inputs/update-chart.input";
 import { ChartConnection } from "../objects/chart-connection.object";

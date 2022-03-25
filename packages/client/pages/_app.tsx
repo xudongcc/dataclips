@@ -10,6 +10,7 @@ import { SessionProvider } from "next-auth/react";
 import { getApolloClient } from "../lib/apolloClient";
 import { QueryClientProvider } from "react-query";
 import { queryClient } from "../lib/queryClient";
+// import { ReactQueryDevtools } from "react-query/devtools";
 
 const App: FC<AppProps & { Component: PC }> = ({
   Component,
@@ -28,6 +29,9 @@ const App: FC<AppProps & { Component: PC }> = ({
             <QueryClientProvider client={queryClient}>
               <Layout>
                 <Component {...pageProps} />
+
+                {/* 调试的时候可打开 */}
+                {/* <ReactQueryDevtools initialIsOpen={false} /> */}
               </Layout>
             </QueryClientProvider>
           </ApolloProvider>
