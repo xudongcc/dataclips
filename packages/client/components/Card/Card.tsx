@@ -1,16 +1,25 @@
 import {
   Box,
   BoxProps,
+  Button,
+  ButtonProps as BaseButtonProps,
   Stack,
+  HStack,
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { omit } from "lodash";
 import { FC, ReactNode } from "react";
 
+interface ButtonProps extends BaseButtonProps {
+  text?: React.ReactNode;
+}
 export interface CardProps extends BoxProps {
   title?: string;
   description?: string;
   extra?: ReactNode;
+  primaryAction?: ButtonProps;
+  secondaryActions?: ButtonProps[];
 }
 
 export const Card: FC<CardProps> = ({
@@ -18,6 +27,8 @@ export const Card: FC<CardProps> = ({
   description,
   children,
   extra,
+  secondaryActions,
+  primaryAction,
   ...otherProps
 }) => (
   <Stack
@@ -30,21 +41,52 @@ export const Card: FC<CardProps> = ({
     p={{ base: "4", md: "6" }}
     {...otherProps}
   >
-    {title || description ? (
-      <Stack spacing="1" className="card-head">
-        {title ? (
-          <Text fontSize="lg" fontWeight="medium">
-            {title}
-          </Text>
-        ) : null}
+    <Stack spacing="5">
+      <Stack
+        justify="space-between"
+        direction={{ base: "column", sm: "row" }}
+        spacing="5"
+      >
+        <Stack spacing="1">
+          {title ? (
+            <Text fontSize="lg" fontWeight="medium">
+              {title}
+            </Text>
+          ) : null}
 
-        {description ? (
-          <Text fontSize="sm" color="muted">
-            {description}
-          </Text>
-        ) : null}
+          {description ? (
+            <Text fontSize="sm" color="muted">
+              {description}
+            </Text>
+          ) : null}
+        </Stack>
+
+        {extra}
+
+        {!extra && (primaryAction || secondaryActions) && (
+          <HStack spacing="1">
+            {!extra &&
+              secondaryActions &&
+              secondaryActions?.length &&
+              secondaryActions.map((secondaryAction, index) => (
+                <Button
+                  key={index}
+                  variant="secondary"
+                  {...omit(secondaryAction, "text")}
+                >
+                  {secondaryAction.text}
+                </Button>
+              ))}
+
+            {!extra && primaryAction && (
+              <Button variant="primary" {...omit(primaryAction, "text")}>
+                {primaryAction?.text}
+              </Button>
+            )}
+          </HStack>
+        )}
       </Stack>
-    ) : null}
+    </Stack>
 
     <Box flex={1} className="card-body">
       {children}
