@@ -1,18 +1,21 @@
 import {
   Box,
   Button,
-  Flex,
   FormControl,
   FormErrorMessage,
-  HStack,
   Input,
   Modal,
   ModalBody,
   ModalCloseButton,
+  Divider,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
   Select,
   useDisclosure,
   useToast,
@@ -39,19 +42,30 @@ import { ChartResultPreview } from "../../../components/ChartResultPreview";
 import { useLazyQueryResult } from "../../../hooks/useLazyQueryResult";
 import { compact } from "lodash";
 import { Loading } from "../../../components/Loading";
+import { Page } from "../../../components/Page";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
 const DashBoardEdit: PC = () => {
   const toast = useToast();
   const router = useRouter();
-  const startRequest = useRef(false);
+  const popoverRef = useRef();
+  const [operation, setOperation] = useState<Record<string, any>>({
+    type: "add",
+  });
+
+  const [initialRequestIsDone, setInitialRequestIsDone] = useState(false);
 
   const { dashboardId } = router.query as { dashboardId: string };
 
   const { data } = useDashboardQuery({
     variables: { id: dashboardId },
     skip: !dashboardId,
+    onCompleted: (data) => {
+      if (!data?.dashboard?.config?.length) {
+        setInitialRequestIsDone(true);
+      }
+    },
   });
 
   const { data: chartConnectionData } = useChartConnectionQuery({
@@ -65,7 +79,8 @@ const DashBoardEdit: PC = () => {
   const [updateDashboard, { loading: updateDashboardLoading }] =
     useUpdateDashboardMutation();
 
-  const [charts, setCharts] = useState([]);
+  const [chartCards, setChartCards] = useState([]);
+
   // 创建仪表盘的弹窗
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -97,7 +112,7 @@ const DashBoardEdit: PC = () => {
       variables: {
         id: dashboardId,
         input: {
-          config: charts.map((item) => ({
+          config: chartCards.map((item) => ({
             name: item.name,
             chartId: item.chartId,
             layout: item.layout,
@@ -107,31 +122,38 @@ const DashBoardEdit: PC = () => {
     });
 
     toast({ title: "更新成功" });
-  }, [charts, dashboardId, toast, updateDashboard]);
+  }, [chartCards, dashboardId, toast, updateDashboard]);
 
+  // 布局发生变化时
   const handleSetChartItemLayout = useCallback(
     (newLayout: Layout[]) => {
       newLayout.forEach((layout) => {
-        charts[+layout.i] = {
-          ...charts[+layout.i],
-          layout: {
-            i: layout.i,
-            x: layout.x,
-            y: layout.y,
-            w: layout.w,
-            h: layout.h,
-          },
-        };
+        const itemIndex = chartCards.findIndex(
+          (item) => item?.layout?.i === layout.i
+        );
+
+        if (itemIndex !== -1) {
+          chartCards[itemIndex] = {
+            ...chartCards[itemIndex],
+            layout: {
+              i: layout.i,
+              x: layout.x,
+              y: layout.y,
+              w: layout.w,
+              h: layout.h,
+            },
+          };
+        }
       });
 
-      setCharts([...charts]);
+      setChartCards([...chartCards]);
     },
-    [charts]
+    [chartCards]
   );
 
   useEffect(() => {
     if (data?.dashboard?.config?.length) {
-      if (!startRequest.current) {
+      if (!initialRequestIsDone) {
         Promise.allSettled(
           data.dashboard.config.map(async (item) => {
             if (item?.chartId) {
@@ -156,73 +178,135 @@ const DashBoardEdit: PC = () => {
               }
             }
           })
-        ).then((res) => {
-          const successRes = res
-            .filter((p) => p.status === "fulfilled")
-            .map((item: any) => item.value);
+        )
+          .then((res) => {
+            const successRes = res
+              .filter((p) => p.status === "fulfilled")
+              .map((item: any) => item.value);
 
-          if (compact(successRes).length) {
-            startRequest.current = true;
-
-            setCharts(successRes);
-          }
-        });
+            if (compact(successRes).length) {
+              setChartCards(successRes);
+            }
+          })
+          .catch((err) => {
+            console.log("err", err);
+          })
+          .finally(() => {
+            setInitialRequestIsDone(true);
+          });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  if (!startRequest.current) {
+  if (!initialRequestIsDone) {
     return <Loading />;
   }
 
   return (
-    <Box>
-      <Flex justifyContent="flex-end">
-        <HStack spacing={4}>
-          <Button
-            onClick={() => {
-              console.log("charts", charts);
-            }}
-          >
-            获取
-          </Button>
-          <Button onClick={onOpen}>添加图表</Button>
-          <Button
-            colorScheme="blue"
-            onClick={handleUpdateDashboard}
-            isLoading={updateDashboardLoading}
-          >
-            保存
-          </Button>
-        </HStack>
-      </Flex>
+    <Page
+      title={data?.dashboard?.name}
+      primaryAction={{
+        text: "保存",
+        onClick: handleUpdateDashboard,
+        isLoading: updateDashboardLoading,
+      }}
+      secondaryActions={[
+        {
+          text: "添加图表",
+          onClick: onOpen,
+        },
+      ]}
+    >
+      <ResponsiveGridLayout
+        className="layout"
+        onLayoutChange={handleSetChartItemLayout}
+        cols={12}
+        width={1200}
+        layout={chartCards.map((item) => item?.layout)}
+      >
+        {chartCards.map((item) => {
+          return (
+            <Card
+              title={item?.name}
+              key={item?.layout?.i}
+              extra={
+                <Popover initialFocusRef={popoverRef}>
+                  {({ onClose }) => (
+                    <>
+                      <PopoverTrigger>
+                        <Button variant="ghost" fontWeight="bold">
+                          ⋮
+                        </Button>
+                      </PopoverTrigger>
 
-      <Box border="1px solid" mt={4}>
-        <ResponsiveGridLayout
-          className="layout"
-          onLayoutChange={handleSetChartItemLayout}
-          cols={12}
-          width={1200}
-          layout={charts.map((item) => item?.layout)}
-        >
-          {charts.map((item, index) => {
-            return (
-              <Card
-                title={item?.name}
-                key={`${index}`}
-                extra={<Button>123</Button>}
-              >
-                <ChartResultPreview
-                  result={item?.data?.result}
-                  type={item?.data?.chart?.type}
-                  config={item?.data?.chart?.config}
-                />
-              </Card>
-            );
-          })}
-        </ResponsiveGridLayout>
-      </Box>
+                      <PopoverContent w="100%">
+                        <PopoverBody>
+                          <Box
+                            cursor="pointer"
+                            _hover={{ bg: "var(--chakra-colors-gray-100)" }}
+                            p={1}
+                            borderRadius="4px"
+                            ref={popoverRef}
+                            onClick={() => {
+                              onClose();
+
+                              form.setValues({
+                                name: item?.name,
+                                chartId: item?.chartId,
+                              });
+
+                              setOperation({
+                                type: "edit",
+                                key: item?.layout?.i,
+                              });
+
+                              onOpen();
+                            }}
+                          >
+                            修改
+                          </Box>
+
+                          <Divider my={1}></Divider>
+
+                          <Box
+                            cursor="pointer"
+                            _hover={{ bg: "var(--chakra-colors-gray-100)" }}
+                            p={1}
+                            ref={popoverRef}
+                            borderRadius="4px"
+                            onClick={() => {
+                              onClose();
+
+                              const deleteIndex = chartCards.findIndex(
+                                (chartCard) =>
+                                  chartCard?.layout?.i === item?.layout?.i
+                              );
+
+                              if (deleteIndex !== -1) {
+                                chartCards.splice(deleteIndex, 1);
+                                setChartCards([...chartCards]);
+                              }
+                            }}
+                          >
+                            删除
+                          </Box>
+                        </PopoverBody>
+                      </PopoverContent>
+                    </>
+                  )}
+                </Popover>
+              }
+            >
+              <ChartResultPreview
+                result={item?.data?.result}
+                type={item?.data?.chart?.type}
+                config={item?.data?.chart?.config}
+              />
+            </Card>
+          );
+        })}
+      </ResponsiveGridLayout>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -246,7 +330,16 @@ const DashBoardEdit: PC = () => {
                 <Select
                   name="chartId"
                   value={form.values.chartId}
-                  onChange={form.handleChange}
+                  onChange={(e) => {
+                    form.handleChange(e);
+
+                    if (!form.values.name) {
+                      const selectedIndex = e.target.selectedIndex;
+                      const text = e.target.options[selectedIndex].text;
+
+                      form.setFieldValue("name", text);
+                    }
+                  }}
                   placeholder="请选择图表"
                 >
                   {chartConnectionData?.chartConnection.edges.map(
@@ -288,9 +381,8 @@ const DashBoardEdit: PC = () => {
                     if (data?.chart) {
                       const result = await getQueryResult(data.chart.clipId);
 
-                      setCharts([
-                        ...charts,
-                        {
+                      if (result && !result?.error) {
+                        const current = {
                           name: form.values.name,
                           chartId: data.chart.id,
                           data: {
@@ -298,14 +390,30 @@ const DashBoardEdit: PC = () => {
                             chart: data?.chart,
                           },
                           layout: {
-                            i: `${charts.length}`,
+                            i: `${Date.now()}`,
                             x: 0,
-                            y: charts.length * 3,
+                            y: chartCards.length * 3,
                             w: 6,
                             h: 3,
                           },
-                        },
-                      ]);
+                        };
+
+                        if (operation.type === "add") {
+                          setChartCards([...chartCards, current]);
+                        } else {
+                          const updateIndex = chartCards.findIndex(
+                            (chartCard) =>
+                              chartCard?.layout?.i === operation?.key
+                          );
+
+                          if (updateIndex !== -1) {
+                            chartCards[updateIndex] = current;
+                          }
+
+                          setChartCards([...chartCards]);
+                          setOperation({ type: "add" });
+                        }
+                      }
                     }
 
                     handleCloseAddChartModal();
@@ -320,7 +428,7 @@ const DashBoardEdit: PC = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </Box>
+    </Page>
   );
 };
 
