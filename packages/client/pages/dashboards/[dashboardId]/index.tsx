@@ -13,6 +13,9 @@ import { compact } from "lodash";
 import { Card } from "../../../components/Card/Card";
 import { ChartResultPreview } from "../../../components/ChartResultPreview";
 import { Loading } from "../../../components/Loading";
+import { Box } from "@chakra-ui/react";
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
@@ -104,24 +107,32 @@ const DashboardPreview: PC = () => {
   }
 
   return (
-    <ResponsiveGridLayout
-      className="layout"
-      cols={12}
-      width={1200}
-      layout={chartCards.map((item) => item?.layout)}
+    <Box
+      sx={{
+        ".react-grid-item.react-grid-placeholder": {
+          background: "rgba(1,1,1,0.2) !important",
+        },
+      }}
     >
-      {chartCards.map((item) => {
-        return (
-          <Card title={item?.name} key={item?.layout?.i}>
-            <ChartResultPreview
-              result={item?.data?.result}
-              type={item?.data?.chart?.type}
-              config={item?.data?.chart?.config}
-            />
-          </Card>
-        );
-      })}
-    </ResponsiveGridLayout>
+      <ResponsiveGridLayout
+        className="layout"
+        cols={12}
+        width={1200}
+        layout={chartCards.map((item) => item?.layout)}
+      >
+        {chartCards.map((item) => {
+          return (
+            <Card title={item?.name} key={item?.layout?.i}>
+              <ChartResultPreview
+                result={item?.data?.result}
+                type={item?.data?.chart?.type}
+                config={item?.data?.chart?.config}
+              />
+            </Card>
+          );
+        })}
+      </ResponsiveGridLayout>
+    </Box>
   );
 };
 

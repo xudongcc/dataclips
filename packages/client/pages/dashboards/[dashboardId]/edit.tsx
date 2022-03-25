@@ -25,8 +25,8 @@ import { useRouter } from "next/router";
 import { PC } from "../../../interfaces/PageComponent";
 import ProjectLayout from "../../../layouts/ProjectLayout";
 import GridLayout, { Layout, WidthProvider } from "react-grid-layout";
-import "/node_modules/react-grid-layout/css/styles.css";
-import "/node_modules/react-resizable/css/styles.css";
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
 import { Card } from "../../../components/Card/Card";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -291,7 +291,7 @@ const DashBoardEdit: PC = () => {
   }, [data]);
 
   if (!initialRequestIsDone) {
-    return <Loading />;
+    return <Loading width="100%" />;
   }
 
   return (
@@ -309,95 +309,104 @@ const DashBoardEdit: PC = () => {
         },
       ]}
     >
-      <ResponsiveGridLayout
-        className="layout"
-        onLayoutChange={handleSetChartItemLayout}
-        cols={12}
-        width={1200}
-        layout={chartCards.map((item) => item?.layout)}
+      <Box
+        sx={{
+          ".react-grid-item.react-grid-placeholder": {
+            background: "rgba(0,0,0,0.2) !important",
+          },
+        }}
       >
-        {chartCards.map((item) => {
-          return (
-            <Card
-              title={item?.name}
-              key={item?.layout?.i}
-              extra={
-                <Popover initialFocusRef={popoverRef}>
-                  {({ onClose }) => (
-                    <>
-                      <PopoverTrigger>
-                        <Button variant="ghost" fontWeight="bold">
-                          ⋮
-                        </Button>
-                      </PopoverTrigger>
+        <ResponsiveGridLayout
+          className="layout"
+          onLayoutChange={handleSetChartItemLayout}
+          cols={12}
+          style={{}}
+          width={1200}
+          layout={chartCards.map((item) => item?.layout)}
+        >
+          {chartCards.map((item) => {
+            return (
+              <Card
+                title={item?.name}
+                key={item?.layout?.i}
+                extra={
+                  <Popover initialFocusRef={popoverRef}>
+                    {({ onClose }) => (
+                      <>
+                        <PopoverTrigger>
+                          <Button variant="ghost" fontWeight="bold">
+                            ⋮
+                          </Button>
+                        </PopoverTrigger>
 
-                      <PopoverContent w="100%">
-                        <PopoverBody>
-                          <Box
-                            cursor="pointer"
-                            _hover={{ bg: "var(--chakra-colors-gray-100)" }}
-                            p={1}
-                            borderRadius="4px"
-                            ref={popoverRef}
-                            onClick={() => {
-                              onClose();
+                        <PopoverContent w="100%">
+                          <PopoverBody>
+                            <Box
+                              cursor="pointer"
+                              _hover={{ bg: "var(--chakra-colors-gray-100)" }}
+                              p={1}
+                              borderRadius="4px"
+                              ref={popoverRef}
+                              onClick={() => {
+                                onClose();
 
-                              form.setValues({
-                                name: item?.name,
-                                chartId: item?.chartId,
-                              });
+                                form.setValues({
+                                  name: item?.name,
+                                  chartId: item?.chartId,
+                                });
 
-                              setOperation({
-                                type: OperationType.EDIT,
-                                key: item?.layout?.i,
-                              });
+                                setOperation({
+                                  type: OperationType.EDIT,
+                                  key: item?.layout?.i,
+                                });
 
-                              onOpen();
-                            }}
-                          >
-                            修改
-                          </Box>
+                                onOpen();
+                              }}
+                            >
+                              修改
+                            </Box>
 
-                          <Divider my={1}></Divider>
+                            <Divider my={1}></Divider>
 
-                          <Box
-                            cursor="pointer"
-                            _hover={{ bg: "var(--chakra-colors-gray-100)" }}
-                            p={1}
-                            ref={popoverRef}
-                            borderRadius="4px"
-                            onClick={() => {
-                              onClose();
+                            <Box
+                              cursor="pointer"
+                              _hover={{ bg: "var(--chakra-colors-gray-100)" }}
+                              p={1}
+                              ref={popoverRef}
+                              borderRadius="4px"
+                              onClick={() => {
+                                onClose();
 
-                              const deleteIndex = chartCards.findIndex(
-                                (chartCard) =>
-                                  chartCard?.layout?.i === item?.layout?.i
-                              );
+                                const deleteIndex = chartCards.findIndex(
+                                  (chartCard) =>
+                                    chartCard?.layout?.i === item?.layout?.i
+                                );
 
-                              if (deleteIndex !== -1) {
-                                chartCards.splice(deleteIndex, 1);
-                                setChartCards([...chartCards]);
-                              }
-                            }}
-                          >
-                            删除
-                          </Box>
-                        </PopoverBody>
-                      </PopoverContent>
-                    </>
-                  )}
-                </Popover>
-              }
-            >
-              <ChartResultPreview
-                result={item?.data?.result}
-                type={item?.data?.chart?.type}
-                config={item?.data?.chart?.config}
-              />
-            </Card>
-          );
-        })}
-      </ResponsiveGridLayout>
+                                if (deleteIndex !== -1) {
+                                  chartCards.splice(deleteIndex, 1);
+                                  setChartCards([...chartCards]);
+                                }
+                              }}
+                            >
+                              删除
+                            </Box>
+                          </PopoverBody>
+                        </PopoverContent>
+                      </>
+                    )}
+                  </Popover>
+                }
+              >
+                <ChartResultPreview
+                  result={item?.data?.result}
+                  type={item?.data?.chart?.type}
+                  config={item?.data?.chart?.config}
+                />
+              </Card>
+            );
+          })}
+        </ResponsiveGridLayout>
+      </Box>
 
       <Modal isOpen={isOpen} onClose={handleCloseAddChartModal}>
         <ModalOverlay />
