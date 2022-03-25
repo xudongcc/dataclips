@@ -321,6 +321,7 @@ const DashBoardEdit: PC = () => {
         }}
       >
         <ResponsiveGridLayout
+          draggableHandle=".card-body"
           className="layout"
           onLayoutChange={handleSetChartItemLayout}
           cols={12}
