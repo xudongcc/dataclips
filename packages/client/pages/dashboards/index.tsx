@@ -22,13 +22,12 @@ import ProjectLayout from "../../layouts/ProjectLayout";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Table } from "../../components/Table";
-import {
-  useDashboardConnectionQuery,
-  useDeleteDashboardMutation,
-  useCreateDashboardMutation,
-} from "../../generated/graphql";
+import { useDashboardConnectionQuery } from "../../generated/graphql";
+
 import { Column, TableOptions } from "react-table";
 import moment from "moment";
+import { useCreateDashboardMutation } from "../../hooks/useCreateDashboardMutation";
+import { useDeleteDashboardMutation } from "../../hooks/useDeleteDashboardMutation";
 
 const DashBoardList: PC = () => {
   const router = useRouter();
@@ -59,8 +58,6 @@ const DashBoardList: PC = () => {
 
   const [deleteDashboard, { loading: deleteDashboardLoading }] =
     useDeleteDashboardMutation();
-
-  console.log("dashboardListData", dashboardListData);
 
   const form = useFormik({
     initialValues: {
