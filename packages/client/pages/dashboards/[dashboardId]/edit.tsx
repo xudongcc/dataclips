@@ -44,6 +44,7 @@ import { useLazyQueryResult } from "../../../hooks/useLazyQueryResult";
 import { compact } from "lodash";
 import { Loading } from "../../../components/Loading";
 import { Page } from "../../../components/Page";
+import { DashboardItem } from "../../../components/DashboardItem";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
@@ -326,83 +327,85 @@ const DashBoardEdit: PC = () => {
         >
           {chartCards.map((item) => {
             return (
-              <Card
-                title={item?.name}
-                key={item?.layout?.i}
-                extra={
-                  <Popover initialFocusRef={popoverRef}>
-                    {({ onClose }) => (
-                      <>
-                        <PopoverTrigger>
-                          <Button variant="ghost" fontWeight="bold">
-                            ⋮
-                          </Button>
-                        </PopoverTrigger>
+              <DashboardItem key={item?.layout?.i}>
+                <Card
+                  h="full"
+                  title={item?.name}
+                  extra={
+                    <Popover initialFocusRef={popoverRef}>
+                      {({ onClose }) => (
+                        <>
+                          <PopoverTrigger>
+                            <Button variant="ghost" fontWeight="bold">
+                              ⋮
+                            </Button>
+                          </PopoverTrigger>
 
-                        <PopoverContent w="100%">
-                          <PopoverBody>
-                            <Box
-                              cursor="pointer"
-                              _hover={{ bg: "var(--chakra-colors-gray-100)" }}
-                              p={1}
-                              borderRadius="4px"
-                              ref={popoverRef}
-                              onClick={() => {
-                                onClose();
+                          <PopoverContent w="100%">
+                            <PopoverBody>
+                              <Box
+                                cursor="pointer"
+                                _hover={{ bg: "var(--chakra-colors-gray-100)" }}
+                                p={1}
+                                borderRadius="4px"
+                                ref={popoverRef}
+                                onClick={() => {
+                                  onClose();
 
-                                form.setValues({
-                                  name: item?.name,
-                                  chartId: item?.chartId,
-                                });
+                                  form.setValues({
+                                    name: item?.name,
+                                    chartId: item?.chartId,
+                                  });
 
-                                setOperation({
-                                  type: OperationType.EDIT,
-                                  key: item?.layout?.i,
-                                });
+                                  setOperation({
+                                    type: OperationType.EDIT,
+                                    key: item?.layout?.i,
+                                  });
 
-                                onOpen();
-                              }}
-                            >
-                              修改
-                            </Box>
+                                  onOpen();
+                                }}
+                              >
+                                修改
+                              </Box>
 
-                            <Divider my={1}></Divider>
+                              <Divider my={1}></Divider>
 
-                            <Box
-                              cursor="pointer"
-                              _hover={{ bg: "var(--chakra-colors-gray-100)" }}
-                              p={1}
-                              ref={popoverRef}
-                              borderRadius="4px"
-                              onClick={() => {
-                                onClose();
+                              <Box
+                                cursor="pointer"
+                                _hover={{ bg: "var(--chakra-colors-gray-100)" }}
+                                p={1}
+                                ref={popoverRef}
+                                borderRadius="4px"
+                                onClick={() => {
+                                  onClose();
 
-                                const deleteIndex = chartCards.findIndex(
-                                  (chartCard) =>
-                                    chartCard?.layout?.i === item?.layout?.i
-                                );
+                                  const deleteIndex = chartCards.findIndex(
+                                    (chartCard) =>
+                                      chartCard?.layout?.i === item?.layout?.i
+                                  );
 
-                                if (deleteIndex !== -1) {
-                                  chartCards.splice(deleteIndex, 1);
-                                  setChartCards([...chartCards]);
-                                }
-                              }}
-                            >
-                              删除
-                            </Box>
-                          </PopoverBody>
-                        </PopoverContent>
-                      </>
-                    )}
-                  </Popover>
-                }
-              >
-                <ChartResultPreview
-                  result={item?.data?.result}
-                  type={item?.data?.chart?.type}
-                  config={item?.data?.chart?.config}
-                />
-              </Card>
+                                  if (deleteIndex !== -1) {
+                                    chartCards.splice(deleteIndex, 1);
+                                    setChartCards([...chartCards]);
+                                  }
+                                }}
+                              >
+                                删除
+                              </Box>
+                            </PopoverBody>
+                          </PopoverContent>
+                        </>
+                      )}
+                    </Popover>
+                  }
+                >
+                  <ChartResultPreview
+                    result={item?.data?.result}
+                    type={item?.data?.chart?.type}
+                    config={item?.data?.chart?.config}
+                  />
+                </Card>
+              </DashboardItem>
             );
           })}
         </ResponsiveGridLayout>

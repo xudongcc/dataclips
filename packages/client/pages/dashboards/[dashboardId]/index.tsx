@@ -16,6 +16,7 @@ import { Loading } from "../../../components/Loading";
 import { Box } from "@chakra-ui/react";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+import { DashboardItem } from "../../../components/DashboardItem";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
@@ -122,13 +123,15 @@ const DashboardPreview: PC = () => {
       >
         {chartCards.map((item) => {
           return (
-            <Card title={item?.name} key={item?.layout?.i}>
-              <ChartResultPreview
-                result={item?.data?.result}
-                type={item?.data?.chart?.type}
-                config={item?.data?.chart?.config}
-              />
-            </Card>
+            <DashboardItem key={item?.layout?.i}>
+              <Card h="full" title={item?.name}>
+                <ChartResultPreview
+                  result={item?.data?.result}
+                  type={item?.data?.chart?.type}
+                  config={item?.data?.chart?.config}
+                />
+              </Card>
+            </DashboardItem>
           );
         })}
       </ResponsiveGridLayout>
