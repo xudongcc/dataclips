@@ -1,4 +1,4 @@
-import { Chart, Coordinate, Interval } from "bizcharts";
+import { Chart, Coordinate, Interval, Tooltip } from "bizcharts";
 import { FC, useMemo } from "react";
 import { ResultFragment } from "../../../../generated/graphql";
 
@@ -6,6 +6,7 @@ export interface BarChartConfig {
   variant: string;
   xCol: string;
   yCol: { label: string; value: string }[];
+  isStack: boolean;
 }
 
 interface BarChartPreviewProps {
@@ -72,16 +73,19 @@ export const BarChartPreview: FC<BarChartPreviewProps> = ({
     >
       <Coordinate transpose={config.variant === "horizontal"} />
 
+      {/* stack || dodge */}
       <Interval
         adjust={[
           {
-            type: "dodge",
+            type: config.isStack ? "stack" : "dodge",
             marginRatio: 0,
           },
         ]}
         color="diff"
         position="x*y"
       />
+
+      <Tooltip shared />
     </Chart>
   );
 };

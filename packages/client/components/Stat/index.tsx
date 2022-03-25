@@ -7,7 +7,6 @@ import {
   Stack,
   Text,
   useBreakpointValue,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import * as React from "react";
 import { FiArrowDownRight, FiArrowUpRight } from "react-icons/fi";
@@ -40,7 +39,7 @@ export const Stat = (props: Props) => {
             {value}
           </Heading>
 
-          {delta.isUpwardsTrend && (
+          {delta.isUpwardsTrend !== undefined && (
             <Badge
               variant="subtle"
               colorScheme={delta.isUpwardsTrend ? "green" : "red"}
