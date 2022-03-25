@@ -35,6 +35,7 @@ import {
   useChartConnectionQuery,
   useUpdateDashboardMutation,
   useChartLazyQuery,
+  Chart,
 } from "../../../generated/graphql";
 import { isEmpty } from "lodash";
 import { useCallback, useEffect, useState, useRef } from "react";
@@ -46,14 +47,36 @@ import { Page } from "../../../components/Page";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
+enum OperationType {
+  ADD = "ADD",
+  EDIT = "EDIT",
+}
+
+interface Operation {
+  type: OperationType;
+  key?: string;
+}
+
+interface ChartCard {
+  name: string;
+  chartId: string;
+  data: {
+    chart: Chart;
+    result: any;
+  };
+  layout: Layout;
+}
+
 const DashBoardEdit: PC = () => {
   const toast = useToast();
   const router = useRouter();
   const popoverRef = useRef();
-  const [operation, setOperation] = useState<Record<string, any>>({
-    type: "add",
+
+  const [operation, setOperation] = useState<Operation>({
+    type: OperationType.ADD,
   });
 
+  // 初始仪表盘中所有图表是否请求完成
   const [initialRequestIsDone, setInitialRequestIsDone] = useState(false);
 
   const { dashboardId } = router.query as { dashboardId: string };
@@ -79,7 +102,7 @@ const DashBoardEdit: PC = () => {
   const [updateDashboard, { loading: updateDashboardLoading }] =
     useUpdateDashboardMutation();
 
-  const [chartCards, setChartCards] = useState([]);
+  const [chartCards, setChartCards] = useState<ChartCard[]>([]);
 
   // 创建仪表盘的弹窗
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -108,21 +131,88 @@ const DashBoardEdit: PC = () => {
   }, [onClose]);
 
   const handleUpdateDashboard = useCallback(async () => {
-    await updateDashboard({
-      variables: {
-        id: dashboardId,
-        input: {
-          config: chartCards.map((item) => ({
-            name: item.name,
-            chartId: item.chartId,
-            layout: item.layout,
-          })),
+    try {
+      await updateDashboard({
+        variables: {
+          id: dashboardId,
+          input: {
+            config: chartCards.map((item) => ({
+              name: item.name,
+              chartId: item.chartId,
+              layout: item.layout,
+            })),
+          },
         },
-      },
-    });
+      });
 
-    toast({ title: "更新成功" });
+      toast({ title: "更新成功" });
+    } catch (err) {
+      console.log(err);
+    }
   }, [chartCards, dashboardId, toast, updateDashboard]);
+
+  const handleAddOrEditChartCard = useCallback(async () => {
+    try {
+      const error = await form.validateForm();
+
+      if (isEmpty(error)) {
+        const { data } = await getChart({
+          variables: {
+            id: form.values.chartId,
+          },
+        });
+
+        if (data?.chart) {
+          const result = await getQueryResult(data.chart.clipId);
+
+          if (result && !result?.error) {
+            const current = {
+              name: form.values.name,
+              chartId: data.chart.id,
+              data: {
+                result: result,
+                chart: data?.chart,
+              },
+              layout: {
+                i: `${Date.now()}`,
+                x: 0,
+                y: chartCards.length * 3,
+                w: 6,
+                h: 3,
+              },
+            };
+
+            if (operation.type === OperationType.ADD) {
+              setChartCards([...chartCards, current]);
+            } else {
+              const updateIndex = chartCards.findIndex(
+                (chartCard) => chartCard?.layout?.i === operation?.key
+              );
+
+              if (updateIndex !== -1) {
+                chartCards[updateIndex] = current;
+              }
+
+              setChartCards([...chartCards]);
+              setOperation({ type: OperationType.EDIT });
+            }
+          }
+        }
+
+        handleCloseAddChartModal();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, [
+    chartCards,
+    form,
+    getChart,
+    getQueryResult,
+    handleCloseAddChartModal,
+    operation?.key,
+    operation.type,
+  ]);
 
   // 布局发生变化时
   const handleSetChartItemLayout = useCallback(
@@ -151,6 +241,7 @@ const DashBoardEdit: PC = () => {
     [chartCards]
   );
 
+  // 初始化时，请求所有图表资源
   useEffect(() => {
     if (data?.dashboard?.config?.length) {
       if (!initialRequestIsDone) {
@@ -257,7 +348,7 @@ const DashBoardEdit: PC = () => {
                               });
 
                               setOperation({
-                                type: "edit",
+                                type: OperationType.EDIT,
                                 key: item?.layout?.i,
                               });
 
@@ -308,7 +399,7 @@ const DashBoardEdit: PC = () => {
         })}
       </ResponsiveGridLayout>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={handleCloseAddChartModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>添加图表</ModalHeader>
@@ -367,61 +458,7 @@ const DashBoardEdit: PC = () => {
             <Button
               colorScheme="red"
               isLoading={isFetching || getChartLoading}
-              onClick={async () => {
-                try {
-                  const error = await form.validateForm();
-
-                  if (isEmpty(error)) {
-                    const { data } = await getChart({
-                      variables: {
-                        id: form.values.chartId,
-                      },
-                    });
-
-                    if (data?.chart) {
-                      const result = await getQueryResult(data.chart.clipId);
-
-                      if (result && !result?.error) {
-                        const current = {
-                          name: form.values.name,
-                          chartId: data.chart.id,
-                          data: {
-                            result: result,
-                            chart: data?.chart,
-                          },
-                          layout: {
-                            i: `${Date.now()}`,
-                            x: 0,
-                            y: chartCards.length * 3,
-                            w: 6,
-                            h: 3,
-                          },
-                        };
-
-                        if (operation.type === "add") {
-                          setChartCards([...chartCards, current]);
-                        } else {
-                          const updateIndex = chartCards.findIndex(
-                            (chartCard) =>
-                              chartCard?.layout?.i === operation?.key
-                          );
-
-                          if (updateIndex !== -1) {
-                            chartCards[updateIndex] = current;
-                          }
-
-                          setChartCards([...chartCards]);
-                          setOperation({ type: "add" });
-                        }
-                      }
-                    }
-
-                    handleCloseAddChartModal();
-                  }
-                } catch (err) {
-                  console.error(err);
-                }
-              }}
+              onClick={handleAddOrEditChartCard}
             >
               确定
             </Button>
