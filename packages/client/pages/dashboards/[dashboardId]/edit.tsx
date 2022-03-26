@@ -38,7 +38,6 @@ import {
 } from "../../../generated/graphql";
 import { cloneDeep, isEmpty } from "lodash";
 import { useCallback, useState, useRef, useEffect } from "react";
-import { useLazyQueryResult } from "../../../hooks/useLazyQueryResult";
 import { Loading } from "../../../components/Loading";
 import { Page } from "../../../components/Page";
 import { DashboardItem } from "../../../components/DashboardItem";
@@ -83,8 +82,6 @@ const DashBoardEdit: PC = () => {
   });
 
   const [getChart, { loading: getChartLoading }] = useChartLazyQuery();
-
-  const [getQueryResult, { isFetching }] = useLazyQueryResult();
 
   const [updateDashboard, { loading: updateDashboardLoading }] =
     useUpdateDashboardMutation();
@@ -150,38 +147,34 @@ const DashBoardEdit: PC = () => {
         });
 
         if (data?.chart) {
-          const result = await getQueryResult(data.chart.clipId);
+          const current = {
+            name: form.values.name,
+            chartId: data.chart.id,
+            layout: {
+              i: `${Date.now()}`,
+              x: 0,
+              y: chartCards.length * 3,
+              w: 6,
+              h: 3,
+            },
+          };
 
-          if (result && !result?.error) {
-            const current = {
-              name: form.values.name,
-              chartId: data.chart.id,
-              layout: {
-                i: `${Date.now()}`,
-                x: 0,
-                y: chartCards.length * 3,
-                w: 6,
-                h: 3,
-              },
-            };
+          if (operation.type === OperationType.ADD) {
+            setChartCards([...chartCards, current]);
+          } else {
+            const updateIndex = chartCards.findIndex(
+              (chartCard) => chartCard?.layout?.i === operation?.key
+            );
 
-            if (operation.type === OperationType.ADD) {
-              setChartCards([...chartCards, current]);
-            } else {
-              const updateIndex = chartCards.findIndex(
-                (chartCard) => chartCard?.layout?.i === operation?.key
-              );
-
-              if (updateIndex !== -1) {
-                chartCards[updateIndex] = {
-                  ...current,
-                  layout: chartCards[updateIndex].layout,
-                };
-              }
-
-              setChartCards([...chartCards]);
-              setOperation({ type: OperationType.EDIT });
+            if (updateIndex !== -1) {
+              chartCards[updateIndex] = {
+                ...current,
+                layout: chartCards[updateIndex].layout,
+              };
             }
+
+            setChartCards([...chartCards]);
+            setOperation({ type: OperationType.EDIT });
           }
         }
 
@@ -194,7 +187,6 @@ const DashBoardEdit: PC = () => {
     chartCards,
     form,
     getChart,
-    getQueryResult,
     handleCloseAddChartModal,
     operation?.key,
     operation.type,
@@ -410,7 +402,7 @@ const DashBoardEdit: PC = () => {
             </Button>
             <Button
               colorScheme="red"
-              isLoading={isFetching || getChartLoading}
+              isLoading={getChartLoading}
               onClick={handleAddOrEditChartCard}
             >
               确定
