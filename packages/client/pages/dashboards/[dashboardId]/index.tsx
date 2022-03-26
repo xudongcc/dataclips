@@ -17,6 +17,7 @@ import { Box } from "@chakra-ui/react";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { DashboardItem } from "../../../components/DashboardItem";
+import { DashboardChartResultPreview } from "../../../components/DashboardChartResultPreview";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
@@ -33,19 +34,11 @@ interface ChartCard {
 const DashboardPreview: PC = () => {
   const router = useRouter();
 
-  // 初始仪表盘中所有图表是否请求完成
-  const [initialRequestIsDone, setInitialRequestIsDone] = useState(false);
-
   const { dashboardId } = router.query as { dashboardId: string };
 
-  const { data } = useDashboardQuery({
+  const { data, loading } = useDashboardQuery({
     variables: { id: dashboardId },
     skip: !dashboardId,
-    onCompleted: (data) => {
-      if (!data?.dashboard?.config?.length) {
-        setInitialRequestIsDone(true);
-      }
-    },
   });
 
   const [getChart] = useChartLazyQuery();
@@ -54,56 +47,13 @@ const DashboardPreview: PC = () => {
 
   const [chartCards, setChartCards] = useState<ChartCard[]>([]);
 
-  // 初始化时，请求所有图表资源
   useEffect(() => {
     if (data?.dashboard?.config?.length) {
-      if (!initialRequestIsDone) {
-        Promise.allSettled(
-          data.dashboard.config.map(async (item) => {
-            if (item?.chartId) {
-              const { data } = await getChart({
-                variables: { id: item.chartId },
-              });
-
-              if (data?.chart.clipId) {
-                const result: any = await getQueryResult(data.chart.clipId);
-
-                if (result?.fields && result?.values && !result?.error) {
-                  return {
-                    name: item.name,
-                    chartId: item.chartId,
-                    data: {
-                      result: result,
-                      chart: data?.chart,
-                    },
-                    layout: item.layout,
-                  };
-                }
-              }
-            }
-          })
-        )
-          .then((res) => {
-            const successRes = res
-              .filter((p) => p.status === "fulfilled")
-              .map((item: any) => item.value);
-
-            if (compact(successRes).length) {
-              setChartCards(successRes);
-            }
-          })
-          .catch((err) => {
-            console.log("err", err);
-          })
-          .finally(() => {
-            setInitialRequestIsDone(true);
-          });
-      }
+      setChartCards(data.dashboard.config);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data?.dashboard?.config]);
 
-  if (!initialRequestIsDone) {
+  if (loading) {
     return <Loading />;
   }
 
@@ -125,11 +75,7 @@ const DashboardPreview: PC = () => {
           return (
             <DashboardItem key={item?.layout?.i}>
               <Card h="full" title={item?.name}>
-                <ChartResultPreview
-                  result={item?.data?.result}
-                  type={item?.data?.chart?.type}
-                  config={item?.data?.chart?.config}
-                />
+                <DashboardChartResultPreview chartId={item?.chartId} />
               </Card>
             </DashboardItem>
           );

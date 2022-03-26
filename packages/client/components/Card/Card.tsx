@@ -65,8 +65,7 @@ export const Card: FC<CardProps> = ({
 
         {!extra && (primaryAction || secondaryActions) && (
           <HStack spacing="1">
-            {!extra &&
-              secondaryActions &&
+            {secondaryActions &&
               secondaryActions?.length &&
               secondaryActions.map((secondaryAction, index) => (
                 <Button
@@ -78,7 +77,7 @@ export const Card: FC<CardProps> = ({
                 </Button>
               ))}
 
-            {!extra && primaryAction && (
+            {primaryAction && (
               <Button variant="primary" {...omit(primaryAction, "text")}>
                 {primaryAction?.text}
               </Button>
