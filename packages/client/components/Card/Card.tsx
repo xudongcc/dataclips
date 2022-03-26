@@ -87,18 +87,7 @@ export const Card: FC<CardProps> = ({
       </Stack>
     </Stack>
 
-    <Box
-      flex={1}
-      // 图表需要限制
-      overflow="hidden"
-      h="inherit"
-      sx={{
-        ".bizcharts": {
-          height: "100% !important",
-        },
-      }}
-      className="card-body"
-    >
+    <Box flex={1} overflow="hidden" h="inherit" className="card-body">
       {children}
     </Box>
 

@@ -24,6 +24,9 @@ export const DashboardItem = forwardRef<any, DashboardItemProps>(
             right: "10px",
             bottom: "10px",
           },
+          ".bizcharts": {
+            height: "100% !important",
+          },
         }}
         className={className}
         key={key}
