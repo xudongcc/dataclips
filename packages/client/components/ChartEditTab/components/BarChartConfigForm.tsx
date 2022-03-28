@@ -68,7 +68,7 @@ export const BarChartConfigForm: FC<BarChartConfigFormProps> = ({
           isChecked={form.values.barConfig.isStack}
           onChange={form.handleChange}
         >
-          显示堆栈（设置后需重新刷新页面）
+          显示堆栈
         </Checkbox>
       </Grid>
     </VStack>

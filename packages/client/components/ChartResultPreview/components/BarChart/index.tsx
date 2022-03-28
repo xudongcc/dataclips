@@ -1,5 +1,7 @@
-import { Chart, Coordinate, Interval, Tooltip } from "bizcharts";
-import { FC, useMemo } from "react";
+import { ColumnChart, Coordinate } from "bizcharts";
+import { isEqual } from "lodash";
+import { useEffect } from "react";
+import { FC, useMemo, useState } from "react";
 import { ResultFragment } from "../../../../generated/graphql";
 
 export interface BarChartConfig {
@@ -18,6 +20,15 @@ export const BarChartPreview: FC<BarChartPreviewProps> = ({
   result,
   config,
 }) => {
+  const [oldData, setOldData] = useState<
+    {
+      x: string;
+      y: string | number;
+      diff: string;
+    }[]
+  >([]);
+  const [oldConfig, setOldConfig] = useState<BarChartConfig>();
+
   const data = useMemo(() => {
     if (!result?.error) {
       if (config.xCol && config.yCol.length) {
@@ -55,37 +66,38 @@ export const BarChartPreview: FC<BarChartPreviewProps> = ({
     return [];
   }, [config, result]);
 
+  const BarChart = useMemo(() => {
+    return (
+      // @ts-ignore
+      <ColumnChart
+        xField="x"
+        yField="y"
+        data={oldData}
+        legend={{ position: "bottom" }}
+        autoFit
+        colorField="diff"
+        isGroup={!oldConfig?.isStack}
+        isStack={oldConfig?.isStack}
+      >
+        {/* 说是不支持 children 其实是支持的。。 */}
+        <Coordinate transpose={oldConfig?.variant === "horizontal"} />
+      </ColumnChart>
+    );
+  }, [oldConfig, oldData]);
+
+  useEffect(() => {
+    if (!isEqual(data, oldData)) {
+      setOldData(data);
+    }
+
+    if (!isEqual(config, oldConfig)) {
+      setOldConfig(config);
+    }
+  }, [config, data, oldConfig, oldData]);
+
   if (!data.length) {
     return null;
   }
 
-  return (
-    <Chart
-      scale={{
-        y: {
-          nice: true,
-          range: [0, 1],
-        },
-      }}
-      padding={[20, 20, 80, 80]}
-      autoFit
-      data={data}
-    >
-      <Coordinate transpose={config.variant === "horizontal"} />
-
-      {/* stack || dodge */}
-      <Interval
-        adjust={[
-          {
-            type: config.isStack ? "stack" : "dodge",
-            marginRatio: 0,
-          },
-        ]}
-        color="diff"
-        position="x*y"
-      />
-
-      <Tooltip shared />
-    </Chart>
-  );
+  return BarChart;
 };
