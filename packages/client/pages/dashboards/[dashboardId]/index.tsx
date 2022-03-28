@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { Chart, useDashboardQuery } from "../../../generated/graphql";
 import GridLayout, { Layout, WidthProvider } from "react-grid-layout";
-import { Box } from "@chakra-ui/react";
+import { Box, useToken } from "@chakra-ui/react";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { DashboardItem } from "../../../components/DashboardItem";
@@ -32,6 +32,7 @@ interface ChartCard {
 const DashboardPreview: PC = () => {
   const router = useRouter();
   const session = useSession();
+  const [borderRadius] = useToken("radii", ["lg"]);
 
   const { dashboardId } = router.query as { dashboardId: string };
 
@@ -58,6 +59,7 @@ const DashboardPreview: PC = () => {
             sx={{
               ".react-grid-item.react-grid-placeholder": {
                 background: "rgba(1,1,1,0.2) !important",
+                borderRadius,
               },
             }}
           >

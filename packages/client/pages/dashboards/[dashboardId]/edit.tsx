@@ -15,12 +15,14 @@ import {
   Text,
   Popover,
   PopoverBody,
+  useToken,
   PopoverContent,
   PopoverTrigger,
   Select,
   useDisclosure,
   useToast,
   VStack,
+  useTheme,
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -67,6 +69,7 @@ const DashBoardEdit: PC = () => {
   const toast = useToast();
   const router = useRouter();
   const popoverRef = useRef();
+  const [borderRadius] = useToken("radii", ["lg"]);
 
   const [operation, setOperation] = useState<Operation>({
     type: OperationType.ADD,
@@ -257,6 +260,7 @@ const DashBoardEdit: PC = () => {
           sx={{
             ".react-grid-item.react-grid-placeholder": {
               background: "rgba(0,0,0,0.2) !important",
+              borderRadius,
             },
           }}
         >
