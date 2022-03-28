@@ -22,7 +22,6 @@ import {
   useDisclosure,
   useToast,
   VStack,
-  useTheme,
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
