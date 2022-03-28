@@ -35,16 +35,13 @@ import {
   useChartConnectionQuery,
   useUpdateDashboardMutation,
   useChartLazyQuery,
-  Chart,
 } from "../../../generated/graphql";
-import { isEmpty } from "lodash";
-import { useCallback, useEffect, useState, useRef } from "react";
-import { ChartResultPreview } from "../../../components/ChartResultPreview";
-import { useLazyQueryResult } from "../../../hooks/useLazyQueryResult";
-import { compact } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
+import { useCallback, useState, useRef, useEffect } from "react";
 import { Loading } from "../../../components/Loading";
 import { Page } from "../../../components/Page";
 import { DashboardItem } from "../../../components/DashboardItem";
+import { DashboardChartResultPreview } from "../../../components/DashboardChartResultPreview";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
@@ -61,10 +58,6 @@ interface Operation {
 interface ChartCard {
   name: string;
   chartId: string;
-  data: {
-    chart: Chart;
-    result: any;
-  };
   layout: Layout;
 }
 
@@ -77,19 +70,11 @@ const DashBoardEdit: PC = () => {
     type: OperationType.ADD,
   });
 
-  // 初始仪表盘中所有图表是否请求完成
-  const [initialRequestIsDone, setInitialRequestIsDone] = useState(false);
-
   const { dashboardId } = router.query as { dashboardId: string };
 
-  const { data } = useDashboardQuery({
+  const { data, loading } = useDashboardQuery({
     variables: { id: dashboardId },
     skip: !dashboardId,
-    onCompleted: (data) => {
-      if (!data?.dashboard?.config?.length) {
-        setInitialRequestIsDone(true);
-      }
-    },
   });
 
   const { data: chartConnectionData } = useChartConnectionQuery({
@@ -97,8 +82,6 @@ const DashBoardEdit: PC = () => {
   });
 
   const [getChart, { loading: getChartLoading }] = useChartLazyQuery();
-
-  const [getQueryResult, { isFetching }] = useLazyQueryResult();
 
   const [updateDashboard, { loading: updateDashboardLoading }] =
     useUpdateDashboardMutation();
@@ -164,39 +147,34 @@ const DashBoardEdit: PC = () => {
         });
 
         if (data?.chart) {
-          const result = await getQueryResult(data.chart.clipId);
+          const current = {
+            name: form.values.name,
+            chartId: data.chart.id,
+            layout: {
+              i: `${Date.now()}`,
+              x: 0,
+              y: chartCards.length * 3,
+              w: 6,
+              h: 3,
+            },
+          };
 
-          if (result && !result?.error) {
-            const current = {
-              name: form.values.name,
-              chartId: data.chart.id,
-              data: {
-                result: result,
-                chart: data?.chart,
-              },
-              layout: {
-                i: `${Date.now()}`,
-                x: 0,
-                y: chartCards.length * 3,
-                w: 6,
-                h: 3,
-              },
-            };
+          if (operation.type === OperationType.ADD) {
+            setChartCards([...chartCards, current]);
+          } else {
+            const updateIndex = chartCards.findIndex(
+              (chartCard) => chartCard?.layout?.i === operation?.key
+            );
 
-            if (operation.type === OperationType.ADD) {
-              setChartCards([...chartCards, current]);
-            } else {
-              const updateIndex = chartCards.findIndex(
-                (chartCard) => chartCard?.layout?.i === operation?.key
-              );
-
-              if (updateIndex !== -1) {
-                chartCards[updateIndex] = current;
-              }
-
-              setChartCards([...chartCards]);
-              setOperation({ type: OperationType.EDIT });
+            if (updateIndex !== -1) {
+              chartCards[updateIndex] = {
+                ...current,
+                layout: chartCards[updateIndex].layout,
+              };
             }
+
+            setChartCards([...chartCards]);
+            setOperation({ type: OperationType.EDIT });
           }
         }
 
@@ -209,7 +187,6 @@ const DashBoardEdit: PC = () => {
     chartCards,
     form,
     getChart,
-    getQueryResult,
     handleCloseAddChartModal,
     operation?.key,
     operation.type,
@@ -218,14 +195,16 @@ const DashBoardEdit: PC = () => {
   // 布局发生变化时
   const handleSetChartItemLayout = useCallback(
     (newLayout: Layout[]) => {
+      const newChartCards = cloneDeep(chartCards);
+
       newLayout.forEach((layout) => {
         const itemIndex = chartCards.findIndex(
           (item) => item?.layout?.i === layout.i
         );
 
         if (itemIndex !== -1) {
-          chartCards[itemIndex] = {
-            ...chartCards[itemIndex],
+          newChartCards[itemIndex] = {
+            ...newChartCards[itemIndex],
             layout: {
               i: layout.i,
               x: layout.x,
@@ -237,61 +216,18 @@ const DashBoardEdit: PC = () => {
         }
       });
 
-      setChartCards([...chartCards]);
+      setChartCards(newChartCards);
     },
     [chartCards]
   );
 
-  // 初始化时，请求所有图表资源
   useEffect(() => {
     if (data?.dashboard?.config?.length) {
-      if (!initialRequestIsDone) {
-        Promise.allSettled(
-          data.dashboard.config.map(async (item) => {
-            if (item?.chartId) {
-              const { data } = await getChart({
-                variables: { id: item.chartId },
-              });
-
-              if (data?.chart.clipId) {
-                const result: any = await getQueryResult(data.chart.clipId);
-
-                if (result?.fields && result?.values && !result?.error) {
-                  return {
-                    name: item.name,
-                    chartId: item.chartId,
-                    data: {
-                      result: result,
-                      chart: data?.chart,
-                    },
-                    layout: item.layout,
-                  };
-                }
-              }
-            }
-          })
-        )
-          .then((res) => {
-            const successRes = res
-              .filter((p) => p.status === "fulfilled")
-              .map((item: any) => item.value);
-
-            if (compact(successRes).length) {
-              setChartCards(successRes);
-            }
-          })
-          .catch((err) => {
-            console.log("err", err);
-          })
-          .finally(() => {
-            setInitialRequestIsDone(true);
-          });
-      }
+      setChartCards(data.dashboard.config);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data?.dashboard?.config]);
 
-  if (!initialRequestIsDone) {
+  if (loading) {
     return <Loading width="100%" />;
   }
 
@@ -318,10 +254,11 @@ const DashBoardEdit: PC = () => {
         }}
       >
         <ResponsiveGridLayout
+          draggableHandle=".card-body"
           className="layout"
           onLayoutChange={handleSetChartItemLayout}
           cols={12}
-          style={{}}
+          containerPadding={[0, 0]}
           width={1200}
           layout={chartCards.map((item) => item?.layout)}
         >
@@ -399,11 +336,7 @@ const DashBoardEdit: PC = () => {
                     </Popover>
                   }
                 >
-                  <ChartResultPreview
-                    result={item?.data?.result}
-                    type={item?.data?.chart?.type}
-                    config={item?.data?.chart?.config}
-                  />
+                  <DashboardChartResultPreview chartId={item?.chartId} />
                 </Card>
               </DashboardItem>
             );
@@ -469,7 +402,7 @@ const DashBoardEdit: PC = () => {
             </Button>
             <Button
               colorScheme="red"
-              isLoading={isFetching || getChartLoading}
+              isLoading={getChartLoading}
               onClick={handleAddOrEditChartCard}
             >
               确定

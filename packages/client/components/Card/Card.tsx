@@ -65,8 +65,7 @@ export const Card: FC<CardProps> = ({
 
         {!extra && (primaryAction || secondaryActions) && (
           <HStack spacing="1">
-            {!extra &&
-              secondaryActions &&
+            {secondaryActions &&
               secondaryActions?.length &&
               secondaryActions.map((secondaryAction, index) => (
                 <Button
@@ -78,7 +77,7 @@ export const Card: FC<CardProps> = ({
                 </Button>
               ))}
 
-            {!extra && primaryAction && (
+            {primaryAction && (
               <Button variant="primary" {...omit(primaryAction, "text")}>
                 {primaryAction?.text}
               </Button>
@@ -88,13 +87,13 @@ export const Card: FC<CardProps> = ({
       </Stack>
     </Stack>
 
-    <Box flex={1} className="card-body">
+    <Box flex={1} overflow="hidden" h="inherit" className="card-body">
       {children}
     </Box>
 
     {/* <Stack direction={{ base: "column", md: "row" }} spacing="3">
-          <Button variant="secondary">Skip</Button>
-          <Button variant="primary">Download</Button>
-        </Stack> */}
+      <Button variant="secondary">Skip</Button>
+      <Button variant="primary">Download</Button>
+    </Stack> */}
   </Stack>
 );
