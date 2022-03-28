@@ -3,7 +3,6 @@ import {
   Chart,
   Coordinate,
   DonutChart,
-  getTheme,
   Interaction,
   Interval,
   Tooltip,
