@@ -79,6 +79,11 @@ const SourceCreate = () => {
         username: "",
         password: "",
         type: "" as DatabaseType,
+        sshEnabled: false,
+        sshHost: "",
+        sshPort: undefined,
+        sshUsername: "",
+        sshPassword: "",
       },
       virtualSource: {
         name: "",

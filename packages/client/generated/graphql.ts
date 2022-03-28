@@ -134,6 +134,12 @@ export type CreateDatabaseSourceInput = {
   name: Scalars['String'];
   password?: InputMaybe<Scalars['String']>;
   port?: InputMaybe<Scalars['Int']>;
+  sshEnabled?: InputMaybe<Scalars['Boolean']>;
+  sshHost?: InputMaybe<Scalars['String']>;
+  sshKey?: InputMaybe<Scalars['String']>;
+  sshPassword?: InputMaybe<Scalars['String']>;
+  sshPort?: InputMaybe<Scalars['Int']>;
+  sshUsername?: InputMaybe<Scalars['String']>;
   type: DatabaseType;
   username: Scalars['String'];
 };
@@ -154,7 +160,7 @@ export type CreateVirtualSourceTableInput = {
 
 export type Dashboard = {
   __typename?: 'Dashboard';
-  config?: Maybe<Array<Scalars['JSONObject']>>;
+  config: Array<Scalars['JSONObject']>;
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
   name: Scalars['String'];
@@ -184,6 +190,10 @@ export type DatabaseSource = {
   id: Scalars['ID'];
   name: Scalars['String'];
   port?: Maybe<Scalars['Int']>;
+  sshEnabled: Scalars['Boolean'];
+  sshHost?: Maybe<Scalars['String']>;
+  sshPort?: Maybe<Scalars['Int']>;
+  sshUsername?: Maybe<Scalars['String']>;
   type: DatabaseType;
   updatedAt: Scalars['DateTime'];
   username: Scalars['String'];
@@ -524,6 +534,12 @@ export type UpdateDatabaseSourceInput = {
   name?: InputMaybe<Scalars['String']>;
   password?: InputMaybe<Scalars['String']>;
   port?: InputMaybe<Scalars['Int']>;
+  sshEnabled?: InputMaybe<Scalars['Boolean']>;
+  sshHost?: InputMaybe<Scalars['String']>;
+  sshKey?: InputMaybe<Scalars['String']>;
+  sshPassword?: InputMaybe<Scalars['String']>;
+  sshPort?: InputMaybe<Scalars['Int']>;
+  sshUsername?: InputMaybe<Scalars['String']>;
   type?: InputMaybe<SourceType>;
   username?: InputMaybe<Scalars['String']>;
 };
@@ -568,13 +584,13 @@ export type ChartFragment = { __typename?: 'Chart', id: string, name: string, to
 
 export type ClipFragment = { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, sourceId: string, createdAt: any, updatedAt: any };
 
-export type DashboardFragment = { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config?: Array<any> | null, createdAt: any, updatedAt: any };
+export type DashboardFragment = { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: Array<any>, createdAt: any, updatedAt: any };
 
-export type DatabaseSourceFragment = { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any };
+export type DatabaseSourceFragment = { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null };
 
 export type ResultFragment = { __typename?: 'Result', id: string, name: string, error?: string | null, fields: Array<string>, values: Array<Array<string>>, duration: number, startedAt?: any | null, finishedAt?: any | null };
 
-type Source_DatabaseSource_Fragment = { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any };
+type Source_DatabaseSource_Fragment = { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null };
 
 type Source_VirtualSource_Fragment = { __typename?: 'VirtualSource', id: string, name: string, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, clipId: string, createdAt: any, updatedAt: any }> };
 
@@ -601,14 +617,14 @@ export type CreateDashboardMutationVariables = Exact<{
 }>;
 
 
-export type CreateDashboardMutation = { __typename?: 'Mutation', createDashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config?: Array<any> | null, createdAt: any, updatedAt: any } };
+export type CreateDashboardMutation = { __typename?: 'Mutation', createDashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: Array<any>, createdAt: any, updatedAt: any } };
 
 export type CreateDatabaseSourceMutationVariables = Exact<{
   input: CreateDatabaseSourceInput;
 }>;
 
 
-export type CreateDatabaseSourceMutation = { __typename?: 'Mutation', createDatabaseSource: { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any } };
+export type CreateDatabaseSourceMutation = { __typename?: 'Mutation', createDatabaseSource: { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null } };
 
 export type CreateVirtualSourceMutationVariables = Exact<{
   input: CreateVirtualSourceInput;
@@ -667,7 +683,7 @@ export type UpdateDashboardMutationVariables = Exact<{
 }>;
 
 
-export type UpdateDashboardMutation = { __typename?: 'Mutation', updateDashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config?: Array<any> | null, createdAt: any, updatedAt: any } };
+export type UpdateDashboardMutation = { __typename?: 'Mutation', updateDashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: Array<any>, createdAt: any, updatedAt: any } };
 
 export type UpdateDatabaseSourceMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -728,7 +744,7 @@ export type DashboardQueryVariables = Exact<{
 }>;
 
 
-export type DashboardQuery = { __typename?: 'Query', dashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config?: Array<any> | null, createdAt: any, updatedAt: any } };
+export type DashboardQuery = { __typename?: 'Query', dashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: Array<any>, createdAt: any, updatedAt: any } };
 
 export type DashboardConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
@@ -740,14 +756,14 @@ export type DashboardConnectionQueryVariables = Exact<{
 }>;
 
 
-export type DashboardConnectionQuery = { __typename?: 'Query', dashboardConnection: { __typename?: 'DashboardConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'DashboardEdge', node: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config?: Array<any> | null, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+export type DashboardConnectionQuery = { __typename?: 'Query', dashboardConnection: { __typename?: 'DashboardConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'DashboardEdge', node: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: Array<any>, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export type SourceQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type SourceQuery = { __typename?: 'Query', source: { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any } | { __typename?: 'VirtualSource', id: string, name: string, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, clipId: string, createdAt: any, updatedAt: any }> } };
+export type SourceQuery = { __typename?: 'Query', source: { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null } | { __typename?: 'VirtualSource', id: string, name: string, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, clipId: string, createdAt: any, updatedAt: any }> } };
 
 export type SourceConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
@@ -759,7 +775,7 @@ export type SourceConnectionQueryVariables = Exact<{
 }>;
 
 
-export type SourceConnectionQuery = { __typename?: 'Query', sourceConnection: { __typename?: 'SourceConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'SourceEdge', node: { __typename: 'DatabaseSource', id: string, name: string, createdAt: any, updatedAt: any, typename: 'DatabaseSource' } | { __typename: 'VirtualSource', id: string, name: string, createdAt: any, updatedAt: any, typename: 'VirtualSource', tables: Array<{ __typename?: 'VirtualSourceTable', name: string, clipId: string }> } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+export type SourceConnectionQuery = { __typename?: 'Query', sourceConnection: { __typename?: 'SourceConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'SourceEdge', node: { __typename: 'DatabaseSource', id: string, name: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null, typename: 'DatabaseSource' } | { __typename: 'VirtualSource', id: string, name: string, createdAt: any, updatedAt: any, typename: 'VirtualSource', tables: Array<{ __typename?: 'VirtualSourceTable', name: string, clipId: string }> } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export const ChartFragmentDoc = gql`
     fragment Chart on Chart {
@@ -817,6 +833,10 @@ export const DatabaseSourceFragmentDoc = gql`
   username
   createdAt
   updatedAt
+  sshEnabled
+  sshHost
+  sshPort
+  sshUsername
 }
     `;
 export const VirtualSourceFragmentDoc = gql`
@@ -1655,6 +1675,10 @@ export const SourceConnectionDocument = gql`
           name
           createdAt
           updatedAt
+          sshEnabled
+          sshHost
+          sshPort
+          sshUsername
         }
         ... on VirtualSource {
           id

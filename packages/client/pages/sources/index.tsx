@@ -106,6 +106,10 @@ const SourceList = () => {
         username: "",
         password: "",
         type: "" as DatabaseType,
+        sshEnabled: false,
+        sshHost: "",
+        sshPort: undefined,
+        sshUsername: "",
       },
       virtualSource: {
         name: "",
@@ -211,6 +215,10 @@ const SourceList = () => {
                           username: (source as DatabaseSource).username,
                           password: "",
                           type: (source as DatabaseSource).type,
+                          sshEnabled: (source as DatabaseSource).sshEnabled,
+                          sshHost: (source as DatabaseSource).sshHost,
+                          sshPort: (source as DatabaseSource).sshPort,
+                          sshUsername: (source as DatabaseSource).sshUsername,
                         },
                       });
                     }

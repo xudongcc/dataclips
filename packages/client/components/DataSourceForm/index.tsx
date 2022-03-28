@@ -1,4 +1,5 @@
 import {
+  Checkbox,
   FormControl,
   FormErrorMessage,
   Input,
@@ -24,7 +25,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({ form }) => {
           value={form.values.dataSource.name}
           onChange={form.handleChange}
           placeholder="请输入数据源名称"
-        ></Input>
+        />
         <FormErrorMessage>请输入数据源名称</FormErrorMessage>
       </FormControl>
 
@@ -48,7 +49,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({ form }) => {
           value={form.values.dataSource.host}
           onChange={form.handleChange}
           placeholder="请输入主机名称"
-        ></Input>
+        />
         <FormErrorMessage>请输入主机名称</FormErrorMessage>
       </FormControl>
 
@@ -73,7 +74,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({ form }) => {
           value={form.values.dataSource.database}
           onChange={form.handleChange}
           placeholder="请输入数据库名称"
-        ></Input>
+        />
         <FormErrorMessage>请输入数据库名称</FormErrorMessage>
       </FormControl>
 
@@ -83,7 +84,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({ form }) => {
           value={form.values.dataSource.username}
           onChange={form.handleChange}
           placeholder="请输入用户名"
-        ></Input>
+        />
         <FormErrorMessage>请输入用户名</FormErrorMessage>
       </FormControl>
 
@@ -94,9 +95,59 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({ form }) => {
           value={form.values.dataSource.password}
           onChange={form.handleChange}
           placeholder="请输入密码"
-        ></Input>
+        />
         <FormErrorMessage>请输入密码</FormErrorMessage>
       </FormControl>
+
+      <Checkbox
+        name="dataSource.sshEnabled"
+        isChecked={form.values.dataSource.sshEnabled}
+        onChange={form.handleChange}
+      >
+        启用 ssh
+      </Checkbox>
+
+      {form.values.dataSource.sshEnabled && (
+        <>
+          <Input
+            name="dataSource.sshHost"
+            value={form.values.dataSource.sshHost}
+            onChange={form.handleChange}
+            placeholder="请输入 ssh 主机"
+          />
+
+          <NumberInput
+            w="100%"
+            name="dataSource.sshPort"
+            value={form.values.dataSource.sshPort}
+          >
+            <NumberInputField
+              onChange={form.handleChange}
+              type="number"
+              placeholder="请输入 ssh 端口号"
+            />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+
+          <Input
+            name="dataSource.sshUsername"
+            value={form.values.dataSource.sshUsername}
+            onChange={form.handleChange}
+            placeholder="请输入 ssh 用户名"
+          />
+
+          <Input
+            type="password"
+            name="dataSource.sshPassword"
+            value={form.values.dataSource.sshPassword}
+            onChange={form.handleChange}
+            placeholder="请输入 ssh 密码"
+          />
+        </>
+      )}
     </>
   );
 };

@@ -8,4 +8,8 @@ fragment DatabaseSource on DatabaseSource {
   username
   createdAt
   updatedAt
+  sshEnabled
+  sshHost
+  sshPort
+  sshUsername
 }
