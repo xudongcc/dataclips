@@ -17,7 +17,7 @@ export const LineChartConfigForm: FC<LineChartConfigFormProps> = ({
   editOptionConfig,
 }) => {
   return (
-    <VStack mt={4} spacing={4}>
+    <VStack spacing={4}>
       <Grid w="100%" gap={4}>
         <Select
           placeholder="请选择 x 轴"

@@ -13,7 +13,11 @@ import {
   ModalOverlay,
   useDisclosure,
   useToast,
+  Divider,
+  Center,
+  Text,
 } from "@chakra-ui/react";
+import Head from "next/head";
 import { Page } from "../../components/Page";
 import { PC } from "../../interfaces/PageComponent";
 import { useRouter } from "next/router";
@@ -86,25 +90,13 @@ const DashBoardList: PC = () => {
           return (
             <Link
               onClick={() => {
-                router.push(`/dashboards/${id}/edit`);
+                router.push(`/dashboards/${id}`);
               }}
               color="blue.500"
             >
               {name}
             </Link>
           );
-        },
-      },
-
-      {
-        Header: "createdAt",
-        accessor: "createdAt",
-        Cell: ({
-          row: {
-            values: { createdAt },
-          },
-        }) => {
-          return moment(createdAt).format("YYYY-MM-DD HH:mm:ss");
         },
       },
       {
@@ -119,7 +111,13 @@ const DashBoardList: PC = () => {
         },
       },
       {
-        Header: "operation",
+        Header: () => {
+          return (
+            <Text w="100%" textAlign="center">
+              operation
+            </Text>
+          );
+        },
         accessor: "operation",
         Cell: ({
           row: {
@@ -127,15 +125,28 @@ const DashBoardList: PC = () => {
           },
         }) => {
           return (
-            <Link
-              color="red.500"
-              onClick={() => {
-                setSelectedDashboardId(id);
-                onDeleteDashboardModalOpen();
-              }}
-            >
-              删除
-            </Link>
+            <Center>
+              <Link
+                color="blue.500"
+                onClick={() => {
+                  router.push(`/dashboards/${id}/edit`);
+                }}
+              >
+                编辑
+              </Link>
+
+              <Divider orientation="vertical" px={2}></Divider>
+
+              <Link
+                color="red.500"
+                onClick={() => {
+                  setSelectedDashboardId(id);
+                  onDeleteDashboardModalOpen();
+                }}
+              >
+                删除
+              </Link>
+            </Center>
           );
         },
       },
@@ -206,94 +217,101 @@ const DashBoardList: PC = () => {
   }, [createDashboard, form]);
 
   return (
-    <Page
-      title="仪表盘"
-      primaryAction={{
-        text: "创建仪表盘",
-        onClick: onCreateDashboardModalOpen,
-      }}
-    >
-      <Table {...tableProps} />
+    <>
+      <Head>
+        <title>仪表盘</title>
+      </Head>
 
-      {/* 创建仪表盘的弹窗 */}
-      <Modal
-        isOpen={isCreateDashboardModalOpen}
-        onClose={handleCloseCreateDashboardModal}
+      <Page
+        title="仪表盘"
+        primaryAction={{
+          text: "创建仪表盘",
+          onClick: onCreateDashboardModalOpen,
+        }}
       >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>创建仪表盘</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl isInvalid={!!form.errors.dashboardName}>
-              <Input
-                name="dashboardName"
-                value={form.values.dashboardName}
-                onChange={form.handleChange}
-                placeholder="请输入仪表盘名称"
-              />
+        <Table {...tableProps} />
 
-              <FormErrorMessage>请输入仪表盘名字</FormErrorMessage>
-            </FormControl>
-          </ModalBody>
+        {/* 创建仪表盘的弹窗 */}
+        <Modal
+          isOpen={isCreateDashboardModalOpen}
+          onClose={handleCloseCreateDashboardModal}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>创建仪表盘</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <FormControl isInvalid={!!form.errors.dashboardName}>
+                <Input
+                  name="dashboardName"
+                  value={form.values.dashboardName}
+                  onChange={form.handleChange}
+                  placeholder="请输入仪表盘名称"
+                />
 
-          <ModalFooter>
-            <Button
-              colorScheme="blue"
-              mr={3}
-              onClick={handleCloseCreateDashboardModal}
-            >
-              取消
-            </Button>
-            <Button
-              isLoading={createDashboardLoading}
-              colorScheme="red"
-              onClick={async () => {
-                const error = await form.validateForm();
+                <FormErrorMessage>请输入仪表盘名字</FormErrorMessage>
+              </FormControl>
+            </ModalBody>
 
-                if (!error?.dashboardName) {
-                  await handleCreateDashboard();
-                  handleCloseCreateDashboardModal();
-                  // router.push("/dashboards/create");
-                }
-              }}
-            >
-              确定
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+            <ModalFooter>
+              <Button
+                colorScheme="blue"
+                mr={3}
+                onClick={handleCloseCreateDashboardModal}
+              >
+                取消
+              </Button>
+              <Button
+                isLoading={createDashboardLoading}
+                colorScheme="red"
+                onClick={async () => {
+                  const error = await form.validateForm();
 
-      {/* 删除仪表盘的弹窗 */}
-      <Modal
-        isOpen={isDeleteDashboardModalOpen}
-        onClose={handleCloseDeleteDashboardModal}
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>删除仪表盘</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>确定删除 id 为 {selectedDashboardId} 的仪表盘？</ModalBody>
+                  if (!error?.dashboardName) {
+                    await handleCreateDashboard();
+                    handleCloseCreateDashboardModal();
+                  }
+                }}
+              >
+                确定
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
 
-          <ModalFooter>
-            <Button
-              colorScheme="blue"
-              mr={3}
-              onClick={handleCloseDeleteDashboardModal}
-            >
-              取消
-            </Button>
-            <Button
-              colorScheme="red"
-              onClick={handleDeleteDashboard}
-              isLoading={deleteDashboardLoading}
-            >
-              确定
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </Page>
+        {/* 删除仪表盘的弹窗 */}
+        <Modal
+          isOpen={isDeleteDashboardModalOpen}
+          onClose={handleCloseDeleteDashboardModal}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>删除仪表盘</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              确定删除 id 为 {selectedDashboardId} 的仪表盘？
+            </ModalBody>
+
+            <ModalFooter>
+              <Button
+                colorScheme="blue"
+                mr={3}
+                onClick={handleCloseDeleteDashboardModal}
+              >
+                取消
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={handleDeleteDashboard}
+                isLoading={deleteDashboardLoading}
+              >
+                确定
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </Page>
+    </>
   );
 };
 

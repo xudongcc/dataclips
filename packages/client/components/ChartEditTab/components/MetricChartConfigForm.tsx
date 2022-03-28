@@ -16,7 +16,7 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
   editOptionConfig,
 }) => {
   return (
-    <VStack mt={4} spacing={4}>
+    <VStack spacing={4}>
       <Grid
         w="100%"
         gap={4}

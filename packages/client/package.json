@@ -48,6 +48,7 @@
     "react-use": "^17.3.2",
     "sql.js": "^1.6.2",
     "use-url-search-params": "^2.5.1",
+    "uuid": "^8.3.2",
     "yup": "^0.32.11"
   },
   "devDependencies": {

@@ -5,14 +5,16 @@ import {
   useDisclosure,
   Link,
   Button,
-  Flex,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Text,
   ModalOverlay,
+  Center,
+  Divider,
 } from "@chakra-ui/react";
 import { useState, useCallback, useMemo } from "react";
 import { Table } from "../../components/Table";
@@ -22,6 +24,7 @@ import moment from "moment";
 import { Column, TableOptions } from "react-table";
 import { Page } from "../../components/Page";
 import { useDeleteChartMutation } from "../../hooks/useDeleteChartMutation";
+import Head from "next/head";
 
 const ChartList = () => {
   const router = useRouter();
@@ -53,7 +56,7 @@ const ChartList = () => {
           return (
             <Link
               onClick={() => {
-                router.push(`/charts/${id}/edit`);
+                router.push(`/charts/${id}`);
               }}
               color="blue.500"
             >
@@ -74,17 +77,6 @@ const ChartList = () => {
         },
       },
       {
-        Header: "createdAt",
-        accessor: "createdAt",
-        Cell: ({
-          row: {
-            values: { createdAt },
-          },
-        }) => {
-          return moment(createdAt).format("YYYY-MM-DD HH:mm:ss");
-        },
-      },
-      {
         Header: "updatedAt",
         accessor: "updatedAt",
         Cell: ({
@@ -96,7 +88,13 @@ const ChartList = () => {
         },
       },
       {
-        Header: "operation",
+        Header: () => {
+          return (
+            <Text w="100%" textAlign="center">
+              operation
+            </Text>
+          );
+        },
         accessor: "operation",
         Cell: ({
           row: {
@@ -104,15 +102,28 @@ const ChartList = () => {
           },
         }) => {
           return (
-            <Link
-              onClick={() => {
-                setSelectedChartId(id);
-                onOpen();
-              }}
-              color="red.500"
-            >
-              删除
-            </Link>
+            <Center>
+              <Link
+                color="blue.500"
+                onClick={() => {
+                  router.push(`/charts/${id}/edit`);
+                }}
+              >
+                编辑
+              </Link>
+
+              <Divider orientation="vertical" px={2}></Divider>
+
+              <Link
+                onClick={() => {
+                  setSelectedChartId(id);
+                  onOpen();
+                }}
+                color="red.500"
+              >
+                删除
+              </Link>
+            </Center>
           );
         },
       },
@@ -147,45 +158,45 @@ const ChartList = () => {
   }, [deleteChart, selectedChartId, toast, handleCloseDeleteModal]);
 
   return (
-    <Page
-      title="图表"
-      primaryAction={{
-        text: "创建图表",
-        onClick: () => {
-          router.push("/charts/create");
-        },
-      }}
-    >
-      {tableProps.data.length ? (
+    <>
+      <Head>
+        <title>图表</title>
+      </Head>
+
+      <Page
+        title="图表"
+        primaryAction={{
+          text: "创建图表",
+          onClick: () => {
+            router.push("/charts/create");
+          },
+        }}
+      >
         <Table {...tableProps} />
-      ) : (
-        <Flex h="calc(100vh - 104px)" align="center" justify="center">
-          暂无数据
-        </Flex>
-      )}
 
-      <Modal isOpen={isOpen} onClose={handleCloseDeleteModal}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>删除图表</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>确定删除 id 为 {selectedChartId} 的图表？</ModalBody>
+        <Modal isOpen={isOpen} onClose={handleCloseDeleteModal}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>删除图表</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>确定删除 id 为 {selectedChartId} 的图表？</ModalBody>
 
-          <ModalFooter>
-            <Button mr={3} onClick={handleCloseDeleteModal}>
-              取消
-            </Button>
-            <Button
-              colorScheme="red"
-              onClick={handleDeleteChart}
-              isLoading={loading}
-            >
-              确定
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </Page>
+            <ModalFooter>
+              <Button mr={3} onClick={handleCloseDeleteModal}>
+                取消
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={handleDeleteChart}
+                isLoading={loading}
+              >
+                确定
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </Page>
+    </>
   );
 };
 

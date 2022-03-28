@@ -3,10 +3,8 @@ import { FC } from "react";
 import { Select as ChakraSelect } from "chakra-react-select";
 
 export interface BarChartEditConfig {
-  variant: string;
   xCol: string[];
   yCol: string[];
-  isStack: boolean;
 }
 
 interface BarChartConfigFormProps {
@@ -19,7 +17,7 @@ export const BarChartConfigForm: FC<BarChartConfigFormProps> = ({
   editOptionConfig,
 }) => {
   return (
-    <VStack mt={4} spacing={4}>
+    <VStack spacing={4}>
       <Grid w="100%" gap={4}>
         <Select
           placeholder="请选择方向"

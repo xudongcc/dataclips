@@ -1,27 +1,24 @@
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   FormControl,
   Select,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
+  Text,
 } from "@chakra-ui/react";
-import { FC, useMemo } from "react";
+import { useRouter } from "next/router";
+import { FC } from "react";
 
 import { ResultFragment } from "../../generated/graphql";
 import { ChartServerConfig, ChartType } from "../../types";
 import {
   FunnelChartConfigForm,
-  FunnelChartEditConfig,
   MetricChartConfigForm,
-  MetricChartEditConfig,
   BarChartConfigForm,
-  BarChartEditConfig,
-  LineChartEditConfig,
   LineChartConfigForm,
   PieChartConfigForm,
-  PieChartEditConfig,
 } from "./components";
 
 export const chartTypeMap = {
@@ -41,56 +38,27 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
   result = { fields: [], values: [] },
   form,
 }) => {
-  // 根据不同图表类型配置不同的选项
-  const editOptionConfig = useMemo(() => {
-    return (
-      [
-        {
-          type: ChartType.FUNNEL,
-          config: {
-            groupCol: result.fields,
-            valueCol: result.fields,
-          },
-        },
-        {
-          type: ChartType.METRIC,
-          config: {
-            valueCol: result.fields,
-            compareCol: result.fields,
-          },
-        },
-        {
-          type: ChartType.LINE,
-          config: { xCol: result.fields, yCol: result.fields },
-        },
-        {
-          type: ChartType.BAR,
-          config: { xCol: result.fields, yCol: result.fields },
-        },
-        {
-          type: ChartType.PIE,
-          config: { keys: result.fields, values: result.fields },
-        },
-      ].find((item) => item.type === form.values.type)?.config || undefined
-    );
-  }, [form, result]);
+  const router = useRouter();
+
+  const { chartId } = router.query as { chartId: string };
 
   return (
-    <Tabs p="2">
-      <TabList>
-        <Tab>属性配置</Tab>
-      </TabList>
+    <Accordion defaultIndex={[chartId ? 1 : 0]} allowToggle>
+      <AccordionItem>
+        <AccordionButton>
+          <Text fontWeight="bold" flex="1" textAlign="left">
+            图表类型
+          </Text>
+          <AccordionIcon />
+        </AccordionButton>
 
-      <TabPanels>
-        <TabPanel>
+        <AccordionPanel pb={4}>
           <FormControl isInvalid={!!form.errors.type}>
             <Select
               size="sm"
               placeholder="请选择图表分类"
               name="type"
               onChange={form.handleChange}
-              borderColor={form.errors.type ? "red.500" : undefined}
-              color={form.errors.type ? "red.500" : undefined}
               value={form.values.type}
             >
               {[
@@ -106,48 +74,83 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
               ))}
             </Select>
           </FormControl>
+        </AccordionPanel>
+      </AccordionItem>
 
-          {/* 漏斗图表配置选项 */}
-          {form.values.type === ChartType.FUNNEL && (
-            <FunnelChartConfigForm
-              form={form}
-              editOptionConfig={editOptionConfig as FunnelChartEditConfig}
-            />
-          )}
-
-          {/* 单值图配置选项 */}
-          {form.values.type === ChartType.METRIC && (
-            <MetricChartConfigForm
-              form={form}
-              editOptionConfig={editOptionConfig as MetricChartEditConfig}
-            />
-          )}
-
-          {/* 折线图配置选项 */}
-          {form.values.type === ChartType.LINE && (
-            <LineChartConfigForm
-              form={form}
-              editOptionConfig={editOptionConfig as LineChartEditConfig}
-            />
-          )}
-
-          {/* 柱状图配置选项 */}
-          {form.values.type === ChartType.BAR && (
-            <BarChartConfigForm
-              form={form}
-              editOptionConfig={editOptionConfig as BarChartEditConfig}
-            />
-          )}
-
-          {/* 饼图配置选项 */}
-          {form.values.type === ChartType.PIE && (
-            <PieChartConfigForm
-              form={form}
-              editOptionConfig={editOptionConfig as PieChartEditConfig}
-            />
-          )}
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+      <AccordionItem isDisabled={!form.values?.type}>
+        <AccordionButton>
+          <Text fontWeight="bold" flex="1" textAlign="left">
+            选项配置
+          </Text>
+          <AccordionIcon />
+        </AccordionButton>
+        <AccordionPanel pb={4}>
+          {
+            [
+              {
+                type: ChartType.FUNNEL,
+                component: (
+                  <FunnelChartConfigForm
+                    form={form}
+                    editOptionConfig={{
+                      groupCol: result.fields,
+                      valueCol: result.fields,
+                    }}
+                  />
+                ),
+              },
+              {
+                type: ChartType.METRIC,
+                component: (
+                  <MetricChartConfigForm
+                    form={form}
+                    editOptionConfig={{
+                      valueCol: result.fields,
+                      compareCol: result.fields,
+                    }}
+                  />
+                ),
+              },
+              {
+                type: ChartType.LINE,
+                component: (
+                  <LineChartConfigForm
+                    form={form}
+                    editOptionConfig={{
+                      xCol: result.fields,
+                      yCol: result.fields,
+                    }}
+                  />
+                ),
+              },
+              {
+                type: ChartType.BAR,
+                component: (
+                  <BarChartConfigForm
+                    form={form}
+                    editOptionConfig={{
+                      xCol: result.fields,
+                      yCol: result.fields,
+                    }}
+                  />
+                ),
+              },
+              {
+                type: ChartType.PIE,
+                component: (
+                  <PieChartConfigForm
+                    form={form}
+                    editOptionConfig={{
+                      keys: result.fields,
+                      values: result.fields,
+                    }}
+                  />
+                ),
+              },
+            ].find((item) => item.type === form.values?.type)?.component
+          }
+        </AccordionPanel>
+      </AccordionItem>
+    </Accordion>
   );
 };

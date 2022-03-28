@@ -3,15 +3,18 @@ import {
   useDisclosure,
   Link,
   Button,
-  Flex,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Text,
   ModalOverlay,
+  Divider,
+  Center,
 } from "@chakra-ui/react";
+import Head from "next/head";
 import { useState } from "react";
 import { useClipConnectionQuery } from "../../generated/graphql";
 import ProjectLayout from "../../layouts/ProjectLayout";
@@ -48,24 +51,13 @@ const ClipList = () => {
           return (
             <Link
               onClick={() => {
-                router.push(`/clips/${id}/edit`);
+                router.push(`/clips/${id}`);
               }}
               color="blue.500"
             >
               {name}
             </Link>
           );
-        },
-      },
-      {
-        Header: "createdAt",
-        accessor: "createdAt",
-        Cell: ({
-          row: {
-            values: { createdAt },
-          },
-        }) => {
-          return moment(createdAt).format("YYYY-MM-DD HH:mm:ss");
         },
       },
       {
@@ -80,7 +72,13 @@ const ClipList = () => {
         },
       },
       {
-        Header: "operation",
+        Header: () => {
+          return (
+            <Text w="100%" textAlign="center">
+              operation
+            </Text>
+          );
+        },
         accessor: "operation",
         Cell: ({
           row: {
@@ -88,15 +86,28 @@ const ClipList = () => {
           },
         }) => {
           return (
-            <Link
-              onClick={() => {
-                setSelectedClipId(id);
-                onOpen();
-              }}
-              color="red.500"
-            >
-              删除
-            </Link>
+            <Center>
+              <Link
+                color="blue.500"
+                onClick={() => {
+                  router.push(`/clips/${id}/edit`);
+                }}
+              >
+                编辑
+              </Link>
+
+              <Divider orientation="vertical" px={2}></Divider>
+
+              <Link
+                onClick={() => {
+                  setSelectedClipId(id);
+                  onOpen();
+                }}
+                color="red.500"
+              >
+                删除
+              </Link>
+            </Center>
           );
         },
       },
@@ -132,45 +143,45 @@ const ClipList = () => {
   }, [deleteClip, selectedClipId, toast, handleCloseDeleteModal]);
 
   return (
-    <Page
-      title="数据集"
-      primaryAction={{
-        text: "创建数据集",
-        onClick: () => {
-          router.push("/clips/create");
-        },
-      }}
-    >
-      {tableProps.data.length ? (
+    <>
+      <Head>
+        <title>数据集</title>
+      </Head>
+
+      <Page
+        title="数据集"
+        primaryAction={{
+          text: "创建数据集",
+          onClick: () => {
+            router.push("/clips/create");
+          },
+        }}
+      >
         <Table {...tableProps} />
-      ) : (
-        <Flex h="calc(100vh - 104px)" align="center" justify="center">
-          暂无数据
-        </Flex>
-      )}
 
-      <Modal isOpen={isOpen} onClose={handleCloseDeleteModal}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>删除数据集</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>确定删除 id 为 {selectedClipId} 的数据集？</ModalBody>
+        <Modal isOpen={isOpen} onClose={handleCloseDeleteModal}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>删除数据集</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>确定删除 id 为 {selectedClipId} 的数据集？</ModalBody>
 
-          <ModalFooter>
-            <Button mr={3} onClick={handleCloseDeleteModal}>
-              取消
-            </Button>
-            <Button
-              colorScheme="red"
-              onClick={handleDeleteClip}
-              isLoading={loading}
-            >
-              确定
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </Page>
+            <ModalFooter>
+              <Button mr={3} onClick={handleCloseDeleteModal}>
+                取消
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={handleDeleteClip}
+                isLoading={loading}
+              >
+                确定
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </Page>
+    </>
   );
 };
 

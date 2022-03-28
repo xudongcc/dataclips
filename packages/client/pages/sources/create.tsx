@@ -24,6 +24,7 @@ import { useCreateVirtualSourceMutation } from "../../hooks/useCreateVirtualSour
 import { useCreateDatabaseSourceMutation } from "../../hooks/useCreateDatabaseSourceMutation";
 import { Card } from "../../components/Card/Card";
 import { Page } from "../../components/Page";
+import Head from "next/head";
 
 const dataSourceValidObj = {
   dataSource: Yup.object({
@@ -128,99 +129,105 @@ const SourceCreate = () => {
   });
 
   return (
-    <Page title="创建数据源">
-      <Card>
-        <Box pt={8}>
-          <HStack spacing="0" justify="space-evenly">
-            {[...Array(numberOfSteps)].map((_, step) => (
-              <Step
-                stepDescription={step === 0 ? "数据源" : "配置"}
-                key={step}
-                cursor={!form.values.type ? "not-allowed" : "pointer"}
-                onClick={() => {
-                  if (!form.values.type) {
-                    return;
-                  }
+    <>
+      <Head>
+        <title>创建 - 数据源</title>
+      </Head>
 
-                  setValidationDatabaseTypeSchema(
-                    form.values.type === "DatabaseSource"
-                      ? dataSourceValidObj
-                      : virtualSourceValidObj
-                  );
-                  form.setErrors({});
-                  setStep(step);
-                }}
-                isActive={currentStep === step}
-                isCompleted={currentStep > step}
-                isLastStep={numberOfSteps === step + 1}
-              />
-            ))}
-          </HStack>
-
-          <form onSubmit={form.handleSubmit}>
-            {currentStep === 0 && (
-              <VStack spacing={4} pt={4}>
-                <Text textAlign="center">请选择数据源类型</Text>
-
-                <FormControl isInvalid={!!form.errors.type}>
-                  <Select
-                    name="type"
-                    value={form.values.type}
-                    onChange={form.handleChange}
-                    placeholder="请选择数据源"
-                  >
-                    <option value="DatabaseSource">DatabaseSource</option>
-                    <option value="VirtualSource">VirtualSource</option>
-                  </Select>
-
-                  <FormErrorMessage>请选择数据源</FormErrorMessage>
-                </FormControl>
-
-                <Button
-                  onClick={async () => {
-                    const res = await form.validateForm();
-
-                    if (!res.type) {
-                      setValidationDatabaseTypeSchema(
-                        form.values.type === "DatabaseSource"
-                          ? dataSourceValidObj
-                          : virtualSourceValidObj
-                      );
-
-                      setStep(1);
-                      form.setErrors({});
+      <Page title="创建数据源">
+        <Card>
+          <Box pt={8}>
+            <HStack spacing="0" justify="space-evenly">
+              {[...Array(numberOfSteps)].map((_, step) => (
+                <Step
+                  stepDescription={step === 0 ? "数据源" : "配置"}
+                  key={step}
+                  cursor={!form.values.type ? "not-allowed" : "pointer"}
+                  onClick={() => {
+                    if (!form.values.type) {
+                      return;
                     }
+
+                    setValidationDatabaseTypeSchema(
+                      form.values.type === "DatabaseSource"
+                        ? dataSourceValidObj
+                        : virtualSourceValidObj
+                    );
+                    form.setErrors({});
+                    setStep(step);
                   }}
-                >
-                  下一步
-                </Button>
-              </VStack>
-            )}
+                  isActive={currentStep === step}
+                  isCompleted={currentStep > step}
+                  isLastStep={numberOfSteps === step + 1}
+                />
+              ))}
+            </HStack>
 
-            {currentStep === 1 && (
-              <VStack spacing={4} pt={4}>
-                {form.values.type === "DatabaseSource" && (
-                  <DataSourceForm form={form} />
-                )}
+            <form onSubmit={form.handleSubmit}>
+              {currentStep === 0 && (
+                <VStack spacing={4} pt={4}>
+                  <Text textAlign="center">请选择数据源类型</Text>
 
-                {form.values.type === "VirtualSource" && (
-                  <VirtualSourceForm form={form} />
-                )}
+                  <FormControl isInvalid={!!form.errors.type}>
+                    <Select
+                      name="type"
+                      value={form.values.type}
+                      onChange={form.handleChange}
+                      placeholder="请选择数据源"
+                    >
+                      <option value="DatabaseSource">DatabaseSource</option>
+                      <option value="VirtualSource">VirtualSource</option>
+                    </Select>
 
-                <Button
-                  isLoading={
-                    createDataBaseSourceLoading || createVirtualSourceLoading
-                  }
-                  type="submit"
-                >
-                  创建
-                </Button>
-              </VStack>
-            )}
-          </form>
-        </Box>
-      </Card>
-    </Page>
+                    <FormErrorMessage>请选择数据源</FormErrorMessage>
+                  </FormControl>
+
+                  <Button
+                    onClick={async () => {
+                      const res = await form.validateForm();
+
+                      if (!res.type) {
+                        setValidationDatabaseTypeSchema(
+                          form.values.type === "DatabaseSource"
+                            ? dataSourceValidObj
+                            : virtualSourceValidObj
+                        );
+
+                        setStep(1);
+                        form.setErrors({});
+                      }
+                    }}
+                  >
+                    下一步
+                  </Button>
+                </VStack>
+              )}
+
+              {currentStep === 1 && (
+                <VStack spacing={4} pt={4}>
+                  {form.values.type === "DatabaseSource" && (
+                    <DataSourceForm form={form} />
+                  )}
+
+                  {form.values.type === "VirtualSource" && (
+                    <VirtualSourceForm form={form} />
+                  )}
+
+                  <Button
+                    isLoading={
+                      createDataBaseSourceLoading || createVirtualSourceLoading
+                    }
+                    type="submit"
+                  >
+                    创建
+                  </Button>
+                </VStack>
+              )}
+            </form>
+          </Box>
+        </Card>
+      </Page>
+    </>
   );
 };
 

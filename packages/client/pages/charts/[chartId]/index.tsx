@@ -18,6 +18,7 @@ import PreviewLayout from "../../../layouts/PreviewLayout";
 import ProjectLayout from "../../../layouts/ProjectLayout";
 import { useSession } from "next-auth/react";
 import { Card } from "../../../components/Card";
+import Head from "next/head";
 
 const ChartPreview = () => {
   const router = useRouter();
@@ -80,19 +81,25 @@ const ChartPreview = () => {
     }
 
     return (
-      <Page title={result?.name}>
-        {data?.chart.type && data?.chart.config && result && (
-          <Box h="800px">
-            <Card overflow="hidden" h="full">
-              <ChartResultPreview
-                type={data.chart.type}
-                config={getChartTypePreviewConfig()}
-                result={result}
-              />
-            </Card>
-          </Box>
-        )}
-      </Page>
+      <>
+        <Head>
+          <title>{result?.name} - 预览 - 图表</title>
+        </Head>
+
+        <Page title={result?.name}>
+          {data?.chart.type && data?.chart.config && result && (
+            <Box h="800px">
+              <Card overflow="hidden" h="full">
+                <ChartResultPreview
+                  type={data.chart.type}
+                  config={getChartTypePreviewConfig()}
+                  result={result}
+                />
+              </Card>
+            </Box>
+          )}
+        </Page>
+      </>
     );
   }, [data, getChartTypePreviewConfig, isLoading, loading, result]);
 

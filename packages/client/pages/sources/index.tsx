@@ -5,7 +5,6 @@ import {
   useDisclosure,
   Link,
   Button,
-  Flex,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -37,6 +36,7 @@ import { DataSourceForm } from "../../components/DataSourceForm";
 import { VirtualSourceForm } from "../../components/VirtualSourceForm";
 import { Table } from "../../components/Table";
 import { Page } from "../../components/Page";
+import Head from "next/head";
 
 const dataSourceValidObj = {
   dataSource: Yup.object({
@@ -247,17 +247,6 @@ const SourceList = () => {
         },
       },
       {
-        Header: "createdAt",
-        accessor: "createdAt",
-        Cell: ({
-          row: {
-            values: { createdAt },
-          },
-        }) => {
-          return moment(createdAt).format("YYYY-MM-DD HH:mm:ss");
-        },
-      },
-      {
         Header: "updatedAt",
         accessor: "updatedAt",
         Cell: ({
@@ -344,82 +333,84 @@ const SourceList = () => {
   );
 
   return (
-    <Page
-      title="数据源"
-      primaryAction={{
-        text: "创建数据源",
-        onClick: () => {
-          router.push("/sources/create");
-        },
-      }}
-    >
-      {tableProps.data.length ? (
+    <>
+      <Head>
+        <title>数据源</title>
+      </Head>
+
+      <Page
+        title="数据源"
+        primaryAction={{
+          text: "创建数据源",
+          onClick: () => {
+            router.push("/sources/create");
+          },
+        }}
+      >
         <Table {...tableProps} />
-      ) : (
-        <Flex h="calc(100vh - 104px)" align="center" justify="center">
-          暂无数据
-        </Flex>
-      )}
 
-      {/* 编辑 modal */}
-      <Modal isOpen={isEditOpen} onClose={handleCloseEditModal}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>编辑数据源</ModalHeader>
-          <ModalCloseButton />
+        {/* 编辑 modal */}
+        <Modal isOpen={isEditOpen} onClose={handleCloseEditModal}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>编辑数据源</ModalHeader>
+            <ModalCloseButton />
 
-          <form onSubmit={form.handleSubmit}>
+            <form onSubmit={form.handleSubmit}>
+              <ModalBody>
+                <VStack spacing={4} pt={4}>
+                  {!sourceLoading && sourceData
+                    ? handleGetCurrentTypeEditForm(form)
+                    : "请稍后"}
+                </VStack>
+              </ModalBody>
+
+              <ModalFooter>
+                <Button mr={3} onClick={handleCloseEditModal}>
+                  取消
+                </Button>
+                <Button
+                  variant="primary"
+                  type="submit"
+                  isLoading={
+                    updateDatabaseSourceLoading ||
+                    sourceLoading ||
+                    updateVirtualSourceLoading
+                  }
+                >
+                  保存
+                </Button>
+              </ModalFooter>
+            </form>
+          </ModalContent>
+        </Modal>
+
+        {/* 删除 modal */}
+        <Modal isOpen={isOpen} onClose={handleCloseDeleteModal}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>删除数据源</ModalHeader>
+            <ModalCloseButton />
             <ModalBody>
-              <VStack spacing={4} pt={4}>
-                {!sourceLoading && sourceData
-                  ? handleGetCurrentTypeEditForm(form)
-                  : "请稍后"}
-              </VStack>
+              确定删除 id 为 {selectedSource?.id} 的数据源？
             </ModalBody>
 
             <ModalFooter>
-              <Button mr={3} onClick={handleCloseEditModal}>
+              <Button mr={3} onClick={handleCloseDeleteModal}>
                 取消
               </Button>
               <Button
-                variant="primary"
-                type="submit"
-                isLoading={
-                  updateDatabaseSourceLoading ||
-                  sourceLoading ||
-                  updateVirtualSourceLoading
-                }
+                colorScheme="red"
+                onClick={handleDeleteSource}
+                isLoading={deleteSourceLoading}
               >
-                保存
+                确定
               </Button>
             </ModalFooter>
-          </form>
-        </ModalContent>
-      </Modal>
-
-      {/* 删除 modal */}
-      <Modal isOpen={isOpen} onClose={handleCloseDeleteModal}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>删除数据源</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>确定删除 id 为 {selectedSource?.id} 的数据源？</ModalBody>
-
-          <ModalFooter>
-            <Button mr={3} onClick={handleCloseDeleteModal}>
-              取消
-            </Button>
-            <Button
-              colorScheme="red"
-              onClick={handleDeleteSource}
-              isLoading={deleteSourceLoading}
-            >
-              确定
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </Page>
+          </ModalContent>
+        </Modal>
+      </Page>
+    </>
   );
 };
 

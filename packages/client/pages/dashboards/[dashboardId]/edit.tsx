@@ -12,8 +12,10 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Text,
   Popover,
   PopoverBody,
+  useToken,
   PopoverContent,
   PopoverTrigger,
   Select,
@@ -21,13 +23,14 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
+import Head from "next/head";
+import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import { PC } from "../../../interfaces/PageComponent";
 import ProjectLayout from "../../../layouts/ProjectLayout";
 import GridLayout, { Layout, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import { Card } from "../../../components/Card/Card";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -42,6 +45,7 @@ import { Loading } from "../../../components/Loading";
 import { Page } from "../../../components/Page";
 import { DashboardItem } from "../../../components/DashboardItem";
 import { DashboardChartResultPreview } from "../../../components/DashboardChartResultPreview";
+import { DashboardCard } from "../../../components/DashboardCard";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
@@ -65,6 +69,7 @@ const DashBoardEdit: PC = () => {
   const toast = useToast();
   const router = useRouter();
   const popoverRef = useRef();
+  const [borderRadius] = useToken("radii", ["lg"]);
 
   const [operation, setOperation] = useState<Operation>({
     type: OperationType.ADD,
@@ -111,6 +116,7 @@ const DashBoardEdit: PC = () => {
     onClose();
     form.setValues(form.initialValues);
     form.setErrors({});
+    setOperation({ type: OperationType.ADD });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClose]);
 
@@ -151,7 +157,7 @@ const DashBoardEdit: PC = () => {
             name: form.values.name,
             chartId: data.chart.id,
             layout: {
-              i: `${Date.now()}`,
+              i: uuidv4(),
               x: 0,
               y: chartCards.length * 3,
               w: 6,
@@ -232,185 +238,206 @@ const DashBoardEdit: PC = () => {
   }
 
   return (
-    <Page
-      title={data?.dashboard?.name}
-      primaryAction={{
-        text: "保存",
-        onClick: handleUpdateDashboard,
-        isLoading: updateDashboardLoading,
-      }}
-      secondaryActions={[
-        {
-          text: "添加图表",
-          onClick: onOpen,
-        },
-      ]}
-    >
-      <Box
-        sx={{
-          ".react-grid-item.react-grid-placeholder": {
-            background: "rgba(0,0,0,0.2) !important",
-          },
+    <>
+      <Head>
+        <title>{data?.dashboard?.name} - 编辑 - 仪表盘</title>
+      </Head>
+
+      <Page
+        title={data?.dashboard?.name}
+        primaryAction={{
+          text: "保存",
+          onClick: handleUpdateDashboard,
+          isLoading: updateDashboardLoading,
         }}
+        secondaryActions={[
+          {
+            text: "添加卡片",
+            onClick: onOpen,
+          },
+        ]}
       >
-        <ResponsiveGridLayout
-          draggableHandle=".card-body"
-          className="layout"
-          onLayoutChange={handleSetChartItemLayout}
-          cols={12}
-          containerPadding={[0, 0]}
-          width={1200}
-          layout={chartCards.map((item) => item?.layout)}
+        <Box
+          sx={{
+            ".react-grid-item.react-grid-placeholder": {
+              background: "rgba(0,0,0,0.2) !important",
+              borderRadius,
+            },
+          }}
         >
-          {chartCards.map((item) => {
-            return (
-              <DashboardItem key={item?.layout?.i}>
-                <Card
-                  h="full"
-                  title={item?.name}
-                  extra={
-                    <Popover initialFocusRef={popoverRef}>
-                      {({ onClose }) => (
-                        <>
-                          <PopoverTrigger>
-                            <Button variant="ghost" fontWeight="bold">
-                              ⋮
-                            </Button>
-                          </PopoverTrigger>
+          <ResponsiveGridLayout
+            draggableHandle=".dashboard-card-body"
+            className="layout"
+            onLayoutChange={handleSetChartItemLayout}
+            cols={12}
+            containerPadding={[0, 0]}
+            width={1200}
+            layout={chartCards.map((item) => item?.layout)}
+          >
+            {chartCards.map((item) => {
+              return (
+                <DashboardItem key={item?.layout?.i}>
+                  <DashboardCard
+                    h="full"
+                    title={item?.name}
+                    extra={
+                      <Popover
+                        initialFocusRef={popoverRef}
+                        placement="bottom-end"
+                      >
+                        {({ onClose }) => (
+                          <>
+                            <PopoverTrigger>
+                              <Text cursor="pointer" fontWeight="bold">
+                                ⋮
+                              </Text>
+                            </PopoverTrigger>
 
-                          <PopoverContent w="100%">
-                            <PopoverBody>
-                              <Box
-                                cursor="pointer"
-                                _hover={{ bg: "var(--chakra-colors-gray-100)" }}
-                                p={1}
-                                borderRadius="4px"
-                                ref={popoverRef}
-                                onClick={() => {
-                                  onClose();
+                            <PopoverContent w="100%">
+                              <PopoverBody d="flex" flexDir="column">
+                                <Button
+                                  variant="ghost"
+                                  ref={popoverRef}
+                                  onClick={() => {
+                                    onClose();
 
-                                  form.setValues({
-                                    name: item?.name,
-                                    chartId: item?.chartId,
-                                  });
+                                    form.setValues({
+                                      name: item?.name,
+                                      chartId: item?.chartId,
+                                    });
 
-                                  setOperation({
-                                    type: OperationType.EDIT,
-                                    key: item?.layout?.i,
-                                  });
+                                    setOperation({
+                                      type: OperationType.EDIT,
+                                      key: item?.layout?.i,
+                                    });
 
-                                  onOpen();
-                                }}
-                              >
-                                修改
-                              </Box>
+                                    onOpen();
+                                  }}
+                                >
+                                  编辑卡片
+                                </Button>
 
-                              <Divider my={1}></Divider>
+                                <Divider my={1} />
 
-                              <Box
-                                cursor="pointer"
-                                _hover={{ bg: "var(--chakra-colors-gray-100)" }}
-                                p={1}
-                                ref={popoverRef}
-                                borderRadius="4px"
-                                onClick={() => {
-                                  onClose();
+                                <Button
+                                  variant="ghost"
+                                  isDisabled={!item?.chartId}
+                                  onClick={() => {
+                                    router.push(
+                                      `/charts/${item?.chartId}/edit`
+                                    );
+                                  }}
+                                >
+                                  编辑图表
+                                </Button>
 
-                                  const deleteIndex = chartCards.findIndex(
-                                    (chartCard) =>
-                                      chartCard?.layout?.i === item?.layout?.i
-                                  );
+                                <Divider my={1} />
 
-                                  if (deleteIndex !== -1) {
-                                    chartCards.splice(deleteIndex, 1);
-                                    setChartCards([...chartCards]);
-                                  }
-                                }}
-                              >
-                                删除
-                              </Box>
-                            </PopoverBody>
-                          </PopoverContent>
-                        </>
-                      )}
-                    </Popover>
-                  }
-                >
-                  <DashboardChartResultPreview chartId={item?.chartId} />
-                </Card>
-              </DashboardItem>
-            );
-          })}
-        </ResponsiveGridLayout>
-      </Box>
+                                <Button
+                                  variant="ghost"
+                                  color="red.500"
+                                  ref={popoverRef}
+                                  onClick={() => {
+                                    onClose();
 
-      <Modal isOpen={isOpen} onClose={handleCloseAddChartModal}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>添加图表</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack spacing={4}>
-              <FormControl isInvalid={!!form.errors.name}>
-                <Input
-                  name="name"
-                  value={form.values.name}
-                  onChange={form.handleChange}
-                  placeholder="请输入图表名称"
-                />
+                                    const deleteIndex = chartCards.findIndex(
+                                      (chartCard) =>
+                                        chartCard?.layout?.i === item?.layout?.i
+                                    );
 
-                <FormErrorMessage>请输入图表名字</FormErrorMessage>
-              </FormControl>
-
-              <FormControl isInvalid={!!form.errors.chartId}>
-                <Select
-                  name="chartId"
-                  value={form.values.chartId}
-                  onChange={(e) => {
-                    form.handleChange(e);
-
-                    if (!form.values.name) {
-                      const selectedIndex = e.target.selectedIndex;
-                      const text = e.target.options[selectedIndex].text;
-
-                      form.setFieldValue("name", text);
+                                    if (deleteIndex !== -1) {
+                                      chartCards.splice(deleteIndex, 1);
+                                      setChartCards([...chartCards]);
+                                    }
+                                  }}
+                                >
+                                  删除
+                                </Button>
+                              </PopoverBody>
+                            </PopoverContent>
+                          </>
+                        )}
+                      </Popover>
                     }
-                  }}
-                  placeholder="请选择图表"
-                >
-                  {chartConnectionData?.chartConnection.edges.map(
-                    ({ node: { id, name } }) => (
-                      <option value={id} key={id}>
-                        {name}
-                      </option>
-                    )
-                  )}
-                </Select>
+                  >
+                    <DashboardChartResultPreview chartId={item?.chartId} />
+                  </DashboardCard>
+                </DashboardItem>
+              );
+            })}
+          </ResponsiveGridLayout>
+        </Box>
 
-                <FormErrorMessage>请选择图表</FormErrorMessage>
-              </FormControl>
-            </VStack>
-          </ModalBody>
+        <Modal isOpen={isOpen} onClose={handleCloseAddChartModal}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>
+              {operation.type === OperationType.EDIT ? "编辑" : "添加"}卡片
+            </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <VStack spacing={4}>
+                <FormControl isInvalid={!!form.errors.name}>
+                  <Input
+                    name="name"
+                    value={form.values.name}
+                    onChange={form.handleChange}
+                    placeholder="请输入图表名称"
+                  />
 
-          <ModalFooter>
-            <Button
-              colorScheme="blue"
-              mr={3}
-              onClick={handleCloseAddChartModal}
-            >
-              取消
-            </Button>
-            <Button
-              colorScheme="red"
-              isLoading={getChartLoading}
-              onClick={handleAddOrEditChartCard}
-            >
-              确定
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </Page>
+                  <FormErrorMessage>请输入图表名字</FormErrorMessage>
+                </FormControl>
+
+                <FormControl isInvalid={!!form.errors.chartId}>
+                  <Select
+                    name="chartId"
+                    value={form.values.chartId}
+                    onChange={(e) => {
+                      form.handleChange(e);
+
+                      if (!form.values.name) {
+                        const selectedIndex = e.target.selectedIndex;
+                        const text = e.target.options[selectedIndex].text;
+
+                        form.setFieldValue("name", text);
+                      }
+                    }}
+                    placeholder="请选择图表"
+                  >
+                    {chartConnectionData?.chartConnection.edges.map(
+                      ({ node: { id, name } }) => (
+                        <option value={id} key={id}>
+                          {name}
+                        </option>
+                      )
+                    )}
+                  </Select>
+
+                  <FormErrorMessage>请选择图表</FormErrorMessage>
+                </FormControl>
+              </VStack>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button
+                colorScheme="blue"
+                mr={3}
+                onClick={handleCloseAddChartModal}
+              >
+                取消
+              </Button>
+              <Button
+                colorScheme="red"
+                isLoading={getChartLoading}
+                onClick={handleAddOrEditChartCard}
+              >
+                确定
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </Page>
+    </>
   );
 };
 

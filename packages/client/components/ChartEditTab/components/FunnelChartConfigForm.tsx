@@ -16,7 +16,7 @@ export const FunnelChartConfigForm: FC<FunnelChartConfigFormProps> = ({
   editOptionConfig,
 }) => {
   return (
-    <Grid mt="4" templateColumns="repeat(2, 1fr)" gap={4}>
+    <Grid templateColumns="repeat(2, 1fr)" gap={4}>
       <Box>
         <Text>分组列</Text>
         <Select
