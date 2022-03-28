@@ -87,7 +87,12 @@ export const DashboardCard: FC<DashboardCardProps> = ({
       </Stack>
     </Stack>
 
-    <Box flex={1} overflow="hidden" h="inherit" className="card-body">
+    <Box
+      flex={1}
+      overflow="hidden"
+      h="inherit"
+      className="card-body dashboard-card-body"
+    >
       {children}
     </Box>
   </Stack>

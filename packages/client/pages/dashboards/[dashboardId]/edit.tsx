@@ -115,6 +115,7 @@ const DashBoardEdit: PC = () => {
     onClose();
     form.setValues(form.initialValues);
     form.setErrors({});
+    setOperation({ type: OperationType.ADD });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClose]);
 
@@ -250,7 +251,7 @@ const DashBoardEdit: PC = () => {
         }}
         secondaryActions={[
           {
-            text: "添加图表",
+            text: "添加卡片",
             onClick: onOpen,
           },
         ]}
@@ -264,7 +265,7 @@ const DashBoardEdit: PC = () => {
           }}
         >
           <ResponsiveGridLayout
-            draggableHandle=".card-body"
+            draggableHandle=".dashboard-card-body"
             className="layout"
             onLayoutChange={handleSetChartItemLayout}
             cols={12}
@@ -312,7 +313,7 @@ const DashBoardEdit: PC = () => {
                                     onOpen();
                                   }}
                                 >
-                                  修改
+                                  编辑卡片
                                 </Button>
 
                                 <Divider my={1}></Divider>
@@ -333,6 +334,7 @@ const DashBoardEdit: PC = () => {
 
                                 <Button
                                   variant="ghost"
+                                  color="red.500"
                                   ref={popoverRef}
                                   onClick={() => {
                                     onClose();
@@ -368,7 +370,9 @@ const DashBoardEdit: PC = () => {
         <Modal isOpen={isOpen} onClose={handleCloseAddChartModal}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>添加图表</ModalHeader>
+            <ModalHeader>
+              {operation.type === OperationType.EDIT ? "编辑" : "添加"}卡片
+            </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <VStack spacing={4}>

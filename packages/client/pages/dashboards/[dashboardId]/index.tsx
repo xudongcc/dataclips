@@ -83,7 +83,7 @@ const DashboardPreview: PC = () => {
         </Page>
       </>
     );
-  }, [chartCards, data?.dashboard?.name, loading]);
+  }, [borderRadius, chartCards, data?.dashboard?.name, loading]);
 
   useEffect(() => {
     if (data?.dashboard?.config?.length) {
