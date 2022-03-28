@@ -225,7 +225,7 @@ const ChartCreate = () => {
           </GridItem>
           <GridItem colSpan={1}>
             <Card>
-              <ChartEditTab form={form} result={result}></ChartEditTab>
+              <ChartEditTab form={form} result={result} />
             </Card>
           </GridItem>
         </Grid>

@@ -270,7 +270,6 @@ const DashBoardList: PC = () => {
                   if (!error?.dashboardName) {
                     await handleCreateDashboard();
                     handleCloseCreateDashboardModal();
-                    // router.push("/dashboards/create");
                   }
                 }}
               >

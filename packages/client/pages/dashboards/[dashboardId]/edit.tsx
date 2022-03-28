@@ -317,7 +317,7 @@ const DashBoardEdit: PC = () => {
                                   编辑卡片
                                 </Button>
 
-                                <Divider my={1}></Divider>
+                                <Divider my={1} />
 
                                 <Button
                                   variant="ghost"
@@ -331,7 +331,7 @@ const DashBoardEdit: PC = () => {
                                   编辑图表
                                 </Button>
 
-                                <Divider my={1}></Divider>
+                                <Divider my={1} />
 
                                 <Button
                                   variant="ghost"
