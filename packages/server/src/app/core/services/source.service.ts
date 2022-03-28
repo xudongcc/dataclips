@@ -6,16 +6,21 @@ import {
 import { mixinConnection } from "@nest-boot/graphql";
 import { mixinSearchable } from "@nest-boot/search";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import Bluebird from "bluebird";
+import Bluebird, { promisify } from "bluebird";
+import _ from "lodash";
 import mysql from "mysql2";
+import { Server } from "net";
 import pg from "pg";
 import initSqlJs from "sql.js";
+import tunnelSSH from "tunnel-ssh";
 
 import { CryptoService } from "../../../crypto";
 import { Source } from "../entities/source.entity";
 import { SourceType } from "../enums/source-type.enum";
 import { ClipService } from "./clip.service";
 import { VirtualSourceTableService } from "./virtual-source-table.service";
+
+const createTunnel = promisify(tunnelSSH);
 
 @Injectable()
 export class SourceService extends mixinConnection(
@@ -57,14 +62,39 @@ export class SourceService extends mixinConnection(
   ): Promise<Record<string, string | number | boolean>[]> {
     const source = await this.findOne({ where: { id } });
 
+    const localHost = "localhost";
+    const localPort = _.random(30000, 60000);
+
+    let tunnel: Server;
+    if (source.sshEnabled) {
+      tunnel = await createTunnel({
+        host: source.sshHost,
+        port: source.sshPort,
+        username: source.sshUsername,
+        password: source.sshPassword,
+        dstHost: source.host,
+        dstPort: source.port,
+        localHost,
+        localPort,
+      });
+
+      console.log("localPort", localPort);
+    }
+
+    const host = source.sshEnabled ? localHost : source.host;
+    const port = source.sshEnabled ? localPort : source.port;
+
+    const { database, username } = source;
+    const password = this.cryptoService.decrypt(source.password);
+
     if (source.type === SourceType.MYSQL) {
       const mysqlConnection = mysql
         .createConnection({
-          host: source.host,
-          port: source.port,
-          user: source.username,
-          password: this.cryptoService.decrypt(source.password),
-          database: source.database,
+          host,
+          port,
+          user: username,
+          password,
+          database,
         })
         .promise();
 
@@ -85,11 +115,11 @@ export class SourceService extends mixinConnection(
 
     if (source.type === SourceType.POSTGRESQL) {
       const pgClient = new pg.Client({
-        host: source.host,
-        port: source.port,
-        user: source.username,
-        password: this.cryptoService.decrypt(source.password),
-        database: source.database,
+        host,
+        port,
+        user: username,
+        password,
+        database,
       });
       await pgClient.connect();
 

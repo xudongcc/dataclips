@@ -24,4 +24,22 @@ export class UpdateDatabaseSourceInput {
 
   @Field({ nullable: true })
   password?: string;
+
+  @Field({ nullable: true })
+  sshEnabled?: boolean;
+
+  @Field({ nullable: true })
+  sshHost?: string;
+
+  @Field(() => Int, { nullable: true })
+  sshPort?: number;
+
+  @Field({ nullable: true })
+  sshUsername?: string;
+
+  @Field({ nullable: true })
+  sshPassword?: string;
+
+  @Field({ nullable: true })
+  sshKey?: string;
 }

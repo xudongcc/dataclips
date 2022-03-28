@@ -26,6 +26,18 @@ export class DatabaseSource {
   username: string;
 
   @Field()
+  sshEnabled: boolean;
+
+  @Field({ nullable: true })
+  sshHost?: string;
+
+  @Field(() => Int, { nullable: true })
+  sshPort?: number;
+
+  @Field({ nullable: true })
+  sshUsername?: string;
+
+  @Field()
   createdAt: Date;
 
   @Field()

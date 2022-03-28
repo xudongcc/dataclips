@@ -41,6 +41,24 @@ export class Source {
   @Column({ nullable: true })
   password?: string;
 
+  @Column({ default: false })
+  sshEnabled: boolean;
+
+  @Column({ nullable: true })
+  sshHost?: string;
+
+  @Column({ type: "int", nullable: true })
+  sshPort?: number;
+
+  @Column({ nullable: true })
+  sshUsername?: string;
+
+  @Column({ nullable: true })
+  sshPassword?: string;
+
+  @Column({ nullable: true })
+  sshKey?: string;
+
   @Field()
   @CreateDateColumn()
   createdAt: Date;
