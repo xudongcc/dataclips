@@ -24,6 +24,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import Head from "next/head";
+import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import { PC } from "../../../interfaces/PageComponent";
 import ProjectLayout from "../../../layouts/ProjectLayout";
@@ -156,7 +157,7 @@ const DashBoardEdit: PC = () => {
             name: form.values.name,
             chartId: data.chart.id,
             layout: {
-              i: `${Date.now()}`,
+              i: uuidv4(),
               x: 0,
               y: chartCards.length * 3,
               w: 6,
