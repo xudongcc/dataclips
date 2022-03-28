@@ -16,7 +16,7 @@ export const PieChartConfigForm: FC<PieChartConfigFormProps> = ({
   editOptionConfig = { keys: [], values: [] },
 }) => {
   return (
-    <VStack mt={4} spacing={4}>
+    <VStack spacing={4}>
       <Grid w="100%" gap={4}>
         <Select
           placeholder="请选择类型"
