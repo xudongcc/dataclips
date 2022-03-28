@@ -3,7 +3,6 @@ import {
   useDisclosure,
   Link,
   Button,
-  Flex,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -158,13 +157,7 @@ const ClipList = () => {
           },
         }}
       >
-        {tableProps.data.length ? (
-          <Table {...tableProps} />
-        ) : (
-          <Flex h="calc(100vh - 104px)" align="center" justify="center">
-            暂无数据
-          </Flex>
-        )}
+        <Table {...tableProps} />
 
         <Modal isOpen={isOpen} onClose={handleCloseDeleteModal}>
           <ModalOverlay />

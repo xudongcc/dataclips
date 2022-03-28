@@ -5,7 +5,6 @@ import {
   useDisclosure,
   Link,
   Button,
-  Flex,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -348,13 +347,7 @@ const SourceList = () => {
           },
         }}
       >
-        {tableProps.data.length ? (
-          <Table {...tableProps} />
-        ) : (
-          <Flex h="calc(100vh - 104px)" align="center" justify="center">
-            暂无数据
-          </Flex>
-        )}
+        <Table {...tableProps} />
 
         {/* 编辑 modal */}
         <Modal isOpen={isEditOpen} onClose={handleCloseEditModal}>
