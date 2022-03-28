@@ -36,6 +36,7 @@ import {
 } from "../../../components/ChartResultPreview/components/";
 import { Page } from "../../../components/Page";
 import { Card } from "../../../components/Card";
+import Head from "next/head";
 
 const ChartEdit = () => {
   const toast = useToast();
@@ -224,74 +225,80 @@ const ChartEdit = () => {
   }
 
   return (
-    <Page title="创建图表">
-      <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-        <GridItem colSpan={3}>
-          <Card>
-            <form onSubmit={form.handleSubmit}>
-              <Stack spacing={3} direction="row">
-                <FormControl width="30%" isInvalid={!!form.errors.name}>
-                  <Input
-                    placeholder="请输入图表名称"
-                    name="name"
-                    onChange={form.handleChange}
-                    value={form.values.name}
-                  />
-                  <FormErrorMessage>请输入图表名字</FormErrorMessage>
-                </FormControl>
+    <>
+      <Head>
+        <title>{data?.chart?.name} - 编辑 - 图表</title>
+      </Head>
 
-                <FormControl isInvalid={!!form.errors.clipId}>
-                  <Select
-                    flex="1"
-                    name="clipId"
-                    placeholder="请选择数据集"
-                    value={form.values.clipId}
-                    onChange={form.handleChange}
+      <Page title={data?.chart?.name}>
+        <Grid templateColumns="repeat(3, 1fr)" gap={4}>
+          <GridItem colSpan={3}>
+            <Card>
+              <form onSubmit={form.handleSubmit}>
+                <Stack spacing={3} direction="row">
+                  <FormControl width="30%" isInvalid={!!form.errors.name}>
+                    <Input
+                      placeholder="请输入图表名称"
+                      name="name"
+                      onChange={form.handleChange}
+                      value={form.values.name}
+                    />
+                    <FormErrorMessage>请输入图表名字</FormErrorMessage>
+                  </FormControl>
+
+                  <FormControl isInvalid={!!form.errors.clipId}>
+                    <Select
+                      flex="1"
+                      name="clipId"
+                      placeholder="请选择数据集"
+                      value={form.values.clipId}
+                      onChange={form.handleChange}
+                    >
+                      {clipsData?.clipConnection.edges?.map(
+                        ({ node: { id, name } }) => {
+                          return (
+                            <option key={id} value={id}>
+                              {name}
+                            </option>
+                          );
+                        }
+                      )}
+                    </Select>
+                    <FormErrorMessage>请选择数据集</FormErrorMessage>
+                  </FormControl>
+
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    isLoading={updateChartLoading}
                   >
-                    {clipsData?.clipConnection.edges?.map(
-                      ({ node: { id, name } }) => {
-                        return (
-                          <option key={id} value={id}>
-                            {name}
-                          </option>
-                        );
-                      }
-                    )}
-                  </Select>
-                  <FormErrorMessage>请选择数据集</FormErrorMessage>
-                </FormControl>
-
-                <Button
-                  type="submit"
-                  variant="primary"
-                  isLoading={updateChartLoading}
-                >
-                  保存
-                </Button>
-              </Stack>
-            </form>
-          </Card>
-        </GridItem>
-        <GridItem colSpan={2}>
-          <Box h="500px">
-            {result && (
-              <Card overflow="hidden" h="full">
-                <ChartResultPreview
-                  config={getChartTypePreviewConfig()}
-                  type={form.values.type}
-                  result={result}
-                />
-              </Card>
-            )}
-          </Box>
-        </GridItem>
-        <GridItem colSpan={1}>
-          <Card>
-            <ChartEditTab form={form} result={result} />
-          </Card>
-        </GridItem>
-      </Grid>
-    </Page>
+                    保存
+                  </Button>
+                </Stack>
+              </form>
+            </Card>
+          </GridItem>
+          <GridItem colSpan={2}>
+            <Box h="500px">
+              {result && (
+                <Card overflow="hidden" h="full">
+                  <ChartResultPreview
+                    config={getChartTypePreviewConfig()}
+                    type={form.values.type}
+                    result={result}
+                  />
+                </Card>
+              )}
+            </Box>
+          </GridItem>
+          <GridItem colSpan={1}>
+            <Card>
+              <ChartEditTab form={form} result={result} />
+            </Card>
+          </GridItem>
+        </Grid>
+      </Page>
+    </>
   );
 };
 

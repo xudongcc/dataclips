@@ -17,6 +17,7 @@ import { SQLEditor } from "../../components/SQLEditor";
 import { useCreateClipMutation } from "../../hooks/useCreateClipMutation";
 import { Card } from "../../components/Card/Card";
 import { Page } from "../../components/Page";
+import Head from "next/head";
 
 const ClipCreate = () => {
   const toast = useToast();
@@ -54,61 +55,67 @@ const ClipCreate = () => {
   });
 
   return (
-    <Page title="创建数据集">
-      <Card>
-        <Flex h="full" direction="column">
-          <form onSubmit={form.handleSubmit}>
-            <Stack mb={4} spacing={3} direction="row">
-              <Input
-                placeholder="请输入名称"
-                name="name"
-                width="30%"
-                onChange={form.handleChange}
-                value={form.values.name}
-              />
+    <>
+      <Head>
+        <title>创建 - 数据集</title>
+      </Head>
 
-              <Select
-                name="sourceId"
-                flex="1"
-                value={form.values.sourceId}
-                onChange={form.handleChange}
-                placeholder="请选择数据源"
-                isDisabled={isSourcesLoading}
+      <Page title="创建数据集">
+        <Card>
+          <Flex h="full" direction="column">
+            <form onSubmit={form.handleSubmit}>
+              <Stack mb={4} spacing={3} direction="row">
+                <Input
+                  placeholder="请输入名称"
+                  name="name"
+                  width="30%"
+                  onChange={form.handleChange}
+                  value={form.values.name}
+                />
+
+                <Select
+                  name="sourceId"
+                  flex="1"
+                  value={form.values.sourceId}
+                  onChange={form.handleChange}
+                  placeholder="请选择数据源"
+                  isDisabled={isSourcesLoading}
+                >
+                  {sourceConnection?.edges?.map(({ node }) => {
+                    return (
+                      <option key={node.id} value={node.id}>
+                        {node.name}
+                      </option>
+                    );
+                  })}
+                </Select>
+
+                <Button
+                  type="submit"
+                  variant="primary"
+                  isLoading={createClipLoading}
+                >
+                  保存
+                </Button>
+              </Stack>
+
+              <Box
+                borderWidth={1}
+                borderStyle="solid"
+                borderColor={useColorModeValue("gray.200", "whiteAlpha.300")}
+                borderRadius="lg"
+                overflow="hidden"
               >
-                {sourceConnection?.edges?.map(({ node }) => {
-                  return (
-                    <option key={node.id} value={node.id}>
-                      {node.name}
-                    </option>
-                  );
-                })}
-              </Select>
-
-              <Button
-                type="submit"
-                variant="primary"
-                isLoading={createClipLoading}
-              >
-                保存
-              </Button>
-            </Stack>
-
-            <Box
-              borderWidth={1}
-              borderStyle="solid"
-              borderColor={useColorModeValue("gray.200", "whiteAlpha.300")}
-              borderRadius="lg"
-              overflow="hidden"
-            >
-              <SQLEditor
-                value={form.values.sql}
-                onChange={(value) => form.setFieldValue("sql", value)}
-              />
-            </Box>
-          </form>
-        </Flex>
-      </Card>
-    </Page>
+                <SQLEditor
+                  value={form.values.sql}
+                  onChange={(value) => form.setFieldValue("sql", value)}
+                />
+              </Box>
+            </form>
+          </Flex>
+        </Card>
+      </Page>
+    </>
   );
 };
 

@@ -14,7 +14,7 @@ import { FC, ReactNode } from "react";
 interface ButtonProps extends BaseButtonProps {
   text?: React.ReactNode;
 }
-export interface CardProps extends BoxProps {
+export interface DashboardCardProps extends BoxProps {
   title?: string;
   description?: string;
   extra?: ReactNode;
@@ -22,7 +22,7 @@ export interface CardProps extends BoxProps {
   secondaryActions?: ButtonProps[];
 }
 
-export const Card: FC<CardProps> = ({
+export const DashboardCard: FC<DashboardCardProps> = ({
   title,
   description,
   children,
@@ -87,13 +87,8 @@ export const Card: FC<CardProps> = ({
       </Stack>
     </Stack>
 
-    <Box flex={1} h="inherit" className="card-body">
+    <Box flex={1} overflow="hidden" h="inherit" className="card-body">
       {children}
     </Box>
-
-    {/* <Stack direction={{ base: "column", md: "row" }} spacing="3">
-      <Button variant="secondary">Skip</Button>
-      <Button variant="primary">Download</Button>
-    </Stack> */}
   </Stack>
 );

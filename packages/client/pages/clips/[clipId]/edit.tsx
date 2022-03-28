@@ -22,6 +22,7 @@ import { ResultPreview } from "../../../components/ResultPreview";
 import { SQLEditor } from "../../../components/SQLEditor";
 import { Page } from "../../../components/Page";
 import { Card } from "../../../components/Card";
+import Head from "next/head";
 
 const ClipEdit = () => {
   const toast = useToast();
@@ -75,69 +76,75 @@ const ClipEdit = () => {
   }, [clip]);
 
   return (
-    <Page title={result?.name}>
-      <Stack spacing={4}>
-        <Card>
-          <Flex h="full" direction="column">
-            <form onSubmit={form.handleSubmit}>
-              <Stack mb={4} spacing={3} direction="row">
-                <Input
-                  placeholder="请输入剪藏名称"
-                  name="name"
-                  width="30%"
-                  onChange={form.handleChange}
-                  value={form.values.name}
-                />
+    <>
+      <Head>
+        <title>{result?.name} - 编辑 - 数据集</title>
+      </Head>
 
-                <Select
-                  name="sourceId"
-                  flex="1"
-                  value={form.values.sourceId}
-                  onChange={form.handleChange}
-                  placeholder="请选择数据源"
-                  isDisabled={isSourcesLoading}
+      <Page title={result?.name}>
+        <Stack spacing={4}>
+          <Card>
+            <Flex h="full" direction="column">
+              <form onSubmit={form.handleSubmit}>
+                <Stack mb={4} spacing={3} direction="row">
+                  <Input
+                    placeholder="请输入剪藏名称"
+                    name="name"
+                    width="30%"
+                    onChange={form.handleChange}
+                    value={form.values.name}
+                  />
+
+                  <Select
+                    name="sourceId"
+                    flex="1"
+                    value={form.values.sourceId}
+                    onChange={form.handleChange}
+                    placeholder="请选择数据源"
+                    isDisabled={isSourcesLoading}
+                  >
+                    {sourceConnection?.edges?.map(({ node }) => {
+                      return (
+                        <option key={node.id} value={node.id}>
+                          {node.name}
+                        </option>
+                      );
+                    })}
+                  </Select>
+
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    isLoading={updateClipLoading}
+                  >
+                    保存
+                  </Button>
+                </Stack>
+
+                <Box
+                  borderWidth={1}
+                  borderStyle="solid"
+                  borderColor={useColorModeValue("gray.200", "whiteAlpha.300")}
+                  borderRadius="lg"
+                  overflow="hidden"
                 >
-                  {sourceConnection?.edges?.map(({ node }) => {
-                    return (
-                      <option key={node.id} value={node.id}>
-                        {node.name}
-                      </option>
-                    );
-                  })}
-                </Select>
+                  <SQLEditor
+                    value={form.values.sql}
+                    onChange={(value) => form.setFieldValue("sql", value)}
+                  />
+                </Box>
+              </form>
+            </Flex>
+          </Card>
 
-                <Button
-                  type="submit"
-                  variant="primary"
-                  isLoading={updateClipLoading}
-                >
-                  保存
-                </Button>
-              </Stack>
-
-              <Box
-                borderWidth={1}
-                borderStyle="solid"
-                borderColor={useColorModeValue("gray.200", "whiteAlpha.300")}
-                borderRadius="lg"
-                overflow="hidden"
-              >
-                <SQLEditor
-                  value={form.values.sql}
-                  onChange={(value) => form.setFieldValue("sql", value)}
-                />
-              </Box>
-            </form>
-          </Flex>
-        </Card>
-
-        <Box flex={1}>
-          {result && !result?.message ? (
-            <ResultPreview token={clip?.token!} result={result} />
-          ) : null}
-        </Box>
-      </Stack>
-    </Page>
+          <Box flex={1}>
+            {result && !result?.message ? (
+              <ResultPreview token={clip?.token!} result={result} />
+            ) : null}
+          </Box>
+        </Stack>
+      </Page>
+    </>
   );
 };
 

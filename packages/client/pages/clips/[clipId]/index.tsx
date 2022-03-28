@@ -7,6 +7,7 @@ import { ResultPreview } from "../../../components/ResultPreview";
 import { useQueryResult } from "../../../hooks/useQueryResult";
 import PreviewLayout from "../../../layouts/PreviewLayout";
 import ProjectLayout from "../../../layouts/ProjectLayout";
+import Head from "next/head";
 
 const ClipPreview = () => {
   const router = useRouter();
@@ -22,9 +23,15 @@ const ClipPreview = () => {
     }
 
     return (
-      <Page title={result?.name}>
-        <ResultPreview token={clipId} result={result} />
-      </Page>
+      <>
+        <Head>
+          <title>{result?.name} - 预览 - 数据集</title>
+        </Head>
+
+        <Page title={result?.name}>
+          <ResultPreview token={clipId} result={result} />
+        </Page>
+      </>
     );
   }, [clipId, isLoading, result]);
 
