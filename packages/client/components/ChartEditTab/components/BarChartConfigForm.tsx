@@ -1,4 +1,4 @@
-import { Grid, Select, VStack } from "@chakra-ui/react";
+import { Checkbox, Grid, Select, VStack } from "@chakra-ui/react";
 import { FC } from "react";
 import { Select as ChakraSelect } from "chakra-react-select";
 
@@ -6,6 +6,7 @@ export interface BarChartEditConfig {
   variant: string;
   xCol: string[];
   yCol: string[];
+  isStack: boolean;
 }
 
 interface BarChartConfigFormProps {
@@ -63,6 +64,14 @@ export const BarChartConfigForm: FC<BarChartConfigFormProps> = ({
             value,
           }))}
         />
+
+        <Checkbox
+          name="barConfig.isStack"
+          isChecked={form.values.barConfig.isStack}
+          onChange={form.handleChange}
+        >
+          显示堆栈（设置后需重新刷新页面）
+        </Checkbox>
       </Grid>
     </VStack>
   );

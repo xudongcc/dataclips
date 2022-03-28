@@ -55,7 +55,7 @@ const ChartCreate = () => {
       funnelConfig: { groupCol: "", valueCol: "" },
       metricConfig: { valueCol: "", compareCol: "" },
       lineConfig: { xCol: "", yCol: [] },
-      barConfig: { variant: "", xCol: "", yCol: [] },
+      barConfig: { isStack: false, variant: "", xCol: "", yCol: [] },
       pieConfig: { variant: "", key: "", value: "" },
     },
     isInitialValid: false,
@@ -127,6 +127,7 @@ const ChartCreate = () => {
 
     if (form.values.type === ChartType.BAR) {
       return {
+        isStack: !!form.values.barConfig?.isStack,
         variant: form.values.barConfig?.variant || "",
         xCol: form.values.barConfig?.xCol || "",
         yCol: form.values.barConfig?.yCol || [],

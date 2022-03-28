@@ -56,6 +56,7 @@ const ChartPreview = () => {
 
     if (data?.chart.type === ChartType.BAR) {
       return {
+        isStack: !!data.chart.config?.isStack,
         variant: data.chart.config?.variant || "",
         xCol: data.chart.config?.xCol || "",
         yCol: data.chart.config?.yCol || [],
@@ -74,7 +75,7 @@ const ChartPreview = () => {
   }, [data]);
 
   const content = useMemo(() => {
-    if (isLoading) {
+    if (isLoading || loading) {
       return <Loading />;
     }
 
@@ -93,7 +94,7 @@ const ChartPreview = () => {
         )}
       </Page>
     );
-  }, [data, getChartTypePreviewConfig, isLoading, result]);
+  }, [data, getChartTypePreviewConfig, isLoading, loading, result]);
 
   if (session.status === "authenticated") {
     return <ProjectLayout>{content}</ProjectLayout>;

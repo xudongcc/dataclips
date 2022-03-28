@@ -63,7 +63,7 @@ const ChartEdit = () => {
       funnelConfig: { groupCol: "", valueCol: "" },
       metricConfig: { valueCol: "", compareCol: "" },
       lineConfig: { xCol: "", yCol: [] },
-      barConfig: { variant: "", xCol: "", yCol: [] },
+      barConfig: { isStack: false, variant: "", xCol: "", yCol: [] },
       pieConfig: { variant: "", key: "", value: "" },
     },
     isInitialValid: false,
@@ -135,6 +135,7 @@ const ChartEdit = () => {
 
     if (form.values.type === ChartType.BAR) {
       return {
+        isStack: !!form.values.barConfig.isStack,
         variant: form.values.barConfig.variant || "",
         xCol: form.values.barConfig?.xCol || "",
         yCol: form.values.barConfig?.yCol || [],
@@ -198,6 +199,7 @@ const ChartEdit = () => {
 
       if (data.chart.type === ChartType.BAR) {
         initialValues.barConfig = {
+          isStack: !!data.chart.config?.isStack,
           variant: data.chart.config?.variant || "",
           xCol: data.chart.config?.xCol || "",
           yCol: data.chart.config?.yCol || [],
