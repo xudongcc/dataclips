@@ -9,6 +9,7 @@ import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import Bluebird, { promisify } from "bluebird";
 import _ from "lodash";
 import mysql from "mysql2";
+import { Logger } from "nestjs-pino";
 import { Server } from "net";
 import pg from "pg";
 import initSqlJs from "sql.js";
@@ -27,6 +28,7 @@ export class SourceService extends mixinConnection(
   mixinSearchable(createEntityService(Source))
 ) {
   constructor(
+    private readonly logger: Logger,
     private readonly cryptoService: CryptoService,
     @Inject(forwardRef(() => ClipService))
     private readonly clipService: ClipService,
@@ -41,6 +43,11 @@ export class SourceService extends mixinConnection(
       input.password = this.cryptoService.encrypt(input.password);
     }
 
+    if (input.sshPassword) {
+      // eslint-disable-next-line no-param-reassign
+      input.sshPassword = this.cryptoService.encrypt(input.sshPassword);
+    }
+
     return await super.create(input);
   }
 
@@ -51,6 +58,11 @@ export class SourceService extends mixinConnection(
     if (input.password) {
       // eslint-disable-next-line no-param-reassign
       input.password = this.cryptoService.encrypt(input.password);
+    }
+
+    if (input.sshPassword) {
+      // eslint-disable-next-line no-param-reassign
+      input.sshPassword = this.cryptoService.encrypt(input.sshPassword);
     }
 
     return await super.update(conditions, input);
@@ -71,14 +83,16 @@ export class SourceService extends mixinConnection(
         host: source.sshHost,
         port: source.sshPort,
         username: source.sshUsername,
-        password: source.sshPassword,
+        password: this.cryptoService.decrypt(source.sshPassword),
         dstHost: source.host,
         dstPort: source.port,
         localHost,
         localPort,
       });
 
-      console.log("localPort", localPort);
+      tunnel.on("error", (err) => {
+        this.logger.error({ err, sourceId: source.id }, "SSH tunnel error");
+      });
     }
 
     const host = source.sshEnabled ? localHost : source.host;
