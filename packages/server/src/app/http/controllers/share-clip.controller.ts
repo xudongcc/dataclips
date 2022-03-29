@@ -5,23 +5,20 @@ import {
   NotFoundException,
   Param,
   Res,
-  UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
 import xlsx from "node-xlsx";
 import Papa from "papaparse";
 
 import { ClipService } from "../../core/services/clip.service";
-import { AuthGuard } from "../guards/auth.guard";
 
-@UseGuards(AuthGuard)
 @Controller("/clips")
-export class ClipController {
+export class ShareClipController {
   constructor(private readonly clipService: ClipService) {}
 
-  @Get(":id(\\d+).json")
-  async json(@Param("id") id: string) {
-    const clip = await this.clipService.findOneById(id);
+  @Get(":token.json")
+  async json(@Param("token") token: string) {
+    const clip = await this.clipService.findOneByToken(token);
 
     if (!clip) {
       throw new NotFoundException();
@@ -39,10 +36,10 @@ export class ClipController {
     return result;
   }
 
-  @Get(":id(\\d+).csv")
+  @Get(":token.csv")
   @Header("Content-Type", "text/csv")
-  async csv(@Param("id") id: string) {
-    const clip = await this.clipService.findOneById(id);
+  async csv(@Param("token") token: string) {
+    const clip = await this.clipService.findOneByToken(token);
 
     if (!clip) {
       throw new NotFoundException();
@@ -63,9 +60,9 @@ export class ClipController {
     });
   }
 
-  @Get(":id(\\d+).xlsx")
-  async xlsx(@Res() res: Response, @Param("id") id: string) {
-    const clip = await this.clipService.findOneById(id);
+  @Get(":token.xlsx")
+  async xlsx(@Res() res: Response, @Param("token") token: string) {
+    const clip = await this.clipService.findOneByToken(token);
 
     if (!clip) {
       throw new NotFoundException();

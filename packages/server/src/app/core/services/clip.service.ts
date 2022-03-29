@@ -73,13 +73,13 @@ export class ClipService extends mixinConnection(
     return result;
   }
 
-  async findOneByIdOrToken(
+  async findOneByToken(
     idOrToken: string,
     options?: FindOneOptions<Clip>
   ): Promise<Clip> {
     return await this.findOne({
       ...options,
-      where: /^\d+$/.test(idOrToken) ? { id: idOrToken } : { token: idOrToken },
+      where: { token: idOrToken },
     });
   }
 

@@ -1,5 +1,5 @@
 import { In } from "@nest-boot/database";
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, UseGuards } from "@nestjs/common";
 import {
   Args,
   ID,
@@ -16,10 +16,12 @@ import { VirtualSourceTable } from "../../core/entities/virtual-source-table.ent
 import { SourceType } from "../../core/enums/source-type.enum";
 import { SourceService } from "../../core/services/source.service";
 import { VirtualSourceTableService } from "../../core/services/virtual-source-table.service";
+import { AuthGuard } from "../guards/auth.guard";
 import { CreateVirtualSourceInput } from "../inputs/create-virtual-source.input";
 import { UpdateVirtualSourceInput } from "../inputs/update-virtual-source.input";
 import { VirtualSource } from "../objects/virtual-source.object";
 
+@UseGuards(AuthGuard)
 @Resolver(() => VirtualSource)
 export class VirtualSourceResolver {
   constructor(

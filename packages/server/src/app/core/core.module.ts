@@ -15,6 +15,7 @@ import { Dashboard } from "./entities/dashboard.entity";
 import { Project } from "./entities/project.entity";
 import { Result } from "./entities/result.entity";
 import { Source } from "./entities/source.entity";
+import { User } from "./entities/user.entity";
 import { VirtualSourceTable } from "./entities/virtual-source-table.entity";
 import { RefreshClipQueue } from "./queues/refresh-clip.queue";
 import { ChartService } from "./services/chart.service";
@@ -23,6 +24,7 @@ import { DashboardService } from "./services/dashboard.service";
 import { ProjectService } from "./services/project.service";
 import { ResultService } from "./services/result.service";
 import { SourceService } from "./services/source.service";
+import { UserService } from "./services/user.service";
 import { VirtualSourceTableService } from "./services/virtual-source-table.service";
 
 const entities = [
@@ -33,6 +35,7 @@ const entities = [
   VirtualSourceTable,
   Chart,
   Dashboard,
+  User,
 ];
 
 const services = [
@@ -43,6 +46,7 @@ const services = [
   VirtualSourceTableService,
   ChartService,
   DashboardService,
+  UserService,
 ];
 
 const queues = [RefreshClipQueue];

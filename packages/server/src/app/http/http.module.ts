@@ -5,14 +5,15 @@ import { GraphQLModule } from "@nestjs/graphql";
 
 import { CoreModule } from "../core/core.module";
 import { ClipController } from "./controllers/clip.controller";
+import { ShareClipController } from "./controllers/share-clip.controller";
 import { ChartResolver } from "./resolvers/chart.resolver";
 import { ClipResolver } from "./resolvers/clip.resolver";
 import { DashboardResolver } from "./resolvers/dashboard.resolver";
 import { DatabaseSourceResolver } from "./resolvers/database-source.resolver";
-import { ProjectResolver } from "./resolvers/project.resolver";
 import { SourceResolver } from "./resolvers/source.resolver";
 import { VirtualSourceResolver } from "./resolvers/virtual-source.resolver";
 import { VirtualSourceTableResolver } from "./resolvers/virtual-source-table.resolver";
+import { JwtPassportStrategy } from "./strategies/jwt.strategy";
 
 @Module({
   imports: [
@@ -26,7 +27,6 @@ import { VirtualSourceTableResolver } from "./resolvers/virtual-source-table.res
     }),
   ],
   providers: [
-    ProjectResolver,
     ClipResolver,
     SourceResolver,
     DatabaseSourceResolver,
@@ -34,8 +34,9 @@ import { VirtualSourceTableResolver } from "./resolvers/virtual-source-table.res
     VirtualSourceTableResolver,
     ChartResolver,
     DashboardResolver,
+    JwtPassportStrategy,
   ],
-  controllers: [ClipController],
+  controllers: [ClipController, ShareClipController],
 })
 export class HttpModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {

@@ -1,13 +1,16 @@
 import { QueryConnectionArgs } from "@nest-boot/graphql";
+import { UseGuards } from "@nestjs/common";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 import _ from "lodash";
 
 import { Chart } from "../../core/entities/chart.entity";
 import { ChartService } from "../../core/services/chart.service";
+import { AuthGuard } from "../guards/auth.guard";
 import { CreateChartInput } from "../inputs/create-chart.input";
 import { UpdateChartInput } from "../inputs/update-chart.input";
 import { ChartConnection } from "../objects/chart-connection.object";
 
+@UseGuards(AuthGuard)
 @Resolver(() => Chart)
 export class ChartResolver {
   constructor(private readonly chartService: ChartService) {}

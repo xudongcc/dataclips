@@ -10,7 +10,6 @@ import Bluebird, { promisify } from "bluebird";
 import _ from "lodash";
 import mysql from "mysql2";
 import { Logger } from "nestjs-pino";
-import { Server } from "net";
 import pg from "pg";
 import initSqlJs from "sql.js";
 import tunnelSSH from "tunnel-ssh";
