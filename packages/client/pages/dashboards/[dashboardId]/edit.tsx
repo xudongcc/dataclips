@@ -135,11 +135,12 @@ const DashBoardEdit: PC = () => {
         },
       });
 
-      toast({ title: "更新成功" });
+      toast({ title: "保存成功" });
+      router.push(`/dashboards/${dashboardId}`);
     } catch (err) {
       console.log(err);
     }
-  }, [chartCards, dashboardId, toast, updateDashboard]);
+  }, [chartCards, dashboardId, router, toast, updateDashboard]);
 
   const handleAddOrEditChartCard = useCallback(async () => {
     try {

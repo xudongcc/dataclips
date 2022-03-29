@@ -28,7 +28,15 @@ const ClipPreview = () => {
           <title>{result?.name} - 预览 - 数据集</title>
         </Head>
 
-        <Page title={result?.name}>
+        <Page
+          title={result?.name}
+          primaryAction={{
+            text: "编辑",
+            onClick: () => {
+              router.push(`/clips/${clipId}/edit`);
+            },
+          }}
+        >
           <ResultPreview token={clipId} result={result} />
         </Page>
       </>

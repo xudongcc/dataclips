@@ -86,7 +86,15 @@ const ChartPreview = () => {
           <title>{result?.name} - 预览 - 图表</title>
         </Head>
 
-        <Page title={result?.name}>
+        <Page
+          title={result?.name}
+          primaryAction={{
+            text: "编辑",
+            onClick: () => {
+              router.push(`/charts/${chartId}/edit`);
+            },
+          }}
+        >
           {data?.chart.type && data?.chart.config && result && (
             <Box h="800px">
               <Card overflow="hidden" h="full">

@@ -71,7 +71,7 @@ export const VirtualSourceForm: FC<VirtualSourceFormProps> = ({ form }) => {
                 name={`virtualSource.tables[${index}].clipId`}
                 value={form.values.virtualSource.tables[index].clipId}
                 onChange={form.handleChange}
-                placeholder="请选择 clipId"
+                placeholder="请选择数据集"
               >
                 {clipIds.map(({ id, name }) => (
                   <option key={id} value={id}>
@@ -79,7 +79,7 @@ export const VirtualSourceForm: FC<VirtualSourceFormProps> = ({ form }) => {
                   </option>
                 ))}
               </Select>
-              <FormErrorMessage>请选择 clipId</FormErrorMessage>
+              <FormErrorMessage>请选择数据集</FormErrorMessage>
             </FormControl>
 
             <IconButton
