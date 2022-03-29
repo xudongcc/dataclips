@@ -35,6 +35,26 @@ const dataSourceValidObj = {
     username: Yup.string().required(),
     password: Yup.string().required(),
     type: Yup.string().required(),
+    sshHost: Yup.string().when("sshEnabled", (sshEnabled, schema) => {
+      if (sshEnabled) {
+        return schema.required();
+      }
+    }),
+    sshPort: Yup.number().when("sshEnabled", (sshEnabled, schema) => {
+      if (sshEnabled) {
+        return schema.required();
+      }
+    }),
+    sshUsername: Yup.string().when("sshEnabled", (sshEnabled, schema) => {
+      if (sshEnabled) {
+        return schema.required();
+      }
+    }),
+    sshPassword: Yup.string().when("sshEnabled", (sshEnabled, schema) => {
+      if (sshEnabled) {
+        return schema.required();
+      }
+    }),
   }),
 };
 

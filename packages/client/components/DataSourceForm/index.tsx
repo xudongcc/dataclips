@@ -109,43 +109,55 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({ form }) => {
 
       {form.values.dataSource.sshEnabled && (
         <>
-          <Input
-            name="dataSource.sshHost"
-            value={form.values.dataSource.sshHost}
-            onChange={form.handleChange}
-            placeholder="请输入 ssh 主机"
-          />
-
-          <NumberInput
-            w="100%"
-            name="dataSource.sshPort"
-            value={form.values.dataSource.sshPort}
-          >
-            <NumberInputField
+          <FormControl isInvalid={!!form.errors.dataSource?.sshHost}>
+            <Input
+              name="dataSource.sshHost"
+              value={form.values.dataSource.sshHost}
               onChange={form.handleChange}
-              type="number"
-              placeholder="请输入 ssh 端口号"
+              placeholder="请输入 ssh 主机"
             />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
+            <FormErrorMessage>请输入 ssh 主机</FormErrorMessage>
+          </FormControl>
 
-          <Input
-            name="dataSource.sshUsername"
-            value={form.values.dataSource.sshUsername}
-            onChange={form.handleChange}
-            placeholder="请输入 ssh 用户名"
-          />
+          <FormControl isInvalid={!!form.errors.dataSource?.sshPort}>
+            <NumberInput
+              w="100%"
+              name="dataSource.sshPort"
+              value={form.values.dataSource.sshPort}
+            >
+              <NumberInputField
+                onChange={form.handleChange}
+                type="number"
+                placeholder="请输入 ssh 端口号"
+              />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+            <FormErrorMessage>请输入 ssh 端口号</FormErrorMessage>
+          </FormControl>
 
-          <Input
-            type="password"
-            name="dataSource.sshPassword"
-            value={form.values.dataSource.sshPassword}
-            onChange={form.handleChange}
-            placeholder="请输入 ssh 密码"
-          />
+          <FormControl isInvalid={!!form.errors.dataSource?.sshUsername}>
+            <Input
+              name="dataSource.sshUsername"
+              value={form.values.dataSource.sshUsername}
+              onChange={form.handleChange}
+              placeholder="请输入 ssh 用户名"
+            />
+            <FormErrorMessage>请输入 ssh 用户名</FormErrorMessage>
+          </FormControl>
+
+          <FormControl isInvalid={!!form.errors.dataSource?.sshPassword}>
+            <Input
+              type="password"
+              name="dataSource.sshPassword"
+              value={form.values.dataSource.sshPassword}
+              onChange={form.handleChange}
+              placeholder="请输入 ssh 密码"
+            />
+            <FormErrorMessage>请输入 ssh 密码</FormErrorMessage>
+          </FormControl>
         </>
       )}
     </>
