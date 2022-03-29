@@ -77,13 +77,14 @@ export class SourceService extends mixinConnection(
     const localHost = "localhost";
     const localPort = _.random(30000, 60000);
 
-    let tunnel: Server;
-    if (source.sshEnabled) {
-      tunnel = await createTunnel({
+    if (source.type !== SourceType.VIRTUAL && source.sshEnabled) {
+      const tunnel = await createTunnel({
         host: source.sshHost,
         port: source.sshPort,
         username: source.sshUsername,
-        password: this.cryptoService.decrypt(source.sshPassword),
+        password: source.sshPassword
+          ? this.cryptoService.decrypt(source.sshPassword)
+          : null,
         dstHost: source.host,
         dstPort: source.port,
         localHost,
@@ -99,7 +100,9 @@ export class SourceService extends mixinConnection(
     const port = source.sshEnabled ? localPort : source.port;
 
     const { database, username } = source;
-    const password = this.cryptoService.decrypt(source.password);
+    const password = source.password
+      ? this.cryptoService.decrypt(source.password)
+      : null;
 
     if (source.type === SourceType.MYSQL) {
       const mysqlConnection = mysql

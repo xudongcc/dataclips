@@ -42,6 +42,9 @@ export class ClipService extends mixinConnection(
       queryResult = await this.sourceService.query(clip.sourceId, clip.sql);
     } catch (err) {
       error = err.message;
+
+      // eslint-disable-next-line no-console
+      console.error(err);
     }
 
     const finishedAt = new Date();
