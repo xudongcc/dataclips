@@ -37,6 +37,7 @@ import {
 import { Page } from "../../../components/Page";
 import { Card } from "../../../components/Card";
 import Head from "next/head";
+import { formatFields } from "../../../utils/formatFields";
 
 const ChartEdit = () => {
   const toast = useToast();
@@ -111,6 +112,8 @@ const ChartEdit = () => {
   });
 
   const { data: result, isLoading } = useQueryResult(form.values.clipId);
+
+  console.log("result", result);
 
   const getChartTypePreviewConfig = useCallback(() => {
     if (form.values.type === ChartType.FUNNEL) {
@@ -293,7 +296,10 @@ const ChartEdit = () => {
           </GridItem>
           <GridItem colSpan={1}>
             <Card>
-              <ChartEditTab form={form} result={result} />
+              <ChartEditTab
+                form={form}
+                result={formatFields(result, "values")}
+              />
             </Card>
           </GridItem>
         </Grid>

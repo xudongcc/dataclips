@@ -77,10 +77,37 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
         </AccordionPanel>
       </AccordionItem>
 
+      <AccordionItem>
+        <AccordionButton>
+          <Text fontWeight="bold" flex="1" textAlign="left">
+            标准配置
+          </Text>
+          <AccordionIcon />
+        </AccordionButton>
+
+        <AccordionPanel pb={4}>
+          <FormControl isInvalid={!!form.errors.format}>
+            <Select
+              size="sm"
+              placeholder="请选择格式化"
+              name="format"
+              onChange={form.handleChange}
+              value={form.values.format}
+            >
+              {[].map((item) => (
+                <option value={item} key={item}>
+                  123
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+        </AccordionPanel>
+      </AccordionItem>
+
       <AccordionItem isDisabled={!form.values?.type}>
         <AccordionButton>
           <Text fontWeight="bold" flex="1" textAlign="left">
-            选项配置
+            查询分析配置
           </Text>
           <AccordionIcon />
         </AccordionButton>
