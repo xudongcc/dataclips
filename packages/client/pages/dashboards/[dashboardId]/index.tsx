@@ -22,10 +22,7 @@ const ResponsiveGridLayout = WidthProvider(GridLayout);
 interface ChartCard {
   name: string;
   chartId: string;
-  data: {
-    chart: Chart;
-    result: any;
-  };
+  hiddenName: boolean;
   layout: Layout;
 }
 
@@ -83,7 +80,10 @@ const DashboardPreview: PC = () => {
               {chartCards.map((item) => {
                 return (
                   <DashboardItem key={item?.layout?.i}>
-                    <DashboardCard h="full" title={item?.name}>
+                    <DashboardCard
+                      h="full"
+                      title={!item?.hiddenName && item?.name}
+                    >
                       <DashboardChartResultPreview chartId={item?.chartId} />
                     </DashboardCard>
                   </DashboardItem>
@@ -94,7 +94,14 @@ const DashboardPreview: PC = () => {
         </Page>
       </>
     );
-  }, [borderRadius, chartCards, data?.dashboard?.name, loading]);
+  }, [
+    borderRadius,
+    chartCards,
+    dashboardId,
+    data?.dashboard?.name,
+    loading,
+    router,
+  ]);
 
   useEffect(() => {
     if (data?.dashboard?.config?.length) {
