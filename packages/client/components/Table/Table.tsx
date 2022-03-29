@@ -11,6 +11,7 @@ import {
   Tr,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { ReactNode } from "react";
 import { TableOptions, useSortBy, useTable } from "react-table";
 
 import { ResultFragment } from "../../generated/graphql";
@@ -22,16 +23,26 @@ export interface ResultPreviewProps {
 
 export interface TableProps<T extends object = {}>
   extends TableOptions<T>,
-    BoxProps {}
+    BoxProps {
+  renderEmpty?: ReactNode;
+}
 
 export const Table = (props: TableProps) => {
   const headerBackgroundColor = useColorModeValue("gray.50", "gray.800");
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable(props, useSortBy);
+  const { renderEmpty, ...rest } = props;
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    headers,
+  } = useTable(rest, useSortBy);
 
   return (
-    <Box overflowY="scroll" {...props}>
+    <Box overflowY="scroll" {...rest}>
       <BaseTable
         sx={{ borderCollapse: "separate", borderSpacing: 0 }}
         {...getTableProps()}
@@ -67,24 +78,32 @@ export const Table = (props: TableProps) => {
         </Thead>
 
         <Tbody {...getTableBodyProps()}>
-          {rows.map((row, i) => {
-            prepareRow(row);
-            return (
-              <Tr key={i} {...row.getRowProps()}>
-                {row.cells.map((cell, index) => {
-                  return (
-                    <Td
-                      key={index}
-                      whiteSpace="nowrap"
-                      {...cell.getCellProps()}
-                    >
-                      {cell.render("Cell")}
-                    </Td>
-                  );
-                })}
-              </Tr>
-            );
-          })}
+          {rows.length ? (
+            rows.map((row, i) => {
+              prepareRow(row);
+              return (
+                <Tr key={i} {...row.getRowProps()}>
+                  {row.cells.map((cell, index) => {
+                    return (
+                      <Td
+                        key={index}
+                        whiteSpace="nowrap"
+                        {...cell.getCellProps()}
+                      >
+                        {cell.render("Cell")}
+                      </Td>
+                    );
+                  })}
+                </Tr>
+              );
+            })
+          ) : (
+            <Tr>
+              <Td colSpan={headers.length} textAlign="center">
+                <Box d="inline-block">{renderEmpty || "暂无数据"}</Box>
+              </Td>
+            </Tr>
+          )}
         </Tbody>
       </BaseTable>
     </Box>
