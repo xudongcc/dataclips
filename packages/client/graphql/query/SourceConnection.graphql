@@ -23,6 +23,10 @@ query SourceConnection(
           name
           createdAt
           updatedAt
+          sshEnabled
+          sshHost
+          sshPort
+          sshUsername
         }
         ... on VirtualSource {
           id

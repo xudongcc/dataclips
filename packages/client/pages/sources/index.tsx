@@ -46,6 +46,21 @@ const dataSourceValidObj = {
     database: Yup.string().required(),
     username: Yup.string().required(),
     type: Yup.string().required(),
+    sshHost: Yup.string().when("sshEnabled", (sshEnabled, schema) => {
+      if (sshEnabled) {
+        return schema.required();
+      }
+    }),
+    sshPort: Yup.number().when("sshEnabled", (sshEnabled, schema) => {
+      if (sshEnabled) {
+        return schema.required();
+      }
+    }),
+    sshUsername: Yup.string().when("sshEnabled", (sshEnabled, schema) => {
+      if (sshEnabled) {
+        return schema.required();
+      }
+    }),
   }),
 };
 
@@ -106,6 +121,10 @@ const SourceList = () => {
         username: "",
         password: "",
         type: "" as DatabaseType,
+        sshEnabled: false,
+        sshHost: "",
+        sshPort: undefined,
+        sshUsername: "",
       },
       virtualSource: {
         name: "",
@@ -211,6 +230,10 @@ const SourceList = () => {
                           username: (source as DatabaseSource).username,
                           password: "",
                           type: (source as DatabaseSource).type,
+                          sshEnabled: (source as DatabaseSource).sshEnabled,
+                          sshHost: (source as DatabaseSource).sshHost,
+                          sshPort: (source as DatabaseSource).sshPort,
+                          sshUsername: (source as DatabaseSource).sshUsername,
                         },
                       });
                     }
