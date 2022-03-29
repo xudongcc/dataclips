@@ -1,4 +1,4 @@
-import { AddIcon, MinusIcon } from "@chakra-ui/icons";
+import { MinusIcon } from "@chakra-ui/icons";
 import {
   Box,
   FormControl,
@@ -74,18 +74,6 @@ export const VirtualSourceForm: FC<VirtualSourceFormProps> = ({ form }) => {
               </Select>
               <FormErrorMessage>请选择数据集</FormErrorMessage>
             </FormControl>
-
-            {/*
-            <IconButton
-              aria-label="add tables filed"
-              onClick={() => {
-                form.setFieldValue("virtualSource.tables", [
-                  ...form.values.virtualSource.tables,
-                  { name: "", clipId: "" },
-                ]);
-              }}
-              icon={<AddIcon />}
-            /> */}
 
             <IconButton
               aria-label="reduce tables filed"
