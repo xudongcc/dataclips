@@ -1,11 +1,13 @@
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import {
+  Box,
   FormControl,
   FormErrorMessage,
-  Grid,
   IconButton,
   Input,
   Select,
+  HStack,
+  Button,
 } from "@chakra-ui/react";
 import { FC, useMemo } from "react";
 import { useClipConnectionQuery } from "../../generated/graphql";
@@ -42,16 +44,7 @@ export const VirtualSourceForm: FC<VirtualSourceFormProps> = ({ form }) => {
 
       {form.values?.virtualSource?.tables?.map(
         (_: { clipId: string; name: string }, index: number) => (
-          <Grid
-            key={index}
-            gap={4}
-            templateColumns={
-              form.values.virtualSource.tables.length > 1
-                ? "repeat(2, 0.8fr) repeat(2, 0.2fr)"
-                : "repeat(2, 0.8fr) 0.2fr"
-            }
-            w="100%"
-          >
+          <HStack key={index} spacing={4} w="100%" alignItems="flex-start">
             <FormControl
               isInvalid={!!form.errors.virtualSource?.tables[index]?.name}
             >
@@ -60,7 +53,7 @@ export const VirtualSourceForm: FC<VirtualSourceFormProps> = ({ form }) => {
                 value={form.values.virtualSource.tables[index].name}
                 onChange={form.handleChange}
                 placeholder="请输入名字"
-              ></Input>
+              />
               <FormErrorMessage>请输入名字</FormErrorMessage>
             </FormControl>
 
@@ -82,6 +75,7 @@ export const VirtualSourceForm: FC<VirtualSourceFormProps> = ({ form }) => {
               <FormErrorMessage>请选择数据集</FormErrorMessage>
             </FormControl>
 
+            {/*
             <IconButton
               aria-label="add tables filed"
               onClick={() => {
@@ -91,26 +85,37 @@ export const VirtualSourceForm: FC<VirtualSourceFormProps> = ({ form }) => {
                 ]);
               }}
               icon={<AddIcon />}
-            />
+            /> */}
 
-            {form.values.virtualSource.tables.length > 1 && (
-              <IconButton
-                aria-label="reduce tables filed"
-                onClick={() => {
-                  form.setFieldValue(
-                    "virtualSource.tables",
-                    form.values.virtualSource.tables.filter(
-                      (item: { clipId: string; name: string }, i: number) =>
-                        i !== index
-                    )
-                  );
-                }}
-                icon={<MinusIcon />}
-              />
-            )}
-          </Grid>
+            <IconButton
+              aria-label="reduce tables filed"
+              onClick={() => {
+                form.setFieldValue(
+                  "virtualSource.tables",
+                  form.values.virtualSource.tables.filter(
+                    (_: { clipId: string; name: string }, i: number) =>
+                      i !== index
+                  )
+                );
+              }}
+              icon={<MinusIcon />}
+            />
+          </HStack>
         )
       )}
+
+      <Box w="100%">
+        <Button
+          onClick={() => {
+            form.setFieldValue("virtualSource.tables", [
+              ...form.values.virtualSource.tables,
+              { name: "", clipId: "" },
+            ]);
+          }}
+        >
+          增加配置项
+        </Button>
+      </Box>
     </>
   );
 };
