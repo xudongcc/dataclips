@@ -54,12 +54,14 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({ form }) => {
       </FormControl>
 
       <FormControl isInvalid={!!form.errors.dataSource?.port}>
-        <NumberInput name="dataSource.port" value={form.values.dataSource.port}>
-          <NumberInputField
-            onChange={form.handleChange}
-            type="number"
-            placeholder="请输入端口号"
-          />
+        <NumberInput
+          value={form.values.dataSource.port}
+          onChange={(value) => {
+            form.setFieldValue("dataSource.port", +value);
+          }}
+          name="dataSource.port"
+        >
+          <NumberInputField type="number" placeholder="请输入端口号" />
           <NumberInputStepper>
             <NumberIncrementStepper />
             <NumberDecrementStepper />
@@ -124,12 +126,11 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({ form }) => {
               w="100%"
               name="dataSource.sshPort"
               value={form.values.dataSource.sshPort}
+              onChange={(value) => {
+                form.setFieldValue("dataSource.sshPort", +value);
+              }}
             >
-              <NumberInputField
-                onChange={form.handleChange}
-                type="number"
-                placeholder="请输入 ssh 端口号"
-              />
+              <NumberInputField type="number" placeholder="请输入 ssh 端口号" />
               <NumberInputStepper>
                 <NumberIncrementStepper />
                 <NumberDecrementStepper />
