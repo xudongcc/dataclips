@@ -33,8 +33,8 @@ export class ClipService extends mixinConnection(
   async query(id: Clip["id"]): Promise<Result> {
     const clip = await this.findOne({ where: { id } });
 
-    let queryResult: Record<string, string | number | boolean>[] = [];
-    let error: any = null;
+    let queryResult: [string[], unknown[][]];
+    let error: string;
 
     const startedAt = new Date();
 
@@ -49,19 +49,12 @@ export class ClipService extends mixinConnection(
 
     const finishedAt = new Date();
 
-    let fields: string[] = [];
-    let values: (string | number | boolean | Date)[][] = [];
-    if (queryResult?.[0]) {
-      fields = Object.keys(queryResult[0]);
-      values = queryResult.map((item: any) => Object.values(item));
-    }
-
     const [result] = await Promise.all([
       this.resultService.create({
         clip,
         name: clip.name,
-        fields,
-        values,
+        fields: queryResult[0],
+        values: queryResult[1],
         error,
         duration: finishedAt.getTime() - startedAt.getTime(),
         startedAt,
