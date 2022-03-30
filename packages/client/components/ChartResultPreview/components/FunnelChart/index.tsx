@@ -10,7 +10,6 @@ import {
 } from "bizcharts";
 import { readableColor } from "polished";
 import { FC, useMemo } from "react";
-import numeral from "numeral";
 
 import { ResultFragment } from "../../../../generated/graphql";
 import { formatPercent } from "../../../../utils/formatPercent";
@@ -46,21 +45,21 @@ export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
           return result.values.map((value, index) => {
             return {
               [config.groupCol]: value[keyIndex],
-              [config.valueCol]: numeral(value[valueIndex]).value(),
+              [config.valueCol]: getFormatValue(value[valueIndex]),
               percent:
                 index === 0
                   ? formatPercent(1)
                   : formatPercent(
-                      numeral(value[valueIndex]).value() /
-                        numeral(result.values[0][valueIndex]).value()
+                      getFormatValue(value[valueIndex]) /
+                        getFormatValue(result.values[0][valueIndex])
                     ),
               // 上一级的占比
               previousPercent:
                 index === 0
                   ? formatPercent(1)
                   : formatPercent(
-                      numeral(value[valueIndex]).value() /
-                        numeral(result.values[index - 1][valueIndex]).value()
+                      getFormatValue(value[valueIndex]) /
+                        getFormatValue(result.values[index - 1][valueIndex])
                     ),
             };
           });

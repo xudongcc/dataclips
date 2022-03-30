@@ -53,6 +53,7 @@ const ChartCreate = () => {
       name: "",
       type: "" as ChartType,
       clipId: "",
+      format: { label: "无格式化", value: "" },
       funnelConfig: { groupCol: "", valueCol: "" },
       metricConfig: { valueCol: "", compareCol: "" },
       lineConfig: { xCol: "", yCol: [] },
@@ -107,6 +108,7 @@ const ChartCreate = () => {
   const getChartTypePreviewConfig = useCallback(() => {
     if (form.values.type === ChartType.FUNNEL) {
       return {
+        format: form.values.format?.value || "",
         groupCol: form.values.funnelConfig.groupCol || "",
         valueCol: form.values.funnelConfig.valueCol || "",
       } as FunnelChartConfig;
@@ -114,6 +116,7 @@ const ChartCreate = () => {
 
     if (form.values.type === ChartType.METRIC) {
       return {
+        format: form.values.format?.value || "",
         valueCol: form.values.metricConfig.valueCol || "",
         compareCol: form.values.metricConfig.compareCol || "",
       } as MetricChartConfig;
@@ -121,6 +124,7 @@ const ChartCreate = () => {
 
     if (form.values.type === ChartType.LINE) {
       return {
+        format: form.values.format?.value || "",
         xCol: form.values.lineConfig?.xCol || "",
         yCol: form.values.lineConfig?.yCol || [],
       } as LineChartConfig;
@@ -128,6 +132,7 @@ const ChartCreate = () => {
 
     if (form.values.type === ChartType.BAR) {
       return {
+        format: form.values.format?.value || "",
         isStack: !!form.values.barConfig?.isStack,
         variant: form.values.barConfig?.variant || "",
         xCol: form.values.barConfig?.xCol || "",
@@ -137,6 +142,7 @@ const ChartCreate = () => {
 
     if (form.values.type === ChartType.PIE) {
       return {
+        format: form.values.format?.value || "",
         variant: form.values.pieConfig?.variant || "",
         key: form.values.pieConfig?.key || "",
         value: form.values.pieConfig?.value || "",

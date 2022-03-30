@@ -15,7 +15,6 @@
     "@chakra-ui/icons": "^1.1.7",
     "@chakra-ui/pro-theme": "^0.0.41",
     "@chakra-ui/react": "^1.8.6",
-    "@choc-ui/chakra-autocomplete": "^4.20.1",
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
     "@fontsource/inter": "^4.5.5",

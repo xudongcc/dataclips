@@ -37,11 +37,9 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
         );
 
         if (keyIndex !== -1 && valueIndex !== -1) {
-          let total = 0;
-
-          result.values.forEach((arr) => {
-            total = total + getFormatValue(arr[valueIndex]);
-          });
+          const total = sumBy(result.values, (arr) =>
+            getFormatValue(arr[valueIndex])
+          );
 
           return result.values.map((value) => {
             return {
@@ -82,11 +80,9 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
       statistic={{
         content: {
           formatter: (_, values) => {
-            const format = values[0]?.format;
-
             return getFormatValue(
               sumBy(values, (o) => o.value),
-              format
+              values[0]?.format
             );
           },
         },

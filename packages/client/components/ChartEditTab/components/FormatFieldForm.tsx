@@ -31,14 +31,14 @@ const momentList = options
 export const getFormatValue = (value: any, format?: string) => {
   if (format) {
     if (numeralList.includes(format)) {
-      return numeral(value).format(format);
+      return numeral(value).format(format) || value;
     }
 
     if (momentList.includes(format)) {
-      return moment(value).format(format);
+      return moment(value).format(format) || value;
     }
   }
-  return numeral(value).value();
+  return numeral(value).value() || value;
 };
 
 export const FormatFieldForm: FC<FormatFieldFormProps> = ({ form }) => {
