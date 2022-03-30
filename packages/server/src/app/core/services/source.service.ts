@@ -166,27 +166,29 @@ export class SourceService extends mixinConnection(
 
           db.run(`CREATE TABLE ${table.name} (${result.fields.join(",")});`);
 
-          db.run(
-            `INSERT INTO ${table.name} VALUES ${result.values
-              .map(
-                (value) =>
-                  `(${value
-                    .map((val) => {
-                      if (val === null) {
-                        return "null";
-                      }
+          if (result.values.length > 0) {
+            db.run(
+              `INSERT INTO ${table.name} VALUES ${result.values
+                .map(
+                  (value) =>
+                    `(${value
+                      .map((val) => {
+                        if (val === null) {
+                          return "null";
+                        }
 
-                      switch (typeof val) {
-                        case "number":
-                          return val;
-                        default:
-                          return `'${val}'`;
-                      }
-                    })
-                    .join(",")})`
-              )
-              .join(",")};`
-          );
+                        switch (typeof val) {
+                          case "number":
+                            return val;
+                          default:
+                            return `'${val}'`;
+                        }
+                      })
+                      .join(",")})`
+                )
+                .join(",")};`
+            );
+          }
         },
         { concurrency: 5 }
       );
