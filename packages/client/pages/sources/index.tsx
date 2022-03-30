@@ -375,7 +375,7 @@ const SourceList = () => {
         <Table {...tableProps} />
 
         {/* 编辑 modal */}
-        <Modal isOpen={isEditOpen} onClose={handleCloseEditModal}>
+        <Modal size="xl" isOpen={isEditOpen} onClose={handleCloseEditModal}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>编辑数据源</ModalHeader>

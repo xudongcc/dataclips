@@ -37,8 +37,7 @@ export const DashboardCard: FC<DashboardCardProps> = ({
     boxShadow={useColorModeValue("sm", "sm-dark")}
     borderRadius="lg"
     className="card"
-    spacing="5"
-    p={{ base: "4", md: "6" }}
+    p={2}
     {...otherProps}
   >
     <Stack spacing="5">

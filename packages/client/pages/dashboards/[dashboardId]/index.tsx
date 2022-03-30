@@ -22,10 +22,7 @@ const ResponsiveGridLayout = WidthProvider(GridLayout);
 interface ChartCard {
   name: string;
   chartId: string;
-  data: {
-    chart: Chart;
-    result: any;
-  };
+  hiddenName: boolean;
   layout: Layout;
 }
 
@@ -54,7 +51,15 @@ const DashboardPreview: PC = () => {
           <title>{data?.dashboard?.name} - 预览 - 仪表盘</title>
         </Head>
 
-        <Page title={data?.dashboard?.name}>
+        <Page
+          title={data?.dashboard?.name}
+          primaryAction={{
+            text: "编辑",
+            onClick: () => {
+              router.push(`/dashboards/${dashboardId}/edit`);
+            },
+          }}
+        >
           <Box
             sx={{
               ".react-grid-item.react-grid-placeholder": {
@@ -67,12 +72,18 @@ const DashboardPreview: PC = () => {
               className="layout"
               cols={12}
               width={1200}
-              layout={chartCards.map((item) => item?.layout)}
+              layout={chartCards.map((item) => ({
+                ...item?.layout,
+                static: true,
+              }))}
             >
               {chartCards.map((item) => {
                 return (
                   <DashboardItem key={item?.layout?.i}>
-                    <DashboardCard h="full" title={item?.name}>
+                    <DashboardCard
+                      h="full"
+                      title={!item?.hiddenName && item?.name}
+                    >
                       <DashboardChartResultPreview chartId={item?.chartId} />
                     </DashboardCard>
                   </DashboardItem>
@@ -83,7 +94,14 @@ const DashboardPreview: PC = () => {
         </Page>
       </>
     );
-  }, [borderRadius, chartCards, data?.dashboard?.name, loading]);
+  }, [
+    borderRadius,
+    chartCards,
+    dashboardId,
+    data?.dashboard?.name,
+    loading,
+    router,
+  ]);
 
   useEffect(() => {
     if (data?.dashboard?.config?.length) {
