@@ -206,7 +206,6 @@ const DashBoardList: PC = () => {
   ]);
 
   const handleCreateDashboard = useCallback(async () => {
-    console.log(form.values.dashboardName);
     await createDashboard({
       variables: {
         input: {

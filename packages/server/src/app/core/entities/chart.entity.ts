@@ -33,6 +33,13 @@ export class Chart {
   @Column()
   type: ChartType;
 
+  // @Field(() => GraphQLJSONObject)
+  // @Column({
+  //   type: "json",
+  //   generator: () => ({ label: "无格式化", value: "" }),
+  // })
+  // format: Record<string, any>;
+
   @Field(() => GraphQLJSONObject)
   @Column({ type: "json" })
   config: Record<string, any>;

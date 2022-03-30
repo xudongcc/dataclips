@@ -37,7 +37,6 @@ import {
 import { Page } from "../../../components/Page";
 import { Card } from "../../../components/Card";
 import Head from "next/head";
-import { formatFields } from "../../../utils/formatFields";
 
 const ChartEdit = () => {
   const toast = useToast();
@@ -62,10 +61,16 @@ const ChartEdit = () => {
       name: "",
       type: "" as ChartType,
       clipId: "",
+      format: { label: "无格式化", value: "" },
       funnelConfig: { groupCol: "", valueCol: "" },
       metricConfig: { valueCol: "", compareCol: "" },
       lineConfig: { xCol: "", yCol: [] },
-      barConfig: { isStack: false, variant: "", xCol: "", yCol: [] },
+      barConfig: {
+        isStack: false,
+        variant: "",
+        xCol: "",
+        yCol: [],
+      },
       pieConfig: { variant: "", key: "", value: "" },
     },
     isInitialValid: false,
@@ -113,11 +118,10 @@ const ChartEdit = () => {
 
   const { data: result, isLoading } = useQueryResult(form.values.clipId);
 
-  console.log("result", result);
-
   const getChartTypePreviewConfig = useCallback(() => {
     if (form.values.type === ChartType.FUNNEL) {
       return {
+        format: form.values.format?.value || "",
         groupCol: form.values.funnelConfig?.groupCol || "",
         valueCol: form.values.funnelConfig?.valueCol || "",
       } as FunnelChartConfig;
@@ -125,6 +129,7 @@ const ChartEdit = () => {
 
     if (form.values.type === ChartType.METRIC) {
       return {
+        format: form.values.format?.value || "",
         valueCol: form.values.metricConfig?.valueCol || "",
         compareCol: form.values.metricConfig?.compareCol || "",
       } as MetricChartConfig;
@@ -132,6 +137,7 @@ const ChartEdit = () => {
 
     if (form.values.type === ChartType.LINE) {
       return {
+        format: form.values.format?.value || "",
         xCol: form.values.lineConfig?.xCol || "",
         yCol: form.values.lineConfig?.yCol || [],
       } as LineChartConfig;
@@ -139,6 +145,7 @@ const ChartEdit = () => {
 
     if (form.values.type === ChartType.BAR) {
       return {
+        format: form.values.format?.value || "",
         isStack: !!form.values.barConfig.isStack,
         variant: form.values.barConfig.variant || "",
         xCol: form.values.barConfig?.xCol || "",
@@ -148,6 +155,7 @@ const ChartEdit = () => {
 
     if (form.values.type === ChartType.PIE) {
       return {
+        format: form.values.format?.value || "",
         variant: form.values.pieConfig.variant || "",
         key: form.values.pieConfig.key || "",
         value: form.values.pieConfig?.value || "",
@@ -296,10 +304,7 @@ const ChartEdit = () => {
           </GridItem>
           <GridItem colSpan={1}>
             <Card>
-              <ChartEditTab
-                form={form}
-                result={formatFields(result, "values")}
-              />
+              <ChartEditTab form={form} result={result} />
             </Card>
           </GridItem>
         </Grid>

@@ -1,10 +1,11 @@
-import { Chart, LineAdvance } from "bizcharts";
+import { Axis, Chart, LineAdvance } from "bizcharts";
 import { FC, useMemo } from "react";
 import { ResultFragment } from "../../../../generated/graphql";
-
+import { getFormatValue } from "../../../ChartEditTab/components/FormatFieldForm";
 export interface LineChartConfig {
   xCol: string;
   yCol: { label: string; value: string }[];
+  format: string;
 }
 
 interface LineChartPreviewProps {
@@ -35,11 +36,7 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
             return result.values.map((value) => {
               return {
                 x: value[keyIndex],
-                y:
-                  typeof Number(value[yIndex]) === "number" &&
-                  !isNaN(Number(value[yIndex]))
-                    ? Number(value[yIndex])
-                    : value[yIndex],
+                y: getFormatValue(value[yIndex]),
                 diff: result.fields[yIndex],
               };
             });
@@ -69,7 +66,29 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
       autoFit
       data={data}
     >
-      <LineAdvance shape="line" point area position="x*y" color="diff" />
+      <Axis
+        name="y"
+        label={{
+          formatter: (val) => getFormatValue(val, config.format),
+        }}
+      />
+
+      <LineAdvance
+        tooltip={[
+          "x*y",
+          (x, y) => {
+            return {
+              name: x,
+              value: getFormatValue(y, config.format),
+            };
+          },
+        ]}
+        shape="line"
+        point
+        area
+        position="x*y"
+        color="diff"
+      />
     </Chart>
   );
 };

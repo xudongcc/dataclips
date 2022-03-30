@@ -27,7 +27,10 @@ export const DashboardChartResultPreview: FC<
     <ChartResultPreview
       result={result}
       type={data?.chart?.type}
-      config={data?.chart?.config}
+      config={{
+        ...data?.chart?.config,
+        format: data?.chart.format.text,
+      }}
     />
   );
 };

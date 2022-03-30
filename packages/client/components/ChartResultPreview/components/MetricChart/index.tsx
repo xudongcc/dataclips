@@ -2,11 +2,13 @@ import { Flex } from "@chakra-ui/react";
 import { FC, useMemo } from "react";
 
 import { ResultFragment } from "../../../../generated/graphql";
+import { getFormatValue } from "../../../ChartEditTab/components/FormatFieldForm";
 import { Stat } from "../../../Stat";
 
 export interface MetricChartConfig {
   valueCol: string;
   compareCol: string;
+  format: string;
 }
 
 interface MetricChartPreviewProps {
@@ -16,7 +18,7 @@ interface MetricChartPreviewProps {
 
 export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
   result,
-  config = { type: "", valueCol: "", compareCol: "" },
+  config = { valueCol: "", compareCol: "", format: "" },
 }) => {
   const component = useMemo(() => {
     const stat = {
@@ -34,15 +36,21 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
     );
 
     if (valueColIndex !== -1) {
-      stat.value = result.values[0]?.[valueColIndex];
+      stat.value = getFormatValue(
+        result.values[0]?.[valueColIndex],
+        config.format
+      );
     }
 
     if (valueColIndex !== -1 && compareColIndex !== -1) {
       stat.delta = {
-        value: result.values[0]?.[compareColIndex],
+        value: getFormatValue(
+          result.values[0]?.[compareColIndex],
+          config.format
+        ),
         isUpwardsTrend:
-          Number(result.values[0]?.[valueColIndex]) >=
-          Number(result.values[0]?.[compareColIndex]),
+          getFormatValue(result.values[0]?.[valueColIndex], config.format) >=
+          getFormatValue(result.values[0]?.[compareColIndex], config.format),
       };
     }
 

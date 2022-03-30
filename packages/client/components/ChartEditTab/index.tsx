@@ -20,6 +20,7 @@ import {
   LineChartConfigForm,
   PieChartConfigForm,
 } from "./components";
+import { FormatFieldForm } from "./components/FormatFieldForm";
 
 export const chartTypeMap = {
   [ChartType.FUNNEL]: "漏斗图",
@@ -43,7 +44,7 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
   const { chartId } = router.query as { chartId: string };
 
   return (
-    <Accordion defaultIndex={[chartId ? 1 : 0]} allowToggle>
+    <Accordion defaultIndex={[chartId ? 2 : 0]} allowToggle>
       <AccordionItem>
         <AccordionButton>
           <Text fontWeight="bold" flex="1" textAlign="left">
@@ -86,21 +87,7 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
         </AccordionButton>
 
         <AccordionPanel pb={4}>
-          <FormControl isInvalid={!!form.errors.format}>
-            <Select
-              size="sm"
-              placeholder="请选择格式化"
-              name="format"
-              onChange={form.handleChange}
-              value={form.values.format}
-            >
-              {[].map((item) => (
-                <option value={item} key={item}>
-                  123
-                </option>
-              ))}
-            </Select>
-          </FormControl>
+          <FormatFieldForm form={form} />
         </AccordionPanel>
       </AccordionItem>
 

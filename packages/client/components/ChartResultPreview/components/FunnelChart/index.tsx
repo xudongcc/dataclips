@@ -10,14 +10,17 @@ import {
 } from "bizcharts";
 import { readableColor } from "polished";
 import { FC, useMemo } from "react";
+import numeral from "numeral";
 
 import { ResultFragment } from "../../../../generated/graphql";
 import { formatPercent } from "../../../../utils/formatPercent";
 import { getGradientColors } from "./utils/getGradientColors";
+import { getFormatValue } from "../../../ChartEditTab/components/FormatFieldForm";
 
 export interface FunnelChartConfig {
   groupCol: string;
   valueCol: string;
+  format: string;
 }
 
 interface FunnelChartPreviesProps {
@@ -27,7 +30,7 @@ interface FunnelChartPreviesProps {
 
 export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
   result,
-  config = { groupCol: "", valueCol: "" },
+  config = { groupCol: "", valueCol: "", format: "" },
 }) => {
   const funnelData = useMemo(() => {
     if (!result?.error) {
@@ -43,19 +46,21 @@ export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
           return result.values.map((value, index) => {
             return {
               [config.groupCol]: value[keyIndex],
-              [config.valueCol]: +value[valueIndex],
+              [config.valueCol]: numeral(value[valueIndex]).value(),
               percent:
                 index === 0
                   ? formatPercent(1)
                   : formatPercent(
-                      +value[valueIndex] / +result.values[0][valueIndex]
+                      numeral(value[valueIndex]).value() /
+                        numeral(result.values[0][valueIndex]).value()
                     ),
               // 上一级的占比
               previousPercent:
                 index === 0
                   ? formatPercent(1)
                   : formatPercent(
-                      +value[valueIndex] / +result.values[index - 1][valueIndex]
+                      numeral(value[valueIndex]).value() /
+                        numeral(result.values[index - 1][valueIndex]).value()
                     ),
             };
           });
@@ -91,7 +96,8 @@ export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
 
                     <Box key={items?.[0]?.data?.key} mt={4}>
                       <Text>
-                        {config.valueCol}: {items?.[0]?.data?.value}
+                        {config.valueCol}:{" "}
+                        {getFormatValue(items?.[0]?.data?.value, config.format)}
                       </Text>
 
                       <Text my={4}>总占比: {items?.[0]?.data?.percent}</Text>

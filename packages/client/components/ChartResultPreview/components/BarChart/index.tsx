@@ -1,14 +1,16 @@
-import { ColumnChart, Coordinate } from "bizcharts";
+import { Axis, ColumnChart, Coordinate } from "bizcharts";
 import { isEqual } from "lodash";
 import { useEffect } from "react";
 import { FC, useMemo, useState } from "react";
 import { ResultFragment } from "../../../../generated/graphql";
+import { getFormatValue } from "../../../ChartEditTab/components/FormatFieldForm";
 
 export interface BarChartConfig {
   variant: string;
   xCol: string;
   yCol: { label: string; value: string }[];
   isStack: boolean;
+  format: string;
 }
 
 interface BarChartPreviewProps {
@@ -48,12 +50,9 @@ export const BarChartPreview: FC<BarChartPreviewProps> = ({
             return result.values.map((value) => {
               return {
                 x: value[keyIndex],
-                y:
-                  typeof Number(value[yIndex]) === "number" &&
-                  !isNaN(Number(value[yIndex]))
-                    ? Number(value[yIndex])
-                    : value[yIndex],
+                y: getFormatValue(value[yIndex]),
                 diff: result.fields[yIndex],
+                format: config.format,
               };
             });
           });
@@ -75,25 +74,42 @@ export const BarChartPreview: FC<BarChartPreviewProps> = ({
         data={oldData}
         legend={{ position: "bottom" }}
         autoFit
+        tooltip={{
+          fields: ["x", "y", "format"],
+          formatter: ({ x, y, format }) => {
+            return {
+              name: x,
+              value: getFormatValue(y, format),
+            };
+          },
+        }}
         colorField="diff"
         isGroup={!oldConfig?.isStack}
         isStack={oldConfig?.isStack}
       >
+        <Axis
+          name="y"
+          label={{
+            formatter: (val) => getFormatValue(val, config.format),
+          }}
+        />
         {/* 说是不支持 children 其实是支持的。。 */}
         <Coordinate transpose={oldConfig?.variant === "horizontal"} />
       </ColumnChart>
     );
-  }, [oldConfig, oldData]);
+  }, [config.format, oldConfig?.isStack, oldConfig?.variant, oldData]);
 
   useEffect(() => {
     if (!isEqual(data, oldData)) {
       setOldData(data);
     }
+  }, [data, oldData]);
 
+  useEffect(() => {
     if (!isEqual(config, oldConfig)) {
       setOldConfig(config);
     }
-  }, [config, data, oldConfig, oldData]);
+  }, [oldConfig, config]);
 
   if (!data.length) {
     return null;

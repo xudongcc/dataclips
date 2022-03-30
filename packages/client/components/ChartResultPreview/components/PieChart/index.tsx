@@ -1,5 +1,4 @@
 import {
-  Axis,
   Chart,
   Coordinate,
   DonutChart,
@@ -7,14 +6,17 @@ import {
   Interval,
   Tooltip,
 } from "bizcharts";
+import { sumBy } from "lodash";
 import { FC, useMemo } from "react";
 import { ResultFragment } from "../../../../generated/graphql";
 import { formatPercent } from "../../../../utils/formatPercent";
+import { getFormatValue } from "../../../ChartEditTab/components/FormatFieldForm";
 
 export interface PieChartConfig {
   variant: string;
   key: string;
   value: string;
+  format: string;
 }
 
 interface PieChartPreviewProps {
@@ -38,14 +40,15 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
           let total = 0;
 
           result.values.forEach((arr) => {
-            total = total + (Number(arr[valueIndex]) || 0);
+            total = total + getFormatValue(arr[valueIndex]);
           });
 
           return result.values.map((value) => {
             return {
               [config.key]: value[keyIndex],
-              [config.value]: +value[valueIndex],
-              percent: +value[valueIndex] / total,
+              [config.value]: getFormatValue(value[valueIndex]),
+              percent: getFormatValue(value[valueIndex]) / total,
+              format: config.format,
             };
           });
         }
@@ -62,6 +65,32 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
 
   return config.variant === "range" ? (
     <DonutChart
+      tooltip={{
+        fields: [config.key, config.value, "format"],
+        formatter: (item) => {
+          return {
+            name: item[config.key],
+            value: getFormatValue(item[config.value], item.format),
+          };
+        },
+      }}
+      label={{
+        formatter: (_, value) => {
+          return getFormatValue(value._origin?.value, value._origin?.format);
+        },
+      }}
+      statistic={{
+        content: {
+          formatter: (_, values) => {
+            const format = values[0]?.format;
+
+            return getFormatValue(
+              sumBy(values, (o) => o.value),
+              format
+            );
+          },
+        },
+      }}
       data={data}
       autoFit
       radius={0.8}
@@ -95,7 +124,9 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
         label={[
           "percent",
           {
-            content: ({ percent }) => formatPercent(percent),
+            content: ({ percent }) => {
+              return formatPercent(percent);
+            },
           },
         ]}
       />
