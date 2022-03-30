@@ -231,9 +231,11 @@ const SourceList = () => {
                           password: "",
                           type: (source as DatabaseSource).type,
                           sshEnabled: (source as DatabaseSource).sshEnabled,
-                          sshHost: (source as DatabaseSource).sshHost,
-                          sshPort: (source as DatabaseSource).sshPort,
-                          sshUsername: (source as DatabaseSource).sshUsername,
+                          sshHost: (source as DatabaseSource).sshHost || "",
+                          sshPort:
+                            (source as DatabaseSource).sshPort || undefined,
+                          sshUsername:
+                            (source as DatabaseSource).sshUsername || "",
                         },
                       });
                     }
@@ -344,11 +346,11 @@ const SourceList = () => {
       return [
         {
           type: "DatabaseSource",
-          component: <DataSourceForm form={f}></DataSourceForm>,
+          component: <DataSourceForm form={f} />,
         },
         {
           type: "VirtualSource",
-          component: <VirtualSourceForm form={f}></VirtualSourceForm>,
+          component: <VirtualSourceForm form={f} />,
         },
       ].find((item) => item.type === selectedSource?.type)?.component;
     },
@@ -373,7 +375,7 @@ const SourceList = () => {
         <Table {...tableProps} />
 
         {/* 编辑 modal */}
-        <Modal isOpen={isEditOpen} onClose={handleCloseEditModal}>
+        <Modal size="xl" isOpen={isEditOpen} onClose={handleCloseEditModal}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>编辑数据源</ModalHeader>

@@ -16,6 +16,7 @@ import {
   Popover,
   PopoverBody,
   useToken,
+  Checkbox,
   PopoverContent,
   PopoverTrigger,
   Select,
@@ -62,6 +63,7 @@ interface Operation {
 interface ChartCard {
   name: string;
   chartId: string;
+  hiddenName: boolean;
   layout: Layout;
 }
 
@@ -100,6 +102,7 @@ const DashBoardEdit: PC = () => {
     initialValues: {
       name: "",
       chartId: "",
+      hiddenName: false,
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -129,17 +132,19 @@ const DashBoardEdit: PC = () => {
             config: chartCards.map((item) => ({
               name: item.name,
               chartId: item.chartId,
+              hiddenName: !!item?.hiddenName,
               layout: item.layout,
             })),
           },
         },
       });
 
-      toast({ title: "更新成功" });
+      toast({ title: "保存成功" });
+      router.push(`/dashboards/${dashboardId}`);
     } catch (err) {
       console.log(err);
     }
-  }, [chartCards, dashboardId, toast, updateDashboard]);
+  }, [chartCards, dashboardId, router, toast, updateDashboard]);
 
   const handleAddOrEditChartCard = useCallback(async () => {
     try {
@@ -156,6 +161,7 @@ const DashBoardEdit: PC = () => {
           const current = {
             name: form.values.name,
             chartId: data.chart.id,
+            hiddenName: form.values.hiddenName,
             layout: {
               i: uuidv4(),
               x: 0,
@@ -279,7 +285,7 @@ const DashBoardEdit: PC = () => {
                 <DashboardItem key={item?.layout?.i}>
                   <DashboardCard
                     h="full"
-                    title={item?.name}
+                    title={!item?.hiddenName && item?.name}
                     extra={
                       <Popover
                         initialFocusRef={popoverRef}
@@ -304,6 +310,7 @@ const DashBoardEdit: PC = () => {
                                     form.setValues({
                                       name: item?.name,
                                       chartId: item?.chartId,
+                                      hiddenName: !!item?.hiddenName,
                                     });
 
                                     setOperation({
@@ -415,6 +422,14 @@ const DashBoardEdit: PC = () => {
 
                   <FormErrorMessage>请选择图表</FormErrorMessage>
                 </FormControl>
+
+                <Checkbox
+                  name="hiddenName"
+                  isChecked={form.values.hiddenName}
+                  onChange={form.handleChange}
+                >
+                  是否隐藏标题
+                </Checkbox>
               </VStack>
             </ModalBody>
 

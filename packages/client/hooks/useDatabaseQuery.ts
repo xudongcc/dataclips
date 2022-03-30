@@ -19,35 +19,40 @@ export const useDatabaseQuery = () => {
       });
       const db = new SQL.Database();
 
+      // 删除表
       db.run(/* SQL */ `DROP TABLE IF EXISTS preview;`);
 
+      // 创建表
       db.run(
         /* SQL */ `CREATE TABLE preview (${fields
           .map((field) => `\`${field}\``)
           .join(",")});`
       );
 
-      db.run(
-        `INSERT INTO preview VALUES ${values
-          .map(
-            (value) =>
-              `(${value
-                .map((val) => {
-                  if (val === null) {
-                    return "null";
-                  }
+      // 插入数据
+      if (values.length > 0) {
+        db.run(
+          `INSERT INTO preview VALUES ${values
+            .map(
+              (value) =>
+                `(${value
+                  .map((val) => {
+                    if (val === null) {
+                      return "null";
+                    }
 
-                  switch (typeof val) {
-                    case "number":
-                      return val;
-                    default:
-                      return `'${val}'`;
-                  }
-                })
-                .join(",")})`
-          )
-          .join(",")};`
-      );
+                    switch (typeof val) {
+                      case "number":
+                        return val;
+                      default:
+                        return `'${val}'`;
+                    }
+                  })
+                  .join(",")})`
+            )
+            .join(",")};`
+        );
+      }
 
       const [queryExecResult] = db.exec(sql);
 

@@ -1,12 +1,15 @@
 import { QueryConnectionArgs } from "@nest-boot/graphql";
+import { UseGuards } from "@nestjs/common";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 
 import { Dashboard } from "../../core/entities/dashboard.entity";
 import { DashboardService } from "../../core/services/dashboard.service";
+import { AuthGuard } from "../guards/auth.guard";
 import { CreateDashboardInput } from "../inputs/create-dashboard.input";
 import { UpdateDashboardInput } from "../inputs/update-dashboard.input";
 import { DashboardConnection } from "../objects/dashboard.connection.object";
 
+@UseGuards(AuthGuard)
 @Resolver(() => Dashboard)
 export class DashboardResolver {
   constructor(private readonly dashboardService: DashboardService) {}

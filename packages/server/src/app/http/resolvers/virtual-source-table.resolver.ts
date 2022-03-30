@@ -1,3 +1,4 @@
+import { UseGuards } from "@nestjs/common";
 import { ID, Parent, ResolveField, Resolver } from "@nestjs/graphql";
 
 import { Clip } from "../../core/entities/clip.entity";
@@ -5,8 +6,10 @@ import { VirtualSourceTable } from "../../core/entities/virtual-source-table.ent
 import { SourceType } from "../../core/enums/source-type.enum";
 import { ClipService } from "../../core/services/clip.service";
 import { SourceService } from "../../core/services/source.service";
+import { AuthGuard } from "../guards/auth.guard";
 import { VirtualSource } from "../objects/virtual-source.object";
 
+@UseGuards(AuthGuard)
 @Resolver(() => VirtualSourceTable)
 export class VirtualSourceTableResolver {
   constructor(

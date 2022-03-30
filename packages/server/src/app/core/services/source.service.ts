@@ -8,10 +8,9 @@ import { mixinSearchable } from "@nest-boot/search";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import Bluebird, { promisify } from "bluebird";
 import _ from "lodash";
-import mysql from "mysql2";
+import mysql, { FieldPacket, RowDataPacket } from "mysql2";
 import { Logger } from "nestjs-pino";
-import { Server } from "net";
-import pg from "pg";
+import pg, { QueryArrayResult } from "pg";
 import initSqlJs from "sql.js";
 import tunnelSSH from "tunnel-ssh";
 
@@ -68,22 +67,20 @@ export class SourceService extends mixinConnection(
     return await super.update(conditions, input);
   }
 
-  async query(
-    id: Source["id"],
-    sql: string
-  ): Promise<Record<string, string | number | boolean>[]> {
+  async query(id: Source["id"], sql: string): Promise<[string[], unknown[][]]> {
     const source = await this.findOne({ where: { id } });
 
     const localHost = "localhost";
     const localPort = _.random(30000, 60000);
 
-    let tunnel: Server;
-    if (source.sshEnabled) {
-      tunnel = await createTunnel({
+    if (source.type !== SourceType.VIRTUAL && source.sshEnabled) {
+      const tunnel = await createTunnel({
         host: source.sshHost,
         port: source.sshPort,
         username: source.sshUsername,
-        password: this.cryptoService.decrypt(source.sshPassword),
+        password: source.sshPassword
+          ? this.cryptoService.decrypt(source.sshPassword)
+          : null,
         dstHost: source.host,
         dstPort: source.port,
         localHost,
@@ -99,7 +96,9 @@ export class SourceService extends mixinConnection(
     const port = source.sshEnabled ? localPort : source.port;
 
     const { database, username } = source;
-    const password = this.cryptoService.decrypt(source.password);
+    const password = source.password
+      ? this.cryptoService.decrypt(source.password)
+      : null;
 
     if (source.type === SourceType.MYSQL) {
       const mysqlConnection = mysql
@@ -109,22 +108,21 @@ export class SourceService extends mixinConnection(
           user: username,
           password,
           database,
+          rowsAsArray: true,
         })
         .promise();
 
-      let result: Record<string, string | number | boolean>[];
+      let result: [RowDataPacket[], FieldPacket[]];
       try {
-        result = (await mysqlConnection.query(sql))?.[0] as Record<
-          string,
-          string | number | boolean
-        >[];
+        result = await mysqlConnection.query(sql);
       } catch (err) {
+        await mysqlConnection.end();
         throw new Error(`[${err.sqlState}][${err.errno}] ${err.message}`);
+      } finally {
+        await mysqlConnection.end();
       }
 
-      await mysqlConnection.end();
-
-      return result;
+      return [result[1].map((item) => item.name), result[0] as unknown[][]];
     }
 
     if (source.type === SourceType.POSTGRESQL) {
@@ -137,19 +135,20 @@ export class SourceService extends mixinConnection(
       });
       await pgClient.connect();
 
-      let result: Record<string, string | number | boolean>[];
+      let result: QueryArrayResult<unknown[]>;
 
       try {
-        result = (await pgClient.query(sql))?.rows;
+        result = await pgClient.query({ rowMode: "array", text: sql });
       } catch (err) {
+        await pgClient.end();
         throw new Error(
           `[${err.code}] ERROR: ${err.message}\n位置：${err.position}`
         );
+      } finally {
+        await pgClient.end();
       }
 
-      await pgClient.end();
-
-      return result;
+      return [result.fields.map((item) => item.name), result.rows];
     }
 
     if (source.type === SourceType.VIRTUAL) {
@@ -167,43 +166,36 @@ export class SourceService extends mixinConnection(
 
           db.run(`CREATE TABLE ${table.name} (${result.fields.join(",")});`);
 
-          db.run(
-            `INSERT INTO ${table.name} VALUES ${result.values
-              .map(
-                (value) =>
-                  `(${value
-                    .map((val) => {
-                      if (val === null) {
-                        return "null";
-                      }
+          if (result.values.length > 0) {
+            db.run(
+              `INSERT INTO ${table.name} VALUES ${result.values
+                .map(
+                  (value) =>
+                    `(${value
+                      .map((val) => {
+                        if (val === null) {
+                          return "null";
+                        }
 
-                      switch (typeof val) {
-                        case "number":
-                          return val;
-                        default:
-                          return `'${val}'`;
-                      }
-                    })
-                    .join(",")})`
-              )
-              .join(",")};`
-          );
+                        switch (typeof val) {
+                          case "number":
+                            return val;
+                          default:
+                            return `'${val}'`;
+                        }
+                      })
+                      .join(",")})`
+                )
+                .join(",")};`
+            );
+          }
         },
         { concurrency: 5 }
       );
 
-      // eslint-disable-next-line no-unsafe-optional-chaining
       const [{ columns, values }] = db.exec(sql);
 
-      return values.map((value) => {
-        const output = {};
-
-        columns.forEach((column, index) => {
-          output[column] = value[index];
-        });
-
-        return output;
-      });
+      return [columns, values];
     }
 
     return null;

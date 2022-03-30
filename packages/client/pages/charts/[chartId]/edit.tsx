@@ -100,10 +100,12 @@ const ChartEdit = () => {
             },
           });
           toast({
-            description: "更新成功",
+            description: "保存成功",
             status: "success",
             isClosable: true,
           });
+
+          router.push(`/charts/${chartId}`);
         }
       } catch (err) {
         console.log("err", err);
