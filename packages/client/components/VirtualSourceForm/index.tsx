@@ -85,6 +85,14 @@ export const VirtualSourceForm: FC<VirtualSourceFormProps> = ({ form }) => {
                       i !== index
                   )
                 );
+
+                form.setErrors({
+                  virtualSource: {
+                    tables: form.errors?.virtualSource?.tables?.filter(
+                      (_: any, i: number) => i !== index
+                    ),
+                  },
+                });
               }}
               icon={<MinusIcon />}
             />

@@ -344,11 +344,11 @@ const SourceList = () => {
       return [
         {
           type: "DatabaseSource",
-          component: <DataSourceForm form={f}></DataSourceForm>,
+          component: <DataSourceForm form={f} />,
         },
         {
           type: "VirtualSource",
-          component: <VirtualSourceForm form={f}></VirtualSourceForm>,
+          component: <VirtualSourceForm form={f} />,
         },
       ].find((item) => item.type === selectedSource?.type)?.component;
     },
