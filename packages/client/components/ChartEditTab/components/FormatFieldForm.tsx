@@ -18,8 +18,7 @@ const options = [
   { label: "10,000", value: "0,0", type: FormatType.NUMERAL },
   { label: "B,KB,MB...", value: "0b", type: FormatType.NUMERAL },
   { label: "B,KiB,MiB...", value: "0ib", type: FormatType.NUMERAL },
-  { label: "percent", value: "0%", type: FormatType.NUMERAL },
-  { label: "currency", value: "$0,0.00", type: FormatType.NUMERAL },
+  { label: "百分比", value: "0%", type: FormatType.NUMERAL },
   { label: "年-月-日", value: "YYYY-MM-DD", type: FormatType.MOMENT },
   { label: "时:分:秒", value: "HH:mm:ss", type: FormatType.MOMENT },
   {
