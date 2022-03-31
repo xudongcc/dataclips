@@ -94,9 +94,17 @@ const DashBoardEdit: PC = () => {
     useUpdateDashboardMutation();
 
   const [chartCards, setChartCards] = useState<ChartCard[]>([]);
+  const [dashboardName, setDashboardName] = useState("");
 
-  // 创建仪表盘的弹窗
+  // 创建或编辑卡片的弹窗
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  // 编辑仪表盘名称
+  const {
+    isOpen: isDashboardNameModalOpen,
+    onOpen: onDashboardNameModalOpen,
+    onClose: onDashboardNameModalClose,
+  } = useDisclosure();
 
   const form = useFormik({
     initialValues: {
@@ -115,6 +123,20 @@ const DashBoardEdit: PC = () => {
     }),
   });
 
+  const editDashboardNameForm = useFormik({
+    initialValues: {
+      dashboardName: "",
+    },
+    isInitialValid: false,
+    validateOnBlur: false,
+    validateOnChange: false,
+    validateOnMount: false,
+    onSubmit: () => {},
+    validationSchema: Yup.object().shape({
+      dashboardName: Yup.string().required(),
+    }),
+  });
+
   const handleCloseAddChartModal = useCallback(() => {
     onClose();
     form.setValues(form.initialValues);
@@ -123,12 +145,20 @@ const DashBoardEdit: PC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClose]);
 
+  const handleCloseEditDashboardNameModal = useCallback(() => {
+    onDashboardNameModalClose();
+    editDashboardNameForm.setErrors({});
+    editDashboardNameForm.setValues(editDashboardNameForm.initialValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dashboardName, onDashboardNameModalClose]);
+
   const handleUpdateDashboard = useCallback(async () => {
     try {
       await updateDashboard({
         variables: {
           id: dashboardId,
           input: {
+            name: dashboardName,
             config: chartCards.map((item) => ({
               name: item.name,
               chartId: item.chartId,
@@ -144,7 +174,7 @@ const DashBoardEdit: PC = () => {
     } catch (err) {
       console.log(err);
     }
-  }, [chartCards, dashboardId, router, toast, updateDashboard]);
+  }, [chartCards, dashboardId, dashboardName, router, toast, updateDashboard]);
 
   const handleAddOrEditChartCard = useCallback(async () => {
     try {
@@ -239,6 +269,19 @@ const DashBoardEdit: PC = () => {
     }
   }, [data?.dashboard?.config]);
 
+  useEffect(() => {
+    if (data?.dashboard?.name) {
+      editDashboardNameForm.setFieldValue(
+        "dashboardName",
+        data?.dashboard?.name
+      );
+
+      setDashboardName(data?.dashboard?.name);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.dashboard?.name]);
+
   if (loading) {
     return <Loading width="100%" />;
   }
@@ -250,13 +293,23 @@ const DashBoardEdit: PC = () => {
       </Head>
 
       <Page
-        title={data?.dashboard?.name}
+        title={dashboardName}
         primaryAction={{
           text: "保存",
           onClick: handleUpdateDashboard,
           isLoading: updateDashboardLoading,
         }}
         secondaryActions={[
+          {
+            text: "编辑名称",
+            onClick: () => {
+              onDashboardNameModalOpen();
+              editDashboardNameForm.setFieldValue(
+                "dashboardName",
+                dashboardName
+              );
+            },
+          },
           {
             text: "添加卡片",
             onClick: onOpen,
@@ -375,6 +428,7 @@ const DashBoardEdit: PC = () => {
           </ResponsiveGridLayout>
         </Box>
 
+        {/* 添加或编辑卡片的弹窗 */}
         <Modal isOpen={isOpen} onClose={handleCloseAddChartModal}>
           <ModalOverlay />
           <ModalContent>
@@ -445,6 +499,62 @@ const DashBoardEdit: PC = () => {
                 colorScheme="red"
                 isLoading={getChartLoading}
                 onClick={handleAddOrEditChartCard}
+              >
+                确定
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+
+        {/* 编辑仪表盘名称弹窗 */}
+        <Modal
+          isOpen={isDashboardNameModalOpen}
+          onClose={handleCloseEditDashboardNameModal}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>编辑仪表盘名称</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <FormControl
+                isInvalid={!!editDashboardNameForm.errors?.dashboardName}
+              >
+                <Input
+                  name="dashboardName"
+                  onChange={editDashboardNameForm.handleChange}
+                  value={editDashboardNameForm.values.dashboardName}
+                  placeholder="请输入仪表盘名称"
+                />
+
+                <FormErrorMessage>请输入仪表盘名称</FormErrorMessage>
+              </FormControl>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button
+                colorScheme="blue"
+                mr={3}
+                onClick={handleCloseEditDashboardNameModal}
+              >
+                取消
+              </Button>
+              <Button
+                colorScheme="red"
+                isLoading={getChartLoading}
+                onClick={async () => {
+                  try {
+                    const error = await editDashboardNameForm.validateForm();
+
+                    if (isEmpty(error)) {
+                      setDashboardName(
+                        editDashboardNameForm.values.dashboardName
+                      );
+                      handleCloseEditDashboardNameModal();
+                    }
+                  } catch (err) {
+                    console.log("err", err);
+                  }
+                }}
               >
                 确定
               </Button>
