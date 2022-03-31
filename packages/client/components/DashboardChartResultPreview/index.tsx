@@ -29,7 +29,7 @@ export const DashboardChartResultPreview: FC<
       type={data?.chart?.type}
       config={{
         ...data?.chart?.config,
-        format: data?.chart.format.text,
+        format: data?.chart.format || "",
       }}
     />
   );
