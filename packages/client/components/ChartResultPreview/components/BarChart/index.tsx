@@ -76,9 +76,9 @@ export const BarChartPreview: FC<BarChartPreviewProps> = ({
         legend={{ position: "bottom" }}
         autoFit
         tooltip={{
-          fields: ["x", "y", "format"],
-          formatter: ({ x, y, format }) => ({
-            name: x,
+          fields: ["diff", "y", "format"],
+          formatter: ({ diff, y, format }) => ({
+            name: diff,
             value: getFormatValue(y, format),
           }),
         }}
