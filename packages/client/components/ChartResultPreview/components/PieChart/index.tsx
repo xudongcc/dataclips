@@ -72,13 +72,13 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
       }}
       label={{
         formatter: (_, value) =>
-          getFormatValue(value._origin?.value, value._origin?.format),
+          getFormatValue(value._origin?.[config.value], value._origin?.format),
       }}
       statistic={{
         content: {
           formatter: (_, values) =>
             getFormatValue(
-              sumBy(values, (o) => o.value),
+              sumBy(values, (o) => o?.[config.value]),
               values[0]?.format
             ),
         },
@@ -87,8 +87,8 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
       autoFit
       radius={0.8}
       padding="auto"
-      angleField="value"
-      colorField="key"
+      angleField={config.value}
+      colorField={config.key}
       legend={{ position: "bottom" }}
       pieStyle={{ stroke: "white", lineWidth: 5 }}
     />
@@ -108,7 +108,7 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
       <Interval
         position="percent"
         adjust="stack"
-        color="key"
+        color={config.key}
         style={{
           lineWidth: 1,
           stroke: "#fff",
