@@ -94,7 +94,7 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
     />
   ) : (
     <Chart
-      padding={[20, 20, 80, 50]}
+      padding="auto"
       scale={{
         percent: {
           formatter: (val) => formatPercent(val),

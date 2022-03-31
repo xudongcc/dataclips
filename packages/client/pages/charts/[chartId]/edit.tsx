@@ -81,7 +81,7 @@ const ChartEdit = () => {
       const input = {
         name: form.values.name,
         type: form.values.type,
-        format: form.values.format,
+        format: form.values.format || "",
         config: [
           { type: ChartType.FUNNEL, config: form.values.funnelConfig },
           { type: ChartType.METRIC, config: form.values.metricConfig },
