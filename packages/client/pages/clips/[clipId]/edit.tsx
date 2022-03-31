@@ -50,11 +50,9 @@ const ClipEdit = () => {
           title: "保存成功",
           status: "success",
         });
-
-        router.push(`/clips/${clipId}`);
       }
     },
-    [clipId, router, toast, updateClip]
+    [clipId, toast, updateClip]
   );
 
   const form = useFormik({
