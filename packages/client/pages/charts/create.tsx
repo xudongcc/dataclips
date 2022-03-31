@@ -222,11 +222,13 @@ const ChartCreate = () => {
           <GridItem colSpan={2}>
             <Box h="500px">
               {result && (
-                <ChartResultPreview
-                  config={getChartTypePreviewConfig()}
-                  type={form.values.type}
-                  result={result}
-                />
+                <Card overflow="hidden" h="full">
+                  <ChartResultPreview
+                    config={getChartTypePreviewConfig()}
+                    type={form.values.type}
+                    result={result}
+                  />
+                </Card>
               )}
             </Box>
           </GridItem>
