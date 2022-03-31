@@ -76,12 +76,10 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
       <LineAdvance
         tooltip={[
           "x*y",
-          (x, y) => {
-            return {
-              name: x,
-              value: getFormatValue(y, config.format),
-            };
-          },
+          (x, y) => ({
+            name: x,
+            value: getFormatValue(y, config.format),
+          }),
         ]}
         shape="line"
         point

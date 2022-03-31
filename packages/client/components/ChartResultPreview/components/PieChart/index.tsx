@@ -65,26 +65,22 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
     <DonutChart
       tooltip={{
         fields: [config.key, config.value, "format"],
-        formatter: (item) => {
-          return {
-            name: item[config.key],
-            value: getFormatValue(item[config.value], item.format),
-          };
-        },
+        formatter: (item) => ({
+          name: item[config.key],
+          value: getFormatValue(item[config.value], item.format),
+        }),
       }}
       label={{
-        formatter: (_, value) => {
-          return getFormatValue(value._origin?.value, value._origin?.format);
-        },
+        formatter: (_, value) =>
+          getFormatValue(value._origin?.value, value._origin?.format),
       }}
       statistic={{
         content: {
-          formatter: (_, values) => {
-            return getFormatValue(
+          formatter: (_, values) =>
+            getFormatValue(
               sumBy(values, (o) => o.value),
               values[0]?.format
-            );
-          },
+            ),
         },
       }}
       data={data}
@@ -120,9 +116,7 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
         label={[
           "percent",
           {
-            content: ({ percent }) => {
-              return formatPercent(percent);
-            },
+            content: ({ percent }) => formatPercent(percent),
           },
         ]}
       />

@@ -20,21 +20,21 @@ const options = [
   { label: "小时", value: "HH", type: "moment" },
 ];
 
-const numeralList = options
+const numeralFormatList = options
   .filter((item) => item.type === "numeral")
   .map((item) => item.value);
 
-const momentList = options
+const momentFormatList = options
   .filter((item) => item.type === "moment")
   .map((item) => item.value);
 
 export const getFormatValue = (value: any, format?: string) => {
   if (format) {
-    if (numeralList.includes(format)) {
+    if (numeralFormatList.includes(format)) {
       return numeral(value).format(format) || value;
     }
 
-    if (momentList.includes(format)) {
+    if (momentFormatList.includes(format)) {
       return moment(value).format(format) || value;
     }
   }
@@ -42,7 +42,6 @@ export const getFormatValue = (value: any, format?: string) => {
 };
 
 export const FormatFieldForm: FC<FormatFieldFormProps> = ({ form }) => {
-  console.log("form", form.values);
   return (
     <CreatableSelect
       name="format"

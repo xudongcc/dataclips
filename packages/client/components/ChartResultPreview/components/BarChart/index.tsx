@@ -76,12 +76,10 @@ export const BarChartPreview: FC<BarChartPreviewProps> = ({
         autoFit
         tooltip={{
           fields: ["x", "y", "format"],
-          formatter: ({ x, y, format }) => {
-            return {
-              name: x,
-              value: getFormatValue(y, format),
-            };
-          },
+          formatter: ({ x, y, format }) => ({
+            name: x,
+            value: getFormatValue(y, format),
+          }),
         }}
         colorField="diff"
         isGroup={!oldConfig?.isStack}
