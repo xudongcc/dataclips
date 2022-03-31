@@ -1,10 +1,19 @@
 import { PC } from "../../../interfaces/PageComponent";
 import { AdminLayout } from "../../../layouts/AdminLayout/AdminLayout";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
-import { Chart, useDashboardQuery } from "../../../generated/graphql";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useDashboardQuery } from "../../../generated/graphql";
 import GridLayout, { Layout, WidthProvider } from "react-grid-layout";
-import { Box, useToken } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Text,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  useToken,
+} from "@chakra-ui/react";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { DashboardItem } from "../../../components/DashboardItem";
@@ -29,6 +38,7 @@ interface ChartCard {
 const DashboardPreview: PC = () => {
   const router = useRouter();
   const session = useSession();
+  const popoverRef = useRef();
   const [borderRadius] = useToken("radii", ["lg"]);
 
   const { dashboardId } = router.query as { dashboardId: string };
@@ -83,6 +93,38 @@ const DashboardPreview: PC = () => {
                     <DashboardCard
                       h="full"
                       title={!item?.hiddenName && item?.name}
+                      extra={
+                        <Popover
+                          initialFocusRef={popoverRef}
+                          placement="bottom-end"
+                        >
+                          {() => (
+                            <>
+                              <PopoverTrigger>
+                                <Text cursor="pointer" fontWeight="bold">
+                                  ⋮
+                                </Text>
+                              </PopoverTrigger>
+
+                              <PopoverContent w="100%">
+                                <PopoverBody d="flex" flexDir="column">
+                                  <Button
+                                    variant="ghost"
+                                    isDisabled={!item?.chartId}
+                                    onClick={() => {
+                                      router.push(
+                                        `/charts/${item?.chartId}/edit`
+                                      );
+                                    }}
+                                  >
+                                    编辑图表
+                                  </Button>
+                                </PopoverBody>
+                              </PopoverContent>
+                            </>
+                          )}
+                        </Popover>
+                      }
                     >
                       <DashboardChartResultPreview chartId={item?.chartId} />
                     </DashboardCard>
