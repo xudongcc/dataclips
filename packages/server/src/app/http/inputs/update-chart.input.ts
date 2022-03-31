@@ -11,8 +11,8 @@ export class UpdateChartInput {
   @Field(() => ChartType)
   type: ChartType;
 
-  // @Field(() => GraphQLJSONObject)
-  // format: Record<string, any>;
+  @Field()
+  format?: string;
 
   @Field(() => GraphQLJSONObject)
   config: Record<string, any>;

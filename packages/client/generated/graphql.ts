@@ -40,6 +40,7 @@ export type Chart = {
   clipId: Scalars['ID'];
   config: Scalars['JSONObject'];
   createdAt: Scalars['DateTime'];
+  format: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
   token?: Maybe<Scalars['String']>;
@@ -113,6 +114,7 @@ export type ClipEdge = {
 export type CreateChartInput = {
   clipId: Scalars['ID'];
   config: Scalars['JSONObject'];
+  format: Scalars['String'];
   name: Scalars['String'];
   type: ChartType;
 };
@@ -142,10 +144,6 @@ export type CreateDatabaseSourceInput = {
   sshUsername?: InputMaybe<Scalars['String']>;
   type: DatabaseType;
   username: Scalars['String'];
-};
-
-export type CreateProjectInput = {
-  name: Scalars['String'];
 };
 
 export type CreateVirtualSourceInput = {
@@ -210,18 +208,15 @@ export type Mutation = {
   createClip: Clip;
   createDashboard: Dashboard;
   createDatabaseSource: DatabaseSource;
-  createProject: Project;
   createVirtualSource: VirtualSource;
   deleteChart: Scalars['ID'];
   deleteClip: Scalars['ID'];
   deleteDashboard: Scalars['ID'];
-  deleteProject: Scalars['ID'];
   deleteSource: Scalars['ID'];
   updateChart: Chart;
   updateClip: Clip;
   updateDashboard: Dashboard;
   updateDatabaseSource: DatabaseSource;
-  updateProject: Project;
   updateVirtualSource: VirtualSource;
 };
 
@@ -246,11 +241,6 @@ export type MutationCreateDatabaseSourceArgs = {
 };
 
 
-export type MutationCreateProjectArgs = {
-  input: CreateProjectInput;
-};
-
-
 export type MutationCreateVirtualSourceArgs = {
   input: CreateVirtualSourceInput;
 };
@@ -267,11 +257,6 @@ export type MutationDeleteClipArgs = {
 
 
 export type MutationDeleteDashboardArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type MutationDeleteProjectArgs = {
   id: Scalars['ID'];
 };
 
@@ -305,12 +290,6 @@ export type MutationUpdateDatabaseSourceArgs = {
 };
 
 
-export type MutationUpdateProjectArgs = {
-  id: Scalars['ID'];
-  input: UpdateProjectInput;
-};
-
-
 export type MutationUpdateVirtualSourceArgs = {
   id: Scalars['ID'];
   input: UpdateVirtualSourceInput;
@@ -334,28 +313,6 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']>;
 };
 
-export type Project = {
-  __typename?: 'Project';
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
-};
-
-export type ProjectConnection = {
-  __typename?: 'ProjectConnection';
-  edges?: Maybe<Array<ProjectEdge>>;
-  nodes?: Maybe<Array<Project>>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars['Int']>;
-};
-
-export type ProjectEdge = {
-  __typename?: 'ProjectEdge';
-  cursor: Scalars['String'];
-  node: Project;
-};
-
 export type Query = {
   __typename?: 'Query';
   chart: Chart;
@@ -364,8 +321,6 @@ export type Query = {
   clips: ClipConnection;
   dashboard: Dashboard;
   dashboards: DashboardConnection;
-  project: Project;
-  projects: ProjectConnection;
   source: Source;
   sources: SourceConnection;
 };
@@ -413,24 +368,6 @@ export type QueryDashboardArgs = {
 
 
 export type QueryDashboardsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  filter?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Ordering>;
-  page?: InputMaybe<Scalars['Int']>;
-  pageSize?: InputMaybe<Scalars['Int']>;
-  query?: InputMaybe<Scalars['String']>;
-};
-
-
-export type QueryProjectArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryProjectsArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
   filter?: InputMaybe<Scalars['String']>;
@@ -513,6 +450,7 @@ export enum SourceType {
 export type UpdateChartInput = {
   clipId: Scalars['ID'];
   config: Scalars['JSONObject'];
+  format: Scalars['String'];
   name?: InputMaybe<Scalars['String']>;
   type: ChartType;
 };
@@ -542,10 +480,6 @@ export type UpdateDatabaseSourceInput = {
   sshUsername?: InputMaybe<Scalars['String']>;
   type?: InputMaybe<SourceType>;
   username?: InputMaybe<Scalars['String']>;
-};
-
-export type UpdateProjectInput = {
-  name: Scalars['String'];
 };
 
 export type UpdateVirtualSourceInput = {
@@ -580,7 +514,7 @@ export type VirtualSourceTable = {
   virtualSourceId: Scalars['ID'];
 };
 
-export type ChartFragment = { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any };
+export type ChartFragment = { __typename?: 'Chart', id: string, name: string, token?: string | null, format: string, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any };
 
 export type ClipFragment = { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, sourceId: string, createdAt: any, updatedAt: any };
 
@@ -603,7 +537,7 @@ export type CreateChartMutationVariables = Exact<{
 }>;
 
 
-export type CreateChartMutation = { __typename?: 'Mutation', createChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
+export type CreateChartMutation = { __typename?: 'Mutation', createChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, format: string, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
 
 export type CreateClipMutationVariables = Exact<{
   input: CreateClipInput;
@@ -667,7 +601,7 @@ export type UpdateChartMutationVariables = Exact<{
 }>;
 
 
-export type UpdateChartMutation = { __typename?: 'Mutation', updateChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
+export type UpdateChartMutation = { __typename?: 'Mutation', updateChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, format: string, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
 
 export type UpdateClipMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -706,7 +640,7 @@ export type ChartQueryVariables = Exact<{
 }>;
 
 
-export type ChartQuery = { __typename?: 'Query', chart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
+export type ChartQuery = { __typename?: 'Query', chart: { __typename?: 'Chart', id: string, name: string, token?: string | null, format: string, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
 
 export type ChartConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
@@ -718,7 +652,7 @@ export type ChartConnectionQueryVariables = Exact<{
 }>;
 
 
-export type ChartConnectionQuery = { __typename?: 'Query', chartConnection: { __typename?: 'ChartConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ChartEdge', node: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+export type ChartConnectionQuery = { __typename?: 'Query', chartConnection: { __typename?: 'ChartConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ChartEdge', node: { __typename?: 'Chart', id: string, name: string, token?: string | null, format: string, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export type ClipQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -782,6 +716,7 @@ export const ChartFragmentDoc = gql`
   id
   name
   token
+  format
   type
   config
   clipId

@@ -42,13 +42,18 @@ export const getFormatValue = (value: any, format?: string) => {
 };
 
 export const FormatFieldForm: FC<FormatFieldFormProps> = ({ form }) => {
+  console.log("form", form.values);
   return (
     <CreatableSelect
       name="format"
       size="sm"
-      value={form.values.format}
+      value={
+        options.find(
+          (option) => option.value === (form.values.format || "")
+        ) || { label: form.values.format, value: form.values.format }
+      }
       onChange={(item) => {
-        form.setFieldValue("format", { label: item.label, value: item.value });
+        form.setFieldValue("format", item.value);
       }}
       options={options?.map(({ label, value }) => ({
         label,

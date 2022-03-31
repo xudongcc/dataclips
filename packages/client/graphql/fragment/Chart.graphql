@@ -2,6 +2,7 @@ fragment Chart on Chart {
   id
   name
   token
+  format
   type
   config
   clipId

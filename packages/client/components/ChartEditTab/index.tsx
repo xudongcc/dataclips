@@ -78,7 +78,7 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
         </AccordionPanel>
       </AccordionItem>
 
-      <AccordionItem>
+      <AccordionItem isDisabled={!form.values?.type}>
         <AccordionButton>
           <Text fontWeight="bold" flex="1" textAlign="left">
             标准配置
