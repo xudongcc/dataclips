@@ -52,6 +52,7 @@ const ChartPreview = () => {
 
     if (data?.chart.type === ChartType.LINE) {
       return {
+        reverseOrder: !!data.chart.config?.reverseOrder,
         format: data.chart.format || "",
         xCol: data.chart.config?.xCol || "",
         yCol: data.chart.config?.yCol || [],
@@ -60,6 +61,7 @@ const ChartPreview = () => {
 
     if (data?.chart.type === ChartType.BAR) {
       return {
+        reverseOrder: !!data.chart.config?.reverseOrder,
         format: data.chart.format || "",
         isStack: !!data.chart.config?.isStack,
         variant: data.chart.config?.variant || "",
