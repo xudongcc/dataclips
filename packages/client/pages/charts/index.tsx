@@ -16,6 +16,7 @@ import {
   Center,
   Divider,
 } from "@chakra-ui/react";
+import NextLink from "next/link";
 import { useState, useCallback, useMemo } from "react";
 import { Table } from "../../components/Table";
 import { useChartConnectionQuery } from "../../generated/graphql";
@@ -54,14 +55,9 @@ const ChartList = () => {
           },
         }) => {
           return (
-            <Link
-              onClick={() => {
-                router.push(`/charts/${id}`);
-              }}
-              color="blue.500"
-            >
-              {name}
-            </Link>
+            <NextLink href={`/charts/${id}`} passHref>
+              <Link color="blue.500">{name}</Link>
+            </NextLink>
           );
         },
       },

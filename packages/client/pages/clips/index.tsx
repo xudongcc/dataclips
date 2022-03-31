@@ -14,6 +14,7 @@ import {
   Divider,
   Center,
 } from "@chakra-ui/react";
+import NextLink from "next/link";
 import Head from "next/head";
 import { useState } from "react";
 import { useClipConnectionQuery } from "../../generated/graphql";
@@ -49,14 +50,9 @@ const ClipList = () => {
           },
         }) => {
           return (
-            <Link
-              onClick={() => {
-                router.push(`/clips/${id}`);
-              }}
-              color="blue.500"
-            >
-              {name}
-            </Link>
+            <NextLink href={`/clips/${id}`} passHref>
+              <Link color="blue.500">{name}</Link>
+            </NextLink>
           );
         },
       },

@@ -18,6 +18,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import Head from "next/head";
+import NextLink from "next/link";
 import { Page } from "../../components/Page";
 import { PC } from "../../interfaces/PageComponent";
 import { useRouter } from "next/router";
@@ -88,14 +89,9 @@ const DashBoardList: PC = () => {
           },
         }) => {
           return (
-            <Link
-              onClick={() => {
-                router.push(`/dashboards/${id}`);
-              }}
-              color="blue.500"
-            >
-              {name}
-            </Link>
+            <NextLink href={`/dashboards/${id}`} passHref>
+              <Link color="blue.500">{name}</Link>
+            </NextLink>
           );
         },
       },
