@@ -70,6 +70,14 @@ export const BarChartConfigForm: FC<BarChartConfigFormProps> = ({
         >
           显示堆栈
         </Checkbox>
+
+        <Checkbox
+          name="barConfig.reverseOrder"
+          isChecked={form.values.barConfig.reverseOrder}
+          onChange={form.handleChange}
+        >
+          反序
+        </Checkbox>
       </Grid>
     </VStack>
   );

@@ -10,6 +10,7 @@ export interface BarChartConfig {
   xCol: string;
   yCol: { label: string; value: string }[];
   isStack: boolean;
+  reverseOrder: boolean;
   format: string;
 }
 
@@ -57,7 +58,7 @@ export const BarChartPreview: FC<BarChartPreviewProps> = ({
             });
           });
 
-          return res.flat(1);
+          return config.reverseOrder ? res.flat(1).reverse() : res.flat(1);
         }
       }
     }

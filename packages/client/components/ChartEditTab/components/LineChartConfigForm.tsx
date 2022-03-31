@@ -1,4 +1,4 @@
-import { Grid, Select, VStack } from "@chakra-ui/react";
+import { Checkbox, Grid, Select, VStack } from "@chakra-ui/react";
 import { FC } from "react";
 import { Select as ChakraSelect } from "chakra-react-select";
 
@@ -51,6 +51,14 @@ export const LineChartConfigForm: FC<LineChartConfigFormProps> = ({
             value,
           }))}
         />
+
+        <Checkbox
+          name="lineConfig.reverseOrder"
+          isChecked={form.values.lineConfig.reverseOrder}
+          onChange={form.handleChange}
+        >
+          反序
+        </Checkbox>
       </Grid>
     </VStack>
   );
