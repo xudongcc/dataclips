@@ -48,6 +48,7 @@ export const FormatFieldForm: FC<FormatFieldFormProps> = ({ form }) => {
   return (
     <CreatableSelect
       name="format"
+      instanceId="format-field-select"
       size="sm"
       value={
         options.find(
