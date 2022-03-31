@@ -1,5 +1,4 @@
 import {
-  Axis,
   Chart,
   Coordinate,
   DonutChart,
@@ -7,14 +6,17 @@ import {
   Interval,
   Tooltip,
 } from "bizcharts";
+import { sumBy } from "lodash";
 import { FC, useMemo } from "react";
 import { ResultFragment } from "../../../../generated/graphql";
 import { formatPercent } from "../../../../utils/formatPercent";
+import { getFormatValue } from "../../../ChartEditTab/components/FormatFieldForm";
 
 export interface PieChartConfig {
   variant: string;
   key: string;
   value: string;
+  format: string;
 }
 
 interface PieChartPreviewProps {
@@ -35,17 +37,16 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
         );
 
         if (keyIndex !== -1 && valueIndex !== -1) {
-          let total = 0;
-
-          result.values.forEach((arr) => {
-            total = total + (Number(arr[valueIndex]) || 0);
-          });
+          const total = sumBy(result.values, (arr) =>
+            getFormatValue(arr[valueIndex])
+          );
 
           return result.values.map((value) => {
             return {
               [config.key]: value[keyIndex],
-              [config.value]: +value[valueIndex],
-              percent: +value[valueIndex] / total,
+              [config.value]: getFormatValue(value[valueIndex]),
+              percent: getFormatValue(value[valueIndex]) / total,
+              format: config.format,
             };
           });
         }
@@ -62,6 +63,26 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
 
   return config.variant === "range" ? (
     <DonutChart
+      tooltip={{
+        fields: [config.key, config.value, "format"],
+        formatter: (item) => ({
+          name: item[config.key],
+          value: getFormatValue(item[config.value], item.format),
+        }),
+      }}
+      label={{
+        formatter: (_, value) =>
+          getFormatValue(value._origin?.value, value._origin?.format),
+      }}
+      statistic={{
+        content: {
+          formatter: (_, values) =>
+            getFormatValue(
+              sumBy(values, (o) => o.value),
+              values[0]?.format
+            ),
+        },
+      }}
       data={data}
       autoFit
       radius={0.8}
@@ -73,7 +94,7 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
     />
   ) : (
     <Chart
-      padding={[20, 20, 80, 50]}
+      padding="auto"
       scale={{
         percent: {
           formatter: (val) => formatPercent(val),

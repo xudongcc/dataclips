@@ -11,6 +11,9 @@ export class CreateChartInput {
   @Field(() => ChartType)
   type: ChartType;
 
+  @Field()
+  format?: string;
+
   @Field(() => GraphQLJSONObject)
   config: Record<string, any>;
 
