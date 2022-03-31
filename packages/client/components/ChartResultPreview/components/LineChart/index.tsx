@@ -76,9 +76,9 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
 
       <LineAdvance
         tooltip={[
-          "x*y",
-          (x, y) => ({
-            name: x,
+          "diff*y",
+          (diff, y) => ({
+            name: diff,
             value: getFormatValue(y, config.format),
           }),
         ]}
