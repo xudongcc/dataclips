@@ -56,8 +56,14 @@ const ChartCreate = () => {
       format: "",
       funnelConfig: { groupCol: "", valueCol: "" },
       metricConfig: { valueCol: "", compareCol: "" },
-      lineConfig: { xCol: "", yCol: [] },
-      barConfig: { isStack: false, variant: "", xCol: "", yCol: [] },
+      lineConfig: { xCol: "", yCol: [], reverseOrder: false },
+      barConfig: {
+        reverseOrder: false,
+        isStack: false,
+        variant: "",
+        xCol: "",
+        yCol: [],
+      },
       pieConfig: { variant: "", key: "", value: "" },
     },
     isInitialValid: false,
@@ -125,6 +131,7 @@ const ChartCreate = () => {
 
     if (form.values.type === ChartType.LINE) {
       return {
+        reverseOrder: !!form.values.lineConfig?.reverseOrder,
         format: form.values.format || "",
         xCol: form.values.lineConfig?.xCol || "",
         yCol: form.values.lineConfig?.yCol || [],
@@ -133,6 +140,7 @@ const ChartCreate = () => {
 
     if (form.values.type === ChartType.BAR) {
       return {
+        reverseOrder: !!form.values.barConfig?.reverseOrder,
         format: form.values.format || "",
         isStack: !!form.values.barConfig?.isStack,
         variant: form.values.barConfig?.variant || "",

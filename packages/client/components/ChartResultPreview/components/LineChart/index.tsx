@@ -6,6 +6,7 @@ export interface LineChartConfig {
   xCol: string;
   yCol: { label: string; value: string }[];
   format: string;
+  reverseOrder: boolean;
 }
 
 interface LineChartPreviewProps {
@@ -42,7 +43,7 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
             });
           });
 
-          return res.flat(1);
+          return config.reverseOrder ? res.flat(1).reverse() : res.flat(1);
         }
       }
     }
