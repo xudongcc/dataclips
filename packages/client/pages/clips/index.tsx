@@ -33,7 +33,7 @@ const ClipList = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedClipId, setSelectedClipId] = useState<string>("");
 
-  const { data } = useClipConnectionQuery({
+  const { data, loading: dataLoading } = useClipConnectionQuery({
     variables: { first: 100 },
   });
 
@@ -114,10 +114,11 @@ const ClipList = () => {
     const options: TableOptions<any> = {
       columns,
       data: data?.clipConnection.edges?.map((item: any) => item.node) || [],
+      loading: dataLoading,
     };
 
     return options;
-  }, [data?.clipConnection.edges, onOpen, router]);
+  }, [data?.clipConnection.edges, dataLoading, onOpen, router]);
 
   const handleCloseDeleteModal = useCallback(() => {
     setSelectedClipId("");

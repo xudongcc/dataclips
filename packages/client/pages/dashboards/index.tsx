@@ -54,7 +54,7 @@ const DashBoardList: PC = () => {
 
   const [selectedDashboardId, setSelectedDashboardId] = useState<string>("");
 
-  const { data: dashboardListData } = useDashboardConnectionQuery({
+  const { data: dashboardListData, loading } = useDashboardConnectionQuery({
     variables: { first: 100 },
   });
 
@@ -156,11 +156,13 @@ const DashBoardList: PC = () => {
         dashboardListData?.dashboardConnection.edges?.map(
           (item) => item.node
         ) || [],
+      loading,
     };
 
     return options;
   }, [
     dashboardListData?.dashboardConnection.edges,
+    loading,
     onDeleteDashboardModalOpen,
     router,
   ]);
