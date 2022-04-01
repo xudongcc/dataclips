@@ -1,9 +1,9 @@
 import { useChartQuery } from "../../../generated/graphql";
 import { useRouter } from "next/router";
 import { useQueryResult } from "../../../hooks/useQueryResult";
-import { Loading } from "../../../components/Loading";
+import { Loading } from "../../../components/common/Loading";
 import { Box } from "@chakra-ui/react";
-import { ChartResultPreview } from "../../../components/ChartResultPreview";
+import { ChartResultPreview } from "../../../components/chart/ChartResultPreview";
 import { useCallback, useMemo } from "react";
 import { ChartType } from "../../../types";
 import {
@@ -12,12 +12,12 @@ import {
   FunnelChartConfig,
   BarChartConfig,
   PieChartConfig,
-} from "../../../components/ChartResultPreview/components/";
-import { Page } from "../../../components/Page";
+} from "../../../components/chart/ChartResultPreview/components";
+import { Page } from "../../../components/common/Page";
 import PreviewLayout from "../../../layouts/PreviewLayout";
 import ProjectLayout from "../../../layouts/ProjectLayout";
 import { useSession } from "next-auth/react";
-import { Card } from "../../../components/Card";
+import { Card } from "../../../components/common/Card";
 import Head from "next/head";
 
 const ChartPreview = () => {

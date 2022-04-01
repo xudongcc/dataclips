@@ -18,10 +18,10 @@ import {
 } from "../../../generated/graphql";
 import { useQueryResult } from "../../../hooks/useQueryResult";
 import { useFormik } from "formik";
-import { ResultPreview } from "../../../components/ResultPreview";
-import { SQLEditor } from "../../../components/SQLEditor";
-import { Page } from "../../../components/Page";
-import { Card } from "../../../components/Card";
+import { ResultPreview } from "../../../components/clip/ResultPreview";
+import { SQLEditor } from "../../../components/clip/SQLEditor";
+import { Page } from "../../../components/common/Page";
+import { Card } from "../../../components/common/Card";
 import Head from "next/head";
 
 const ClipEdit = () => {

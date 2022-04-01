@@ -1,9 +1,9 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
-import { Loading } from "../../../components/Loading";
-import { Page } from "../../../components/Page";
-import { ResultPreview } from "../../../components/ResultPreview";
+import { Loading } from "../../../components/common/Loading";
+import { Page } from "../../../components/common/Page";
+import { ResultPreview } from "../../../components/clip/ResultPreview";
 import { useQueryResult } from "../../../hooks/useQueryResult";
 import PreviewLayout from "../../../layouts/PreviewLayout";
 import ProjectLayout from "../../../layouts/ProjectLayout";

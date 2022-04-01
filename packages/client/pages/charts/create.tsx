@@ -11,8 +11,8 @@ import {
   GridItem,
 } from "@chakra-ui/react";
 import { useCallback, useEffect } from "react";
-import { ChartEditTab } from "../../components/ChartEditTab";
-import { ChartResultPreview } from "../../components/ChartResultPreview";
+import { ChartEditTab } from "../../components/chart/ChartEditTab";
+import { ChartResultPreview } from "../../components/chart/ChartResultPreview";
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -22,9 +22,9 @@ import {
   LineChartConfig,
   BarChartConfig,
   PieChartConfig,
-} from "../../components/ChartResultPreview/components";
+} from "../../components/chart/ChartResultPreview/components";
 import { ChartType } from "../../types";
-import { Loading } from "../../components/Loading";
+import { Loading } from "../../components/common/Loading";
 import {
   CreateChartInput,
   useClipConnectionQuery,
@@ -33,9 +33,9 @@ import {
 import { useQueryResult } from "../../hooks/useQueryResult";
 import { useRouter } from "next/router";
 import { useCreateChartMutation } from "../../hooks/useCreateChartMutation";
-import { Page } from "../../components/Page";
+import { Page } from "../../components/common/Page";
 import Head from "next/head";
-import { Card } from "../../components/Card";
+import { Card } from "../../components/common/Card";
 
 const ChartCreate = () => {
   const router = useRouter();

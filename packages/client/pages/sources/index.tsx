@@ -32,10 +32,10 @@ import { omit } from "lodash";
 import { useCallback, useMemo } from "react";
 import { Column, TableOptions } from "react-table";
 import moment from "moment";
-import { DataSourceForm } from "../../components/DataSourceForm";
-import { VirtualSourceForm } from "../../components/VirtualSourceForm";
-import { Table } from "../../components/Table";
-import { Page } from "../../components/Page";
+import { DataSourceForm } from "../../components/source/DataSourceForm";
+import { VirtualSourceForm } from "../../components/source/VirtualSourceForm";
+import { Table } from "../../components/common/Table";
+import { Page } from "../../components/common/Page";
 import Head from "next/head";
 
 const dataSourceValidObj = {

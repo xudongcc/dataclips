@@ -24,7 +24,7 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect } from "react";
-import { Loading } from "../../../components/Loading";
+import { Loading } from "../../../components/common/Loading";
 import { NavButton } from "./NavButton";
 import { ToggleButton } from "./ToggleButton";
 

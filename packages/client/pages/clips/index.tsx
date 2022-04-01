@@ -24,8 +24,8 @@ import { useDeleteClipMutation } from "../../hooks/useDeleteClipMutation";
 import { useMemo, useCallback } from "react";
 import { Column, TableOptions } from "react-table";
 import moment from "moment";
-import { Page } from "../../components/Page";
-import { Table } from "../../components/Table";
+import { Page } from "../../components/common/Page";
+import { Table } from "../../components/common/Table";
 
 const ClipList = () => {
   const router = useRouter();

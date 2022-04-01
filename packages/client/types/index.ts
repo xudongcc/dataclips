@@ -4,7 +4,7 @@ import {
   LineChartConfig,
   BarChartConfig,
   PieChartConfig,
-} from "../components/ChartResultPreview/components";
+} from "../components/chart/ChartResultPreview/components";
 
 export enum ChartType {
   FUNNEL = "FUNNEL",

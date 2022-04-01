@@ -1,32 +1,16 @@
 import { PC } from "../../../interfaces/PageComponent";
 import { AdminLayout } from "../../../layouts/AdminLayout/AdminLayout";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDashboardQuery } from "../../../generated/graphql";
-import GridLayout, { Layout, WidthProvider } from "react-grid-layout";
-import {
-  Box,
-  Button,
-  Text,
-  Popover,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
-  useToken,
-} from "@chakra-ui/react";
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
-import { DashboardItem } from "../../../components/DashboardItem";
-import { DashboardChartResultPreview } from "../../../components/DashboardChartResultPreview";
-import { Loading } from "../../../components/Loading";
+import { Layout } from "react-grid-layout";
+import { Loading } from "../../../components/common/Loading";
 import PreviewLayout from "../../../layouts/PreviewLayout";
 import ProjectLayout from "../../../layouts/ProjectLayout";
 import { useSession } from "next-auth/react";
-import { Page } from "../../../components/Page";
-import { DashboardCard } from "../../../components/DashboardCard";
+import { Page } from "../../../components/common/Page";
 import Head from "next/head";
-
-const ResponsiveGridLayout = WidthProvider(GridLayout);
+import { DashboardLayout } from "../../../components/dashboard/DashboardLayout";
 
 interface ChartCard {
   name: string;
@@ -38,8 +22,6 @@ interface ChartCard {
 const DashboardPreview: PC = () => {
   const router = useRouter();
   const session = useSession();
-  const popoverRef = useRef();
-  const [borderRadius] = useToken("radii", ["lg"]);
 
   const { dashboardId } = router.query as { dashboardId: string };
 
@@ -70,80 +52,24 @@ const DashboardPreview: PC = () => {
             },
           }}
         >
-          <Box
-            sx={{
-              ".react-grid-item.react-grid-placeholder": {
-                background: "rgba(1,1,1,0.2) !important",
-                borderRadius,
+          <DashboardLayout
+            layout={chartCards.map((item) => ({
+              ...item?.layout,
+              static: true,
+            }))}
+            charts={chartCards}
+            cardExtraConfig={{
+              onEditChartClick: (item) => {
+                router.push(`/charts/${item?.chartId}/edit`);
               },
+              disabledDelete: true,
+              disabledEditCard: true,
             }}
-          >
-            <ResponsiveGridLayout
-              className="layout"
-              cols={12}
-              width={1200}
-              layout={chartCards.map((item) => ({
-                ...item?.layout,
-                static: true,
-              }))}
-            >
-              {chartCards.map((item) => {
-                return (
-                  <DashboardItem key={item?.layout?.i}>
-                    <DashboardCard
-                      h="full"
-                      title={!item?.hiddenName && item?.name}
-                      extra={
-                        <Popover
-                          initialFocusRef={popoverRef}
-                          placement="bottom-end"
-                        >
-                          {() => (
-                            <>
-                              <PopoverTrigger>
-                                <Text cursor="pointer" fontWeight="bold">
-                                  ⋮
-                                </Text>
-                              </PopoverTrigger>
-
-                              <PopoverContent w="100%">
-                                <PopoverBody d="flex" flexDir="column">
-                                  <Button
-                                    variant="ghost"
-                                    isDisabled={!item?.chartId}
-                                    onClick={() => {
-                                      router.push(
-                                        `/charts/${item?.chartId}/edit`
-                                      );
-                                    }}
-                                  >
-                                    编辑图表
-                                  </Button>
-                                </PopoverBody>
-                              </PopoverContent>
-                            </>
-                          )}
-                        </Popover>
-                      }
-                    >
-                      <DashboardChartResultPreview chartId={item?.chartId} />
-                    </DashboardCard>
-                  </DashboardItem>
-                );
-              })}
-            </ResponsiveGridLayout>
-          </Box>
+          />
         </Page>
       </>
     );
-  }, [
-    borderRadius,
-    chartCards,
-    dashboardId,
-    data?.dashboard?.name,
-    loading,
-    router,
-  ]);
+  }, [chartCards, dashboardId, data?.dashboard?.name, loading, router]);
 
   useEffect(() => {
     if (data?.dashboard?.config?.length) {
