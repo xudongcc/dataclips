@@ -53,18 +53,18 @@ const ChartCreate = () => {
       name: "",
       type: "" as ChartType,
       clipId: "",
-      format: "",
-      funnelConfig: { groupCol: "", valueCol: "" },
-      metricConfig: { valueCol: "", compareCol: "" },
-      lineConfig: { xCol: "", yCol: [], reverseOrder: false },
+      funnelConfig: { groupCol: "", valueCol: "", format: "" },
+      metricConfig: { valueCol: "", compareCol: "", format: "" },
+      lineConfig: { xCol: "", yCol: [], reverseOrder: false, format: "" },
       barConfig: {
         reverseOrder: false,
         isStack: false,
         variant: "",
         xCol: "",
         yCol: [],
+        format: "",
       },
-      pieConfig: { variant: "", key: "", value: "" },
+      pieConfig: { variant: "", key: "", value: "", format: "" },
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -74,7 +74,6 @@ const ChartCreate = () => {
       const input = {
         name: form.values.name,
         type: form.values.type,
-        format: form.values.format,
         config: [
           { type: ChartType.FUNNEL, config: form.values.funnelConfig },
           { type: ChartType.METRIC, config: form.values.metricConfig },
@@ -115,24 +114,24 @@ const ChartCreate = () => {
   const getChartTypePreviewConfig = useCallback(() => {
     if (form.values.type === ChartType.FUNNEL) {
       return {
-        format: form.values.format || "",
-        groupCol: form.values.funnelConfig.groupCol || "",
-        valueCol: form.values.funnelConfig.valueCol || "",
+        format: form.values.funnelConfig?.format || "",
+        groupCol: form.values.funnelConfig?.groupCol || "",
+        valueCol: form.values.funnelConfig?.valueCol || "",
       } as FunnelChartConfig;
     }
 
     if (form.values.type === ChartType.METRIC) {
       return {
-        format: form.values.format || "",
-        valueCol: form.values.metricConfig.valueCol || "",
-        compareCol: form.values.metricConfig.compareCol || "",
+        format: form.values.metricConfig?.format || "",
+        valueCol: form.values.metricConfig?.valueCol || "",
+        compareCol: form.values.metricConfig?.compareCol || "",
       } as MetricChartConfig;
     }
 
     if (form.values.type === ChartType.LINE) {
       return {
         reverseOrder: !!form.values.lineConfig?.reverseOrder,
-        format: form.values.format || "",
+        format: form.values.lineConfig?.format || "",
         xCol: form.values.lineConfig?.xCol || "",
         yCol: form.values.lineConfig?.yCol || [],
       } as LineChartConfig;
@@ -141,7 +140,7 @@ const ChartCreate = () => {
     if (form.values.type === ChartType.BAR) {
       return {
         reverseOrder: !!form.values.barConfig?.reverseOrder,
-        format: form.values.format || "",
+        format: form.values.barConfig?.format || "",
         isStack: !!form.values.barConfig?.isStack,
         variant: form.values.barConfig?.variant || "",
         xCol: form.values.barConfig?.xCol || "",
@@ -151,7 +150,7 @@ const ChartCreate = () => {
 
     if (form.values.type === ChartType.PIE) {
       return {
-        format: form.values.format || "",
+        format: form.values.pieConfig?.format || "",
         variant: form.values.pieConfig?.variant || "",
         key: form.values.pieConfig?.key || "",
         value: form.values.pieConfig?.value || "",

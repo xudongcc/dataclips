@@ -36,24 +36,24 @@ const ChartPreview = () => {
   const getChartTypePreviewConfig = useCallback(() => {
     if (data?.chart.type === ChartType.FUNNEL) {
       return {
-        format: data.chart.format || "",
-        groupCol: data.chart.config.groupCol,
-        valueCol: data.chart.config.valueCol,
+        format: data.chart.config?.format || "",
+        groupCol: data.chart.config?.groupCol || "",
+        valueCol: data.chart.config?.valueCol || "",
       } as FunnelChartConfig;
     }
 
     if (data?.chart.type === ChartType.METRIC) {
       return {
-        format: data.chart.format || "",
-        valueCol: data.chart.config.valueCol || "",
-        compareCol: data.chart.config.compareCol || "",
+        format: data.chart.config?.format || "",
+        valueCol: data.chart.config?.valueCol || "",
+        compareCol: data.chart.config?.compareCol || "",
       } as MetricChartConfig;
     }
 
     if (data?.chart.type === ChartType.LINE) {
       return {
         reverseOrder: !!data.chart.config?.reverseOrder,
-        format: data.chart.format || "",
+        format: data.chart.config?.format || "",
         xCol: data.chart.config?.xCol || "",
         yCol: data.chart.config?.yCol || [],
       } as LineChartConfig;
@@ -62,7 +62,7 @@ const ChartPreview = () => {
     if (data?.chart.type === ChartType.BAR) {
       return {
         reverseOrder: !!data.chart.config?.reverseOrder,
-        format: data.chart.format || "",
+        format: data.chart.config?.format || "",
         isStack: !!data.chart.config?.isStack,
         variant: data.chart.config?.variant || "",
         xCol: data.chart.config?.xCol || "",
@@ -72,7 +72,7 @@ const ChartPreview = () => {
 
     if (data?.chart.type === ChartType.PIE) {
       return {
-        format: data.chart.format || "",
+        format: data.chart.config?.format || "",
         variant: data.chart.config?.variant || "",
         key: data.chart.config?.key || "",
         value: data.chart.config?.value || "",
