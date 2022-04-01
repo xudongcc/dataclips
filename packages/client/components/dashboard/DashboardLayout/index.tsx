@@ -1,5 +1,5 @@
 import GridLayout, { Layout, WidthProvider } from "react-grid-layout";
-import { FC, useRef } from "react";
+import { FC, ReactNode, useRef } from "react";
 import { DashboardDragWrapper } from "../DashboardDragWrapper";
 import { DashboardCard } from "../DashboardCard";
 import {
@@ -29,6 +29,7 @@ interface Chart {
 interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
   charts: Chart[];
   cardExtraConfig?: {
+    extra?: ReactNode;
     disabledExtra?: boolean;
     disabledEditCard?: boolean;
     disabledEditChart?: boolean;
@@ -78,7 +79,9 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
               h="full"
               title={!item?.hiddenName && item?.name}
               extra={
-                !cardExtraConfig.disabledExtra ? (
+                cardExtraConfig?.extra ? (
+                  cardExtraConfig?.extra
+                ) : !cardExtraConfig.disabledExtra ? (
                   <Popover initialFocusRef={popoverRef} placement="bottom-end">
                     {({ onClose }) => (
                       <>
