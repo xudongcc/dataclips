@@ -78,7 +78,6 @@ const DashBoardEdit: PC = () => {
     useUpdateDashboardMutation();
 
   const [chartCards, setChartCards] = useState<ChartCard[]>([]);
-  const [dashboardName, setDashboardName] = useState("");
 
   // 创建或编辑卡片的弹窗
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -134,31 +133,46 @@ const DashBoardEdit: PC = () => {
     editDashboardNameForm.setErrors({});
     editDashboardNameForm.setValues(editDashboardNameForm.initialValues);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dashboardName, onDashboardNameModalClose]);
+  }, [onDashboardNameModalClose]);
 
-  const handleUpdateDashboard = useCallback(async () => {
-    try {
-      await updateDashboard({
-        variables: {
-          id: dashboardId,
-          input: {
-            name: dashboardName,
-            config: chartCards.map((item) => ({
-              name: item.name,
-              chartId: item.chartId,
-              hiddenName: !!item?.hiddenName,
-              layout: item.layout,
-            })),
+  const handleUpdateDashboard = useCallback(
+    async (goPreview?: boolean) => {
+      try {
+        await updateDashboard({
+          variables: {
+            id: dashboardId,
+            input: {
+              name: editDashboardNameForm.values.dashboardName,
+              config: chartCards.map((item) => ({
+                name: item.name,
+                chartId: item.chartId,
+                hiddenName: !!item?.hiddenName,
+                layout: item.layout,
+              })),
+            },
           },
-        },
-      });
+        });
 
-      toast({ title: "保存成功" });
-      router.push(`/dashboards/${dashboardId}`);
-    } catch (err) {
-      console.log(err);
-    }
-  }, [chartCards, dashboardId, dashboardName, router, toast, updateDashboard]);
+        toast({ title: "保存成功" });
+
+        if (!goPreview) {
+          return;
+        }
+
+        router.push(`/dashboards/${dashboardId}`);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [
+      chartCards,
+      dashboardId,
+      editDashboardNameForm.values.dashboardName,
+      router,
+      toast,
+      updateDashboard,
+    ]
+  );
 
   const handleAddOrEditChartCard = useCallback(async () => {
     try {
@@ -259,8 +273,6 @@ const DashBoardEdit: PC = () => {
         "dashboardName",
         data?.dashboard?.name
       );
-
-      setDashboardName(data?.dashboard?.name);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -277,10 +289,12 @@ const DashBoardEdit: PC = () => {
       </Head>
 
       <Page
-        title={dashboardName}
+        title={data?.dashboard?.name}
         primaryAction={{
           text: "保存",
-          onClick: handleUpdateDashboard,
+          onClick: () => {
+            handleUpdateDashboard();
+          },
           isLoading: updateDashboardLoading,
         }}
         secondaryActions={[
@@ -290,7 +304,7 @@ const DashBoardEdit: PC = () => {
               onDashboardNameModalOpen();
               editDashboardNameForm.setFieldValue(
                 "dashboardName",
-                dashboardName
+                data?.dashboard?.name
               );
             },
           },
@@ -399,15 +413,11 @@ const DashBoardEdit: PC = () => {
             </ModalBody>
 
             <ModalFooter>
-              <Button
-                colorScheme="blue"
-                mr={3}
-                onClick={handleCloseAddChartModal}
-              >
+              <Button mr={3} onClick={handleCloseAddChartModal}>
                 取消
               </Button>
               <Button
-                colorScheme="red"
+                colorScheme="blue"
                 isLoading={getChartLoading}
                 onClick={handleAddOrEditChartCard}
               >
@@ -442,24 +452,18 @@ const DashBoardEdit: PC = () => {
             </ModalBody>
 
             <ModalFooter>
-              <Button
-                colorScheme="blue"
-                mr={3}
-                onClick={handleCloseEditDashboardNameModal}
-              >
+              <Button mr={3} onClick={handleCloseEditDashboardNameModal}>
                 取消
               </Button>
               <Button
-                colorScheme="red"
-                isLoading={getChartLoading}
+                colorScheme="blue"
+                isLoading={getChartLoading || updateDashboardLoading}
                 onClick={async () => {
                   try {
                     const error = await editDashboardNameForm.validateForm();
 
                     if (isEmpty(error)) {
-                      setDashboardName(
-                        editDashboardNameForm.values.dashboardName
-                      );
+                      handleUpdateDashboard(false);
                       handleCloseEditDashboardNameModal();
                     }
                   } catch (err) {
