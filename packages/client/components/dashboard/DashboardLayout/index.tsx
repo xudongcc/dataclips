@@ -16,6 +16,7 @@ import {
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { DashboardChartResultPreview } from "../DashboardChartResultPreview";
+import { DashboardDivider } from "../DashboardDivider";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
@@ -54,6 +55,12 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
   const [borderRadius] = useToken("radii", ["lg"]);
   const popoverRef = useRef();
 
+  const ll = [
+    ...rest.layout,
+    // { i: "hello", x: 0, y: 24, w: 24, h: 2, maxH: 1 },
+  ];
+  console.log("ll", ll);
+
   return (
     <Box
       sx={{
@@ -63,6 +70,8 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
         },
       }}
     >
+      <DashboardDivider orientation="center">123</DashboardDivider>
+
       <ResponsiveGridLayout
         draggableHandle=".dashboard-card-body"
         className="layout"
@@ -71,8 +80,13 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
         cols={24}
         containerPadding={[0, 0]}
         width={1200}
+        layout={ll}
         {...rest}
       >
+        {/* <DashboardDragWrapper key="hello">
+          <DashboardDivider orientation="center">123</DashboardDivider>
+        </DashboardDragWrapper> */}
+
         {charts.map((item) => (
           <DashboardDragWrapper key={item?.layout?.i}>
             <DashboardCard
