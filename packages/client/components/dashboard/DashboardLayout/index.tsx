@@ -1,6 +1,7 @@
 import GridLayout, { Layout, WidthProvider } from "react-grid-layout";
 import { FC, ReactNode, useRef } from "react";
 import { DashboardDragWrapper } from "../DashboardDragWrapper";
+
 import { DashboardCard } from "../DashboardCard";
 import {
   Box,
@@ -70,7 +71,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
         },
       }}
     >
-      <DashboardDivider orientation="center">123</DashboardDivider>
+      <DashboardDivider>123</DashboardDivider>
 
       <ResponsiveGridLayout
         draggableHandle=".dashboard-card-body"

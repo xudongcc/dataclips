@@ -1,3 +1,4 @@
+import { DeleteIcon } from "@chakra-ui/icons";
 import { Box, Text } from "@chakra-ui/react";
 import { FC } from "react";
 
@@ -10,9 +11,9 @@ export const DashboardDivider: FC<DashboardDividerProps> = ({
   children,
 }) => {
   const orientationWidth = [
-    { orientation: "left", beforeWidth: "5%", afterWidth: "95%" },
+    { orientation: "left", beforeWidth: "5%", afterWidth: "88%" },
     { orientation: "center", beforeWidth: "50%", afterWidth: "50%" },
-    { orientation: "right", beforeWidth: "95%", afterWidth: "5%" },
+    { orientation: "right", beforeWidth: "88%", afterWidth: "5%" },
   ].find((item) => item.orientation === orientation);
 
   return (
@@ -20,6 +21,7 @@ export const DashboardDivider: FC<DashboardDividerProps> = ({
       w="100%"
       d="flex"
       minW="100%"
+      position="relative"
       className="dashboard-card-body"
       my="16px"
       fontWeight="bold"
@@ -29,7 +31,7 @@ export const DashboardDivider: FC<DashboardDividerProps> = ({
         position: "relative",
         top: "50%",
         width: orientationWidth.beforeWidth,
-        borderTop: "1px solid red",
+        borderTop: "1px solid transparent",
         borderTopColor: "inherit",
         borderBottom: 0,
         transform: "translateY(50%)",
@@ -39,7 +41,7 @@ export const DashboardDivider: FC<DashboardDividerProps> = ({
         position: "relative",
         top: "50%",
         width: orientationWidth.afterWidth,
-        borderTop: "1px solid red",
+        borderTop: "1px solid transparent",
         borderTopColor: "inherit",
         borderBottom: 0,
         transform: "translateY(50%)",
@@ -49,6 +51,16 @@ export const DashboardDivider: FC<DashboardDividerProps> = ({
       userSelect="none"
     >
       {children && <Text px={4}>{children}</Text>}
+
+      <DeleteIcon
+        cursor="pointer"
+        position="absolute"
+        right="0"
+        color="gray.500"
+        transform="translateY(25%)"
+        overflow="hidden"
+        zIndex={100}
+      />
     </Box>
   );
 };
