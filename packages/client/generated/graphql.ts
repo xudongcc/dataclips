@@ -40,7 +40,6 @@ export type Chart = {
   clipId: Scalars['ID'];
   config: Scalars['JSONObject'];
   createdAt: Scalars['DateTime'];
-  format: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
   token?: Maybe<Scalars['String']>;
@@ -114,7 +113,6 @@ export type ClipEdge = {
 export type CreateChartInput = {
   clipId: Scalars['ID'];
   config: Scalars['JSONObject'];
-  format: Scalars['String'];
   name: Scalars['String'];
   type: ChartType;
 };
@@ -450,7 +448,6 @@ export enum SourceType {
 export type UpdateChartInput = {
   clipId: Scalars['ID'];
   config: Scalars['JSONObject'];
-  format: Scalars['String'];
   name?: InputMaybe<Scalars['String']>;
   type: ChartType;
 };
@@ -514,7 +511,7 @@ export type VirtualSourceTable = {
   virtualSourceId: Scalars['ID'];
 };
 
-export type ChartFragment = { __typename?: 'Chart', id: string, name: string, token?: string | null, format: string, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any };
+export type ChartFragment = { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any };
 
 export type ClipFragment = { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, sourceId: string, createdAt: any, updatedAt: any };
 
@@ -537,7 +534,7 @@ export type CreateChartMutationVariables = Exact<{
 }>;
 
 
-export type CreateChartMutation = { __typename?: 'Mutation', createChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, format: string, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
+export type CreateChartMutation = { __typename?: 'Mutation', createChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
 
 export type CreateClipMutationVariables = Exact<{
   input: CreateClipInput;
@@ -601,7 +598,7 @@ export type UpdateChartMutationVariables = Exact<{
 }>;
 
 
-export type UpdateChartMutation = { __typename?: 'Mutation', updateChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, format: string, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
+export type UpdateChartMutation = { __typename?: 'Mutation', updateChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
 
 export type UpdateClipMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -640,7 +637,7 @@ export type ChartQueryVariables = Exact<{
 }>;
 
 
-export type ChartQuery = { __typename?: 'Query', chart: { __typename?: 'Chart', id: string, name: string, token?: string | null, format: string, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
+export type ChartQuery = { __typename?: 'Query', chart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
 
 export type ChartConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
@@ -652,7 +649,7 @@ export type ChartConnectionQueryVariables = Exact<{
 }>;
 
 
-export type ChartConnectionQuery = { __typename?: 'Query', chartConnection: { __typename?: 'ChartConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ChartEdge', node: { __typename?: 'Chart', id: string, name: string, token?: string | null, format: string, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+export type ChartConnectionQuery = { __typename?: 'Query', chartConnection: { __typename?: 'ChartConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ChartEdge', node: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export type ClipQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -716,7 +713,6 @@ export const ChartFragmentDoc = gql`
   id
   name
   token
-  format
   type
   config
   clipId

@@ -61,18 +61,18 @@ const ChartEdit = () => {
       name: "",
       type: "" as ChartType,
       clipId: "",
-      format: "",
-      funnelConfig: { groupCol: "", valueCol: "" },
-      metricConfig: { valueCol: "", compareCol: "" },
-      lineConfig: { xCol: "", yCol: [], reverseOrder: false },
+      funnelConfig: { groupCol: "", valueCol: "", format: "" },
+      metricConfig: { valueCol: "", compareCol: "", format: "" },
+      lineConfig: { xCol: "", yCol: [], reverseOrder: false, format: "" },
       barConfig: {
         isStack: false,
         reverseOrder: false,
         variant: "",
         xCol: "",
         yCol: [],
+        format: "",
       },
-      pieConfig: { variant: "", key: "", value: "" },
+      pieConfig: { variant: "", key: "", value: "", format: "" },
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -82,7 +82,6 @@ const ChartEdit = () => {
       const input = {
         name: form.values.name,
         type: form.values.type,
-        format: form.values.format || "",
         config: [
           { type: ChartType.FUNNEL, config: form.values.funnelConfig },
           { type: ChartType.METRIC, config: form.values.metricConfig },
@@ -125,7 +124,7 @@ const ChartEdit = () => {
   const getChartTypePreviewConfig = useCallback(() => {
     if (form.values.type === ChartType.FUNNEL) {
       return {
-        format: form.values.format || "",
+        format: form.values.funnelConfig?.format || "",
         groupCol: form.values.funnelConfig?.groupCol || "",
         valueCol: form.values.funnelConfig?.valueCol || "",
       } as FunnelChartConfig;
@@ -133,7 +132,7 @@ const ChartEdit = () => {
 
     if (form.values.type === ChartType.METRIC) {
       return {
-        format: form.values.format || "",
+        format: form.values.metricConfig?.format || "",
         valueCol: form.values.metricConfig?.valueCol || "",
         compareCol: form.values.metricConfig?.compareCol || "",
       } as MetricChartConfig;
@@ -141,7 +140,7 @@ const ChartEdit = () => {
 
     if (form.values.type === ChartType.LINE) {
       return {
-        format: form.values.format || "",
+        format: form.values.lineConfig?.format || "",
         reverseOrder: !!form.values.lineConfig.reverseOrder,
         xCol: form.values.lineConfig?.xCol || "",
         yCol: form.values.lineConfig?.yCol || [],
@@ -150,7 +149,7 @@ const ChartEdit = () => {
 
     if (form.values.type === ChartType.BAR) {
       return {
-        format: form.values.format || "",
+        format: form.values.barConfig?.format || "",
         reverseOrder: !!form.values.barConfig.reverseOrder,
         isStack: !!form.values.barConfig.isStack,
         variant: form.values.barConfig.variant || "",
@@ -161,7 +160,7 @@ const ChartEdit = () => {
 
     if (form.values.type === ChartType.PIE) {
       return {
-        format: form.values.format || "",
+        format: form.values.pieConfig?.format || "",
         variant: form.values.pieConfig.variant || "",
         key: form.values.pieConfig.key || "",
         value: form.values.pieConfig?.value || "",
@@ -196,6 +195,7 @@ const ChartEdit = () => {
 
       if (data.chart.type === ChartType.FUNNEL) {
         initialValues.funnelConfig = {
+          format: data.chart.config?.format || "",
           groupCol: data.chart.config?.groupCol || "",
           valueCol: data.chart.config?.valueCol || "",
         };
@@ -203,6 +203,7 @@ const ChartEdit = () => {
 
       if (data.chart.type === ChartType.METRIC) {
         initialValues.metricConfig = {
+          format: data.chart.config?.format || "",
           valueCol: data.chart.config?.valueCol || "",
           compareCol: data.chart.config?.compareCol || "",
         };
@@ -210,6 +211,7 @@ const ChartEdit = () => {
 
       if (data.chart.type === ChartType.LINE) {
         initialValues.lineConfig = {
+          format: data.chart.config?.format || "",
           reverseOrder: !!data.chart.config?.reverseOrder,
           xCol: data.chart.config?.xCol || "",
           yCol: data.chart.config?.yCol || [],
@@ -223,6 +225,7 @@ const ChartEdit = () => {
           variant: data.chart.config?.variant || "",
           xCol: data.chart.config?.xCol || "",
           yCol: data.chart.config?.yCol || [],
+          format: data.chart.config?.format || [],
         };
       }
 
@@ -231,6 +234,7 @@ const ChartEdit = () => {
           variant: data.chart.config?.variant || "",
           key: data.chart.config?.key || "",
           value: data.chart.config?.value || "",
+          format: data.chart.config?.format || "",
         };
       }
 
