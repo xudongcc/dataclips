@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   FormControl,
   FormErrorMessage,
@@ -7,18 +6,11 @@ import {
   Modal,
   ModalBody,
   ModalCloseButton,
-  Divider,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
-  Popover,
-  PopoverBody,
-  useToken,
   Checkbox,
-  PopoverContent,
-  PopoverTrigger,
   Select,
   useDisclosure,
   useToast,
@@ -29,9 +21,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import { PC } from "../../../interfaces/PageComponent";
 import ProjectLayout from "../../../layouts/ProjectLayout";
-import GridLayout, { Layout, WidthProvider } from "react-grid-layout";
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
+import { Layout } from "react-grid-layout";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -41,14 +31,10 @@ import {
   useChartLazyQuery,
 } from "../../../generated/graphql";
 import { cloneDeep, isEmpty } from "lodash";
-import { useCallback, useState, useRef, useEffect } from "react";
-import { Loading } from "../../../components/Loading";
-import { Page } from "../../../components/Page";
-import { DashboardItem } from "../../../components/DashboardItem";
-import { DashboardChartResultPreview } from "../../../components/DashboardChartResultPreview";
-import { DashboardCard } from "../../../components/DashboardCard";
-
-const ResponsiveGridLayout = WidthProvider(GridLayout);
+import { useCallback, useState, useEffect } from "react";
+import { Loading } from "../../../components/common/Loading";
+import { Page } from "../../../components/common/Page";
+import { DashboardLayout } from "../../../components/dashboard/DashboardLayout";
 
 enum OperationType {
   ADD = "ADD",
@@ -70,8 +56,6 @@ interface ChartCard {
 const DashBoardEdit: PC = () => {
   const toast = useToast();
   const router = useRouter();
-  const popoverRef = useRef();
-  const [borderRadius] = useToken("radii", ["lg"]);
 
   const [operation, setOperation] = useState<Operation>({
     type: OperationType.ADD,
@@ -94,7 +78,6 @@ const DashBoardEdit: PC = () => {
     useUpdateDashboardMutation();
 
   const [chartCards, setChartCards] = useState<ChartCard[]>([]);
-  const [dashboardName, setDashboardName] = useState("");
 
   // 创建或编辑卡片的弹窗
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -150,31 +133,46 @@ const DashBoardEdit: PC = () => {
     editDashboardNameForm.setErrors({});
     editDashboardNameForm.setValues(editDashboardNameForm.initialValues);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dashboardName, onDashboardNameModalClose]);
+  }, [onDashboardNameModalClose]);
 
-  const handleUpdateDashboard = useCallback(async () => {
-    try {
-      await updateDashboard({
-        variables: {
-          id: dashboardId,
-          input: {
-            name: dashboardName,
-            config: chartCards.map((item) => ({
-              name: item.name,
-              chartId: item.chartId,
-              hiddenName: !!item?.hiddenName,
-              layout: item.layout,
-            })),
+  const handleUpdateDashboard = useCallback(
+    async (goPreview?: boolean) => {
+      try {
+        await updateDashboard({
+          variables: {
+            id: dashboardId,
+            input: {
+              name: editDashboardNameForm.values.dashboardName,
+              config: chartCards.map((item) => ({
+                name: item.name,
+                chartId: item.chartId,
+                hiddenName: !!item?.hiddenName,
+                layout: item.layout,
+              })),
+            },
           },
-        },
-      });
+        });
 
-      toast({ title: "保存成功" });
-      router.push(`/dashboards/${dashboardId}`);
-    } catch (err) {
-      console.log(err);
-    }
-  }, [chartCards, dashboardId, dashboardName, router, toast, updateDashboard]);
+        toast({ title: "保存成功" });
+
+        if (!goPreview) {
+          return;
+        }
+
+        router.push(`/dashboards/${dashboardId}`);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [
+      chartCards,
+      dashboardId,
+      editDashboardNameForm.values.dashboardName,
+      router,
+      toast,
+      updateDashboard,
+    ]
+  );
 
   const handleAddOrEditChartCard = useCallback(async () => {
     try {
@@ -275,8 +273,6 @@ const DashBoardEdit: PC = () => {
         "dashboardName",
         data?.dashboard?.name
       );
-
-      setDashboardName(data?.dashboard?.name);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -293,10 +289,12 @@ const DashBoardEdit: PC = () => {
       </Head>
 
       <Page
-        title={dashboardName}
+        title={data?.dashboard?.name}
         primaryAction={{
           text: "保存",
-          onClick: handleUpdateDashboard,
+          onClick: () => {
+            handleUpdateDashboard();
+          },
           isLoading: updateDashboardLoading,
         }}
         secondaryActions={[
@@ -306,7 +304,7 @@ const DashBoardEdit: PC = () => {
               onDashboardNameModalOpen();
               editDashboardNameForm.setFieldValue(
                 "dashboardName",
-                dashboardName
+                data?.dashboard?.name
               );
             },
           },
@@ -316,117 +314,44 @@ const DashBoardEdit: PC = () => {
           },
         ]}
       >
-        <Box
-          sx={{
-            ".react-grid-item.react-grid-placeholder": {
-              background: "rgba(0,0,0,0.2) !important",
-              borderRadius,
+        <DashboardLayout
+          onLayoutChange={handleSetChartItemLayout}
+          layout={chartCards.map((item) => item?.layout)}
+          charts={chartCards}
+          cardExtraConfig={{
+            onEditCardClick: (item, onClose) => {
+              onClose();
+
+              form.setValues({
+                name: item?.name,
+                chartId: item?.chartId,
+                hiddenName: !!item?.hiddenName,
+              });
+
+              setOperation({
+                type: OperationType.EDIT,
+                key: item?.layout?.i,
+              });
+
+              onOpen();
+            },
+            onDeleteClick: (item, onClose) => {
+              onClose();
+
+              const deleteIndex = chartCards.findIndex(
+                (chartCard) => chartCard?.layout?.i === item?.layout?.i
+              );
+
+              if (deleteIndex !== -1) {
+                chartCards.splice(deleteIndex, 1);
+                setChartCards([...chartCards]);
+              }
+            },
+            onEditChartClick: (item) => {
+              router.push(`/charts/${item?.chartId}/edit`);
             },
           }}
-        >
-          <ResponsiveGridLayout
-            draggableHandle=".dashboard-card-body"
-            className="layout"
-            onLayoutChange={handleSetChartItemLayout}
-            cols={12}
-            containerPadding={[0, 0]}
-            width={1200}
-            layout={chartCards.map((item) => item?.layout)}
-          >
-            {chartCards.map((item) => {
-              return (
-                <DashboardItem key={item?.layout?.i}>
-                  <DashboardCard
-                    h="full"
-                    title={!item?.hiddenName && item?.name}
-                    extra={
-                      <Popover
-                        initialFocusRef={popoverRef}
-                        placement="bottom-end"
-                      >
-                        {({ onClose }) => (
-                          <>
-                            <PopoverTrigger>
-                              <Text cursor="pointer" fontWeight="bold">
-                                ⋮
-                              </Text>
-                            </PopoverTrigger>
-
-                            <PopoverContent w="100%">
-                              <PopoverBody d="flex" flexDir="column">
-                                <Button
-                                  variant="ghost"
-                                  ref={popoverRef}
-                                  onClick={() => {
-                                    onClose();
-
-                                    form.setValues({
-                                      name: item?.name,
-                                      chartId: item?.chartId,
-                                      hiddenName: !!item?.hiddenName,
-                                    });
-
-                                    setOperation({
-                                      type: OperationType.EDIT,
-                                      key: item?.layout?.i,
-                                    });
-
-                                    onOpen();
-                                  }}
-                                >
-                                  编辑卡片
-                                </Button>
-
-                                <Divider my={1} />
-
-                                <Button
-                                  variant="ghost"
-                                  isDisabled={!item?.chartId}
-                                  onClick={() => {
-                                    router.push(
-                                      `/charts/${item?.chartId}/edit`
-                                    );
-                                  }}
-                                >
-                                  编辑图表
-                                </Button>
-
-                                <Divider my={1} />
-
-                                <Button
-                                  variant="ghost"
-                                  color="red.500"
-                                  ref={popoverRef}
-                                  onClick={() => {
-                                    onClose();
-
-                                    const deleteIndex = chartCards.findIndex(
-                                      (chartCard) =>
-                                        chartCard?.layout?.i === item?.layout?.i
-                                    );
-
-                                    if (deleteIndex !== -1) {
-                                      chartCards.splice(deleteIndex, 1);
-                                      setChartCards([...chartCards]);
-                                    }
-                                  }}
-                                >
-                                  删除
-                                </Button>
-                              </PopoverBody>
-                            </PopoverContent>
-                          </>
-                        )}
-                      </Popover>
-                    }
-                  >
-                    <DashboardChartResultPreview chartId={item?.chartId} />
-                  </DashboardCard>
-                </DashboardItem>
-              );
-            })}
-          </ResponsiveGridLayout>
-        </Box>
+        />
 
         {/* 添加或编辑卡片的弹窗 */}
         <Modal isOpen={isOpen} onClose={handleCloseAddChartModal}>
@@ -488,15 +413,11 @@ const DashBoardEdit: PC = () => {
             </ModalBody>
 
             <ModalFooter>
-              <Button
-                colorScheme="blue"
-                mr={3}
-                onClick={handleCloseAddChartModal}
-              >
+              <Button mr={3} onClick={handleCloseAddChartModal}>
                 取消
               </Button>
               <Button
-                colorScheme="red"
+                colorScheme="blue"
                 isLoading={getChartLoading}
                 onClick={handleAddOrEditChartCard}
               >
@@ -531,24 +452,18 @@ const DashBoardEdit: PC = () => {
             </ModalBody>
 
             <ModalFooter>
-              <Button
-                colorScheme="blue"
-                mr={3}
-                onClick={handleCloseEditDashboardNameModal}
-              >
+              <Button mr={3} onClick={handleCloseEditDashboardNameModal}>
                 取消
               </Button>
               <Button
-                colorScheme="red"
-                isLoading={getChartLoading}
+                colorScheme="blue"
+                isLoading={getChartLoading || updateDashboardLoading}
                 onClick={async () => {
                   try {
                     const error = await editDashboardNameForm.validateForm();
 
                     if (isEmpty(error)) {
-                      setDashboardName(
-                        editDashboardNameForm.values.dashboardName
-                      );
+                      handleUpdateDashboard(false);
                       handleCloseEditDashboardNameModal();
                     }
                   } catch (err) {

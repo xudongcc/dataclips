@@ -18,12 +18,12 @@ import {
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useState, useCallback, useMemo } from "react";
-import { Table } from "../../components/Table";
+import { Table } from "../../components/common/Table";
 import { useChartConnectionQuery } from "../../generated/graphql";
-import { chartTypeMap } from "../../components/ChartEditTab";
+import { chartTypeMap } from "../../components/chart/ChartEditTab";
 import moment from "moment";
 import { Column, TableOptions } from "react-table";
-import { Page } from "../../components/Page";
+import { Page } from "../../components/common/Page";
 import { useDeleteChartMutation } from "../../hooks/useDeleteChartMutation";
 import Head from "next/head";
 

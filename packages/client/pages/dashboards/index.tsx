@@ -19,14 +19,14 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import NextLink from "next/link";
-import { Page } from "../../components/Page";
+import { Page } from "../../components/common/Page";
 import { PC } from "../../interfaces/PageComponent";
 import { useRouter } from "next/router";
 import { useCallback, useMemo, useState } from "react";
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Table } from "../../components/Table";
+import { Table } from "../../components/common/Table";
 import { useDashboardConnectionQuery } from "../../generated/graphql";
 
 import { Column, TableOptions } from "react-table";

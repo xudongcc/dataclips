@@ -1,6 +1,6 @@
 import ProjectLayout from "../../layouts/ProjectLayout";
 import * as Yup from "yup";
-import { useStep } from "../../components/StepsWithCircles/useStep";
+import { useStep } from "../../components/common/StepsWithCircles/useStep";
 import { useRouter } from "next/router";
 import {
   useToast,
@@ -17,13 +17,13 @@ import {
 import { useState } from "react";
 import { DatabaseType } from "../../generated/graphql";
 import { useFormik } from "formik";
-import { Step } from "../../components/StepsWithCircles/Step";
-import { DataSourceForm } from "../../components/DataSourceForm";
-import { VirtualSourceForm } from "../../components/VirtualSourceForm";
+import { Step } from "../../components/common/StepsWithCircles/Step";
+import { DataSourceForm } from "../../components/source/DataSourceForm";
+import { VirtualSourceForm } from "../../components/source/VirtualSourceForm";
 import { useCreateVirtualSourceMutation } from "../../hooks/useCreateVirtualSourceMutation";
 import { useCreateDatabaseSourceMutation } from "../../hooks/useCreateDatabaseSourceMutation";
-import { Card } from "../../components/Card/Card";
-import { Page } from "../../components/Page";
+import { Card } from "../../components/common/Card/Card";
+import { Page } from "../../components/common/Page";
 import Head from "next/head";
 
 const dataSourceValidObj = {

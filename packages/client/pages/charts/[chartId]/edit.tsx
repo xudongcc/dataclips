@@ -24,18 +24,18 @@ import { useFormik } from "formik";
 import { ChartType } from "../../../types";
 import { useQueryResult } from "../../../hooks/useQueryResult";
 import { omit } from "lodash";
-import { Loading } from "../../../components/Loading";
-import { ChartEditTab } from "../../../components/ChartEditTab";
-import { ChartResultPreview } from "../../../components/ChartResultPreview";
+import { Loading } from "../../../components/common/Loading";
+import { ChartEditTab } from "../../../components/chart/ChartEditTab";
+import { ChartResultPreview } from "../../../components/chart/ChartResultPreview";
 import {
   LineChartConfig,
   BarChartConfig,
   FunnelChartConfig,
   MetricChartConfig,
   PieChartConfig,
-} from "../../../components/ChartResultPreview/components/";
-import { Page } from "../../../components/Page";
-import { Card } from "../../../components/Card";
+} from "../../../components/chart/ChartResultPreview/components";
+import { Page } from "../../../components/common/Page";
+import { Card } from "../../../components/common/Card";
 import Head from "next/head";
 
 const ChartEdit = () => {
@@ -225,7 +225,7 @@ const ChartEdit = () => {
           variant: data.chart.config?.variant || "",
           xCol: data.chart.config?.xCol || "",
           yCol: data.chart.config?.yCol || [],
-          format: data.chart.config?.format || [],
+          format: data.chart.config?.format || "",
         };
       }
 

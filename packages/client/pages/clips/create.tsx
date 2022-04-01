@@ -13,10 +13,10 @@ import {
 import { useSourceConnectionQuery } from "../../generated/graphql";
 import { useCallback } from "react";
 import { useFormik } from "formik";
-import { SQLEditor } from "../../components/SQLEditor";
+import { SQLEditor } from "../../components/clip/SQLEditor";
 import { useCreateClipMutation } from "../../hooks/useCreateClipMutation";
-import { Card } from "../../components/Card/Card";
-import { Page } from "../../components/Page";
+import { Card } from "../../components/common/Card/Card";
+import { Page } from "../../components/common/Page";
 import Head from "next/head";
 
 const ClipCreate = () => {
