@@ -34,7 +34,7 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
       (value) => value === config.valueCol
     );
 
-    if (valueColIndex > 0) {
+    if (valueColIndex >= 0) {
       return getFormatValue(result.values[0]?.[valueColIndex], config.format);
     }
 
@@ -46,7 +46,7 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
       (c) => c === config.compareCol
     );
 
-    if (compareColIndex > 0) {
+    if (compareColIndex >= 0) {
       return getFormatValue(result.values[0]?.[compareColIndex], config.format);
     }
 
@@ -58,33 +58,33 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
   }, [value, compareValue]);
 
   return (
-    <Flex h="100%" justify="center" align="center">
-      <Box
-        px={{ base: "4", md: "6" }}
-        py={{ base: "5", md: "6" }}
-        borderRadius="lg"
-      >
-        <Stack>
-          <Stack spacing="4">
-            <Heading size={useBreakpointValue({ base: "sm", md: "md" })}>
-              {value}
-            </Heading>
+    <Flex
+      h="full"
+      align="center"
+      px={{ base: "4", md: "6" }}
+      py={{ base: "5", md: "6" }}
+      borderRadius="lg"
+    >
+      <Stack>
+        <Stack spacing="4">
+          <Heading size={useBreakpointValue({ base: "sm", md: "md" })}>
+            {value}
+          </Heading>
 
-            {compareValue ? (
-              <HStack spacing="1" fontWeight="medium">
-                <Icon
-                  color={isUpwardsTrend ? "success" : "error"}
-                  as={isUpwardsTrend ? FiArrowUpRight : FiArrowDownRight}
-                  boxSize="5"
-                />
-                <Text color={isUpwardsTrend ? "success" : "error"}>
-                  {compareValue}
-                </Text>
-              </HStack>
-            ) : null}
-          </Stack>
+          {compareValue ? (
+            <HStack spacing="1" fontWeight="medium">
+              <Icon
+                color={isUpwardsTrend ? "success" : "error"}
+                as={isUpwardsTrend ? FiArrowUpRight : FiArrowDownRight}
+                boxSize="5"
+              />
+              <Text color={isUpwardsTrend ? "success" : "error"}>
+                {compareValue}
+              </Text>
+            </HStack>
+          ) : null}
         </Stack>
-      </Box>
+      </Stack>
     </Flex>
   );
 };
