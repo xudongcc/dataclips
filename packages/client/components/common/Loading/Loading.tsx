@@ -9,7 +9,7 @@ interface LoadingProps {
 export const Loading: FC<LoadingProps> = ({ width, height }) => {
   return (
     <Flex
-      w={width || "100vw"}
+      w={width || "100%"}
       h={height || "100vh"}
       align="center"
       justify="center"

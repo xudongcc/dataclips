@@ -80,7 +80,7 @@ const SourceList = () => {
   const router = useRouter();
   const toast = useToast();
 
-  const { data } = useSourceConnectionQuery({
+  const { data, loading } = useSourceConnectionQuery({
     variables: { first: 100 },
   });
 
@@ -310,6 +310,7 @@ const SourceList = () => {
     const options: TableOptions<any> = {
       columns,
       data: data?.sourceConnection.edges?.map((item) => item.node) || [],
+      loading,
     };
 
     return options;
