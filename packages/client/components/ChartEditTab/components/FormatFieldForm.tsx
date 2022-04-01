@@ -4,6 +4,15 @@ import numeral from "numeral";
 import { CreatableSelect } from "chakra-react-select";
 import moment from "moment";
 import { formatSecondToStr } from "../../../utils/formatSecondToStr";
+import { ChartType } from "../../../generated/graphql";
+
+const chartTypeToFormFieldMap = {
+  [ChartType.FUNNEL]: "funnelConfig",
+  [ChartType.LINE]: "lineConfig",
+  [ChartType.BAR]: "barConfig",
+  [ChartType.METRIC]: "metricConfig",
+  [ChartType.PIE]: "pieConfig",
+};
 
 interface FormatFieldFormProps {
   form: any;
@@ -52,18 +61,22 @@ export const getFormatValue = (value: any, format?: string) => {
 };
 
 export const FormatFieldForm: FC<FormatFieldFormProps> = ({ form }) => {
+  const nameField = `${chartTypeToFormFieldMap[form.values.type]}`;
+
   return (
     <CreatableSelect
-      name="format"
       instanceId="format-field-select"
       size="sm"
       value={
-        options.find(
-          (option) => option.value === (form.values.format || "")
-        ) || { label: form.values.format, value: form.values.format }
+        options.find((option) => {
+          return option.value === (form.values[nameField]?.format || "");
+        }) || {
+          label: form.values[nameField]?.format,
+          value: form.values[nameField]?.format,
+        }
       }
       onChange={(item) => {
-        form.setFieldValue("format", item.value);
+        form.setFieldValue(`${nameField}.format`, item.value);
       }}
       options={options?.map(({ label, value }) => ({
         label,
