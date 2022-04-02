@@ -188,11 +188,11 @@ const DashBoardEdit: PC = () => {
 
         toast({ title: "保存成功" });
 
-        if (!goPreview) {
-          return;
+        if (goPreview) {
+          router.push(`/dashboards/${dashboardId}`);
         }
 
-        router.push(`/dashboards/${dashboardId}`);
+        return;
       } catch (err) {
         console.log(err);
       }
@@ -328,7 +328,7 @@ const DashBoardEdit: PC = () => {
         primaryAction={{
           text: "保存",
           onClick: () => {
-            handleUpdateDashboard();
+            handleUpdateDashboard(true);
           },
           isLoading: updateDashboardLoading,
         }}
@@ -516,7 +516,7 @@ const DashBoardEdit: PC = () => {
                     const error = await editDashboardNameForm.validateForm();
 
                     if (isEmpty(error)) {
-                      handleUpdateDashboard(false);
+                      handleUpdateDashboard();
                       handleCloseEditDashboardNameModal();
                     }
                   } catch (err) {
