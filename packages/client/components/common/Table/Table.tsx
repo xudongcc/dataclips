@@ -103,7 +103,7 @@ export const Table = (props: TableProps) => {
             <Tr>
               <Td colSpan={headers.length} textAlign="center">
                 {loading ? (
-                  <Loading width={"100%"} />
+                  <Loading width={"100%"} height={"500px"} />
                 ) : (
                   <Box d="inline-block">{renderEmpty || "暂无数据"}</Box>
                 )}
