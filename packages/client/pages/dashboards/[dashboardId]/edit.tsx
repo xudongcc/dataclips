@@ -575,7 +575,8 @@ const DashBoardEdit: PC = () => {
                     {
                       name: dividerNameForm.values.dividerName,
                       type: "divider",
-                      orientation: dividerNameForm.values.orientation as any,
+                      orientation: (dividerNameForm.values.orientation ||
+                        "left") as any,
                       layout: {
                         i: uuidv4(),
                         x: 0,
