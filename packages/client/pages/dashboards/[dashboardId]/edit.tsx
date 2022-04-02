@@ -315,8 +315,6 @@ const DashBoardEdit: PC = () => {
     return <Loading width="100%" />;
   }
 
-  console.log("dragItems", dragItems);
-
   return (
     <>
       <Head>
