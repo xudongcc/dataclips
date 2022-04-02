@@ -565,8 +565,6 @@ const DashBoardEdit: PC = () => {
                         y: dragItems.length * 3,
                         w: 24,
                         h: 1,
-                        minW: 24,
-                        maxH: 1,
                       },
                     },
                   ]);
