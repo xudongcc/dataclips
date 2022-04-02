@@ -283,6 +283,7 @@ const DashBoardEdit: PC = () => {
           newDragItems[itemIndex] = {
             ...newDragItems[itemIndex],
             layout: {
+              ...newDragItems[itemIndex].layout,
               i: layout.i,
               x: layout.x,
               y: layout.y,
@@ -583,6 +584,8 @@ const DashBoardEdit: PC = () => {
                         y: dragItems.length * 3,
                         w: 24,
                         h: 1,
+                        maxH: 1,
+                        minH: 1,
                       },
                     },
                   ]);

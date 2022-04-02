@@ -87,6 +87,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
         margin={[24, 24]}
         rowHeight={50}
         cols={24}
+        verticalCompact={false}
         containerPadding={[0, 0]}
         width={1200}
         {...rest}
