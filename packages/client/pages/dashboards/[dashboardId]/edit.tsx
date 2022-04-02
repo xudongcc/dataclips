@@ -540,7 +540,7 @@ const DashBoardEdit: PC = () => {
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>编辑分割线名称</ModalHeader>
+            <ModalHeader>编辑间隔线名称</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <VStack spacing={4}>
@@ -548,7 +548,7 @@ const DashBoardEdit: PC = () => {
                   name="dividerName"
                   onChange={dividerNameForm.handleChange}
                   value={dividerNameForm.values.dividerName}
-                  placeholder="请输入分割线名称"
+                  placeholder="请输入间隔线名称"
                 />
 
                 <Select
