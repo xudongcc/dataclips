@@ -10,7 +10,10 @@ import ProjectLayout from "../../../layouts/ProjectLayout";
 import { useSession } from "next-auth/react";
 import { Page } from "../../../components/common/Page";
 import Head from "next/head";
-import { DashboardLayout } from "../../../components/dashboard/DashboardLayout";
+import {
+  DashboardLayout,
+  DragDivider,
+} from "../../../components/dashboard/DashboardLayout";
 
 interface ChartCard {
   name: string;
@@ -30,7 +33,9 @@ const DashboardPreview: PC = () => {
     skip: !dashboardId,
   });
 
-  const [chartCards, setChartCards] = useState<ChartCard[]>([]);
+  const [dragItems, setDragItems] = useState<Array<DragDivider | ChartCard>>(
+    []
+  );
 
   const content = useMemo(() => {
     if (loading) {
@@ -53,11 +58,12 @@ const DashboardPreview: PC = () => {
           }}
         >
           <DashboardLayout
-            layout={chartCards.map((item) => ({
+            type="preview"
+            layout={dragItems.map((item) => ({
               ...item?.layout,
               static: true,
             }))}
-            charts={chartCards}
+            dragItems={dragItems}
             cardExtraConfig={{
               onEditChartClick: (item) => {
                 router.push(`/charts/${item?.chartId}/edit`);
@@ -69,11 +75,11 @@ const DashboardPreview: PC = () => {
         </Page>
       </>
     );
-  }, [chartCards, dashboardId, data?.dashboard?.name, loading, router]);
+  }, [dashboardId, data?.dashboard?.name, dragItems, loading, router]);
 
   useEffect(() => {
     if (data?.dashboard?.config?.length) {
-      setChartCards(data.dashboard.config);
+      setDragItems(data.dashboard.config);
     }
   }, [data?.dashboard?.config]);
 

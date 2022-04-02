@@ -34,7 +34,12 @@ import { cloneDeep, isEmpty } from "lodash";
 import { useCallback, useState, useEffect } from "react";
 import { Loading } from "../../../components/common/Loading";
 import { Page } from "../../../components/common/Page";
-import { DashboardLayout } from "../../../components/dashboard/DashboardLayout";
+import {
+  ChartCard,
+  DashboardLayout,
+  DragDivider,
+  isChartCard,
+} from "../../../components/dashboard/DashboardLayout";
 
 enum OperationType {
   ADD = "ADD",
@@ -44,13 +49,6 @@ enum OperationType {
 interface Operation {
   type: OperationType;
   key?: string;
-}
-
-interface ChartCard {
-  name: string;
-  chartId: string;
-  hiddenName: boolean;
-  layout: Layout;
 }
 
 const DashBoardEdit: PC = () => {
@@ -77,7 +75,9 @@ const DashBoardEdit: PC = () => {
   const [updateDashboard, { loading: updateDashboardLoading }] =
     useUpdateDashboardMutation();
 
-  const [chartCards, setChartCards] = useState<ChartCard[]>([]);
+  const [dragItems, setDragItems] = useState<Array<DragDivider | ChartCard>>(
+    []
+  );
 
   // 创建或编辑卡片的弹窗
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -87,6 +87,13 @@ const DashBoardEdit: PC = () => {
     isOpen: isDashboardNameModalOpen,
     onOpen: onDashboardNameModalOpen,
     onClose: onDashboardNameModalClose,
+  } = useDisclosure();
+
+  // 编辑线名称弹窗
+  const {
+    isOpen: isDividerNameModalOpen,
+    onOpen: onDividerNameModalOpen,
+    onClose: onDividerNameModalClose,
   } = useDisclosure();
 
   const form = useFormik({
@@ -120,6 +127,18 @@ const DashBoardEdit: PC = () => {
     }),
   });
 
+  const dividerNameForm = useFormik({
+    initialValues: {
+      dividerName: "",
+      orientation: "",
+    },
+    isInitialValid: false,
+    validateOnBlur: false,
+    validateOnChange: false,
+    validateOnMount: false,
+    onSubmit: () => {},
+  });
+
   const handleCloseAddChartModal = useCallback(() => {
     onClose();
     form.setValues(form.initialValues);
@@ -135,6 +154,12 @@ const DashBoardEdit: PC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onDashboardNameModalClose]);
 
+  const handleCloseDividerModal = useCallback(() => {
+    onDividerNameModalClose();
+    dividerNameForm.setValues(dividerNameForm.initialValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onDividerNameModalClose]);
+
   const handleUpdateDashboard = useCallback(
     async (goPreview?: boolean) => {
       try {
@@ -143,12 +168,24 @@ const DashBoardEdit: PC = () => {
             id: dashboardId,
             input: {
               name: editDashboardNameForm.values.dashboardName,
-              config: chartCards.map((item) => ({
-                name: item.name,
-                chartId: item.chartId,
-                hiddenName: !!item?.hiddenName,
-                layout: item.layout,
-              })),
+              config: dragItems.map((item) => {
+                if (isChartCard(item)) {
+                  return {
+                    name: item.name,
+                    chartId: item.chartId,
+                    hiddenName: !!item?.hiddenName,
+                    layout: item.layout,
+                    type: "chart",
+                  };
+                } else {
+                  return {
+                    name: item?.name,
+                    layout: item.layout,
+                    type: "divider",
+                    orientation: item?.orientation,
+                  };
+                }
+              }),
             },
           },
         });
@@ -165,12 +202,12 @@ const DashBoardEdit: PC = () => {
       }
     },
     [
-      chartCards,
+      updateDashboard,
       dashboardId,
       editDashboardNameForm.values.dashboardName,
-      router,
+      dragItems,
       toast,
-      updateDashboard,
+      router,
     ]
   );
 
@@ -193,27 +230,27 @@ const DashBoardEdit: PC = () => {
             layout: {
               i: uuidv4(),
               x: 0,
-              y: chartCards.length * 3,
+              y: dragItems.length * 3,
               w: 6,
               h: 3,
             },
           };
 
           if (operation.type === OperationType.ADD) {
-            setChartCards([...chartCards, current]);
+            setDragItems([...dragItems, current]);
           } else {
-            const updateIndex = chartCards.findIndex(
-              (chartCard) => chartCard?.layout?.i === operation?.key
+            const updateIndex = dragItems.findIndex(
+              (dragItem) => dragItem?.layout?.i === operation?.key
             );
 
             if (updateIndex !== -1) {
-              chartCards[updateIndex] = {
+              dragItems[updateIndex] = {
                 ...current,
-                layout: chartCards[updateIndex].layout,
+                layout: dragItems[updateIndex].layout,
               };
             }
 
-            setChartCards([...chartCards]);
+            setDragItems([...dragItems]);
             setOperation({ type: OperationType.EDIT });
           }
         }
@@ -224,7 +261,7 @@ const DashBoardEdit: PC = () => {
       console.error(err);
     }
   }, [
-    chartCards,
+    dragItems,
     form,
     getChart,
     handleCloseAddChartModal,
@@ -235,17 +272,18 @@ const DashBoardEdit: PC = () => {
   // 布局发生变化时
   const handleSetChartItemLayout = useCallback(
     (newLayout: Layout[]) => {
-      const newChartCards = cloneDeep(chartCards);
+      const newDragItems = cloneDeep(dragItems);
 
       newLayout.forEach((layout) => {
-        const itemIndex = chartCards.findIndex(
+        const itemIndex = dragItems.findIndex(
           (item) => item?.layout?.i === layout.i
         );
 
         if (itemIndex !== -1) {
-          newChartCards[itemIndex] = {
-            ...newChartCards[itemIndex],
+          newDragItems[itemIndex] = {
+            ...newDragItems[itemIndex],
             layout: {
+              ...newDragItems[itemIndex].layout,
               i: layout.i,
               x: layout.x,
               y: layout.y,
@@ -256,14 +294,14 @@ const DashBoardEdit: PC = () => {
         }
       });
 
-      setChartCards(newChartCards);
+      setDragItems(newDragItems);
     },
-    [chartCards]
+    [dragItems]
   );
 
   useEffect(() => {
     if (data?.dashboard?.config?.length) {
-      setChartCards(data.dashboard.config);
+      setDragItems(data.dashboard.config);
     }
   }, [data?.dashboard?.config]);
 
@@ -309,15 +347,22 @@ const DashBoardEdit: PC = () => {
             },
           },
           {
+            text: "添加间隔线",
+            onClick: () => {
+              onDividerNameModalOpen();
+            },
+          },
+          {
             text: "添加卡片",
             onClick: onOpen,
           },
         ]}
       >
         <DashboardLayout
+          type="edit"
           onLayoutChange={handleSetChartItemLayout}
-          layout={chartCards.map((item) => item?.layout)}
-          charts={chartCards}
+          layout={dragItems.map((item) => item?.layout)}
+          dragItems={dragItems}
           cardExtraConfig={{
             onEditCardClick: (item, onClose) => {
               onClose();
@@ -338,18 +383,29 @@ const DashBoardEdit: PC = () => {
             onDeleteClick: (item, onClose) => {
               onClose();
 
-              const deleteIndex = chartCards.findIndex(
+              const deleteIndex = dragItems.findIndex(
                 (chartCard) => chartCard?.layout?.i === item?.layout?.i
               );
 
               if (deleteIndex !== -1) {
-                chartCards.splice(deleteIndex, 1);
-                setChartCards([...chartCards]);
+                dragItems.splice(deleteIndex, 1);
+                setDragItems([...dragItems]);
               }
             },
             onEditChartClick: (item) => {
               router.push(`/charts/${item?.chartId}/edit`);
             },
+          }}
+          onDividerDelete={(layoutKey) => {
+            const deleteDividerIndex = dragItems.findIndex(
+              (dragItem) => dragItem.layout.i === layoutKey
+            );
+
+            if (deleteDividerIndex !== -1) {
+              dragItems.splice(deleteDividerIndex, 1);
+
+              setDragItems([...dragItems]);
+            }
           }}
         />
 
@@ -469,6 +525,72 @@ const DashBoardEdit: PC = () => {
                   } catch (err) {
                     console.log("err", err);
                   }
+                }}
+              >
+                确定
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+
+        {/* 添加编辑线弹窗 */}
+        <Modal
+          isOpen={isDividerNameModalOpen}
+          onClose={handleCloseDividerModal}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>编辑间隔线名称</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <VStack spacing={4}>
+                <Input
+                  name="dividerName"
+                  onChange={dividerNameForm.handleChange}
+                  value={dividerNameForm.values.dividerName}
+                  placeholder="请输入间隔线名称"
+                />
+
+                <Select
+                  name="orientation"
+                  value={dividerNameForm.values.orientation}
+                  onChange={dividerNameForm.handleChange}
+                  placeholder="请选择文字方向"
+                >
+                  <option value="left">居左</option>
+                  <option value="center">居中</option>
+                  <option value="right">居右</option>
+                </Select>
+              </VStack>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button mr={3} onClick={handleCloseDividerModal}>
+                取消
+              </Button>
+              <Button
+                colorScheme="blue"
+                onClick={async () => {
+                  setDragItems([
+                    ...dragItems,
+                    {
+                      name: dividerNameForm.values.dividerName,
+                      type: "divider",
+                      orientation: (dividerNameForm.values.orientation ||
+                        "left") as any,
+                      layout: {
+                        i: uuidv4(),
+                        x: 0,
+                        y: dragItems.length * 3,
+                        w: 24,
+                        h: 1,
+                        maxH: 1,
+                        minH: 1,
+                      },
+                    },
+                  ]);
+
+                  handleCloseDividerModal();
                 }}
               >
                 确定
