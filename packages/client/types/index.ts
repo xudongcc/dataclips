@@ -12,6 +12,7 @@ export enum ChartType {
   LINE = "LINE",
   BAR = "BAR",
   PIE = "PIE",
+  MD = "MD",
 }
 
 export type ChartConfig =

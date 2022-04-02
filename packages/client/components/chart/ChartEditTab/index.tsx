@@ -7,6 +7,7 @@ import {
   FormControl,
   Select,
   Text,
+  Textarea,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { FC } from "react";
@@ -28,6 +29,7 @@ export const chartTypeMap = {
   [ChartType.LINE]: "折线图",
   [ChartType.BAR]: "柱状图",
   [ChartType.PIE]: "饼图",
+  [ChartType.MD]: "Markdown",
 };
 
 interface ChartEditTabProps extends Partial<ChartServerConfig> {
@@ -68,6 +70,7 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
                 ChartType.LINE,
                 ChartType.BAR,
                 ChartType.PIE,
+                ChartType.MD,
               ].map((item) => (
                 <option value={item} key={item}>
                   {chartTypeMap[item]}
@@ -78,93 +81,110 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
         </AccordionPanel>
       </AccordionItem>
 
-      <AccordionItem isDisabled={!form.values?.type}>
-        <AccordionButton>
-          <Text fontWeight="bold" flex="1" textAlign="left">
-            标准配置
-          </Text>
-          <AccordionIcon />
-        </AccordionButton>
+      {form.values.type !== ChartType.MD ? (
+        <>
+          <AccordionItem isDisabled={!form.values?.type}>
+            <AccordionButton>
+              <Text fontWeight="bold" flex="1" textAlign="left">
+                标准配置
+              </Text>
+              <AccordionIcon />
+            </AccordionButton>
 
-        <AccordionPanel pb={4}>
-          <FormatFieldForm form={form} />
-        </AccordionPanel>
-      </AccordionItem>
+            <AccordionPanel pb={4}>
+              <FormatFieldForm form={form} />
+            </AccordionPanel>
+          </AccordionItem>
 
-      <AccordionItem isDisabled={!form.values?.type}>
-        <AccordionButton>
-          <Text fontWeight="bold" flex="1" textAlign="left">
-            查询分析配置
-          </Text>
-          <AccordionIcon />
-        </AccordionButton>
-        <AccordionPanel pb={4}>
-          {
-            [
+          <AccordionItem isDisabled={!form.values?.type}>
+            <AccordionButton>
+              <Text fontWeight="bold" flex="1" textAlign="left">
+                查询分析配置
+              </Text>
+              <AccordionIcon />
+            </AccordionButton>
+            <AccordionPanel pb={4}>
               {
-                type: ChartType.FUNNEL,
-                component: (
-                  <FunnelChartConfigForm
-                    form={form}
-                    editOptionConfig={{
-                      groupCol: result.fields,
-                      valueCol: result.fields,
-                    }}
-                  />
-                ),
-              },
-              {
-                type: ChartType.METRIC,
-                component: (
-                  <MetricChartConfigForm
-                    form={form}
-                    editOptionConfig={{
-                      valueCol: result.fields,
-                      compareCol: result.fields,
-                    }}
-                  />
-                ),
-              },
-              {
-                type: ChartType.LINE,
-                component: (
-                  <LineChartConfigForm
-                    form={form}
-                    editOptionConfig={{
-                      xCol: result.fields,
-                      yCol: result.fields,
-                    }}
-                  />
-                ),
-              },
-              {
-                type: ChartType.BAR,
-                component: (
-                  <BarChartConfigForm
-                    form={form}
-                    editOptionConfig={{
-                      xCol: result.fields,
-                      yCol: result.fields,
-                    }}
-                  />
-                ),
-              },
-              {
-                type: ChartType.PIE,
-                component: (
-                  <PieChartConfigForm
-                    form={form}
-                    editOptionConfig={{
-                      keys: result.fields,
-                      values: result.fields,
-                    }}
-                  />
-                ),
-              },
-            ].find((item) => item.type === form.values?.type)?.component
-          }
-        </AccordionPanel>
-      </AccordionItem>
+                [
+                  {
+                    type: ChartType.FUNNEL,
+                    component: (
+                      <FunnelChartConfigForm
+                        form={form}
+                        editOptionConfig={{
+                          groupCol: result.fields,
+                          valueCol: result.fields,
+                        }}
+                      />
+                    ),
+                  },
+                  {
+                    type: ChartType.METRIC,
+                    component: (
+                      <MetricChartConfigForm
+                        form={form}
+                        editOptionConfig={{
+                          valueCol: result.fields,
+                          compareCol: result.fields,
+                        }}
+                      />
+                    ),
+                  },
+                  {
+                    type: ChartType.LINE,
+                    component: (
+                      <LineChartConfigForm
+                        form={form}
+                        editOptionConfig={{
+                          xCol: result.fields,
+                          yCol: result.fields,
+                        }}
+                      />
+                    ),
+                  },
+                  {
+                    type: ChartType.BAR,
+                    component: (
+                      <BarChartConfigForm
+                        form={form}
+                        editOptionConfig={{
+                          xCol: result.fields,
+                          yCol: result.fields,
+                        }}
+                      />
+                    ),
+                  },
+                  {
+                    type: ChartType.PIE,
+                    component: (
+                      <PieChartConfigForm
+                        form={form}
+                        editOptionConfig={{
+                          keys: result.fields,
+                          values: result.fields,
+                        }}
+                      />
+                    ),
+                  },
+                ].find((item) => item.type === form.values?.type)?.component
+              }
+            </AccordionPanel>
+          </AccordionItem>
+        </>
+      ) : (
+        <AccordionItem>
+          <AccordionButton>
+            <Text fontWeight="bold" flex="1" textAlign="left">
+              配置
+            </Text>
+            <AccordionIcon />
+          </AccordionButton>
+
+          <AccordionPanel pb={4}>
+            <Textarea />
+          </AccordionPanel>
+        </AccordionItem>
+      )}
     </Accordion>
   );
 };

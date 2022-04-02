@@ -65,6 +65,7 @@ const ChartCreate = () => {
         format: "",
       },
       pieConfig: { variant: "", key: "", value: "", format: "" },
+      mdConfig: { content: "" },
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -80,6 +81,7 @@ const ChartCreate = () => {
           { type: ChartType.LINE, config: form.values.lineConfig },
           { type: ChartType.BAR, config: form.values.barConfig },
           { type: ChartType.PIE, config: form.values.pieConfig },
+          { type: ChartType.MD, config: form.values.mdConfig },
         ].find((item) => item.type === form.values.type).config,
         clipId: form.values.clipId,
       } as CreateChartInput;
