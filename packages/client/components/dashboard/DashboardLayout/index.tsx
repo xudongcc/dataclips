@@ -79,6 +79,9 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
           background: "rgba(0,0,0,0.2) !important",
           borderRadius,
         },
+        ".react-grid-item:hover": {
+          zIndex: 10,
+        },
       }}
     >
       <ResponsiveGridLayout
