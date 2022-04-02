@@ -26,11 +26,14 @@ export interface ChartCard {
   chartId: string;
   hiddenName: boolean;
   layout: Layout;
+  type?: "chart";
 }
 
 export interface DragDivider {
   name?: string;
   layout: Layout;
+  type?: "divider";
+  orientation?: "left" | "center" | "right";
 }
 
 export function isChartCard(arg: DragDivider | ChartCard): arg is ChartCard {
@@ -190,6 +193,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
               <DashboardDragWrapper key={item.layout.i}>
                 <Box pr="20px">
                   <DashboardDivider
+                    orientation={item?.orientation}
                     hasDelete={type === "edit"}
                     onDelete={() => {
                       onDividerDelete?.(item.layout.i);

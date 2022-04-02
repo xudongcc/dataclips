@@ -130,6 +130,7 @@ const DashBoardEdit: PC = () => {
   const dividerNameForm = useFormik({
     initialValues: {
       dividerName: "",
+      orientation: "",
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -174,11 +175,14 @@ const DashBoardEdit: PC = () => {
                     chartId: item.chartId,
                     hiddenName: !!item?.hiddenName,
                     layout: item.layout,
+                    type: "chart",
                   };
                 } else {
                   return {
                     name: item?.name,
                     layout: item.layout,
+                    type: "divider",
+                    orientation: item?.orientation,
                   };
                 }
               }),
@@ -538,12 +542,25 @@ const DashBoardEdit: PC = () => {
             <ModalHeader>编辑分割线名称</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <Input
-                name="dividerName"
-                onChange={dividerNameForm.handleChange}
-                value={dividerNameForm.values.dividerName}
-                placeholder="请输入分割线名称"
-              />
+              <VStack spacing={4}>
+                <Input
+                  name="dividerName"
+                  onChange={dividerNameForm.handleChange}
+                  value={dividerNameForm.values.dividerName}
+                  placeholder="请输入分割线名称"
+                />
+
+                <Select
+                  name="orientation"
+                  value={dividerNameForm.values.orientation}
+                  onChange={dividerNameForm.handleChange}
+                  placeholder="请选择文字方向"
+                >
+                  <option value="left">居左</option>
+                  <option value="center">居中</option>
+                  <option value="right">居右</option>
+                </Select>
+              </VStack>
             </ModalBody>
 
             <ModalFooter>
@@ -557,6 +574,8 @@ const DashBoardEdit: PC = () => {
                     ...dragItems,
                     {
                       name: dividerNameForm.values.dividerName,
+                      type: "divider",
+                      orientation: dividerNameForm.values.orientation as any,
                       layout: {
                         i: uuidv4(),
                         x: 0,
