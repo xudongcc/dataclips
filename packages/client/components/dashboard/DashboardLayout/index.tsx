@@ -104,6 +104,11 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
               <DashboardDragWrapper key={item?.layout?.i}>
                 <DashboardCard
                   h="full"
+                  sx={{
+                    ".dashboard-card-body": {
+                      overflowY: "auto",
+                    },
+                  }}
                   title={!item?.hiddenName && item?.name}
                   extra={
                     cardExtraConfig?.extra ? (
