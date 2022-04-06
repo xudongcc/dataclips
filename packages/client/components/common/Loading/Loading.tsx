@@ -14,7 +14,7 @@ export const Loading: FC<LoadingProps> = ({ width, height }) => {
       align="center"
       justify="center"
     >
-      <Spinner />
+      <Spinner color="blue.500" size="lg" />
     </Flex>
   );
 };

@@ -34,7 +34,7 @@ const ChartList = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedChartId, setSelectedChartId] = useState<string>("");
 
-  const { data } = useChartConnectionQuery({
+  const { data, loading: dataLoading } = useChartConnectionQuery({
     variables: { first: 100 },
   });
   const [deleteChart, { loading }] = useDeleteChartMutation();
@@ -130,10 +130,11 @@ const ChartList = () => {
     const options: TableOptions<any> = {
       columns,
       data: data?.chartConnection.edges?.map((item) => item.node) || [],
+      loading: dataLoading,
     };
 
     return options;
-  }, [data?.chartConnection.edges, onOpen, router]);
+  }, [data?.chartConnection.edges, dataLoading, onOpen, router]);
 
   const handleDeleteChart = useCallback(async () => {
     try {

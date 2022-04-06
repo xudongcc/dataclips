@@ -15,6 +15,7 @@ import { ReactNode } from "react";
 import { TableOptions, useSortBy, useTable } from "react-table";
 
 import { ResultFragment } from "../../../generated/graphql";
+import { Loading } from "../Loading";
 
 export interface ResultPreviewProps {
   token?: string;
@@ -25,12 +26,13 @@ export interface TableProps<T extends object = {}>
   extends TableOptions<T>,
     BoxProps {
   renderEmpty?: ReactNode;
+  loading?: boolean;
 }
 
 export const Table = (props: TableProps) => {
   const headerBackgroundColor = useColorModeValue("gray.50", "gray.800");
 
-  const { renderEmpty, ...rest } = props;
+  const { renderEmpty, loading, ...rest } = props;
 
   const {
     getTableProps,
@@ -100,7 +102,11 @@ export const Table = (props: TableProps) => {
           ) : (
             <Tr>
               <Td colSpan={headers.length} textAlign="center">
-                <Box d="inline-block">{renderEmpty || "暂无数据"}</Box>
+                {loading ? (
+                  <Loading width={"100%"} height={"500px"} />
+                ) : (
+                  <Box d="inline-block">{renderEmpty || "暂无数据"}</Box>
+                )}
               </Td>
             </Tr>
           )}
