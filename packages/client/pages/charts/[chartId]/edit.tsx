@@ -320,7 +320,16 @@ const ChartEdit = () => {
           <GridItem colSpan={2}>
             <Box h="500px">
               {result && (
-                <Card overflow="hidden" h="full">
+                <Card
+                  overflow="hidden"
+                  h="full"
+                  sx={{
+                    ".card-body": {
+                      overflowY:
+                        form.values.type === ChartType.MD ? "auto" : undefined,
+                    },
+                  }}
+                >
                   <ChartResultPreview
                     config={getChartTypePreviewConfig()}
                     type={form.values.type}

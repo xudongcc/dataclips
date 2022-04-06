@@ -111,7 +111,16 @@ const ChartPreview = () => {
         >
           {data?.chart.type && data?.chart.config && result && (
             <Box h="800px">
-              <Card overflow="hidden" h="full">
+              <Card
+                overflow="hidden"
+                h="full"
+                sx={{
+                  ".card-body": {
+                    overflowY:
+                      data.chart.type === ChartType.MD ? "auto" : undefined,
+                  },
+                }}
+              >
                 <ChartResultPreview
                   type={data.chart.type}
                   config={getChartTypePreviewConfig()}
