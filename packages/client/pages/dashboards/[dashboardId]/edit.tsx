@@ -395,6 +395,19 @@ const DashBoardEdit: PC = () => {
             onEditChartClick: (item) => {
               router.push(`/charts/${item?.chartId}/edit`);
             },
+            onPreviewClipClick: async (item) => {
+              try {
+                const { data } = await getChart({
+                  variables: { id: item.chartId },
+                });
+
+                if (data?.chart?.clipId) {
+                  router.push(`/clips/${data?.chart?.clipId}`);
+                }
+              } catch (err) {
+                console.log("err", err);
+              }
+            },
           }}
           onDividerDelete={(layoutKey) => {
             const deleteDividerIndex = dragItems.findIndex(
