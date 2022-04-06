@@ -26,8 +26,6 @@ export const ChartResultPreview: FC<ChartResultPreviewProps> = ({
   config,
   type,
 }) => {
-  console.log("config", config);
-
   return (
     <Box h="full">
       {useMemo(() => {
