@@ -173,6 +173,7 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
                     name="mdConfig.content"
                     value={form.values.mdConfig.content}
                     onChange={form.handleChange}
+                    placeholder="请输入 markdown 语法"
                   />
                 ),
               },
