@@ -30,7 +30,7 @@ import {
   useUpdateDashboardMutation,
   useChartLazyQuery,
 } from "../../../generated/graphql";
-import { cloneDeep, isEmpty } from "lodash";
+import { cloneDeep, isEmpty, maxBy } from "lodash";
 import { useCallback, useState, useEffect } from "react";
 import { Loading } from "../../../components/common/Loading";
 import { Page } from "../../../components/common/Page";
@@ -230,7 +230,7 @@ const DashBoardEdit: PC = () => {
             layout: {
               i: uuidv4(),
               x: 0,
-              y: dragItems.length * 3,
+              y: maxBy(dragItems, (item) => item.layout.y).layout.y,
               w: 6,
               h: 3,
             },
@@ -581,7 +581,7 @@ const DashBoardEdit: PC = () => {
                       layout: {
                         i: uuidv4(),
                         x: 0,
-                        y: dragItems.length * 3,
+                        y: maxBy(dragItems, (item) => item.layout.y).layout.y,
                         w: 24,
                         h: 1,
                         maxH: 1,
