@@ -49,8 +49,10 @@ interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
     disabledEditCard?: boolean;
     disabledEditChart?: boolean;
     disabledDelete?: boolean;
+    disabledPreviewClip?: boolean;
     onEditCardClick?: (chart: ChartCard, close: () => void) => void;
     onEditChartClick?: (chart: ChartCard, close: () => void) => void;
+    onPreviewClipClick?: (chart: ChartCard, close: () => void) => void;
     onDeleteClick?: (chart: ChartCard, close: () => void) => void;
   };
   onDividerDelete?: (key: string) => void;
@@ -64,6 +66,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
       disabledDelete: false,
       disabledEditCard: false,
       disabledEditChart: false,
+      disabledPreviewClip: false,
     },
     onDividerDelete,
     type,
@@ -158,6 +161,28 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                                   }}
                                 >
                                   编辑图表
+                                </Button>
+
+                                <Divider my={1} />
+
+                                <Button
+                                  variant="ghost"
+                                  isDisabled={
+                                    !item?.chartId ||
+                                    cardExtraConfig.disabledPreviewClip
+                                  }
+                                  onClick={() => {
+                                    cardExtraConfig?.onPreviewClipClick?.(
+                                      item,
+                                      onClose
+                                    );
+
+                                    if (!cardExtraConfig?.onPreviewClipClick) {
+                                      onClose();
+                                    }
+                                  }}
+                                >
+                                  预览数据集
                                 </Button>
 
                                 <Divider my={1} />

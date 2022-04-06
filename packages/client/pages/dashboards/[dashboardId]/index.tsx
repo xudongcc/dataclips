@@ -2,7 +2,10 @@ import { PC } from "../../../interfaces/PageComponent";
 import { AdminLayout } from "../../../layouts/AdminLayout/AdminLayout";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import { useDashboardQuery } from "../../../generated/graphql";
+import {
+  useChartLazyQuery,
+  useDashboardQuery,
+} from "../../../generated/graphql";
 import { Layout } from "react-grid-layout";
 import { Loading } from "../../../components/common/Loading";
 import PreviewLayout from "../../../layouts/PreviewLayout";
@@ -27,6 +30,8 @@ const DashboardPreview: PC = () => {
   const session = useSession();
 
   const { dashboardId } = router.query as { dashboardId: string };
+
+  const [getChart] = useChartLazyQuery();
 
   const { data, loading } = useDashboardQuery({
     variables: { id: dashboardId },
@@ -68,6 +73,19 @@ const DashboardPreview: PC = () => {
               onEditChartClick: (item) => {
                 router.push(`/charts/${item?.chartId}/edit`);
               },
+              onPreviewClipClick: async (item) => {
+                try {
+                  const { data } = await getChart({
+                    variables: { id: item.chartId },
+                  });
+
+                  if (data?.chart?.clipId) {
+                    router.push(`/clips/${data?.chart?.clipId}`);
+                  }
+                } catch (err) {
+                  console.log("err", err);
+                }
+              },
               disabledDelete: true,
               disabledEditCard: true,
             }}
@@ -75,7 +93,14 @@ const DashboardPreview: PC = () => {
         </Page>
       </>
     );
-  }, [dashboardId, data?.dashboard?.name, dragItems, loading, router]);
+  }, [
+    dashboardId,
+    data?.dashboard?.name,
+    dragItems,
+    getChart,
+    loading,
+    router,
+  ]);
 
   useEffect(() => {
     if (data?.dashboard?.config?.length) {
