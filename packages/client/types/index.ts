@@ -4,6 +4,7 @@ import {
   LineChartConfig,
   BarChartConfig,
   PieChartConfig,
+  MarkdownConfig,
 } from "../components/chart/ChartResultPreview/components";
 
 export enum ChartType {
@@ -21,7 +22,8 @@ export type ChartConfig =
   | LineChartConfig
   | BarChartConfig
   | PieChartConfig
-  | BarChartConfig;
+  | BarChartConfig
+  | MarkdownConfig;
 
 export interface ChartServerConfig {
   config?: ChartConfig;

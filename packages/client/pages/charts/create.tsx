@@ -22,6 +22,7 @@ import {
   LineChartConfig,
   BarChartConfig,
   PieChartConfig,
+  MarkdownConfig,
 } from "../../components/chart/ChartResultPreview/components";
 import { ChartType } from "../../types";
 import { Loading } from "../../components/common/Loading";
@@ -157,6 +158,10 @@ const ChartCreate = () => {
         key: form.values.pieConfig?.key || "",
         value: form.values.pieConfig?.value || "",
       } as PieChartConfig;
+    }
+
+    if (form.values.type === ChartType.MD) {
+      return { content: form.values.mdConfig?.content || "" } as MarkdownConfig;
     }
 
     return undefined;

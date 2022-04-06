@@ -65,6 +65,7 @@ export enum ChartType {
   BAR = 'BAR',
   FUNNEL = 'FUNNEL',
   LINE = 'LINE',
+  MD = 'MD',
   METRIC = 'METRIC',
   PIE = 'PIE'
 }

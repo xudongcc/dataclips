@@ -12,6 +12,7 @@ import {
   FunnelChartConfig,
   BarChartConfig,
   PieChartConfig,
+  MarkdownConfig,
 } from "../../../components/chart/ChartResultPreview/components";
 import { Page } from "../../../components/common/Page";
 import PreviewLayout from "../../../layouts/PreviewLayout";
@@ -77,6 +78,12 @@ const ChartPreview = () => {
         key: data.chart.config?.key || "",
         value: data.chart.config?.value || "",
       } as PieChartConfig;
+    }
+
+    if (data?.chart.type === ChartType.MD) {
+      return {
+        content: data.chart.config?.content || "",
+      } as MarkdownConfig;
     }
 
     return undefined;

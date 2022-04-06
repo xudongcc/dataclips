@@ -87,7 +87,7 @@ export const Card: FC<CardProps> = ({
       </Stack>
     </Stack>
 
-    <Box flex={1} h="inherit" className="card-body">
+    <Box flex={1} h="inherit" className="card-body" overflowY="auto">
       {children}
     </Box>
 

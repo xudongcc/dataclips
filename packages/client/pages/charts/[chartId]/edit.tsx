@@ -33,6 +33,7 @@ import {
   FunnelChartConfig,
   MetricChartConfig,
   PieChartConfig,
+  MarkdownConfig,
 } from "../../../components/chart/ChartResultPreview/components";
 import { Page } from "../../../components/common/Page";
 import { Card } from "../../../components/common/Card";
@@ -169,6 +170,12 @@ const ChartEdit = () => {
       } as PieChartConfig;
     }
 
+    if (form.values.type === ChartType.MD) {
+      return {
+        content: form.values.mdConfig?.content || "",
+      } as MarkdownConfig;
+    }
+
     return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
@@ -237,6 +244,12 @@ const ChartEdit = () => {
           key: data.chart.config?.key || "",
           value: data.chart.config?.value || "",
           format: data.chart.config?.format || "",
+        };
+      }
+
+      if (data.chart.type === ChartType.MD) {
+        initialValues.mdConfig = {
+          content: data.chart.config?.content || "",
         };
       }
 
