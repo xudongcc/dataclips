@@ -1,15 +1,16 @@
 import { FC } from "react";
 import { marked } from "marked";
 import { Box } from "@chakra-ui/react";
+import "github-markdown-css";
 
 export interface MarkdownConfig {
   content: string;
 }
 
 export const Markdown: FC<MarkdownConfig> = ({ content }) => {
-  console.log(" marked.parse(content)", marked.parse(content));
   return (
     <Box
+      className="markdown-body"
       sx={{
         "> *": {
           all: "revert",
