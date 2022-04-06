@@ -7,6 +7,7 @@ import {
   FormControl,
   Select,
   Text,
+  Textarea,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { FC } from "react";
@@ -28,6 +29,7 @@ export const chartTypeMap = {
   [ChartType.LINE]: "折线图",
   [ChartType.BAR]: "柱状图",
   [ChartType.PIE]: "饼图",
+  [ChartType.MD]: "Markdown",
 };
 
 interface ChartEditTabProps extends Partial<ChartServerConfig> {
@@ -68,6 +70,7 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
                 ChartType.LINE,
                 ChartType.BAR,
                 ChartType.PIE,
+                ChartType.MD,
               ].map((item) => (
                 <option value={item} key={item}>
                   {chartTypeMap[item]}
@@ -78,18 +81,20 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
         </AccordionPanel>
       </AccordionItem>
 
-      <AccordionItem isDisabled={!form.values?.type}>
-        <AccordionButton>
-          <Text fontWeight="bold" flex="1" textAlign="left">
-            标准配置
-          </Text>
-          <AccordionIcon />
-        </AccordionButton>
+      {form.values.type !== ChartType.MD && (
+        <AccordionItem isDisabled={!form.values?.type}>
+          <AccordionButton>
+            <Text fontWeight="bold" flex="1" textAlign="left">
+              标准配置
+            </Text>
+            <AccordionIcon />
+          </AccordionButton>
 
-        <AccordionPanel pb={4}>
-          <FormatFieldForm form={form} />
-        </AccordionPanel>
-      </AccordionItem>
+          <AccordionPanel pb={4}>
+            <FormatFieldForm form={form} />
+          </AccordionPanel>
+        </AccordionItem>
+      )}
 
       <AccordionItem isDisabled={!form.values?.type}>
         <AccordionButton>
@@ -158,6 +163,17 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
                       keys: result.fields,
                       values: result.fields,
                     }}
+                  />
+                ),
+              },
+              {
+                type: ChartType.MD,
+                component: (
+                  <Textarea
+                    name="mdConfig.content"
+                    value={form.values.mdConfig.content}
+                    onChange={form.handleChange}
+                    placeholder="请输入 markdown 语法"
                   />
                 ),
               },

@@ -6,6 +6,7 @@ export enum ChartType {
   LINE = "LINE",
   BAR = "BAR",
   PIE = "PIE",
+  MD = "MD",
 }
 
 registerEnumType(ChartType, { name: "ChartType" });

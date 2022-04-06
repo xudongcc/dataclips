@@ -22,6 +22,7 @@ import {
   LineChartConfig,
   BarChartConfig,
   PieChartConfig,
+  MarkdownConfig,
 } from "../../components/chart/ChartResultPreview/components";
 import { ChartType } from "../../types";
 import { Loading } from "../../components/common/Loading";
@@ -65,6 +66,7 @@ const ChartCreate = () => {
         format: "",
       },
       pieConfig: { variant: "", key: "", value: "", format: "" },
+      mdConfig: { content: "" },
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -80,6 +82,7 @@ const ChartCreate = () => {
           { type: ChartType.LINE, config: form.values.lineConfig },
           { type: ChartType.BAR, config: form.values.barConfig },
           { type: ChartType.PIE, config: form.values.pieConfig },
+          { type: ChartType.MD, config: form.values.mdConfig },
         ].find((item) => item.type === form.values.type).config,
         clipId: form.values.clipId,
       } as CreateChartInput;
@@ -155,6 +158,10 @@ const ChartCreate = () => {
         key: form.values.pieConfig?.key || "",
         value: form.values.pieConfig?.value || "",
       } as PieChartConfig;
+    }
+
+    if (form.values.type === ChartType.MD) {
+      return { content: form.values.mdConfig?.content || "" } as MarkdownConfig;
     }
 
     return undefined;

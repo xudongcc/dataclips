@@ -33,6 +33,7 @@ import {
   FunnelChartConfig,
   MetricChartConfig,
   PieChartConfig,
+  MarkdownConfig,
 } from "../../../components/chart/ChartResultPreview/components";
 import { Page } from "../../../components/common/Page";
 import { Card } from "../../../components/common/Card";
@@ -73,6 +74,7 @@ const ChartEdit = () => {
         format: "",
       },
       pieConfig: { variant: "", key: "", value: "", format: "" },
+      mdConfig: { content: "" },
     },
     isInitialValid: false,
     validateOnBlur: false,
@@ -88,6 +90,7 @@ const ChartEdit = () => {
           { type: ChartType.LINE, config: form.values.lineConfig },
           { type: ChartType.BAR, config: form.values.barConfig },
           { type: ChartType.PIE, config: form.values.pieConfig },
+          { type: ChartType.MD, config: form.values.mdConfig },
         ].find((item) => item.type === form.values.type).config,
         clipId: form.values.clipId,
       } as UpdateChartInput;
@@ -167,6 +170,12 @@ const ChartEdit = () => {
       } as PieChartConfig;
     }
 
+    if (form.values.type === ChartType.MD) {
+      return {
+        content: form.values.mdConfig?.content || "",
+      } as MarkdownConfig;
+    }
+
     return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
@@ -238,6 +247,12 @@ const ChartEdit = () => {
         };
       }
 
+      if (data.chart.type === ChartType.MD) {
+        initialValues.mdConfig = {
+          content: data.chart.config?.content || "",
+        };
+      }
+
       form.setValues(initialValues);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -301,6 +316,7 @@ const ChartEdit = () => {
               </form>
             </Card>
           </GridItem>
+
           <GridItem colSpan={2}>
             <Box h="500px">
               {result && (

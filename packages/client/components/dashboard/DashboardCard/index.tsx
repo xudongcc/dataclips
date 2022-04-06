@@ -90,6 +90,7 @@ export const DashboardCard: FC<DashboardCardProps> = ({
       flex={1}
       overflow="hidden"
       h="inherit"
+      overflowY="auto"
       className="card-body dashboard-card-body"
     >
       {children}
