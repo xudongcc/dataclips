@@ -98,11 +98,11 @@ const ChartPreview = () => {
     return (
       <>
         <Head>
-          <title>{result?.name} - 预览 - 图表</title>
+          <title>{data?.chart?.name} - 预览 - 图表</title>
         </Head>
 
         <Page
-          title={result?.name}
+          title={data?.chart?.name}
           primaryAction={{
             text: "编辑",
             onClick: () => {
