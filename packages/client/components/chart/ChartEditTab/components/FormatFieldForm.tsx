@@ -47,17 +47,17 @@ const momentFormatList = options
 export const getFormatValue = (value: any, format?: string) => {
   if (format) {
     if (momentFormatList.includes(format)) {
-      return moment(value).format(format) || value;
+      return moment(value).format(format) ?? value;
     }
 
     if (format === "seconds") {
       return formatSecondToStr(value);
     }
 
-    return numeral(value).format(format) || value;
+    return numeral(value).format(format) ?? value;
   }
 
-  return numeral(value).value() || value;
+  return numeral(value).value() ?? value;
 };
 
 export const FormatFieldForm: FC<FormatFieldFormProps> = ({ form }) => {
