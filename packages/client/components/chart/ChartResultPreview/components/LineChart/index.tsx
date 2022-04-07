@@ -85,16 +85,6 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
           nice: true,
           range: [0, 1],
         },
-        y0: {
-          tickCount: 5,
-          min: 0,
-          type: "linear-strict",
-        },
-        y1: {
-          tickCount: 5,
-          min: 0,
-          type: "linear-strict",
-        },
       }}
       padding={[20, 20, 80, 50]}
       autoFit
