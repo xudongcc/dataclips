@@ -59,6 +59,14 @@ export const LineChartConfigForm: FC<LineChartConfigFormProps> = ({
         >
           反序
         </Checkbox>
+
+        <Checkbox
+          name="lineConfig.doubleAxes"
+          isChecked={form.values.lineConfig.doubleAxes}
+          onChange={form.handleChange}
+        >
+          双 y 轴
+        </Checkbox>
       </Grid>
     </VStack>
   );

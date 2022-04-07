@@ -2,11 +2,13 @@ import { Axis, Chart, LineAdvance } from "bizcharts";
 import { FC, useMemo } from "react";
 import { ResultFragment } from "../../../../../generated/graphql";
 import { getFormatValue } from "../../../ChartEditTab/components/FormatFieldForm";
+import { DoubleLineChart } from "./DoubleLineChart";
 export interface LineChartConfig {
   xCol: string;
   yCol: { label: string; value: string }[];
   format: string;
   reverseOrder: boolean;
+  doubleAxes: boolean;
 }
 
 interface LineChartPreviewProps {
@@ -33,15 +35,32 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
 
         // x 轴和 y 轴都存在
         if (keyIndex !== -1 && valuesIndex.length) {
-          const res = valuesIndex.map((yIndex) => {
-            return result.values.map((value) => {
-              return {
-                x: value[keyIndex],
-                y: getFormatValue(value[yIndex]),
-                diff: result.fields[yIndex],
-              };
+          let res: Record<string, any>[] = [];
+
+          // 双 y 轴
+          if (config.doubleAxes) {
+            res = result.values.map((value) => {
+              const obj: Record<string, any> = {};
+
+              valuesIndex.forEach((yIndex, i) => {
+                obj.x = value[keyIndex];
+                obj[`y${i + 1}`] = getFormatValue(value[yIndex]);
+                obj[`y${i + 1}-name`] = result.fields[yIndex];
+              });
+
+              return obj;
             });
-          });
+          } else {
+            res = valuesIndex.map((yIndex, i) => {
+              return result.values.map((value) => {
+                return {
+                  x: value[keyIndex],
+                  y: getFormatValue(value[yIndex]),
+                  diff: result.fields[yIndex],
+                };
+              });
+            });
+          }
 
           return config.reverseOrder ? res.flat(1).reverse() : res.flat(1);
         }
@@ -53,6 +72,10 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
 
   if (!data.length) {
     return null;
+  }
+
+  if (config.doubleAxes) {
+    return <DoubleLineChart data={data} />;
   }
 
   return (

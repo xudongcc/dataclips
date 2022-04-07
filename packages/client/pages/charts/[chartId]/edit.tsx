@@ -64,7 +64,13 @@ const ChartEdit = () => {
       clipId: "",
       funnelConfig: { groupCol: "", valueCol: "", format: "" },
       metricConfig: { valueCol: "", compareCol: "", format: "" },
-      lineConfig: { xCol: "", yCol: [], reverseOrder: false, format: "" },
+      lineConfig: {
+        xCol: "",
+        yCol: [],
+        reverseOrder: false,
+        format: "",
+        doubleAxes: false,
+      },
       barConfig: {
         isStack: false,
         reverseOrder: false,
@@ -147,6 +153,7 @@ const ChartEdit = () => {
         reverseOrder: !!form.values.lineConfig.reverseOrder,
         xCol: form.values.lineConfig?.xCol || "",
         yCol: form.values.lineConfig?.yCol || [],
+        doubleAxes: !!form.values.lineConfig.doubleAxes,
       } as LineChartConfig;
     }
 
@@ -220,6 +227,7 @@ const ChartEdit = () => {
 
       if (data.chart.type === ChartType.LINE) {
         initialValues.lineConfig = {
+          doubleAxes: !!data.chart.config?.doubleAxes,
           format: data.chart.config?.format || "",
           reverseOrder: !!data.chart.config?.reverseOrder,
           xCol: data.chart.config?.xCol || "",
