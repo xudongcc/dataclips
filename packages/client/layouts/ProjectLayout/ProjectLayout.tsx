@@ -1,16 +1,160 @@
-import { Box, Container } from "@chakra-ui/react";
-import { FC } from "react";
-import { Navbar } from "./components/Navbar";
+import { FC, useState, useMemo, useCallback, useEffect } from "react";
+import { Layout, Menu, Image, Row, Col, Popover, Avatar, Button } from "antd";
+import { useRouter } from "next/router";
+import { signOut, useSession } from "next-auth/react";
+import { Loading } from "../../components/common/Loading";
+import { routes } from "../../router";
+import NextLink from "next/link";
+
+const { SubMenu } = Menu;
+const { Header, Content, Sider } = Layout;
 
 const ProjectLayout: FC = ({ children }) => {
-  return (
-    <Box as="section" height="100vh" overflowY="auto">
-      <Navbar />
+  const router = useRouter();
+  const session = useSession();
 
-      <Container maxW="var(--chakra-sizes-7xl)" p={4}>
-        {children}
-      </Container>
-    </Box>
+  // 侧边栏收起状态
+  const [collapsed, setCollapsed] = useState(false);
+
+  const siderBarWidth = useMemo(() => {
+    return collapsed ? 80 : 200;
+  }, [collapsed]);
+
+  // 登录退出
+  const handleLogout = useCallback(() => {
+    signOut();
+    router.push("/login");
+  }, [router]);
+
+  // 验证登录态
+  useEffect(() => {
+    if (session.status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [session, router]);
+
+  if (session.status !== "authenticated") {
+    return <Loading />;
+  }
+
+  return (
+    <Layout hasSider style={{ minHeight: "100%" }}>
+      <nav style={{ width: siderBarWidth }} />
+      <Sider
+        style={{
+          width: siderBarWidth,
+          position: "fixed",
+          left: "0",
+          top: 0,
+          zIndex: 101,
+          bottom: 0,
+        }}
+        breakpoint="md"
+        collapsed={collapsed}
+        onCollapse={(state) => {
+          setCollapsed(state);
+        }}
+      >
+        <Header
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            background: "#fff",
+            borderBottom: "1px solid rgba(0,0,0,0.06)",
+            padding: 0,
+          }}
+        >
+          <Image
+            src="/dataclip.png"
+            width={32}
+            preview={false}
+            alt="data-clip"
+          />
+        </Header>
+
+        <Menu
+          mode="inline"
+          style={{ height: "100%" }}
+          selectedKeys={[
+            routes.find((item) => router.asPath.includes(item.path))?.name,
+          ]}
+        >
+          {routes.map((route) => {
+            if (route.children?.length) {
+              return (
+                // 待优化，children
+                <SubMenu title={route.name}>
+                  {route?.children?.map((menu) => (
+                    <Menu.Item key={menu.name}>
+                      <NextLink href={menu.path}>{route.name}</NextLink>
+                    </Menu.Item>
+                  ))}
+                </SubMenu>
+              );
+            } else {
+              return (
+                <Menu.Item icon={route?.icon} key={route.name}>
+                  <NextLink href={route.path}>{route.name}</NextLink>
+                </Menu.Item>
+              );
+            }
+          })}
+        </Menu>
+      </Sider>
+
+      <Layout
+        style={{
+          position: "relative",
+          minHeight: "100vh",
+        }}
+      >
+        <header style={{ height: 64 }} />
+        <Header
+          style={{
+            background: "#fff",
+            position: "fixed",
+            padding: "0 24px",
+            top: "0px",
+            zIndex: 100,
+            width: "100%",
+            right: 0,
+            height: 64,
+            borderBottom: "1px solid rgba(0,0,0,0.06)",
+          }}
+        >
+          {/* 头像 */}
+          <Row justify="end">
+            <Col>
+              <Popover
+                content={
+                  <Button type="text" onClick={handleLogout}>
+                    退出登录
+                  </Button>
+                }
+                placement="bottomLeft"
+                trigger="click"
+              >
+                <Avatar
+                  size={32}
+                  style={{ cursor: "pointer" }}
+                  src={session.data?.user?.image}
+                />
+              </Popover>
+            </Col>
+          </Row>
+        </Header>
+
+        <Content
+          style={{
+            margin: 24,
+            transition: "all linear",
+          }}
+        >
+          {children}
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 

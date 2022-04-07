@@ -11,6 +11,7 @@ export const Markdown: FC<MarkdownConfig> = ({ content }) => {
   return (
     <Box
       className="markdown-body"
+      height="100%"
       sx={{
         "> *": {
           all: "revert",

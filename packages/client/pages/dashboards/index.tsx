@@ -1,22 +1,4 @@
-import {
-  Button,
-  FormControl,
-  FormErrorMessage,
-  Input,
-  Modal,
-  Link,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  useDisclosure,
-  useToast,
-  Divider,
-  Center,
-  Text,
-} from "@chakra-ui/react";
+import { Link, useToast, Divider, Center, Text } from "@chakra-ui/react";
 import Head from "next/head";
 import NextLink from "next/link";
 import { Page } from "../../components/common/Page";
@@ -24,10 +6,10 @@ import { PC } from "../../interfaces/PageComponent";
 import { useRouter } from "next/router";
 import { useCallback, useMemo, useState } from "react";
 import ProjectLayout from "../../layouts/ProjectLayout";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import { Table } from "../../components/common/Table";
 import { useDashboardConnectionQuery } from "../../generated/graphql";
+import { Form, Input } from "antd";
+import { Modal } from "../../components/common/Modal";
 
 import { Column, TableOptions } from "react-table";
 import moment from "moment";
@@ -37,22 +19,11 @@ import { useDeleteDashboardMutation } from "../../hooks/useDeleteDashboardMutati
 const DashBoardList: PC = () => {
   const router = useRouter();
   const toast = useToast();
+  const [form] = Form.useForm();
 
   // 创建仪表盘的弹窗
-  const {
-    isOpen: isCreateDashboardModalOpen,
-    onOpen: onCreateDashboardModalOpen,
-    onClose: onCreateDashboardModalClose,
-  } = useDisclosure();
-
-  // 删除仪表盘的弹窗
-  const {
-    isOpen: isDeleteDashboardModalOpen,
-    onOpen: onDeleteDashboardModalOpen,
-    onClose: onDeleteDashboardModalClose,
-  } = useDisclosure();
-
-  const [selectedDashboardId, setSelectedDashboardId] = useState<string>("");
+  const [isCreateDashboardModalVisible, setIsCreateDashboardModalVisible] =
+    useState(false);
 
   const { data: dashboardListData, loading } = useDashboardConnectionQuery({
     variables: { first: 100 },
@@ -61,22 +32,26 @@ const DashBoardList: PC = () => {
   const [createDashboard, { loading: createDashboardLoading }] =
     useCreateDashboardMutation();
 
-  const [deleteDashboard, { loading: deleteDashboardLoading }] =
-    useDeleteDashboardMutation();
+  const [deleteDashboard] = useDeleteDashboardMutation();
 
-  const form = useFormik({
-    initialValues: {
-      dashboardName: "",
+  const handleDeleteDashboard = useCallback(
+    async (deleteId: string) => {
+      try {
+        if (deleteId) {
+          await deleteDashboard({ variables: { id: deleteId } });
+
+          toast({
+            description: "删除成功",
+            status: "success",
+            isClosable: true,
+          });
+        }
+      } catch (err) {
+        console.log("err", err);
+      }
     },
-    isInitialValid: false,
-    validateOnBlur: false,
-    validateOnChange: false,
-    validateOnMount: false,
-    onSubmit: () => {},
-    validationSchema: Yup.object().shape({
-      dashboardName: Yup.string().required(),
-    }),
-  });
+    [deleteDashboard, toast]
+  );
 
   const tableProps = useMemo<TableOptions<any>>(() => {
     const columns: Column<any>[] = [
@@ -117,7 +92,7 @@ const DashBoardList: PC = () => {
         accessor: "operation",
         Cell: ({
           row: {
-            original: { id },
+            original: { id, name },
           },
         }) => {
           return (
@@ -136,8 +111,24 @@ const DashBoardList: PC = () => {
               <Link
                 color="red.500"
                 onClick={() => {
-                  setSelectedDashboardId(id);
-                  onDeleteDashboardModalOpen();
+                  const modal = Modal.confirm({
+                    okButtonProps: { danger: true },
+                    title: "删除仪表盘",
+                    okText: "确定",
+                    cancelText: "取消",
+                    content: `确认删除名称为 ${name} 的仪表盘？`,
+                    onOk: async () => {
+                      modal.update({
+                        okButtonProps: { loading: true },
+                      });
+
+                      await handleDeleteDashboard(id);
+
+                      modal.update({
+                        okButtonProps: { loading: false },
+                      });
+                    },
+                  });
                 }}
               >
                 删除
@@ -162,52 +153,23 @@ const DashBoardList: PC = () => {
     return options;
   }, [
     dashboardListData?.dashboardConnection.edges,
+    handleDeleteDashboard,
     loading,
-    onDeleteDashboardModalOpen,
     router,
   ]);
 
   const handleCloseCreateDashboardModal = useCallback(() => {
-    onCreateDashboardModalClose();
-    form.setErrors({});
-    form.setValues(form.initialValues);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onCreateDashboardModalClose]);
-
-  const handleCloseDeleteDashboardModal = useCallback(() => {
-    onDeleteDashboardModalClose();
-    setSelectedDashboardId("");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onDeleteDashboardModalClose]);
-
-  const handleDeleteDashboard = useCallback(async () => {
-    try {
-      if (selectedDashboardId) {
-        await deleteDashboard({ variables: { id: selectedDashboardId } });
-
-        toast({
-          description: "删除成功",
-          status: "success",
-          isClosable: true,
-        });
-
-        handleCloseDeleteDashboardModal();
-      }
-    } catch (err) {
-      console.log("err", err);
-    }
-  }, [
-    deleteDashboard,
-    handleCloseDeleteDashboardModal,
-    selectedDashboardId,
-    toast,
-  ]);
+    setIsCreateDashboardModalVisible(false);
+    form.resetFields();
+  }, [form]);
 
   const handleCreateDashboard = useCallback(async () => {
+    const values = form.getFieldsValue();
+
     await createDashboard({
       variables: {
         input: {
-          name: form.values.dashboardName,
+          name: values.dashboardName,
         },
       },
     });
@@ -223,89 +185,49 @@ const DashBoardList: PC = () => {
         title="仪表盘"
         primaryAction={{
           text: "创建仪表盘",
-          onClick: onCreateDashboardModalOpen,
+          onClick: () => {
+            setIsCreateDashboardModalVisible(true);
+          },
         }}
       >
         <Table {...tableProps} />
 
         {/* 创建仪表盘的弹窗 */}
         <Modal
-          isOpen={isCreateDashboardModalOpen}
-          onClose={handleCloseCreateDashboardModal}
+          title="创建仪表盘"
+          okText="确认"
+          cancelText="取消"
+          okButtonProps={{ loading: createDashboardLoading }}
+          onOk={async () => {
+            try {
+              await form.validateFields();
+
+              await handleCreateDashboard();
+
+              toast({
+                description: "创建成功",
+                status: "success",
+                isClosable: true,
+              });
+
+              handleCloseCreateDashboardModal();
+            } catch (err) {
+              console.error(err);
+            }
+          }}
+          visible={isCreateDashboardModalVisible}
+          onCancel={handleCloseCreateDashboardModal}
         >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>创建仪表盘</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <FormControl isInvalid={!!form.errors.dashboardName}>
-                <Input
-                  name="dashboardName"
-                  value={form.values.dashboardName}
-                  onChange={form.handleChange}
-                  placeholder="请输入仪表盘名称"
-                />
-
-                <FormErrorMessage>请输入仪表盘名字</FormErrorMessage>
-              </FormControl>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button
-                colorScheme="blue"
-                mr={3}
-                onClick={handleCloseCreateDashboardModal}
-              >
-                取消
-              </Button>
-              <Button
-                isLoading={createDashboardLoading}
-                colorScheme="red"
-                onClick={async () => {
-                  const error = await form.validateForm();
-
-                  if (!error?.dashboardName) {
-                    await handleCreateDashboard();
-                    handleCloseCreateDashboardModal();
-                  }
-                }}
-              >
-                确定
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-
-        {/* 删除仪表盘的弹窗 */}
-        <Modal
-          isOpen={isDeleteDashboardModalOpen}
-          onClose={handleCloseDeleteDashboardModal}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>删除仪表盘</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              确定删除 id 为 {selectedDashboardId} 的仪表盘？
-            </ModalBody>
-
-            <ModalFooter>
-              <Button
-                colorScheme="blue"
-                mr={3}
-                onClick={handleCloseDeleteDashboardModal}
-              >
-                取消
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={handleDeleteDashboard}
-                isLoading={deleteDashboardLoading}
-              >
-                确定
-              </Button>
-            </ModalFooter>
-          </ModalContent>
+          <Form form={form} layout="vertical">
+            <Form.Item
+              label="仪表盘名称"
+              style={{ marginBottom: 0 }}
+              name="dashboardName"
+              rules={[{ required: true, message: "请输入仪表盘名称" }]}
+            >
+              <Input placeholder="请输入仪表盘名称" />
+            </Form.Item>
+          </Form>
         </Modal>
       </Page>
     </>

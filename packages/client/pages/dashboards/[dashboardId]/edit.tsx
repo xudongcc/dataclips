@@ -1,36 +1,17 @@
-import {
-  Button,
-  FormControl,
-  FormErrorMessage,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Checkbox,
-  Select,
-  useDisclosure,
-  useToast,
-  VStack,
-} from "@chakra-ui/react";
+import { useDisclosure, useToast } from "@chakra-ui/react";
 import Head from "next/head";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import { PC } from "../../../interfaces/PageComponent";
 import ProjectLayout from "../../../layouts/ProjectLayout";
 import { Layout } from "react-grid-layout";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import {
   useDashboardQuery,
   useChartConnectionQuery,
   useUpdateDashboardMutation,
   useChartLazyQuery,
 } from "../../../generated/graphql";
-import { cloneDeep, isEmpty, maxBy } from "lodash";
+import { cloneDeep, maxBy } from "lodash";
 import { useCallback, useState, useEffect } from "react";
 import { Loading } from "../../../components/common/Loading";
 import { Page } from "../../../components/common/Page";
@@ -40,6 +21,9 @@ import {
   DragDivider,
   isChartCard,
 } from "../../../components/dashboard/DashboardLayout";
+import { Checkbox, Form, Input, Modal, Select, Space } from "antd";
+
+const { Option } = Select;
 
 enum OperationType {
   ADD = "ADD",
@@ -54,6 +38,12 @@ interface Operation {
 const DashBoardEdit: PC = () => {
   const toast = useToast();
   const router = useRouter();
+  // 编辑仪表盘名称的 form
+  const [editDashboardNameForm] = Form.useForm();
+  // 添加分隔线的 form
+  const [dividerNameForm] = Form.useForm();
+  // 添加或编辑卡片的 form
+  const [addOrEditCardForm] = Form.useForm();
 
   const [operation, setOperation] = useState<Operation>({
     type: OperationType.ADD,
@@ -80,94 +70,44 @@ const DashBoardEdit: PC = () => {
   );
 
   // 创建或编辑卡片的弹窗
+  const [isAddOrEditCardModalVisible, setIsAddOrEditCardModalVisible] =
+    useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // 编辑仪表盘名称
-  const {
-    isOpen: isDashboardNameModalOpen,
-    onOpen: onDashboardNameModalOpen,
-    onClose: onDashboardNameModalClose,
-  } = useDisclosure();
+  const [isDashboardNameModalVisible, setIsDashboardNameModalVisible] =
+    useState(false);
 
   // 编辑线名称弹窗
-  const {
-    isOpen: isDividerNameModalOpen,
-    onOpen: onDividerNameModalOpen,
-    onClose: onDividerNameModalClose,
-  } = useDisclosure();
-
-  const form = useFormik({
-    initialValues: {
-      name: "",
-      chartId: "",
-      hiddenName: false,
-    },
-    isInitialValid: false,
-    validateOnBlur: false,
-    validateOnChange: false,
-    validateOnMount: false,
-    onSubmit: () => {},
-    validationSchema: Yup.object().shape({
-      name: Yup.string().required(),
-      chartId: Yup.string().required(),
-    }),
-  });
-
-  const editDashboardNameForm = useFormik({
-    initialValues: {
-      dashboardName: "",
-    },
-    isInitialValid: false,
-    validateOnBlur: false,
-    validateOnChange: false,
-    validateOnMount: false,
-    onSubmit: () => {},
-    validationSchema: Yup.object().shape({
-      dashboardName: Yup.string().required(),
-    }),
-  });
-
-  const dividerNameForm = useFormik({
-    initialValues: {
-      dividerName: "",
-      orientation: "",
-    },
-    isInitialValid: false,
-    validateOnBlur: false,
-    validateOnChange: false,
-    validateOnMount: false,
-    onSubmit: () => {},
-  });
+  const [isDividerNameModalVisible, setIsDividerNameModalVisible] =
+    useState(false);
 
   const handleCloseAddChartModal = useCallback(() => {
-    onClose();
-    form.setValues(form.initialValues);
-    form.setErrors({});
+    setIsAddOrEditCardModalVisible(false);
+    addOrEditCardForm.resetFields();
     setOperation({ type: OperationType.ADD });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onClose]);
+  }, [addOrEditCardForm]);
 
   const handleCloseEditDashboardNameModal = useCallback(() => {
-    onDashboardNameModalClose();
-    editDashboardNameForm.setErrors({});
-    editDashboardNameForm.setValues(editDashboardNameForm.initialValues);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onDashboardNameModalClose]);
+    setIsDashboardNameModalVisible(false);
+    editDashboardNameForm.resetFields();
+  }, [editDashboardNameForm]);
 
   const handleCloseDividerModal = useCallback(() => {
-    onDividerNameModalClose();
-    dividerNameForm.setValues(dividerNameForm.initialValues);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onDividerNameModalClose]);
+    setIsDividerNameModalVisible(false);
+    dividerNameForm.resetFields();
+  }, [dividerNameForm]);
 
   const handleUpdateDashboard = useCallback(
     async (goPreview?: boolean) => {
       try {
+        const value = editDashboardNameForm.getFieldValue("dashboardName");
+
         await updateDashboard({
           variables: {
             id: dashboardId,
             input: {
-              name: editDashboardNameForm.values.dashboardName,
+              name: value,
               config: dragItems.map((item) => {
                 if (isChartCard(item)) {
                   return {
@@ -198,13 +138,13 @@ const DashBoardEdit: PC = () => {
 
         return;
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     },
     [
+      editDashboardNameForm,
       updateDashboard,
       dashboardId,
-      editDashboardNameForm.values.dashboardName,
       dragItems,
       toast,
       router,
@@ -213,56 +153,50 @@ const DashBoardEdit: PC = () => {
 
   const handleAddOrEditChartCard = useCallback(async () => {
     try {
-      const error = await form.validateForm();
+      const values = await addOrEditCardForm.validateFields();
 
-      if (isEmpty(error)) {
-        const { data } = await getChart({
-          variables: {
-            id: form.values.chartId,
+      const { data } = await getChart({
+        variables: {
+          id: values.chartId,
+        },
+      });
+
+      if (data?.chart) {
+        const current = {
+          name: values.name,
+          chartId: data.chart.id,
+          hiddenName: values.hiddenName,
+          layout: {
+            i: uuidv4(),
+            x: 0,
+            y: maxBy(dragItems, (item) => item.layout.y).layout.y,
+            w: 6,
+            h: 3,
           },
-        });
-
-        if (data?.chart) {
-          const current = {
-            name: form.values.name,
-            chartId: data.chart.id,
-            hiddenName: form.values.hiddenName,
-            layout: {
-              i: uuidv4(),
-              x: 0,
-              y: maxBy(dragItems, (item) => item.layout.y).layout.y,
-              w: 6,
-              h: 3,
-            },
-          };
-
-          if (operation.type === OperationType.ADD) {
-            setDragItems([...dragItems, current]);
-          } else {
-            const updateIndex = dragItems.findIndex(
-              (dragItem) => dragItem?.layout?.i === operation?.key
-            );
-
-            if (updateIndex !== -1) {
-              dragItems[updateIndex] = {
-                ...current,
-                layout: dragItems[updateIndex].layout,
-              };
-            }
-
-            setDragItems([...dragItems]);
-            setOperation({ type: OperationType.EDIT });
+        };
+        if (operation.type === OperationType.ADD) {
+          setDragItems([...dragItems, current]);
+        } else {
+          const updateIndex = dragItems.findIndex(
+            (dragItem) => dragItem?.layout?.i === operation?.key
+          );
+          if (updateIndex !== -1) {
+            dragItems[updateIndex] = {
+              ...current,
+              layout: dragItems[updateIndex].layout,
+            };
           }
+          setDragItems([...dragItems]);
+          setOperation({ type: OperationType.EDIT });
         }
-
-        handleCloseAddChartModal();
       }
+      handleCloseAddChartModal();
     } catch (err) {
       console.error(err);
     }
   }, [
+    addOrEditCardForm,
     dragItems,
-    form,
     getChart,
     handleCloseAddChartModal,
     operation?.key,
@@ -305,17 +239,6 @@ const DashBoardEdit: PC = () => {
     }
   }, [data?.dashboard?.config]);
 
-  useEffect(() => {
-    if (data?.dashboard?.name) {
-      editDashboardNameForm.setFieldValue(
-        "dashboardName",
-        data?.dashboard?.name
-      );
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data?.dashboard?.name]);
-
   if (loading) {
     return <Loading width="100%" />;
   }
@@ -333,28 +256,29 @@ const DashBoardEdit: PC = () => {
           onClick: () => {
             handleUpdateDashboard(true);
           },
-          isLoading: updateDashboardLoading,
+          loading: updateDashboardLoading,
         }}
         secondaryActions={[
           {
             text: "编辑名称",
             onClick: () => {
-              onDashboardNameModalOpen();
-              editDashboardNameForm.setFieldValue(
-                "dashboardName",
-                data?.dashboard?.name
-              );
+              editDashboardNameForm.setFieldsValue({
+                dashboardName: data?.dashboard?.name,
+              });
+              setIsDashboardNameModalVisible(true);
             },
           },
           {
             text: "添加间隔线",
             onClick: () => {
-              onDividerNameModalOpen();
+              setIsDividerNameModalVisible(true);
             },
           },
           {
             text: "添加卡片",
-            onClick: onOpen,
+            onClick: () => {
+              setIsAddOrEditCardModalVisible(true);
+            },
           },
         ]}
       >
@@ -367,7 +291,7 @@ const DashBoardEdit: PC = () => {
             onEditCardClick: (item, onClose) => {
               onClose();
 
-              form.setValues({
+              addOrEditCardForm.setFieldsValue({
                 name: item?.name,
                 chartId: item?.chartId,
                 hiddenName: !!item?.hiddenName,
@@ -378,7 +302,7 @@ const DashBoardEdit: PC = () => {
                 key: item?.layout?.i,
               });
 
-              onOpen();
+              setIsAddOrEditCardModalVisible(true);
             },
             onDeleteClick: (item, onClose) => {
               onClose();
@@ -405,7 +329,7 @@ const DashBoardEdit: PC = () => {
                   router.push(`/clips/${data?.chart?.clipId}`);
                 }
               } catch (err) {
-                console.log("err", err);
+                console.error("err", err);
               }
             },
           }}
@@ -423,193 +347,135 @@ const DashBoardEdit: PC = () => {
         />
 
         {/* 添加或编辑卡片的弹窗 */}
-        <Modal isOpen={isOpen} onClose={handleCloseAddChartModal}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>
-              {operation.type === OperationType.EDIT ? "编辑" : "添加"}卡片
-            </ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <VStack spacing={4}>
-                <FormControl isInvalid={!!form.errors.name}>
-                  <Input
-                    name="name"
-                    value={form.values.name}
-                    onChange={form.handleChange}
-                    placeholder="请输入图表名称"
-                  />
+        <Modal
+          title={`${
+            operation.type === OperationType.EDIT ? "编辑" : "添加"
+          }卡片`}
+          visible={isAddOrEditCardModalVisible}
+          onCancel={handleCloseAddChartModal}
+          okButtonProps={{ loading: getChartLoading }}
+          onOk={async () => {
+            await handleAddOrEditChartCard();
+          }}
+        >
+          <Form form={addOrEditCardForm} layout="vertical">
+            <Form.Item
+              label="图表名称"
+              name="name"
+              rules={[{ required: true, message: "请输入图表名称" }]}
+            >
+              <Input placeholder="请输入图表名称"></Input>
+            </Form.Item>
 
-                  <FormErrorMessage>请输入图表名字</FormErrorMessage>
-                </FormControl>
+            <Form.Item
+              name="chartId"
+              label="图表"
+              rules={[{ required: true, message: "请选择图表" }]}
+            >
+              <Select
+                placeholder="请选择图表"
+                onChange={(_, { children }: { children: string }) => {
+                  const value = addOrEditCardForm.getFieldValue("name");
 
-                <FormControl isInvalid={!!form.errors.chartId}>
-                  <Select
-                    name="chartId"
-                    value={form.values.chartId}
-                    onChange={(e) => {
-                      form.handleChange(e);
-
-                      if (!form.values.name) {
-                        const selectedIndex = e.target.selectedIndex;
-                        const text = e.target.options[selectedIndex].text;
-
-                        form.setFieldValue("name", text);
-                      }
-                    }}
-                    placeholder="请选择图表"
-                  >
-                    {chartConnectionData?.chartConnection.edges.map(
-                      ({ node: { id, name } }) => (
-                        <option value={id} key={id}>
-                          {name}
-                        </option>
-                      )
-                    )}
-                  </Select>
-
-                  <FormErrorMessage>请选择图表</FormErrorMessage>
-                </FormControl>
-
-                <Checkbox
-                  name="hiddenName"
-                  isChecked={form.values.hiddenName}
-                  onChange={form.handleChange}
-                >
-                  是否隐藏标题
-                </Checkbox>
-              </VStack>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button mr={3} onClick={handleCloseAddChartModal}>
-                取消
-              </Button>
-              <Button
-                colorScheme="blue"
-                isLoading={getChartLoading}
-                onClick={handleAddOrEditChartCard}
+                  if (!value) {
+                    addOrEditCardForm.setFieldsValue({
+                      name: children,
+                    });
+                  }
+                }}
               >
-                确定
-              </Button>
-            </ModalFooter>
-          </ModalContent>
+                {chartConnectionData?.chartConnection.edges.map(
+                  ({ node: { id, name } }) => (
+                    <Option value={id} key={id}>
+                      {name}
+                    </Option>
+                  )
+                )}
+              </Select>
+            </Form.Item>
+
+            <Form.Item noStyle name="hiddenName" valuePropName="checked">
+              <Checkbox>是否隐藏标题</Checkbox>
+            </Form.Item>
+          </Form>
         </Modal>
 
         {/* 编辑仪表盘名称弹窗 */}
         <Modal
-          isOpen={isDashboardNameModalOpen}
-          onClose={handleCloseEditDashboardNameModal}
+          title="编辑仪表盘名称"
+          okButtonProps={{ loading: getChartLoading || updateDashboardLoading }}
+          visible={isDashboardNameModalVisible}
+          onCancel={handleCloseEditDashboardNameModal}
+          onOk={async () => {
+            try {
+              await editDashboardNameForm.validateFields();
+
+              await handleUpdateDashboard();
+              handleCloseEditDashboardNameModal();
+            } catch (err) {
+              console.error("err", err);
+            }
+          }}
         >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>编辑仪表盘名称</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <FormControl
-                isInvalid={!!editDashboardNameForm.errors?.dashboardName}
-              >
-                <Input
-                  name="dashboardName"
-                  onChange={editDashboardNameForm.handleChange}
-                  value={editDashboardNameForm.values.dashboardName}
-                  placeholder="请输入仪表盘名称"
-                />
-
-                <FormErrorMessage>请输入仪表盘名称</FormErrorMessage>
-              </FormControl>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button mr={3} onClick={handleCloseEditDashboardNameModal}>
-                取消
-              </Button>
-              <Button
-                colorScheme="blue"
-                isLoading={getChartLoading || updateDashboardLoading}
-                onClick={async () => {
-                  try {
-                    const error = await editDashboardNameForm.validateForm();
-
-                    if (isEmpty(error)) {
-                      handleUpdateDashboard();
-                      handleCloseEditDashboardNameModal();
-                    }
-                  } catch (err) {
-                    console.log("err", err);
-                  }
-                }}
-              >
-                确定
-              </Button>
-            </ModalFooter>
-          </ModalContent>
+          <Form form={editDashboardNameForm} layout="vertical">
+            <Form.Item
+              name="dashboardName"
+              label="仪表盘名称"
+              style={{ marginBottom: 0 }}
+              rules={[{ required: true, message: "请输入仪表盘名称" }]}
+            >
+              <Input placeholder="请输入仪表盘名称"></Input>
+            </Form.Item>
+          </Form>
         </Modal>
 
         {/* 添加编辑线弹窗 */}
         <Modal
-          isOpen={isDividerNameModalOpen}
-          onClose={handleCloseDividerModal}
+          title="添加分割线"
+          onCancel={handleCloseDividerModal}
+          visible={isDividerNameModalVisible}
+          onOk={() => {
+            const values = dividerNameForm.getFieldsValue();
+
+            setDragItems([
+              ...dragItems,
+              {
+                name: values?.dividerName,
+                type: "divider",
+                orientation: (values?.orientation || "left") as any,
+                layout: {
+                  i: uuidv4(),
+                  x: 0,
+                  y: maxBy(dragItems, (item) => item.layout.y).layout.y,
+                  w: 24,
+                  h: 1,
+                  maxH: 1,
+                  minH: 1,
+                },
+              },
+            ]);
+
+            handleCloseDividerModal();
+          }}
         >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>编辑间隔线名称</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <VStack spacing={4}>
-                <Input
-                  name="dividerName"
-                  onChange={dividerNameForm.handleChange}
-                  value={dividerNameForm.values.dividerName}
-                  placeholder="请输入间隔线名称"
-                />
+          <Form form={dividerNameForm} layout="vertical">
+            <Space direction="vertical"></Space>
+            <Form.Item name="dividerName" label="分割线名称">
+              <Input placeholder="请输入分割线名称"></Input>
+            </Form.Item>
 
-                <Select
-                  name="orientation"
-                  value={dividerNameForm.values.orientation}
-                  onChange={dividerNameForm.handleChange}
-                  placeholder="请选择文字方向"
-                >
-                  <option value="left">居左</option>
-                  <option value="center">居中</option>
-                  <option value="right">居右</option>
-                </Select>
-              </VStack>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button mr={3} onClick={handleCloseDividerModal}>
-                取消
-              </Button>
-              <Button
-                colorScheme="blue"
-                onClick={async () => {
-                  setDragItems([
-                    ...dragItems,
-                    {
-                      name: dividerNameForm.values.dividerName,
-                      type: "divider",
-                      orientation: (dividerNameForm.values.orientation ||
-                        "left") as any,
-                      layout: {
-                        i: uuidv4(),
-                        x: 0,
-                        y: maxBy(dragItems, (item) => item.layout.y).layout.y,
-                        w: 24,
-                        h: 1,
-                        maxH: 1,
-                        minH: 1,
-                      },
-                    },
-                  ]);
-
-                  handleCloseDividerModal();
-                }}
-              >
-                确定
-              </Button>
-            </ModalFooter>
-          </ModalContent>
+            <Form.Item
+              style={{ marginBottom: 0 }}
+              name="orientation"
+              label="文本方向"
+            >
+              <Select placeholder="请选择文本方向">
+                <Option value="left">居左</Option>
+                <Option value="center">居中</Option>
+                <Option value="right">居右</Option>
+              </Select>
+            </Form.Item>
+          </Form>
         </Modal>
       </Page>
     </>

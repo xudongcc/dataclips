@@ -170,6 +170,7 @@ const ChartList = () => {
         }}
       >
         <Table {...tableProps} />
+        <Table {...tableProps} />
 
         <Modal isOpen={isOpen} onClose={handleCloseDeleteModal}>
           <ModalOverlay />

@@ -1,14 +1,16 @@
-import {
-  Box,
-  Button,
-  ButtonProps as BaseButtonProps,
-  Heading,
-  Stack,
-  Text,
-  useBreakpointValue,
-} from "@chakra-ui/react";
 import { omit } from "lodash";
 import { FC } from "react";
+import {
+  Layout,
+  Row,
+  Col,
+  Typography,
+  Button,
+  ButtonProps as BaseButtonProps,
+  Space,
+} from "antd";
+
+const { Title, Text } = Typography;
 
 interface ButtonProps extends BaseButtonProps {
   text?: React.ReactNode;
@@ -29,45 +31,48 @@ export const Page: FC<PageProps> = ({
   secondaryActions,
 }) => {
   return (
-    <Box as="section" pb={{ base: "6", md: "12" }}>
-      <Stack
-        spacing="4"
-        direction={{ base: "column", md: "row" }}
+    <Layout>
+      <Row
         justify="space-between"
-        pb={4}
+        gutter={[8, 8]}
+        align="middle"
+        style={{ marginBottom: 24 }}
       >
-        <Stack spacing="1">
-          <Heading
-            size={useBreakpointValue({ base: "xs", md: "sm" })}
-            fontWeight="medium"
-          >
+        <Col>
+          <Title style={{ marginBottom: 0 }} level={2}>
             {title}
-          </Heading>
+          </Title>
 
-          {description && <Text color="muted">{description}</Text>}
-        </Stack>
+          {description && <Text type="secondary">{description}</Text>}
+        </Col>
 
-        <Stack direction="row" spacing="3">
-          {secondaryActions?.length &&
-            secondaryActions.map((secondaryAction, index) => (
+        <Col>
+          <Space wrap>
+            {secondaryActions?.length &&
+              secondaryActions.map((secondaryAction, index) => (
+                <Button
+                  key={index}
+                  size="large"
+                  {...omit(secondaryAction, "text")}
+                >
+                  {secondaryAction.text}
+                </Button>
+              ))}
+
+            {primaryAction && (
               <Button
-                key={index}
-                variant="secondary"
-                {...omit(secondaryAction, "text")}
+                size="large"
+                type="primary"
+                {...omit(primaryAction, "text")}
               >
-                {secondaryAction.text}
+                {primaryAction?.text}
               </Button>
-            ))}
-
-          {primaryAction && (
-            <Button variant="primary" {...omit(primaryAction, "text")}>
-              {primaryAction?.text}
-            </Button>
-          )}
-        </Stack>
-      </Stack>
+            )}
+          </Space>
+        </Col>
+      </Row>
 
       {children}
-    </Box>
+    </Layout>
   );
 };

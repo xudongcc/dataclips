@@ -1,16 +1,17 @@
 import "@fontsource/inter/variable.css";
-
-import React, { useMemo, Fragment, FC } from "react";
+import { theme } from "../theme";
 import { ChakraProvider } from "@chakra-ui/react";
+import React, { useMemo, Fragment, FC } from "react";
 import { AppProps } from "next/app";
 import { PC } from "../interfaces/PageComponent";
-import { theme } from "../theme";
 import { ApolloProvider } from "@apollo/client";
 import { SessionProvider } from "next-auth/react";
 import { getApolloClient } from "../lib/apolloClient";
 import { QueryClientProvider } from "react-query";
 import { queryClient } from "../lib/queryClient";
 // import { ReactQueryDevtools } from "react-query/devtools";
+import { ConfigProvider as AntdConfigProvider } from "antd";
+import "../style/index.less";
 
 const App: FC<AppProps & { Component: PC }> = ({
   Component,
@@ -24,18 +25,20 @@ const App: FC<AppProps & { Component: PC }> = ({
   return (
     <>
       <ChakraProvider theme={theme}>
-        <SessionProvider session={session}>
-          <ApolloProvider client={getApolloClient(null, apolloState)}>
-            <QueryClientProvider client={queryClient}>
-              <Layout>
-                <Component {...pageProps} />
+        <AntdConfigProvider>
+          <SessionProvider session={session}>
+            <ApolloProvider client={getApolloClient(null, apolloState)}>
+              <QueryClientProvider client={queryClient}>
+                <Layout>
+                  <Component {...pageProps} />
 
-                {/* 调试的时候可打开 */}
-                {/* <ReactQueryDevtools initialIsOpen={false} /> */}
-              </Layout>
-            </QueryClientProvider>
-          </ApolloProvider>
-        </SessionProvider>
+                  {/* 调试的时候可打开 */}
+                  {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+                </Layout>
+              </QueryClientProvider>
+            </ApolloProvider>
+          </SessionProvider>
+        </AntdConfigProvider>
       </ChakraProvider>
     </>
   );
