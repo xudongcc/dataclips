@@ -113,11 +113,13 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
           nice: true,
           tickCount: 5,
           range: [0, 1],
+          type: "linear-strict",
         },
         y1: {
           nice: true,
           tickCount: 5,
           range: [0, 1],
+          type: "linear-strict",
         },
       }}
       padding={[20, 80, 80, 80]}
@@ -175,7 +177,6 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
         tooltip={false}
         position="x*y1"
         color="doubleAxesColor"
-        visible={hasDoubleAxes}
       />
       <Axis
         visible={hasDoubleAxes}
