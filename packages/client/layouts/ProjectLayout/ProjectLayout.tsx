@@ -41,12 +41,13 @@ const ProjectLayout: FC = ({ children }) => {
     <Layout hasSider style={{ minHeight: "100%" }}>
       <nav style={{ width: siderBarWidth }} />
       <Sider
+        collapsible
         style={{
           width: siderBarWidth,
           position: "fixed",
           left: "0",
           top: 0,
-          zIndex: 101,
+          zIndex: 100,
           bottom: 0,
         }}
         breakpoint="md"
@@ -58,20 +59,13 @@ const ProjectLayout: FC = ({ children }) => {
         <Header
           style={{
             display: "flex",
-            justifyContent: "center",
+            paddingLeft: 24,
             alignItems: "center",
             background: "#fff",
             borderBottom: "1px solid rgba(0,0,0,0.06)",
             padding: 0,
           }}
-        >
-          <Image
-            src="/dataclip.png"
-            width={32}
-            preview={false}
-            alt="data-clip"
-          />
-        </Header>
+        />
 
         <Menu
           mode="inline"
@@ -116,7 +110,7 @@ const ProjectLayout: FC = ({ children }) => {
             position: "fixed",
             padding: "0 24px",
             top: "0px",
-            zIndex: 100,
+            zIndex: 101,
             width: "100%",
             right: 0,
             height: 64,
@@ -124,7 +118,20 @@ const ProjectLayout: FC = ({ children }) => {
           }}
         >
           {/* 头像 */}
-          <Row justify="end">
+          <Row justify="space-between">
+            <Col style={{ display: "flex", alignItems: "center" }}>
+              <Image
+                onClick={() => {
+                  setCollapsed(false);
+                }}
+                style={{ cursor: "pointer" }}
+                src="/dataclip.png"
+                width={32}
+                preview={false}
+                alt="data-clip"
+              />
+            </Col>
+
             <Col>
               <Popover
                 content={
