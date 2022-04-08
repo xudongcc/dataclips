@@ -62,7 +62,7 @@ const ChartCreate = () => {
         reverseOrder: false,
         format: "",
         doubleAxes: false,
-        doubleAxesCol: "",
+        doubleAxesCol: [],
       },
       barConfig: {
         reverseOrder: false,
@@ -140,7 +140,7 @@ const ChartCreate = () => {
 
     if (form.values.type === ChartType.LINE) {
       return {
-        doubleAxesCol: form.values.lineConfig?.doubleAxesCol || "",
+        doubleAxesCol: form.values.lineConfig?.doubleAxesCol || [],
         doubleAxes: !!form.values.lineConfig?.doubleAxes,
         reverseOrder: !!form.values.lineConfig?.reverseOrder,
         format: form.values.lineConfig?.format || "",
