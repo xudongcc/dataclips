@@ -53,7 +53,9 @@ const ChartPreview = () => {
 
     if (data?.chart.type === ChartType.LINE) {
       return {
+        doubleAxesCol: data.chart.config?.doubleAxesCol || "",
         reverseOrder: !!data.chart.config?.reverseOrder,
+        doubleAxes: !!data.chart.config?.doubleAxes,
         format: data.chart.config?.format || "",
         xCol: data.chart.config?.xCol || "",
         yCol: data.chart.config?.yCol || [],
@@ -97,11 +99,11 @@ const ChartPreview = () => {
     return (
       <>
         <Head>
-          <title>{result?.name} - 预览 - 图表</title>
+          <title>{data?.chart?.name} - 预览 - 图表</title>
         </Head>
 
         <Page
-          title={result?.name}
+          title={data?.chart?.name}
           primaryAction={{
             text: "编辑",
             onClick: () => {

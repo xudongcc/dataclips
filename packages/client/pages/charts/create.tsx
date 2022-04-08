@@ -56,7 +56,14 @@ const ChartCreate = () => {
       clipId: "",
       funnelConfig: { groupCol: "", valueCol: "", format: "" },
       metricConfig: { valueCol: "", compareCol: "", format: "" },
-      lineConfig: { xCol: "", yCol: [], reverseOrder: false, format: "" },
+      lineConfig: {
+        xCol: "",
+        yCol: [],
+        reverseOrder: false,
+        format: "",
+        doubleAxes: false,
+        doubleAxesCol: "",
+      },
       barConfig: {
         reverseOrder: false,
         isStack: false,
@@ -133,6 +140,8 @@ const ChartCreate = () => {
 
     if (form.values.type === ChartType.LINE) {
       return {
+        doubleAxesCol: form.values.lineConfig?.doubleAxesCol || "",
+        doubleAxes: !!form.values.lineConfig?.doubleAxes,
         reverseOrder: !!form.values.lineConfig?.reverseOrder,
         format: form.values.lineConfig?.format || "",
         xCol: form.values.lineConfig?.xCol || "",
