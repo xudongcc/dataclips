@@ -230,7 +230,7 @@ const DashBoardEdit: PC = () => {
             layout: {
               i: uuidv4(),
               x: 0,
-              y: maxBy(dragItems, (item) => item.layout.y).layout.y,
+              y: maxBy(dragItems, (item) => item?.layout?.y)?.layout?.y || 0,
               w: 6,
               h: 3,
             },
