@@ -70,6 +70,7 @@ const ChartEdit = () => {
         reverseOrder: false,
         format: "",
         doubleAxes: false,
+        doubleAxesCol: "",
       },
       barConfig: {
         isStack: false,
@@ -149,6 +150,7 @@ const ChartEdit = () => {
 
     if (form.values.type === ChartType.LINE) {
       return {
+        doubleAxesCol: form.values.lineConfig?.doubleAxesCol || "",
         format: form.values.lineConfig?.format || "",
         reverseOrder: !!form.values.lineConfig.reverseOrder,
         xCol: form.values.lineConfig?.xCol || "",
@@ -227,6 +229,7 @@ const ChartEdit = () => {
 
       if (data.chart.type === ChartType.LINE) {
         initialValues.lineConfig = {
+          doubleAxesCol: data.chart.config?.doubleAxesCol || "",
           doubleAxes: !!data.chart.config?.doubleAxes,
           format: data.chart.config?.format || "",
           reverseOrder: !!data.chart.config?.reverseOrder,

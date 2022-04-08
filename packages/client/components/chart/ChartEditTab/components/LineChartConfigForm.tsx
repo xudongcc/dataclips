@@ -67,6 +67,22 @@ export const LineChartConfigForm: FC<LineChartConfigFormProps> = ({
         >
           双 y 轴
         </Checkbox>
+
+        {form.values.lineConfig.doubleAxes && (
+          <Select
+            name="lineConfig.doubleAxesCol"
+            size="sm"
+            onChange={form.handleChange}
+            value={form.values.lineConfig.doubleAxesCol}
+            placeholder="请选择双 y 轴字段"
+          >
+            {editOptionConfig?.yCol.map((value) => (
+              <option value={value} key={value}>
+                {value}
+              </option>
+            ))}
+          </Select>
+        )}
       </Grid>
     </VStack>
   );
