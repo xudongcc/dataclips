@@ -69,19 +69,31 @@ export const LineChartConfigForm: FC<LineChartConfigFormProps> = ({
         </Checkbox>
 
         {form.values.lineConfig.doubleAxes && (
-          <Select
+          <ChakraSelect
             name="lineConfig.doubleAxesCol"
             size="sm"
-            onChange={form.handleChange}
-            value={form.values.lineConfig.doubleAxesCol}
+            onChange={(values) => {
+              if (!values.length) {
+                form.setFieldValue("lineConfig.doubleAxesCol", []);
+              } else {
+                form.setFieldValue(
+                  "lineConfig.doubleAxesCol",
+                  values.map((item) => item.value)
+                );
+              }
+            }}
+            isMulti
+            value={editOptionConfig.yCol
+              .filter((value) =>
+                form.values.lineConfig.doubleAxesCol.includes(value)
+              )
+              .map((val) => ({ label: val, value: val }))}
             placeholder="请选择双 y 轴字段"
-          >
-            {editOptionConfig?.yCol.map((value) => (
-              <option value={value} key={value}>
-                {value}
-              </option>
-            ))}
-          </Select>
+            options={editOptionConfig?.yCol.map((value) => ({
+              label: value,
+              value,
+            }))}
+          />
         )}
       </Grid>
     </VStack>
