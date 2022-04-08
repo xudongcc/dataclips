@@ -53,6 +53,7 @@ const ChartPreview = () => {
 
     if (data?.chart.type === ChartType.LINE) {
       return {
+        doubleAxesCol: data.chart.config?.doubleAxesCol || "",
         reverseOrder: !!data.chart.config?.reverseOrder,
         doubleAxes: !!data.chart.config?.doubleAxes,
         format: data.chart.config?.format || "",
