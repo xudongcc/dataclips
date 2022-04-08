@@ -1,15 +1,16 @@
-import { Axis, Chart, Line, LineAdvance, Point } from "bizcharts";
+import { Axis, Chart, LineAdvance } from "bizcharts";
 import { FC, useMemo } from "react";
 import { ResultFragment } from "../../../../../generated/graphql";
 import { getFormatValue } from "../../../ChartEditTab/components/FormatFieldForm";
 
 export interface LineChartConfig {
   xCol: string;
+  // 后面统一优化传入的值
   yCol: { label: string; value: string }[];
   format: string;
   reverseOrder: boolean;
   doubleAxes: boolean;
-  doubleAxesCol: string;
+  doubleAxesCol: string[];
 }
 
 interface LineChartPreviewProps {
@@ -21,6 +22,11 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
   result,
   config,
 }) => {
+  // 有没有开启双 y 轴
+  const hasDoubleAxes = useMemo(() => {
+    return !!(config.doubleAxes && config.doubleAxesCol.length);
+  }, [config.doubleAxes, config.doubleAxesCol.length]);
+
   const data = useMemo(() => {
     if (!result?.error) {
       let res: Record<string, any>[] = [];
@@ -46,11 +52,18 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
               ...res,
               ...valuesIndex.map((yIndex) => {
                 return result.values.map((value) => {
-                  return {
+                  const obj: Record<string, any> = {
                     x: value[keyIndex],
                     y: getFormatValue(value[yIndex]),
                     diff: result.fields[yIndex],
                   };
+
+                  // 如果双 y 轴开启的话，用于双轴区分所有颜色
+                  if (hasDoubleAxes) {
+                    obj.doubleAxesColor = result.fields[yIndex];
+                  }
+
+                  return obj;
                 });
               }),
             ];
@@ -58,18 +71,26 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
         }
 
         // 双 y 轴数据
-        if (config.doubleAxes && config.doubleAxesCol) {
-          const valueIndex = result.fields.findIndex(
-            (key) => key === config.doubleAxesCol
-          );
+        if (hasDoubleAxes) {
+          const doubleAxesColIndex = config.doubleAxesCol.map((y) => {
+            const valueIndex = result.fields.findIndex((key) => key === y);
+
+            if (valueIndex !== -1) {
+              return valueIndex;
+            }
+          });
 
           res = [
             ...res,
-            result.values.map((value) => {
-              return {
-                x: value[keyIndex],
-                y1: getFormatValue(value[valueIndex]),
-              };
+            ...doubleAxesColIndex.map((yIndex) => {
+              return result.values.map((value) => {
+                return {
+                  x: value[keyIndex],
+                  y1: getFormatValue(value[yIndex]),
+                  diff2: result.fields[yIndex],
+                  doubleAxesColor: result.fields[yIndex],
+                };
+              });
             }),
           ];
         }
@@ -79,98 +100,91 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
     }
 
     return [];
-  }, [config, result]);
-
-  // 双 y 轴显示的坐标轴名字
-  const doubleAxesColName = useMemo(() => {
-    if (!result?.error) {
-      if (config.xCol && config.doubleAxes && config.doubleAxesCol) {
-        const valueIndex = result.fields.findIndex(
-          (key) => key === config.doubleAxesCol
-        );
-
-        return result.fields[valueIndex];
-      }
-    }
-    return "";
-  }, [config, result]);
+  }, [config, hasDoubleAxes, result]);
 
   if (!data.length) {
     return null;
   }
 
   return (
-    <>
-      <Chart
-        scale={{
-          y: {
-            nice: true,
-            tickCount: 5,
-            range: [0, 1],
+    <Chart
+      scale={{
+        y: {
+          nice: true,
+          tickCount: 5,
+          range: [0, 1],
+          type: "linear-strict",
+        },
+        y1: {
+          nice: true,
+          tickCount: 5,
+          range: [0, 1],
+          type: "linear-strict",
+        },
+      }}
+      padding={[20, 80, 80, 80]}
+      autoFit
+      data={data}
+    >
+      <LineAdvance
+        tooltip={[
+          "diff*diff2*y*y1",
+          (diff, diff2, y, y1) => {
+            if (
+              diff !== undefined &&
+              y !== undefined &&
+              diff2 === undefined &&
+              y1 === undefined
+            ) {
+              return {
+                name: diff,
+                value: getFormatValue(y, config.format),
+              };
+            }
+
+            // 证明是双 y 轴
+            if (
+              diff2 !== undefined &&
+              y1 !== undefined &&
+              diff === undefined &&
+              y === undefined
+            ) {
+              return {
+                name: diff2,
+                value: getFormatValue(y1, config.format),
+              };
+            }
           },
-          y1: {
-            alias: doubleAxesColName,
-            tickCount: 5,
-            min: 0,
-            type: "linear-strict",
-          },
+        ]}
+        shape="line"
+        point
+        area
+        position="x*y"
+        color={hasDoubleAxes ? "doubleAxesColor" : "diff"}
+      />
+      <Axis
+        name="y"
+        label={{
+          formatter: (val) => getFormatValue(val, config.format),
         }}
-        padding={[20, 80, 80, 80]}
-        autoFit
-        data={data}
-      >
-        <LineAdvance
-          tooltip={[
-            "diff*y*y1",
-            (diff, y, y1) => {
-              if (diff !== undefined && y !== undefined) {
-                return {
-                  name: diff,
-                  value: getFormatValue(y, config.format),
-                };
-              }
+      />
 
-              // 证明是双 y 轴
-              if (y1 !== undefined) {
-                return {
-                  color: "#8D4EDA",
-                  name: doubleAxesColName,
-                  value: getFormatValue(y1, config.format),
-                };
-              }
-            },
-          ]}
-          shape="line"
-          point
-          area
-          position="x*y"
-          color="diff"
-        />
-        <Axis
-          name="y"
-          label={{
-            formatter: (val) => getFormatValue(val, config.format),
-          }}
-        />
-
-        {/* 双 y 轴配置 */}
-        <Axis
-          name="y1"
-          title
-          label={{
-            formatter: (val) => getFormatValue(val, config.format),
-          }}
-          visible={!!(config.doubleAxes && config.doubleAxesCol)}
-        />
-        <Line position="x*y1" color="#8D4EDA" />
-        <Point
-          position="x*y1"
-          color="#8D4EDA"
-          size={3}
-          shape="circle"
-          tooltip={false}
-        />
-      </Chart>
-    </>
+      {/* 双 y 轴 */}
+      <LineAdvance
+        shape="line"
+        point
+        area
+        tooltip={false}
+        position="x*y1"
+        color="doubleAxesColor"
+      />
+      <Axis
+        visible={hasDoubleAxes}
+        name="y1"
+        label={{
+          formatter: (val) => getFormatValue(val, config.format),
+        }}
+      />
+    </Chart>
   );
 };
