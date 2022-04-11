@@ -16,7 +16,6 @@ import { Loading } from "../../components/common/Loading";
 import { routes } from "../../router";
 import NextLink from "next/link";
 import { LeftOutlined } from "@ant-design/icons";
-import { v4 as uuidv4 } from "uuid";
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -42,14 +41,14 @@ const ProjectLayout: FC = ({ children }) => {
       return routes.map((route) => {
         if (route.children?.length) {
           return (
-            <SubMenu key={uuidv4()} title={route.name}>
+            <SubMenu key={route.name} title={route.name}>
               {getSubMenus(route.children)}
             </SubMenu>
           );
         } else {
           return (
             <Menu.Item
-              key={uuidv4()}
+              key={route.name}
               icon={route?.icon}
               onClick={() => {
                 if (menuDrawerVisible) {
