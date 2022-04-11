@@ -195,8 +195,6 @@ const DashBoardList: PC = () => {
         {/* 创建仪表盘的弹窗 */}
         <Modal
           title="创建仪表盘"
-          okText="确认"
-          cancelText="取消"
           okButtonProps={{ loading: createDashboardLoading }}
           onOk={async () => {
             try {

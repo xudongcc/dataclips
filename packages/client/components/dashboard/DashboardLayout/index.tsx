@@ -224,7 +224,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
           } else {
             return (
               <DashboardDragWrapper key={item.layout.i}>
-                <Box pr="20px">
+                <Box pr={type === "edit" ? "20px" : undefined}>
                   <DashboardDivider
                     orientation={item?.orientation}
                     hasDelete={type === "edit"}

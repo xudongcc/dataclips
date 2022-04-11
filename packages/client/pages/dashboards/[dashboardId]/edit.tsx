@@ -21,7 +21,8 @@ import {
   DragDivider,
   isChartCard,
 } from "../../../components/dashboard/DashboardLayout";
-import { Checkbox, Form, Input, Modal, Select, Space } from "antd";
+import { Checkbox, Form, Input, Select, Space } from "antd";
+import { Modal } from "../../../components/common/Modal";
 
 const { Option } = Select;
 
