@@ -1,49 +1,37 @@
 import ProjectLayout from "../../../layouts/ProjectLayout";
 import { useRouter } from "next/router";
-import {
-  Box,
-  Button,
-  FormControl,
-  FormErrorMessage,
-  Grid,
-  GridItem,
-  Input,
-  Select,
-  Stack,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Grid, GridItem, useToast } from "@chakra-ui/react";
 import {
   useClipConnectionQuery,
   useChartQuery,
   useUpdateChartMutation,
   UpdateChartInput,
 } from "../../../generated/graphql";
-import * as Yup from "yup";
-import { useCallback, useEffect } from "react";
-import { useFormik } from "formik";
+import { useCallback, useEffect, useState } from "react";
 import { ChartType } from "../../../types";
 import { useQueryResult } from "../../../hooks/useQueryResult";
-import { omit } from "lodash";
+import { omit, isEqual } from "lodash";
 import { Loading } from "../../../components/common/Loading";
-import { ChartEditTab } from "../../../components/chart/ChartEditTab";
-import { ChartResultPreview } from "../../../components/chart/ChartResultPreview";
 import {
-  LineChartConfig,
-  BarChartConfig,
-  FunnelChartConfig,
-  MetricChartConfig,
-  PieChartConfig,
-  MarkdownConfig,
-} from "../../../components/chart/ChartResultPreview/components";
+  ChartEditTab,
+  chartTypeToFormFieldMap,
+} from "../../../components/chart/ChartEditTab";
+import { ChartResultPreview } from "../../../components/chart/ChartResultPreview";
 import { Page } from "../../../components/common/Page";
 import { Card } from "../../../components/common/Card";
 import Head from "next/head";
+import { Col, Form, Row, Select, Button, Input } from "antd";
+
+const { Option } = Select;
 
 const ChartEdit = () => {
   const toast = useToast();
   const router = useRouter();
+  const [form] = Form.useForm();
 
   const { chartId } = router.query as { chartId: string };
+
+  const [selectClipId, setSelectClipId] = useState("");
 
   const { data: clipsData } = useClipConnectionQuery({
     variables: { first: 100 },
@@ -57,219 +45,52 @@ const ChartEdit = () => {
   const [updateChart, { loading: updateChartLoading }] =
     useUpdateChartMutation();
 
-  const form = useFormik({
-    initialValues: {
-      name: "",
-      type: "" as ChartType,
-      clipId: "",
-      funnelConfig: { groupCol: "", valueCol: "", format: "" },
-      metricConfig: { valueCol: "", compareCol: "", format: "" },
-      lineConfig: {
-        xCol: "",
-        yCol: [],
-        reverseOrder: false,
-        format: "",
-        doubleAxes: false,
-        doubleAxesCol: [],
-      },
-      barConfig: {
-        isStack: false,
-        reverseOrder: false,
-        variant: "",
-        xCol: "",
-        yCol: [],
-        format: "",
-      },
-      pieConfig: { variant: "", key: "", value: "", format: "" },
-      mdConfig: { content: "" },
-    },
-    isInitialValid: false,
-    validateOnBlur: false,
-    validateOnChange: false,
-    validateOnMount: false,
-    onSubmit: async () => {
+  const { data: result } = useQueryResult(selectClipId);
+
+  // 保存更新
+  const handleSubmit = useCallback(async () => {
+    try {
+      const values = await form.validateFields();
+
       const input = {
-        name: form.values.name,
-        type: form.values.type,
+        name: values.name,
+        type: values.type,
         config: [
-          { type: ChartType.FUNNEL, config: form.values.funnelConfig },
-          { type: ChartType.METRIC, config: form.values.metricConfig },
-          { type: ChartType.LINE, config: form.values.lineConfig },
-          { type: ChartType.BAR, config: form.values.barConfig },
-          { type: ChartType.PIE, config: form.values.pieConfig },
-          { type: ChartType.MD, config: form.values.mdConfig },
-        ].find((item) => item.type === form.values.type).config,
-        clipId: form.values.clipId,
+          { type: ChartType.FUNNEL, config: values.funnelConfig },
+          { type: ChartType.METRIC, config: values.metricConfig },
+          { type: ChartType.LINE, config: values.lineConfig },
+          { type: ChartType.BAR, config: values.barConfig },
+          { type: ChartType.PIE, config: values.pieConfig },
+          { type: ChartType.MD, config: values.mdConfig },
+        ].find((item) => item.type === values.type).config,
+        clipId: values.clipId,
       } as UpdateChartInput;
 
-      try {
-        if (chartId) {
-          await updateChart({
-            variables: {
-              id: chartId,
-              input,
-            },
-          });
-          toast({
-            description: "保存成功",
-            status: "success",
-            isClosable: true,
-          });
+      await updateChart({
+        variables: {
+          id: chartId,
+          input,
+        },
+      });
+      toast({
+        description: "保存成功",
+        status: "success",
+        isClosable: true,
+      });
 
-          router.push(`/charts/${chartId}`);
-        }
-      } catch (err) {
-        console.log("err", err);
-      }
-    },
-    validationSchema: Yup.object().shape({
-      name: Yup.string().required(),
-      clipId: Yup.string().required(),
-      type: Yup.string().required(),
-    }),
-  });
-
-  const { data: result, isLoading } = useQueryResult(form.values.clipId);
-
-  const getChartTypePreviewConfig = useCallback(() => {
-    if (form.values.type === ChartType.FUNNEL) {
-      return {
-        format: form.values.funnelConfig?.format || "",
-        groupCol: form.values.funnelConfig?.groupCol || "",
-        valueCol: form.values.funnelConfig?.valueCol || "",
-      } as FunnelChartConfig;
+      router.push(`/charts/${chartId}`);
+    } catch (err) {
+      console.error(err);
     }
-
-    if (form.values.type === ChartType.METRIC) {
-      return {
-        format: form.values.metricConfig?.format || "",
-        valueCol: form.values.metricConfig?.valueCol || "",
-        compareCol: form.values.metricConfig?.compareCol || "",
-      } as MetricChartConfig;
-    }
-
-    if (form.values.type === ChartType.LINE) {
-      return {
-        doubleAxesCol: form.values.lineConfig?.doubleAxesCol || [],
-        format: form.values.lineConfig?.format || "",
-        reverseOrder: !!form.values.lineConfig.reverseOrder,
-        xCol: form.values.lineConfig?.xCol || "",
-        yCol: form.values.lineConfig?.yCol || [],
-        doubleAxes: !!form.values.lineConfig.doubleAxes,
-      } as LineChartConfig;
-    }
-
-    if (form.values.type === ChartType.BAR) {
-      return {
-        format: form.values.barConfig?.format || "",
-        reverseOrder: !!form.values.barConfig.reverseOrder,
-        isStack: !!form.values.barConfig.isStack,
-        variant: form.values.barConfig.variant || "",
-        xCol: form.values.barConfig?.xCol || "",
-        yCol: form.values.barConfig?.yCol || [],
-      } as BarChartConfig;
-    }
-
-    if (form.values.type === ChartType.PIE) {
-      return {
-        format: form.values.pieConfig?.format || "",
-        variant: form.values.pieConfig.variant || "",
-        key: form.values.pieConfig.key || "",
-        value: form.values.pieConfig?.value || "",
-      } as PieChartConfig;
-    }
-
-    if (form.values.type === ChartType.MD) {
-      return {
-        content: form.values.mdConfig?.content || "",
-      } as MarkdownConfig;
-    }
-
-    return undefined;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form]);
-
-  // 初始配置
-  useEffect(() => {
-    if (!form.values.clipId) {
-      form.setValues(form.initialValues);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [chartId, form, router, toast, updateChart]);
 
   useEffect(() => {
-    if (data?.chart) {
-      const initialValues = {
-        ...form.initialValues,
-        ...omit(data.chart, [
-          "config",
-          "createdAt",
-          "id",
-          "token",
-          "updatedAt",
-          "__typename",
-        ]),
-      };
-
-      if (data.chart.type === ChartType.FUNNEL) {
-        initialValues.funnelConfig = {
-          format: data.chart.config?.format || "",
-          groupCol: data.chart.config?.groupCol || "",
-          valueCol: data.chart.config?.valueCol || "",
-        };
-      }
-
-      if (data.chart.type === ChartType.METRIC) {
-        initialValues.metricConfig = {
-          format: data.chart.config?.format || "",
-          valueCol: data.chart.config?.valueCol || "",
-          compareCol: data.chart.config?.compareCol || "",
-        };
-      }
-
-      if (data.chart.type === ChartType.LINE) {
-        initialValues.lineConfig = {
-          doubleAxesCol: data.chart.config?.doubleAxesCol || [],
-          doubleAxes: !!data.chart.config?.doubleAxes,
-          format: data.chart.config?.format || "",
-          reverseOrder: !!data.chart.config?.reverseOrder,
-          xCol: data.chart.config?.xCol || "",
-          yCol: data.chart.config?.yCol || [],
-        };
-      }
-
-      if (data.chart.type === ChartType.BAR) {
-        initialValues.barConfig = {
-          reverseOrder: !!data.chart.config?.reverseOrder,
-          isStack: !!data.chart.config?.isStack,
-          variant: data.chart.config?.variant || "",
-          xCol: data.chart.config?.xCol || "",
-          yCol: data.chart.config?.yCol || [],
-          format: data.chart.config?.format || "",
-        };
-      }
-
-      if (data.chart.type === ChartType.PIE) {
-        initialValues.pieConfig = {
-          variant: data.chart.config?.variant || "",
-          key: data.chart.config?.key || "",
-          value: data.chart.config?.value || "",
-          format: data.chart.config?.format || "",
-        };
-      }
-
-      if (data.chart.type === ChartType.MD) {
-        initialValues.mdConfig = {
-          content: data.chart.config?.content || "",
-        };
-      }
-
-      form.setValues(initialValues);
+    if (data?.chart?.clipId) {
+      setSelectClipId(data?.chart?.clipId);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data?.chart?.clipId]);
 
-  if (chartId && (loading || isLoading)) {
+  if (chartId && loading) {
     return <Loading />;
   }
 
@@ -280,82 +101,136 @@ const ChartEdit = () => {
       </Head>
 
       <Page title={data?.chart?.name}>
-        <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-          <GridItem colSpan={3}>
-            <Card>
-              <form onSubmit={form.handleSubmit}>
-                <Stack spacing={3} direction="row">
-                  <FormControl width="30%" isInvalid={!!form.errors.name}>
-                    <Input
-                      placeholder="请输入图表名称"
+        <Form
+          form={form}
+          initialValues={{
+            ...omit(data?.chart, [
+              "createdAt",
+              "id",
+              "token",
+              "config",
+              "updatedAt",
+              "__typename",
+            ]),
+            [chartTypeToFormFieldMap[data?.chart?.type]]: data?.chart?.config,
+          }}
+        >
+          <Grid templateColumns="repeat(3, 1fr)" gap={4}>
+            <GridItem colSpan={3}>
+              <Card>
+                <Row gutter={16} justify="space-between">
+                  <Col span={8}>
+                    <Form.Item
                       name="name"
-                      onChange={form.handleChange}
-                      value={form.values.name}
-                    />
-                    <FormErrorMessage>请输入图表名字</FormErrorMessage>
-                  </FormControl>
-
-                  <FormControl isInvalid={!!form.errors.clipId}>
-                    <Select
-                      flex="1"
-                      name="clipId"
-                      placeholder="请选择数据集"
-                      value={form.values.clipId}
-                      onChange={form.handleChange}
+                      style={{ marginBottom: 0 }}
+                      rules={[{ required: true, message: "请输入图表名称" }]}
                     >
-                      {clipsData?.clipConnection.edges?.map(
-                        ({ node: { id, name } }) => {
-                          return (
-                            <option key={id} value={id}>
-                              {name}
-                            </option>
-                          );
-                        }
-                      )}
-                    </Select>
-                    <FormErrorMessage>请选择数据集</FormErrorMessage>
-                  </FormControl>
+                      <Input placeholder="请输入图表名称"></Input>
+                    </Form.Item>
+                  </Col>
+                  <Col flex={1}>
+                    <Form.Item
+                      name="clipId"
+                      style={{ marginBottom: 0 }}
+                      rules={[{ required: true, message: "请选择数据集" }]}
+                    >
+                      <Select
+                        onChange={(clipId) => {
+                          setSelectClipId(clipId);
 
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    isLoading={updateChartLoading}
+                          const type = form.getFieldValue("type");
+
+                          form.resetFields([
+                            "type",
+                            chartTypeToFormFieldMap[type],
+                          ]);
+                        }}
+                        placeholder="请选择数据集"
+                      >
+                        {clipsData?.clipConnection.edges?.map(
+                          ({ node: { id, name } }) => {
+                            return (
+                              <Option key={id} value={id}>
+                                {name}
+                              </Option>
+                            );
+                          }
+                        )}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col>
+                    <Form.Item noStyle>
+                      <Button
+                        type="primary"
+                        loading={updateChartLoading}
+                        onClick={handleSubmit}
+                      >
+                        保存
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Card>
+            </GridItem>
+
+            <GridItem colSpan={2}>
+              <Box h="500px">
+                {result && (
+                  <Card
+                    overflow="hidden"
+                    h="full"
+                    sx={{
+                      ".card-body": {
+                        // overflowY:
+                        //   form.values.type === ChartType.MD
+                        //     ? "auto"
+                        //     : undefined,
+                      },
+                    }}
                   >
-                    保存
-                  </Button>
-                </Stack>
-              </form>
-            </Card>
-          </GridItem>
-
-          <GridItem colSpan={2}>
-            <Box h="500px">
-              {result && (
-                <Card
-                  overflow="hidden"
-                  h="full"
-                  sx={{
-                    ".card-body": {
-                      overflowY:
-                        form.values.type === ChartType.MD ? "auto" : undefined,
-                    },
-                  }}
-                >
-                  <ChartResultPreview
-                    config={getChartTypePreviewConfig()}
-                    type={form.values.type}
-                    result={result}
-                  />
-                </Card>
-              )}
-            </Box>
-          </GridItem>
-          <GridItem colSpan={1}>
-            <Card>
-              <ChartEditTab form={form} result={result} />
-            </Card>
-          </GridItem>
-        </Grid>
+                    <Form.Item
+                      shouldUpdate={(prevValues, curValues) => {
+                        if (
+                          isEqual(
+                            omit(prevValues, "name"),
+                            omit(curValues, "name")
+                          )
+                        ) {
+                          return false;
+                        }
+                        return true;
+                      }}
+                      noStyle
+                    >
+                      {({ getFieldValue }) => {
+                        console.log(
+                          getFieldValue(
+                            chartTypeToFormFieldMap[getFieldValue("type")]
+                          )
+                        );
+                        return (
+                          <ChartResultPreview
+                            config={getFieldValue(
+                              chartTypeToFormFieldMap[getFieldValue("type")]
+                            )}
+                            type={getFieldValue("type")}
+                            result={result}
+                          />
+                        );
+                      }}
+                    </Form.Item>
+                  </Card>
+                )}
+              </Box>
+            </GridItem>
+            <GridItem colSpan={1}>
+              <Card>
+                <ChartEditTab form={form} result={result} />
+              </Card>
+            </GridItem>
+          </Grid>
+        </Form>
       </Page>
     </>
   );

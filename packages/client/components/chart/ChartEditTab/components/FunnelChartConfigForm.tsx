@@ -1,55 +1,52 @@
-import { Box, Grid, Select, Text } from "@chakra-ui/react";
 import { FC } from "react";
+import { Row, Col, Form, Select } from "antd";
 
+const { Option } = Select;
 export interface FunnelChartEditConfig {
   groupCol: string[];
   valueCol: string[];
 }
 
 interface FunnelChartConfigFormProps {
-  form: any;
   editOptionConfig?: FunnelChartEditConfig;
 }
 
 export const FunnelChartConfigForm: FC<FunnelChartConfigFormProps> = ({
-  form,
   editOptionConfig,
 }) => {
   return (
-    <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-      <Box>
-        <Text>分组列</Text>
-        <Select
-          size="sm"
-          placeholder="请选择分组列"
-          name="funnelConfig.groupCol"
-          onChange={form.handleChange}
-          value={form.values?.funnelConfig.groupCol}
+    <Row gutter={16}>
+      <Col span={12}>
+        <Form.Item
+          style={{ marginBottom: 0 }}
+          label="分组列"
+          name={["funnelConfig", "groupCol"]}
         >
-          {editOptionConfig?.groupCol.map((key) => (
-            <option value={key} key={key}>
-              {key}
-            </option>
-          ))}
-        </Select>
-      </Box>
+          <Select allowClear placeholder="选择分组列">
+            {editOptionConfig?.groupCol.map((key) => (
+              <Option value={key} key={key}>
+                {key}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+      </Col>
 
-      <Box>
-        <Text>数值列</Text>
-        <Select
-          size="sm"
-          placeholder="请选择数值列"
-          onChange={form.handleChange}
-          value={form.values?.funnelConfig.valueCol}
-          name="funnelConfig.valueCol"
+      <Col span={12}>
+        <Form.Item
+          style={{ marginBottom: 0 }}
+          label="数值列"
+          name={["funnelConfig", "valueCol"]}
         >
-          {editOptionConfig?.valueCol.map((value, index) => (
-            <option value={value} key={index}>
-              {value}
-            </option>
-          ))}
-        </Select>
-      </Box>
-    </Grid>
+          <Select allowClear placeholder="选择数值列">
+            {editOptionConfig?.valueCol.map((key) => (
+              <Option value={key} key={key}>
+                {key}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+      </Col>
+    </Row>
   );
 };

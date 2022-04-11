@@ -1,19 +1,10 @@
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  FormControl,
-  Select,
-  Text,
-  Textarea,
-} from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import { FC } from "react";
-
+import { Form, FormInstance, Select, Divider } from "antd";
+import moment from "antd/node_modules/moment";
+import { FC, useEffect, useState } from "react";
+import numeral from "numeral";
 import { ResultFragment } from "../../../generated/graphql";
 import { ChartServerConfig, ChartType } from "../../../types";
+import { formatSecondToStr } from "../../../utils/formatSecondToStr";
 import {
   FunnelChartConfigForm,
   MetricChartConfigForm,
@@ -21,7 +12,58 @@ import {
   LineChartConfigForm,
   PieChartConfigForm,
 } from "./components";
-import { FormatFieldForm } from "./components/FormatFieldForm";
+
+export const chartTypeToFormFieldMap = {
+  [ChartType.FUNNEL]: "funnelConfig",
+  [ChartType.LINE]: "lineConfig",
+  [ChartType.BAR]: "barConfig",
+  [ChartType.METRIC]: "metricConfig",
+  [ChartType.PIE]: "pieConfig",
+};
+
+enum FormatType {
+  NUMERAL = "NUMERAL",
+  MOMENT = "MOMENT",
+  DURATION = "DURATION",
+}
+
+const options = [
+  { label: "无格式化", value: "" },
+  { label: "10,000", value: "0,0", type: FormatType.NUMERAL },
+  { label: "B,KB,MB...", value: "0b", type: FormatType.NUMERAL },
+  { label: "B,KiB,MiB...", value: "0ib", type: FormatType.NUMERAL },
+  { label: "秒", value: "seconds", type: FormatType.DURATION },
+  { label: "百分比", value: "0%", type: FormatType.NUMERAL },
+  { label: "百分比（保留两位小数）", value: "0.00%", type: FormatType.NUMERAL },
+  { label: "年-月-日", value: "YYYY-MM-DD", type: FormatType.MOMENT },
+  {
+    label: "年-月-日 时:分:秒",
+    value: "YYYY-MM-DD HH:mm:ss",
+    type: FormatType.MOMENT,
+  },
+];
+
+const momentFormatList = options
+  .filter((item) => item.type === FormatType.MOMENT)
+  .map((item) => item.value);
+
+export const getFormatValue = (value: any, format?: string) => {
+  if (format) {
+    if (momentFormatList.includes(format)) {
+      return moment(value).format(format) ?? value;
+    }
+
+    if (format === "seconds") {
+      return formatSecondToStr(value);
+    }
+
+    return numeral(value).format(format) ?? value;
+  }
+
+  return numeral(value).value() ?? value;
+};
+
+const { Option } = Select;
 
 export const chartTypeMap = {
   [ChartType.FUNNEL]: "漏斗图",
@@ -34,153 +76,156 @@ export const chartTypeMap = {
 
 interface ChartEditTabProps extends Partial<ChartServerConfig> {
   result?: ResultFragment;
-  form: any;
+  form: FormInstance<any>;
 }
 
 export const ChartEditTab: FC<ChartEditTabProps> = ({
   result = { fields: [], values: [] },
   form,
 }) => {
-  const router = useRouter();
+  const [currentChartType, setCurrentChartType] = useState("");
 
-  const { chartId } = router.query as { chartId: string };
+  useEffect(() => {
+    const type = form.getFieldValue("type");
+    if (type) {
+      setCurrentChartType(type);
+    }
+  }, [form]);
 
   return (
-    <Accordion defaultIndex={[chartId ? 2 : 0]} allowToggle>
-      <AccordionItem>
-        <AccordionButton>
-          <Text fontWeight="bold" flex="1" textAlign="left">
-            图表类型
-          </Text>
-          <AccordionIcon />
-        </AccordionButton>
+    <div>
+      <Divider style={{ marginTop: 0 }} orientation="left">
+        图表类型
+      </Divider>
 
-        <AccordionPanel pb={4}>
-          <FormControl isInvalid={!!form.errors.type}>
-            <Select
-              size="sm"
-              placeholder="请选择图表分类"
-              name="type"
-              onChange={form.handleChange}
-              value={form.values.type}
-            >
-              {[
-                ChartType.FUNNEL,
-                ChartType.METRIC,
-                ChartType.LINE,
-                ChartType.BAR,
-                ChartType.PIE,
-                ChartType.MD,
-              ].map((item) => (
-                <option value={item} key={item}>
-                  {chartTypeMap[item]}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-        </AccordionPanel>
-      </AccordionItem>
+      <Form.Item
+        name="type"
+        style={{ marginBottom: 0 }}
+        rules={[{ required: true, message: "请选择图表类型" }]}
+      >
+        <Select
+          placeholder="请选择图表类型"
+          onChange={(chartType) => {
+            setCurrentChartType(chartType);
+          }}
+        >
+          {[
+            ChartType.FUNNEL,
+            ChartType.METRIC,
+            ChartType.LINE,
+            ChartType.BAR,
+            ChartType.PIE,
+            ChartType.MD,
+          ].map((item) => (
+            <Option value={item} key={item}>
+              {chartTypeMap[item]}
+            </Option>
+          ))}
+        </Select>
+      </Form.Item>
 
-      {form.values.type !== ChartType.MD && (
-        <AccordionItem isDisabled={!form.values?.type}>
-          <AccordionButton>
-            <Text fontWeight="bold" flex="1" textAlign="left">
-              标准配置
-            </Text>
-            <AccordionIcon />
-          </AccordionButton>
+      <Divider orientation="left">标准配置</Divider>
+      <Form.Item
+        style={{ marginBottom: currentChartType ? undefined : 0 }}
+        name={[chartTypeToFormFieldMap[currentChartType], "format"]}
+      >
+        <Select
+          placeholder="选择格式化方式"
+          disabled={!currentChartType}
+          style={{ width: "100%" }}
+        >
+          {options?.map(({ label, value }) => (
+            <Option key={value} value={value}>
+              {label}
+            </Option>
+          ))}
+        </Select>
+      </Form.Item>
 
-          <AccordionPanel pb={4}>
-            <FormatFieldForm form={form} />
-          </AccordionPanel>
-        </AccordionItem>
+      {currentChartType && (
+        <Divider style={{ marginTop: 0 }} orientation="left">
+          查询分析配置
+        </Divider>
       )}
-
-      <AccordionItem isDisabled={!form.values?.type}>
-        <AccordionButton>
-          <Text fontWeight="bold" flex="1" textAlign="left">
-            查询分析配置
-          </Text>
-          <AccordionIcon />
-        </AccordionButton>
-        <AccordionPanel pb={4}>
+      {
+        [
           {
-            [
-              {
-                type: ChartType.FUNNEL,
-                component: (
-                  <FunnelChartConfigForm
-                    form={form}
-                    editOptionConfig={{
-                      groupCol: result.fields,
-                      valueCol: result.fields,
-                    }}
-                  />
-                ),
-              },
-              {
-                type: ChartType.METRIC,
-                component: (
-                  <MetricChartConfigForm
-                    form={form}
-                    editOptionConfig={{
-                      valueCol: result.fields,
-                      compareCol: result.fields,
-                    }}
-                  />
-                ),
-              },
-              {
-                type: ChartType.LINE,
-                component: (
-                  <LineChartConfigForm
-                    form={form}
-                    editOptionConfig={{
-                      xCol: result.fields,
-                      yCol: result.fields,
-                    }}
-                  />
-                ),
-              },
-              {
-                type: ChartType.BAR,
-                component: (
-                  <BarChartConfigForm
-                    form={form}
-                    editOptionConfig={{
-                      xCol: result.fields,
-                      yCol: result.fields,
-                    }}
-                  />
-                ),
-              },
-              {
-                type: ChartType.PIE,
-                component: (
-                  <PieChartConfigForm
-                    form={form}
-                    editOptionConfig={{
-                      keys: result.fields,
-                      values: result.fields,
-                    }}
-                  />
-                ),
-              },
-              {
-                type: ChartType.MD,
-                component: (
-                  <Textarea
-                    name="mdConfig.content"
-                    value={form.values.mdConfig.content}
-                    onChange={form.handleChange}
-                    placeholder="请输入 markdown 语法"
-                  />
-                ),
-              },
-            ].find((item) => item.type === form.values?.type)?.component
+            type: ChartType.FUNNEL,
+            component: (
+              <FunnelChartConfigForm
+                editOptionConfig={{
+                  groupCol: result.fields,
+                  valueCol: result.fields,
+                }}
+              />
+            ),
+          },
+          {
+            type: ChartType.METRIC,
+            component: (
+              <MetricChartConfigForm
+                editOptionConfig={{
+                  valueCol: result.fields,
+                  compareCol: result.fields,
+                }}
+              />
+            ),
+          },
+          {
+            type: ChartType.LINE,
+            component: (
+              <LineChartConfigForm
+                editOptionConfig={{
+                  xCol: result.fields,
+                  yCol: result.fields,
+                }}
+              />
+            ),
+          },
+          {
+            type: ChartType.BAR,
+            component: (
+              <BarChartConfigForm
+                editOptionConfig={{
+                  xCol: result.fields,
+                  yCol: result.fields,
+                }}
+              />
+            ),
+          },
+          {
+            type: ChartType.PIE,
+            component: (
+              <PieChartConfigForm
+                form={form}
+                editOptionConfig={{
+                  keys: result.fields,
+                  values: result.fields,
+                }}
+              />
+            ),
+          },
+          // {
+          //   type: ChartType.MD,
+          //   component: (
+          //     <Textarea
+          //       name="mdConfig.content"
+          //       value={form.values.mdConfig.content}
+          //       onChange={form.handleChange}
+          //       placeholder="请输入 markdown 语法"
+          //     />
+          //   ),
+          // },
+        ].find((item) => item.type === currentChartType)?.component
+      }
+
+      <Form.Item noStyle shouldUpdate>
+        {({ getFieldValue }) => {
+          if (!getFieldValue("type")) {
+            setCurrentChartType("");
           }
-        </AccordionPanel>
-      </AccordionItem>
-    </Accordion>
+        }}
+      </Form.Item>
+    </div>
   );
 };

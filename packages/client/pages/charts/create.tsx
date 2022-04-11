@@ -1,31 +1,12 @@
+import { useToast, Box, Grid, GridItem } from "@chakra-ui/react";
+import { useCallback, useState } from "react";
 import {
-  Stack,
-  FormControl,
-  Input,
-  FormErrorMessage,
-  Select,
-  Button,
-  useToast,
-  Box,
-  Grid,
-  GridItem,
-} from "@chakra-ui/react";
-import { useCallback, useEffect } from "react";
-import { ChartEditTab } from "../../components/chart/ChartEditTab";
+  ChartEditTab,
+  chartTypeToFormFieldMap,
+} from "../../components/chart/ChartEditTab";
 import { ChartResultPreview } from "../../components/chart/ChartResultPreview";
 import ProjectLayout from "../../layouts/ProjectLayout";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import {
-  FunnelChartConfig,
-  MetricChartConfig,
-  LineChartConfig,
-  BarChartConfig,
-  PieChartConfig,
-  MarkdownConfig,
-} from "../../components/chart/ChartResultPreview/components";
 import { ChartType } from "../../types";
-import { Loading } from "../../components/common/Loading";
 import {
   CreateChartInput,
   useClipConnectionQuery,
@@ -37,10 +18,17 @@ import { useCreateChartMutation } from "../../hooks/useCreateChartMutation";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
 import { Card } from "../../components/common/Card";
+import { Form, Select, Input, Button, Row, Col } from "antd";
+import { isEqual, omit } from "lodash";
+
+const { Option } = Select;
 
 const ChartCreate = () => {
   const router = useRouter();
   const toast = useToast();
+  const [form] = Form.useForm();
+
+  const [selectClipId, setSelectClipId] = useState("");
 
   const { data: clipsData } = useClipConnectionQuery({
     variables: { first: 100 },
@@ -49,144 +37,48 @@ const ChartCreate = () => {
   const [createChart, { loading: createChartLoading }] =
     useCreateChartMutation();
 
-  const form = useFormik({
-    initialValues: {
-      name: "",
-      type: "" as ChartType,
-      clipId: "",
-      funnelConfig: { groupCol: "", valueCol: "", format: "" },
-      metricConfig: { valueCol: "", compareCol: "", format: "" },
-      lineConfig: {
-        xCol: "",
-        yCol: [],
-        reverseOrder: false,
-        format: "",
-        doubleAxes: false,
-        doubleAxesCol: [],
-      },
-      barConfig: {
-        reverseOrder: false,
-        isStack: false,
-        variant: "",
-        xCol: "",
-        yCol: [],
-        format: "",
-      },
-      pieConfig: { variant: "", key: "", value: "", format: "" },
-      mdConfig: { content: "" },
-    },
-    isInitialValid: false,
-    validateOnBlur: false,
-    validateOnChange: false,
-    validateOnMount: false,
-    onSubmit: async () => {
+  // 创建图表
+  const handleSubmit = useCallback(async () => {
+    try {
+      const values = await form.validateFields();
+
       const input = {
-        name: form.values.name,
-        type: form.values.type,
+        name: values.name,
+        type: values.type,
         config: [
-          { type: ChartType.FUNNEL, config: form.values.funnelConfig },
-          { type: ChartType.METRIC, config: form.values.metricConfig },
-          { type: ChartType.LINE, config: form.values.lineConfig },
-          { type: ChartType.BAR, config: form.values.barConfig },
-          { type: ChartType.PIE, config: form.values.pieConfig },
-          { type: ChartType.MD, config: form.values.mdConfig },
-        ].find((item) => item.type === form.values.type).config,
-        clipId: form.values.clipId,
+          { type: ChartType.FUNNEL, config: values.funnelConfig },
+          { type: ChartType.METRIC, config: values.metricConfig },
+          { type: ChartType.LINE, config: values.lineConfig },
+          { type: ChartType.BAR, config: values.barConfig },
+          { type: ChartType.PIE, config: values.pieConfig },
+          { type: ChartType.MD, config: values.mdConfig },
+        ].find((item) => item.type === values.type).config,
+        clipId: values.clipId,
       } as CreateChartInput;
 
-      try {
-        const result = await createChart({
-          variables: {
-            input,
-          },
-        });
-        toast({
-          description: "创建成功",
-          status: "success",
-          isClosable: true,
-        });
-        if (result.data?.createChart.id) {
-          router.push(`/charts/${result.data?.createChart.id}/edit`);
-        }
-      } catch (err) {
-        console.log("err", err);
+      const result = await createChart({
+        variables: {
+          input,
+        },
+      });
+      toast({
+        description: "创建成功",
+        status: "success",
+        isClosable: true,
+      });
+      if (result.data?.createChart.id) {
+        router.push(`/charts/${result.data?.createChart.id}/edit`);
       }
-    },
-    validationSchema: Yup.object().shape({
-      name: Yup.string().required(),
-      clipId: Yup.string().required(),
-      type: Yup.string().required(),
-    }),
-  });
-
-  const { data: result, isLoading } = useQueryResult(form.values.clipId);
-
-  const getChartTypePreviewConfig = useCallback(() => {
-    if (form.values.type === ChartType.FUNNEL) {
-      return {
-        format: form.values.funnelConfig?.format || "",
-        groupCol: form.values.funnelConfig?.groupCol || "",
-        valueCol: form.values.funnelConfig?.valueCol || "",
-      } as FunnelChartConfig;
+    } catch (err) {
+      console.log("err", err);
     }
+  }, [createChart, form, router, toast]);
 
-    if (form.values.type === ChartType.METRIC) {
-      return {
-        format: form.values.metricConfig?.format || "",
-        valueCol: form.values.metricConfig?.valueCol || "",
-        compareCol: form.values.metricConfig?.compareCol || "",
-      } as MetricChartConfig;
-    }
+  const { data: result } = useQueryResult(selectClipId);
 
-    if (form.values.type === ChartType.LINE) {
-      return {
-        doubleAxesCol: form.values.lineConfig?.doubleAxesCol || [],
-        doubleAxes: !!form.values.lineConfig?.doubleAxes,
-        reverseOrder: !!form.values.lineConfig?.reverseOrder,
-        format: form.values.lineConfig?.format || "",
-        xCol: form.values.lineConfig?.xCol || "",
-        yCol: form.values.lineConfig?.yCol || [],
-      } as LineChartConfig;
-    }
-
-    if (form.values.type === ChartType.BAR) {
-      return {
-        reverseOrder: !!form.values.barConfig?.reverseOrder,
-        format: form.values.barConfig?.format || "",
-        isStack: !!form.values.barConfig?.isStack,
-        variant: form.values.barConfig?.variant || "",
-        xCol: form.values.barConfig?.xCol || "",
-        yCol: form.values.barConfig?.yCol || [],
-      } as BarChartConfig;
-    }
-
-    if (form.values.type === ChartType.PIE) {
-      return {
-        format: form.values.pieConfig?.format || "",
-        variant: form.values.pieConfig?.variant || "",
-        key: form.values.pieConfig?.key || "",
-        value: form.values.pieConfig?.value || "",
-      } as PieChartConfig;
-    }
-
-    if (form.values.type === ChartType.MD) {
-      return { content: form.values.mdConfig?.content || "" } as MarkdownConfig;
-    }
-
-    return undefined;
-  }, [form]);
-
-  // 初始配置
-  useEffect(() => {
-    if (!form.values.clipId) {
-      form.setValues(form.initialValues);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  if (isLoading) {
-    return <Loading />;
-  }
+  // if (isLoading) {
+  //   return <Loading />;
+  // }
 
   return (
     <>
@@ -195,72 +87,104 @@ const ChartCreate = () => {
       </Head>
 
       <Page title="创建图表">
-        <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-          <GridItem colSpan={3}>
-            <Card>
-              <form onSubmit={form.handleSubmit}>
-                <Stack spacing={3} direction="row">
-                  <FormControl width="30%" isInvalid={!!form.errors.name}>
-                    <Input
-                      placeholder="请输入图表名称"
-                      {...form.getFieldProps("name")}
-                      onChange={form.handleChange}
-                      value={form.values.name}
-                    />
-                    <FormErrorMessage>请输入图表名字</FormErrorMessage>
-                  </FormControl>
-
-                  <FormControl isInvalid={!!form.errors.clipId}>
-                    <Select
-                      flex="1"
-                      {...form.getFieldProps("clipId")}
-                      placeholder="请选择数据集"
-                      value={form.values.clipId}
-                      onChange={form.handleChange}
+        <Form form={form} layout="vertical">
+          <Grid templateColumns="repeat(3, 1fr)" gap={4} w="100%">
+            <GridItem colSpan={3}>
+              <Card>
+                <Row gutter={16} justify="space-between">
+                  <Col span={8}>
+                    <Form.Item
+                      name="name"
+                      style={{ marginBottom: 0 }}
+                      rules={[{ required: true, message: "请输入图表名称" }]}
                     >
-                      {clipsData?.clipConnection.edges?.map(
-                        ({ node: { id, name } }) => {
-                          return (
-                            <option key={id} value={id}>
-                              {name}
-                            </option>
-                          );
-                        }
-                      )}
-                    </Select>
-                    <FormErrorMessage>请选择数据集</FormErrorMessage>
-                  </FormControl>
+                      <Input placeholder="请输入图表名称"></Input>
+                    </Form.Item>
+                  </Col>
+                  <Col flex={1}>
+                    <Form.Item
+                      name="clipId"
+                      style={{ marginBottom: 0 }}
+                      rules={[{ required: true, message: "请选择数据集" }]}
+                    >
+                      <Select
+                        onChange={(clipId) => {
+                          setSelectClipId(clipId);
 
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    isLoading={createChartLoading}
-                  >
-                    保存
-                  </Button>
-                </Stack>
-              </form>
-            </Card>
-          </GridItem>
-          <GridItem colSpan={2}>
-            <Box h="500px">
-              {result && (
-                <Card overflow="hidden" h="full">
-                  <ChartResultPreview
-                    config={getChartTypePreviewConfig()}
-                    type={form.values.type}
-                    result={result}
-                  />
-                </Card>
-              )}
-            </Box>
-          </GridItem>
-          <GridItem colSpan={1}>
-            <Card>
-              <ChartEditTab form={form} result={result} />
-            </Card>
-          </GridItem>
-        </Grid>
+                          const type = form.getFieldValue("type");
+
+                          form.resetFields([
+                            "type",
+                            chartTypeToFormFieldMap[type],
+                          ]);
+                        }}
+                        placeholder="请选择数据集"
+                      >
+                        {clipsData?.clipConnection.edges?.map(
+                          ({ node: { id, name } }) => {
+                            return (
+                              <Option key={id} value={id}>
+                                {name}
+                              </Option>
+                            );
+                          }
+                        )}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col>
+                    <Form.Item noStyle>
+                      <Button
+                        type="primary"
+                        loading={createChartLoading}
+                        onClick={handleSubmit}
+                      >
+                        保存
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Card>
+            </GridItem>
+            <GridItem colSpan={2}>
+              <Box h="500px">
+                {result && (
+                  <Card overflow="hidden" h="full">
+                    <Form.Item
+                      shouldUpdate={(prevValues, curValues) => {
+                        if (
+                          isEqual(
+                            omit(prevValues, "name"),
+                            omit(curValues, "name")
+                          )
+                        ) {
+                          return false;
+                        }
+                        return true;
+                      }}
+                      noStyle
+                    >
+                      {({ getFieldValue }) => (
+                        <ChartResultPreview
+                          config={getFieldValue(
+                            chartTypeToFormFieldMap[getFieldValue("type")]
+                          )}
+                          type={getFieldValue("type")}
+                          result={result}
+                        />
+                      )}
+                    </Form.Item>
+                  </Card>
+                )}
+              </Box>
+            </GridItem>
+            <GridItem colSpan={1}>
+              <Card>
+                <ChartEditTab form={form} result={result} />
+              </Card>
+            </GridItem>
+          </Grid>
+        </Form>
       </Page>
     </>
   );

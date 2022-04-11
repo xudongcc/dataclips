@@ -1,23 +1,8 @@
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useRouter } from "next/router";
-import {
-  useToast,
-  useDisclosure,
-  Link,
-  Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Text,
-  ModalOverlay,
-  Center,
-  Divider,
-} from "@chakra-ui/react";
+import { useToast, Link, Text, Center, Divider } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { useState, useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { Table } from "../../components/common/Table";
 import { useChartConnectionQuery } from "../../generated/graphql";
 import { chartTypeMap } from "../../components/chart/ChartEditTab";
@@ -26,23 +11,17 @@ import { Column, TableOptions } from "react-table";
 import { Page } from "../../components/common/Page";
 import { useDeleteChartMutation } from "../../hooks/useDeleteChartMutation";
 import Head from "next/head";
+import { Modal } from "../../components/common/Modal";
 
 const ChartList = () => {
   const router = useRouter();
 
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedChartId, setSelectedChartId] = useState<string>("");
 
   const { data, loading: dataLoading } = useChartConnectionQuery({
     variables: { first: 100 },
   });
-  const [deleteChart, { loading }] = useDeleteChartMutation();
-
-  const handleCloseDeleteModal = useCallback(() => {
-    onClose();
-    setSelectedChartId("");
-  }, [onClose]);
+  const [deleteChart] = useDeleteChartMutation();
 
   const tableProps = useMemo<TableOptions<any>>(() => {
     const columns: Column<any>[] = [
@@ -94,7 +73,7 @@ const ChartList = () => {
         accessor: "operation",
         Cell: ({
           row: {
-            original: { id },
+            original: { id, name },
           },
         }) => {
           return (
@@ -112,8 +91,32 @@ const ChartList = () => {
 
               <Link
                 onClick={() => {
-                  setSelectedChartId(id);
-                  onOpen();
+                  const modal = Modal.confirm({
+                    title: "删除图表",
+                    content: `确定删除名称为 ${name} 的图表吗？`,
+                    okButtonProps: {
+                      danger: true,
+                    },
+                    okText: "确定",
+                    cancelText: "取消",
+                    onOk: async () => {
+                      modal.update({
+                        okButtonProps: { loading: true },
+                      });
+
+                      await deleteChart({ variables: { id } });
+
+                      toast({
+                        description: "删除成功",
+                        status: "success",
+                        isClosable: true,
+                      });
+
+                      modal.update({
+                        okButtonProps: { loading: false },
+                      });
+                    },
+                  });
                 }}
                 color="red.500"
               >
@@ -134,25 +137,7 @@ const ChartList = () => {
     };
 
     return options;
-  }, [data?.chartConnection.edges, dataLoading, onOpen, router]);
-
-  const handleDeleteChart = useCallback(async () => {
-    try {
-      if (selectedChartId) {
-        await deleteChart({ variables: { id: selectedChartId } });
-
-        toast({
-          description: "删除成功",
-          status: "success",
-          isClosable: true,
-        });
-
-        handleCloseDeleteModal();
-      }
-    } catch (err) {
-      console.log("err", err);
-    }
-  }, [deleteChart, selectedChartId, toast, handleCloseDeleteModal]);
+  }, [data?.chartConnection.edges, dataLoading, deleteChart, router, toast]);
 
   return (
     <>
@@ -170,28 +155,6 @@ const ChartList = () => {
         }}
       >
         <Table {...tableProps} />
-
-        <Modal isOpen={isOpen} onClose={handleCloseDeleteModal}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>删除图表</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>确定删除 id 为 {selectedChartId} 的图表？</ModalBody>
-
-            <ModalFooter>
-              <Button mr={3} onClick={handleCloseDeleteModal}>
-                取消
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={handleDeleteChart}
-                isLoading={loading}
-              >
-                确定
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
       </Page>
     </>
   );

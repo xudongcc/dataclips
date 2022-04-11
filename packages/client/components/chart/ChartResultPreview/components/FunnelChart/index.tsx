@@ -13,13 +13,13 @@ import { FC, useMemo } from "react";
 
 import { ResultFragment } from "../../../../../generated/graphql";
 import { formatPercent } from "../../../../../utils/formatPercent";
+import { getFormatValue } from "../../../ChartEditTab";
 import { getGradientColors } from "./utils/getGradientColors";
-import { getFormatValue } from "../../../ChartEditTab/components/FormatFieldForm";
 
 export interface FunnelChartConfig {
-  groupCol: string;
-  valueCol: string;
-  format: string;
+  groupCol?: string;
+  valueCol?: string;
+  format?: string;
 }
 
 interface FunnelChartPreviesProps {
@@ -29,11 +29,11 @@ interface FunnelChartPreviesProps {
 
 export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
   result,
-  config = { groupCol: "", valueCol: "", format: "" },
+  config,
 }) => {
   const funnelData = useMemo(() => {
     if (!result?.error) {
-      if (config.groupCol && config.valueCol) {
+      if (config?.groupCol && config?.valueCol) {
         const keyIndex = result.fields.findIndex(
           (key) => key === config.groupCol
         );
@@ -95,8 +95,11 @@ export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
 
                     <Box key={items?.[0]?.data?.key} mt={4}>
                       <Text>
-                        {config.valueCol}:{" "}
-                        {getFormatValue(items?.[0]?.data?.value, config.format)}
+                        {config?.valueCol}:{" "}
+                        {getFormatValue(
+                          items?.[0]?.data?.value,
+                          config?.format
+                        )}
                       </Text>
 
                       <Text my={4}>总占比: {items?.[0]?.data?.percent}</Text>
@@ -111,10 +114,10 @@ export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
           }}
         </Tooltip>
 
-        <Axis name={config.valueCol} grid={null} label={null} />
+        <Axis name={config?.valueCol} grid={null} label={null} />
 
         <Axis
-          name={config.groupCol}
+          name={config?.groupCol}
           label={null}
           line={null}
           grid={null}
@@ -130,7 +133,7 @@ export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
             <Annotation.Text
               key={index}
               top={true}
-              position={[item[config.groupCol], "center"]}
+              position={[item[config?.groupCol], "center"]}
               content={item.percent}
               style={{
                 fill: readableColor(funnelGradientColors[index]),
@@ -144,12 +147,12 @@ export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
         })}
 
         <Interval
-          position={`${config.groupCol}*${config.valueCol}`}
+          position={`${config?.groupCol}*${config?.valueCol}`}
           adjust="symmetric"
           shape="funnel"
-          color={[config.groupCol, funnelGradientColors]}
+          color={[config?.groupCol, funnelGradientColors]}
           label={[
-            `${config.groupCol}`,
+            `${config?.groupCol}`,
             (key) => ({ content: key }),
             {
               offset: 35,

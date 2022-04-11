@@ -10,7 +10,7 @@ import { sumBy } from "lodash";
 import { FC, useMemo } from "react";
 import { ResultFragment } from "../../../../../generated/graphql";
 import { formatPercent } from "../../../../../utils/formatPercent";
-import { getFormatValue } from "../../../ChartEditTab/components/FormatFieldForm";
+import { getFormatValue } from "../../../ChartEditTab";
 
 export interface PieChartConfig {
   variant: string;
