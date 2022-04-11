@@ -10,6 +10,7 @@
     "graphql-codegen": "graphql-codegen"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.7.0",
     "@apollo/client": "^3.5.10",
     "@apollo/gateway": "0.46.0",
     "@chakra-ui/icons": "^1.1.7",
@@ -20,6 +21,7 @@
     "@fontsource/inter": "^4.5.5",
     "@monaco-editor/loader": "^1.2.0",
     "@monaco-editor/react": "^4.3.1",
+    "antd": "^4.19.5",
     "bizcharts": "^4.1.15",
     "chakra-react-select": "^3.1.2",
     "crypto-browserify": "^3.12.0",
@@ -29,12 +31,14 @@
     "framer-motion": "^6.2.8",
     "github-markdown-css": "^5.1.0",
     "graphql": "15.8.0",
+    "less": "^4.1.2",
     "lodash": "^4.17.21",
     "marked": "^4.0.12",
     "moment": "^2.29.1",
     "monaco-editor": "^0.33.0",
-    "next": "12.1.0",
+    "next": "^12.1.4",
     "next-auth": "^4.3.1",
+    "next-with-less": "^2.0.5",
     "numeral": "^2.0.6",
     "path-browserify": "^1.0.1",
     "polished": "^4.1.4",
@@ -75,6 +79,7 @@
     "@types/sql.js": "^1.4.3",
     "eslint": "8.10.0",
     "eslint-config-next": "12.1.0",
+    "less-loader": "^10.2.0",
     "prettier": "^2.5.1",
     "typescript": "4.6.2"
   }
