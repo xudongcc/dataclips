@@ -16,9 +16,10 @@ import { Loading } from "../../components/common/Loading";
 import { routes } from "../../router";
 import NextLink from "next/link";
 import { LeftOutlined } from "@ant-design/icons";
+import { v4 as uuidv4 } from "uuid";
 
 const { SubMenu } = Menu;
-const { Header, Content, Sider, Footer } = Layout;
+const { Header, Content, Sider } = Layout;
 
 const ProjectLayout: FC = ({ children }) => {
   const router = useRouter();
@@ -41,19 +42,20 @@ const ProjectLayout: FC = ({ children }) => {
       return routes.map((route) => {
         if (route.children?.length) {
           return (
-            // 待优化，children
-            <SubMenu title={route.name}>{getSubMenus(route.children)}</SubMenu>
+            <SubMenu key={uuidv4()} title={route.name}>
+              {getSubMenus(route.children)}
+            </SubMenu>
           );
         } else {
           return (
             <Menu.Item
+              key={uuidv4()}
               icon={route?.icon}
               onClick={() => {
                 if (menuDrawerVisible) {
                   setMenuDrawerVisible(false);
                 }
               }}
-              key={route.name}
             >
               <NextLink href={route.path}>{route.name}</NextLink>
             </Menu.Item>
@@ -112,17 +114,23 @@ const ProjectLayout: FC = ({ children }) => {
             }}
           />
 
-          <Menu
-            mode="inline"
+          <div
             style={{
-              height: "100%",
               position: "relative",
+              height: "100%",
             }}
-            selectedKeys={[
-              routes.find((item) => router.asPath.includes(item.path))?.name,
-            ]}
           >
-            {getSubMenus(routes)}
+            <Menu
+              mode="inline"
+              style={{
+                height: "100%",
+              }}
+              selectedKeys={[
+                routes.find((item) => router.asPath.includes(item.path))?.name,
+              ]}
+            >
+              {getSubMenus(routes)}
+            </Menu>
 
             <Row
               style={{
@@ -141,7 +149,7 @@ const ProjectLayout: FC = ({ children }) => {
             >
               <LeftOutlined />
             </Row>
-          </Menu>
+          </div>
         </Sider>
 
         <Layout
