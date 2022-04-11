@@ -171,8 +171,8 @@ const DashBoardEdit: PC = () => {
             i: uuidv4(),
             x: 0,
             y: maxBy(dragItems, (item) => item?.layout?.y)?.layout?.y || 0,
-            w: 6,
-            h: 3,
+            w: 12,
+            h: 6,
           },
         };
         if (operation.type === OperationType.ADD) {
