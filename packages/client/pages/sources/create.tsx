@@ -93,13 +93,14 @@ const SourceCreate = () => {
         <Form form={form}>
           <Card>
             <Steps
+              labelPlacement="vertical"
               onChange={(c) => {
                 setCurrent(c);
               }}
               current={current}
             >
               {steps.map((key) => (
-                <Step key={key} title={key} />
+                <Step disabled={!currentSourceType} key={key} title={key} />
               ))}
             </Steps>
             <div>
