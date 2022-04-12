@@ -33,13 +33,6 @@ export const VirtualSourceForm: FC = () => {
           return (
             <>
               {fields.map(({ key, name, ...restField }) => {
-                console.log({
-                  fields,
-                  key,
-                  name,
-                  restField,
-                });
-
                 return (
                   <Row key={key} gutter={8}>
                     <Col span={12}>
@@ -47,7 +40,7 @@ export const VirtualSourceForm: FC = () => {
                         name={[name, "name"]}
                         rules={[{ required: true, message: "请输入名字" }]}
                       >
-                        <Input placeholder="请输入名字"></Input>
+                        <Input placeholder="请输入名字" />
                       </Form.Item>
                     </Col>
                     <Col flex={1}>

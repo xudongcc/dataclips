@@ -42,24 +42,21 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
         name={["dataSource", "port"]}
         rules={[{ required: true, message: "请输入端口号" }]}
       >
-        <InputNumber
-          style={{ width: "100%" }}
-          placeholder="请输入端口号"
-        ></InputNumber>
+        <InputNumber style={{ width: "100%" }} placeholder="请输入端口号" />
       </Form.Item>
 
       <Form.Item
         name={["dataSource", "database"]}
         rules={[{ required: true, message: "请输入数据库名称" }]}
       >
-        <Input placeholder="请输入数据库名称"></Input>
+        <Input placeholder="请输入数据库名称" />
       </Form.Item>
 
       <Form.Item
         name={["dataSource", "username"]}
         rules={[{ required: true, message: "请输入用户名" }]}
       >
-        <Input placeholder="请输入用户名"></Input>
+        <Input placeholder="请输入用户名" />
       </Form.Item>
 
       <Form.Item
@@ -71,7 +68,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
           },
         ]}
       >
-        <Input type="password" placeholder="请输入密码"></Input>
+        <Input type="password" placeholder="请输入密码" />
       </Form.Item>
 
       <Row justify="center">
@@ -101,7 +98,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
                   <InputNumber
                     style={{ width: "100%" }}
                     placeholder="请输入 ssh 端口号"
-                  ></InputNumber>
+                  />
                 </Form.Item>
 
                 <Form.Item

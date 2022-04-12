@@ -94,7 +94,7 @@ const ChartCreate = () => {
                       style={{ marginBottom: 0 }}
                       rules={[{ required: true, message: "请输入图表名称" }]}
                     >
-                      <Input placeholder="请输入图表名称"></Input>
+                      <Input placeholder="请输入图表名称" />
                     </Form.Item>
                   </Col>
                   <Col flex={1}>
