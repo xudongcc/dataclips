@@ -211,8 +211,6 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
       {/* 只为了监听 type 是否为空，空的话隐藏查询分析配置 */}
       <Form.Item noStyle shouldUpdate>
         {({ getFieldValue }) => {
-          console.log(getFieldValue("123"));
-
           const currentType = getFieldValue("type");
 
           if (!currentType) {

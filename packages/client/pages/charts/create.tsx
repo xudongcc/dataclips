@@ -145,22 +145,33 @@ const ChartCreate = () => {
             <GridItem colSpan={2}>
               <Box h="500px">
                 {result && (
-                  <Card overflow="hidden" h="full">
-                    <Form.Item
-                      shouldUpdate={(prevValues, curValues) => {
-                        if (
-                          isEqual(
-                            omit(prevValues, "name"),
-                            omit(curValues, "name")
-                          )
-                        ) {
-                          return false;
-                        }
-                        return true;
-                      }}
-                      noStyle
-                    >
-                      {({ getFieldValue }) => (
+                  <Form.Item
+                    shouldUpdate={(prevValues, curValues) => {
+                      if (
+                        isEqual(
+                          omit(prevValues, "name"),
+                          omit(curValues, "name")
+                        )
+                      ) {
+                        return false;
+                      }
+                      return true;
+                    }}
+                    noStyle
+                  >
+                    {({ getFieldValue }) => (
+                      <Card
+                        overflow="hidden"
+                        h="full"
+                        sx={{
+                          ".card-body": {
+                            overflowY:
+                              getFieldValue("type") === ChartType.MD
+                                ? "auto"
+                                : undefined,
+                          },
+                        }}
+                      >
                         <ChartResultPreview
                           config={getFieldValue(
                             chartTypeToFormFieldMap[getFieldValue("type")]
@@ -168,9 +179,9 @@ const ChartCreate = () => {
                           type={getFieldValue("type")}
                           result={result}
                         />
-                      )}
-                    </Form.Item>
-                  </Card>
+                      </Card>
+                    )}
+                  </Form.Item>
                 )}
               </Box>
             </GridItem>

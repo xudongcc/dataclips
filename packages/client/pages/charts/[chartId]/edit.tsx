@@ -178,39 +178,34 @@ const ChartEdit = () => {
             <GridItem colSpan={2}>
               <Box h="500px">
                 {result && (
-                  <Card
-                    overflow="hidden"
-                    h="full"
-                    sx={{
-                      ".card-body": {
-                        // overflowY:
-                        //   form.values.type === ChartType.MD
-                        //     ? "auto"
-                        //     : undefined,
-                      },
+                  <Form.Item
+                    shouldUpdate={(prevValues, curValues) => {
+                      if (
+                        isEqual(
+                          omit(prevValues, "name"),
+                          omit(curValues, "name")
+                        )
+                      ) {
+                        return false;
+                      }
+                      return true;
                     }}
+                    noStyle
                   >
-                    <Form.Item
-                      shouldUpdate={(prevValues, curValues) => {
-                        if (
-                          isEqual(
-                            omit(prevValues, "name"),
-                            omit(curValues, "name")
-                          )
-                        ) {
-                          return false;
-                        }
-                        return true;
-                      }}
-                      noStyle
-                    >
-                      {({ getFieldValue }) => {
-                        console.log(
-                          getFieldValue(
-                            chartTypeToFormFieldMap[getFieldValue("type")]
-                          )
-                        );
-                        return (
+                    {({ getFieldValue }) => {
+                      return (
+                        <Card
+                          overflow="hidden"
+                          h="full"
+                          sx={{
+                            ".card-body": {
+                              overflowY:
+                                getFieldValue("type") === ChartType.MD
+                                  ? "auto"
+                                  : undefined,
+                            },
+                          }}
+                        >
                           <ChartResultPreview
                             config={getFieldValue(
                               chartTypeToFormFieldMap[getFieldValue("type")]
@@ -218,10 +213,10 @@ const ChartEdit = () => {
                             type={getFieldValue("type")}
                             result={result}
                           />
-                        );
-                      }}
-                    </Form.Item>
-                  </Card>
+                        </Card>
+                      );
+                    }}
+                  </Form.Item>
                 )}
               </Box>
             </GridItem>
