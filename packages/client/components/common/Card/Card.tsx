@@ -87,13 +87,13 @@ export const Card: FC<CardProps> = ({
       </Stack>
     </Stack>
 
-    <Box flex={1} h="inherit" className="card-body">
+    <Box
+      flex={1}
+      h="inherit"
+      className="card-body"
+      mt={!title && !description && !extra ? "0px !important" : undefined}
+    >
       {children}
     </Box>
-
-    {/* <Stack direction={{ base: "column", md: "row" }} spacing="3">
-      <Button variant="secondary">Skip</Button>
-      <Button variant="primary">Download</Button>
-    </Stack> */}
   </Stack>
 );

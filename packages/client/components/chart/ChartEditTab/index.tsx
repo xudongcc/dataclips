@@ -129,6 +129,7 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
           allowClear
           options={options}
           placeholder="选择格式化方式"
+          disabled={!currentChartType}
         />
       </Form.Item>
 
