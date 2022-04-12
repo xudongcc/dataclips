@@ -1,4 +1,4 @@
-import { Form, Select, Divider, Input } from "antd";
+import { Form, Select, Divider, Input, AutoComplete } from "antd";
 import moment from "antd/node_modules/moment";
 import { FC, useState } from "react";
 import numeral from "numeral";
@@ -98,6 +98,7 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
         rules={[{ required: true, message: "请选择图表类型" }]}
       >
         <Select
+          allowClear
           placeholder="请选择图表类型"
           onChange={(chartType) => {
             setCurrentChartType(chartType);
@@ -119,21 +120,16 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
       </Form.Item>
 
       <Divider orientation="left">标准配置</Divider>
+
       <Form.Item
-        style={{ marginBottom: currentChartType ? undefined : 0 }}
         name={[chartTypeToFormFieldMap[currentChartType], "format"]}
+        style={{ marginBottom: currentChartType ? undefined : 0 }}
       >
-        <Select
+        <AutoComplete
+          allowClear
+          options={options}
           placeholder="选择格式化方式"
-          disabled={!currentChartType}
-          style={{ width: "100%" }}
-        >
-          {options?.map(({ label, value }) => (
-            <Option key={value} value={value}>
-              {label}
-            </Option>
-          ))}
-        </Select>
+        />
       </Form.Item>
 
       {currentChartType && (
@@ -205,7 +201,7 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
                 style={{ marginBottom: 0 }}
                 name={["mdConfig", "content"]}
               >
-                <TextArea placeholder="输入 markdown 语法" />
+                <TextArea allowClear placeholder="输入 markdown 语法" />
               </Form.Item>
             ),
           },
@@ -215,6 +211,8 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
       {/* 只为了监听 type 是否为空，空的话隐藏查询分析配置 */}
       <Form.Item noStyle shouldUpdate>
         {({ getFieldValue }) => {
+          console.log(getFieldValue("123"));
+
           const currentType = getFieldValue("type");
 
           if (!currentType) {

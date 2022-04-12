@@ -8,8 +8,6 @@ export interface MarkdownConfig {
 }
 
 export const Markdown: FC<MarkdownConfig> = ({ content }) => {
-  console.log("content", content);
-
   return (
     <Box
       className="markdown-body"
@@ -19,7 +17,9 @@ export const Markdown: FC<MarkdownConfig> = ({ content }) => {
           all: "revert",
         },
       }}
-      dangerouslySetInnerHTML={{ __html: marked.parse(content) }}
+      dangerouslySetInnerHTML={{
+        __html: marked.parse(content || ""),
+      }}
     />
   );
 };

@@ -57,8 +57,6 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
     return [];
   }, [config, result]);
 
-  console.log("data", data);
-
   if (!data.length) {
     return null;
   }

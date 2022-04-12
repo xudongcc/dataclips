@@ -18,14 +18,14 @@ export const BarChartConfigForm: FC<BarChartConfigFormProps> = ({
   return (
     <>
       <Form.Item label="方向" name={["barConfig", "variant"]}>
-        <Select placeholder="请选择方向">
+        <Select allowClear placeholder="请选择方向">
           <Option value="horizontal">水平</Option>
           <Option value="vertical">垂直</Option>
         </Select>
       </Form.Item>
 
       <Form.Item label="x 轴字段" name={["barConfig", "xCol"]}>
-        <Select placeholder="选择 x 轴">
+        <Select allowClear placeholder="选择 x 轴">
           {editOptionConfig?.xCol.map((value) => (
             <Option value={value} key={value}>
               {value}
@@ -35,7 +35,7 @@ export const BarChartConfigForm: FC<BarChartConfigFormProps> = ({
       </Form.Item>
 
       <Form.Item label="y 轴字段" name={["barConfig", "yCol"]}>
-        <Select mode="multiple" placeholder="选择 y 轴">
+        <Select allowClear mode="multiple" placeholder="选择 y 轴">
           {editOptionConfig?.xCol.map((value) => (
             <Option value={value} key={value}>
               {value}
