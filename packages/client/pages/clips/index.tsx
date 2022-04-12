@@ -1,43 +1,26 @@
-import {
-  useToast,
-  useDisclosure,
-  Link,
-  Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Text,
-  ModalOverlay,
-  Divider,
-  Center,
-} from "@chakra-ui/react";
+import { useToast, Link, Text, Divider, Center } from "@chakra-ui/react";
 import NextLink from "next/link";
 import Head from "next/head";
-import { useState } from "react";
 import { useClipConnectionQuery } from "../../generated/graphql";
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useRouter } from "next/router";
 import { useDeleteClipMutation } from "../../hooks/useDeleteClipMutation";
-import { useMemo, useCallback } from "react";
+import { useMemo } from "react";
 import { Column, TableOptions } from "react-table";
 import moment from "moment";
 import { Page } from "../../components/common/Page";
 import { Table } from "../../components/common/Table";
+import { Modal } from "../../components/common/Modal";
 
 const ClipList = () => {
   const router = useRouter();
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedClipId, setSelectedClipId] = useState<string>("");
 
   const { data, loading: dataLoading } = useClipConnectionQuery({
     variables: { first: 100 },
   });
 
-  const [deleteClip, { loading }] = useDeleteClipMutation();
+  const [deleteClip] = useDeleteClipMutation();
 
   const tableProps = useMemo<TableOptions<any>>(() => {
     const columns: Column<any>[] = [
@@ -78,7 +61,7 @@ const ClipList = () => {
         accessor: "operation",
         Cell: ({
           row: {
-            original: { id },
+            original: { id, name },
           },
         }) => {
           return (
@@ -96,8 +79,32 @@ const ClipList = () => {
 
               <Link
                 onClick={() => {
-                  setSelectedClipId(id);
-                  onOpen();
+                  const modal = Modal.confirm({
+                    title: "删除数据集",
+                    content: `确定删除名称为 ${name} 的数据集？`,
+                    okText: "确定",
+                    okButtonProps: {
+                      danger: true,
+                    },
+                    cancelText: "取消",
+                    onOk: async () => {
+                      try {
+                        modal.update({ okButtonProps: { loading: true } });
+
+                        await deleteClip({ variables: { id } });
+
+                        modal.update({ okButtonProps: { loading: false } });
+
+                        toast({
+                          description: "删除成功",
+                          status: "success",
+                          isClosable: true,
+                        });
+                      } catch (err) {
+                        console.error("err", err);
+                      }
+                    },
+                  });
                 }}
                 color="red.500"
               >
@@ -118,26 +125,7 @@ const ClipList = () => {
     };
 
     return options;
-  }, [data?.clipConnection.edges, dataLoading, onOpen, router]);
-
-  const handleCloseDeleteModal = useCallback(() => {
-    setSelectedClipId("");
-    onClose();
-  }, [onClose]);
-
-  const handleDeleteClip = useCallback(async () => {
-    if (selectedClipId) {
-      await deleteClip({ variables: { id: selectedClipId } });
-
-      toast({
-        description: "删除成功",
-        status: "success",
-        isClosable: true,
-      });
-
-      handleCloseDeleteModal();
-    }
-  }, [deleteClip, selectedClipId, toast, handleCloseDeleteModal]);
+  }, [data?.clipConnection.edges, dataLoading, deleteClip, router, toast]);
 
   return (
     <>
@@ -155,28 +143,6 @@ const ClipList = () => {
         }}
       >
         <Table {...tableProps} />
-
-        <Modal isOpen={isOpen} onClose={handleCloseDeleteModal}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>删除数据集</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>确定删除 id 为 {selectedClipId} 的数据集？</ModalBody>
-
-            <ModalFooter>
-              <Button mr={3} onClick={handleCloseDeleteModal}>
-                取消
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={handleDeleteClip}
-                isLoading={loading}
-              >
-                确定
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
       </Page>
     </>
   );

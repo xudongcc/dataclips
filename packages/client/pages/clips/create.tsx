@@ -1,58 +1,51 @@
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useRouter } from "next/router";
-import {
-  Box,
-  Button,
-  Flex,
-  Input,
-  Select,
-  Stack,
-  useColorModeValue,
-  useToast,
-} from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import { useSourceConnectionQuery } from "../../generated/graphql";
-import { useCallback } from "react";
-import { useFormik } from "formik";
+import { useCallback, useState } from "react";
 import { SQLEditor } from "../../components/clip/SQLEditor";
 import { useCreateClipMutation } from "../../hooks/useCreateClipMutation";
 import { Card } from "../../components/common/Card/Card";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
+import { Row, Col, Form, Input, Select, Button, Space } from "antd";
+
+const { Option } = Select;
 
 const ClipCreate = () => {
   const toast = useToast();
   const router = useRouter();
+  const [form] = Form.useForm();
+
+  const [sqlValue, setSqlValue] = useState("");
 
   const [createClip, { loading: createClipLoading }] = useCreateClipMutation();
 
   const { data: { sourceConnection } = {}, loading: isSourcesLoading } =
-    useSourceConnectionQuery({ variables: { first: 20 } });
+    useSourceConnectionQuery({ variables: { first: 50 } });
 
-  const handleSubmit = useCallback(
-    async (input) => {
-      try {
-        const { data } = await createClip({ variables: { input } });
-        toast({
-          title: "创建成功",
-          status: "success",
-        });
+  const handleSubmit = useCallback(async () => {
+    try {
+      const values = await form.validateFields();
 
-        router.push(`/clips/${data?.createClip.id}/edit`);
-      } catch (err) {
-        //
-      }
-    },
-    [createClip, router, toast]
-  );
+      const { data } = await createClip({
+        variables: {
+          input: {
+            ...values,
+            sql: sqlValue,
+          },
+        },
+      });
+      toast({
+        title: "创建成功",
+        status: "success",
+      });
 
-  const form = useFormik({
-    initialValues: {
-      name: "",
-      sql: "",
-      sourceId: "",
-    },
-    onSubmit: handleSubmit,
-  });
+      router.push(`/clips/${data?.createClip.id}/edit`);
+    } catch (err) {
+      //
+    }
+  }, [createClip, form, router, sqlValue, toast]);
 
   return (
     <>
@@ -61,59 +54,72 @@ const ClipCreate = () => {
       </Head>
 
       <Page title="创建数据集">
-        <Card>
-          <Flex h="full" direction="column">
-            <form onSubmit={form.handleSubmit}>
-              <Stack mb={4} spacing={3} direction="row">
-                <Input
-                  placeholder="请输入名称"
-                  name="name"
-                  width="30%"
-                  onChange={form.handleChange}
-                  value={form.values.name}
-                />
+        <Form form={form}>
+          <Card>
+            <Space
+              direction="vertical"
+              size="middle"
+              style={{ display: "flex" }}
+            >
+              <Row gutter={16} justify="space-between">
+                <Col span={8}>
+                  <Form.Item
+                    name="name"
+                    style={{ marginBottom: 0 }}
+                    rules={[{ required: true, message: "请输入名称" }]}
+                  >
+                    <Input placeholder="请输入名称"></Input>
+                  </Form.Item>
+                </Col>
+                <Col flex={1}>
+                  <Form.Item
+                    name="sourceId"
+                    style={{ marginBottom: 0 }}
+                    rules={[{ required: true, message: "请选择数据源" }]}
+                  >
+                    <Select placeholder="请选择数据源">
+                      {sourceConnection?.edges?.map(
+                        ({ node: { id, name } }) => {
+                          return (
+                            <Option key={id} value={id}>
+                              {name}
+                            </Option>
+                          );
+                        }
+                      )}
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col>
+                  <Form.Item noStyle>
+                    <Button
+                      type="primary"
+                      loading={createClipLoading}
+                      onClick={handleSubmit}
+                    >
+                      保存
+                    </Button>
+                  </Form.Item>
+                </Col>
+              </Row>
 
-                <Select
-                  name="sourceId"
-                  flex="1"
-                  value={form.values.sourceId}
-                  onChange={form.handleChange}
-                  placeholder="请选择数据源"
-                  isDisabled={isSourcesLoading}
-                >
-                  {sourceConnection?.edges?.map(({ node }) => {
-                    return (
-                      <option key={node.id} value={node.id}>
-                        {node.name}
-                      </option>
-                    );
-                  })}
-                </Select>
-
-                <Button
-                  type="submit"
-                  variant="primary"
-                  isLoading={createClipLoading}
-                >
-                  保存
-                </Button>
-              </Stack>
-
-              <Box
-                borderWidth={1}
-                borderStyle="solid"
-                borderColor={useColorModeValue("gray.200", "whiteAlpha.300")}
-                borderRadius="lg"
-                overflow="hidden"
+              <div
+                style={{
+                  border: "1px solid #ececec",
+                  overflow: "hidden",
+                  borderRadius: "2px",
+                }}
               >
                 <SQLEditor
-                  value={form.values.sql}
-                  onChange={(value) => form.setFieldValue("sql", value)}
+                  value={sqlValue}
+                  onChange={(value) => {
+                    setSqlValue(value);
+                  }}
                 />
-              </Box>
-            </form>
-          </Flex>
-        </Card>
+              </div>
+            </Space>
+          </Card>
+        </Form>
       </Page>
     </>
   );
