@@ -1,5 +1,5 @@
 import { Box } from "@chakra-ui/react";
-import { FC, useMemo } from "react";
+import { FC } from "react";
 
 import { ResultFragment } from "../../../generated/graphql";
 import { ChartServerConfig, ChartType } from "../../../types";

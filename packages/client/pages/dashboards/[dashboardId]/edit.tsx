@@ -1,4 +1,4 @@
-import { useDisclosure, useToast } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import Head from "next/head";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
@@ -73,7 +73,6 @@ const DashBoardEdit: PC = () => {
   // 创建或编辑卡片的弹窗
   const [isAddOrEditCardModalVisible, setIsAddOrEditCardModalVisible] =
     useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   // 编辑仪表盘名称
   const [isDashboardNameModalVisible, setIsDashboardNameModalVisible] =

@@ -40,8 +40,7 @@ const SourceList = () => {
     id: string;
   }>();
 
-  const [getSource, { data: sourceData, loading: sourceLoading }] =
-    useSourceLazyQuery();
+  const [getSource, { loading: sourceLoading }] = useSourceLazyQuery();
 
   const [deleteSource] = useDeleteSourceMutation();
 
