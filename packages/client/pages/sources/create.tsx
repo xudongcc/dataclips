@@ -59,6 +59,7 @@ const SourceCreate = () => {
           variables: {
             input: {
               ...values.virtualSource,
+              tables: values?.tables || [],
             },
           },
         });
