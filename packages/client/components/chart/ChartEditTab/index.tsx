@@ -1,6 +1,6 @@
-import { Form, FormInstance, Select, Divider } from "antd";
+import { Form, Select, Divider, Input } from "antd";
 import moment from "antd/node_modules/moment";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import numeral from "numeral";
 import { ResultFragment } from "../../../generated/graphql";
 import { ChartServerConfig, ChartType } from "../../../types";
@@ -13,12 +13,15 @@ import {
   PieChartConfigForm,
 } from "./components";
 
+const { TextArea } = Input;
+
 export const chartTypeToFormFieldMap = {
   [ChartType.FUNNEL]: "funnelConfig",
   [ChartType.LINE]: "lineConfig",
   [ChartType.BAR]: "barConfig",
   [ChartType.METRIC]: "metricConfig",
   [ChartType.PIE]: "pieConfig",
+  [ChartType.MD]: "mdConfig",
 };
 
 enum FormatType {
@@ -76,21 +79,12 @@ export const chartTypeMap = {
 
 interface ChartEditTabProps extends Partial<ChartServerConfig> {
   result?: ResultFragment;
-  form: FormInstance<any>;
 }
 
 export const ChartEditTab: FC<ChartEditTabProps> = ({
   result = { fields: [], values: [] },
-  form,
 }) => {
   const [currentChartType, setCurrentChartType] = useState("");
-
-  useEffect(() => {
-    const type = form.getFieldValue("type");
-    if (type) {
-      setCurrentChartType(type);
-    }
-  }, [form]);
 
   return (
     <div>
@@ -197,7 +191,6 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
             type: ChartType.PIE,
             component: (
               <PieChartConfigForm
-                form={form}
                 editOptionConfig={{
                   keys: result.fields,
                   values: result.fields,
@@ -205,24 +198,29 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
               />
             ),
           },
-          // {
-          //   type: ChartType.MD,
-          //   component: (
-          //     <Textarea
-          //       name="mdConfig.content"
-          //       value={form.values.mdConfig.content}
-          //       onChange={form.handleChange}
-          //       placeholder="请输入 markdown 语法"
-          //     />
-          //   ),
-          // },
+          {
+            type: ChartType.MD,
+            component: (
+              <Form.Item
+                style={{ marginBottom: 0 }}
+                name={["mdConfig", "content"]}
+              >
+                <TextArea placeholder="输入 markdown 语法" />
+              </Form.Item>
+            ),
+          },
         ].find((item) => item.type === currentChartType)?.component
       }
 
+      {/* 只为了监听 type 是否为空，空的话隐藏查询分析配置 */}
       <Form.Item noStyle shouldUpdate>
         {({ getFieldValue }) => {
-          if (!getFieldValue("type")) {
+          const currentType = getFieldValue("type");
+
+          if (!currentType) {
             setCurrentChartType("");
+          } else {
+            setCurrentChartType(currentType);
           }
         }}
       </Form.Item>

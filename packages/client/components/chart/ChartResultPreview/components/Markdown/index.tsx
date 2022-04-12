@@ -8,6 +8,8 @@ export interface MarkdownConfig {
 }
 
 export const Markdown: FC<MarkdownConfig> = ({ content }) => {
+  console.log("content", content);
+
   return (
     <Box
       className="markdown-body"

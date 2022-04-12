@@ -76,10 +76,6 @@ const ChartCreate = () => {
 
   const { data: result } = useQueryResult(selectClipId);
 
-  // if (isLoading) {
-  //   return <Loading />;
-  // }
-
   return (
     <>
       <Head>
@@ -180,7 +176,7 @@ const ChartCreate = () => {
             </GridItem>
             <GridItem colSpan={1}>
               <Card>
-                <ChartEditTab form={form} result={result} />
+                <ChartEditTab result={result} />
               </Card>
             </GridItem>
           </Grid>

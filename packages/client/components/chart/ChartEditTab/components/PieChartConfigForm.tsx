@@ -1,6 +1,7 @@
-// import { Grid, Select, VStack } from "@chakra-ui/react";
 import { FC } from "react";
 import { Form, Select } from "antd";
+
+const { Option } = Select;
 
 export interface PieChartEditConfig {
   keys: string[];
@@ -16,50 +17,36 @@ export const PieChartConfigForm: FC<PieChartConfigFormProps> = ({
 }) => {
   return (
     <>
-      <Form.Item name={["pieConfig", "variant"]}></Form.Item>
+      <Form.Item label="饼图类型" name={["pieConfig", "variant"]}>
+        <Select placeholder="选择类型">
+          <Option value="pie">饼图</Option>
+          <Option value="range">环图</Option>
+        </Select>
+      </Form.Item>
+
+      <Form.Item label="分类" name={["pieConfig", "key"]}>
+        <Select placeholder="选择分类">
+          {editOptionConfig?.keys.map((value) => (
+            <Option value={value} key={value}>
+              {value}
+            </Option>
+          ))}
+        </Select>
+      </Form.Item>
+
+      <Form.Item
+        style={{ marginBottom: 0 }}
+        label="数值列"
+        name={["pieConfig", "value"]}
+      >
+        <Select placeholder="选择数值列">
+          {editOptionConfig?.values.map((value) => (
+            <Option value={value} key={value}>
+              {value}
+            </Option>
+          ))}
+        </Select>
+      </Form.Item>
     </>
-    // <VStack spacing={4}>
-    //   <Grid w="100%" gap={4}>
-    //     <Select
-    //       placeholder="请选择类型"
-    //       size="sm"
-    //       value={form.values.pieConfig.variant}
-    //       onChange={form.handleChange}
-    //       name="pieConfig.variant"
-    //     >
-    //       <option value="pie">饼图</option>
-
-    //       <option value="range">环图</option>
-    //     </Select>
-
-    //     <Select
-    //       placeholder="请选择分类"
-    //       size="sm"
-    //       value={form.values.pieConfig.key}
-    //       onChange={form.handleChange}
-    //       name="pieConfig.key"
-    //     >
-    //       {editOptionConfig?.keys.map((value) => (
-    //         <option value={value} key={value}>
-    //           {value}
-    //         </option>
-    //       ))}
-    //     </Select>
-
-    //     <Select
-    //       placeholder="请选择数值列"
-    //       size="sm"
-    //       value={form.values.pieConfig.value}
-    //       onChange={form.handleChange}
-    //       name="pieConfig.value"
-    //     >
-    //       {editOptionConfig?.values.map((value) => (
-    //         <option value={value} key={value}>
-    //           {value}
-    //         </option>
-    //       ))}
-    //     </Select>
-    //   </Grid>
-    // </VStack>
   );
 };

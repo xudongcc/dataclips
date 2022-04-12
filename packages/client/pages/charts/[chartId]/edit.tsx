@@ -103,6 +103,7 @@ const ChartEdit = () => {
       <Page title={data?.chart?.name}>
         <Form
           form={form}
+          layout="vertical"
           initialValues={{
             ...omit(data?.chart, [
               "createdAt",
@@ -226,7 +227,7 @@ const ChartEdit = () => {
             </GridItem>
             <GridItem colSpan={1}>
               <Card>
-                <ChartEditTab form={form} result={result} />
+                <ChartEditTab result={result} />
               </Card>
             </GridItem>
           </Grid>
