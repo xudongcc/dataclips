@@ -1,23 +1,7 @@
 import ProjectLayout from "../../layouts/ProjectLayout";
-import * as Yup from "yup";
-import { useStep } from "../../components/common/StepsWithCircles/useStep";
 import { useRouter } from "next/router";
-import {
-  useToast,
-  Box,
-  VStack,
-  Container,
-  HStack,
-  FormControl,
-  Select,
-  Text,
-  Button,
-  FormErrorMessage,
-} from "@chakra-ui/react";
-import { useState } from "react";
-import { DatabaseType } from "../../generated/graphql";
-import { useFormik } from "formik";
-import { Step } from "../../components/common/StepsWithCircles/Step";
+import { useToast } from "@chakra-ui/react";
+import { useCallback, useState } from "react";
 import { DataSourceForm } from "../../components/source/DataSourceForm";
 import { VirtualSourceForm } from "../../components/source/VirtualSourceForm";
 import { useCreateVirtualSourceMutation } from "../../hooks/useCreateVirtualSourceMutation";
@@ -25,133 +9,79 @@ import { useCreateDatabaseSourceMutation } from "../../hooks/useCreateDatabaseSo
 import { Card } from "../../components/common/Card/Card";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
+import { Form, Select, Button, Steps, Space, Row } from "antd";
 
-const dataSourceValidObj = {
-  dataSource: Yup.object({
-    name: Yup.string().required(),
-    host: Yup.string().required(),
-    port: Yup.number().required(),
-    database: Yup.string().required(),
-    username: Yup.string().required(),
-    password: Yup.string().required(),
-    type: Yup.string().required(),
-    sshHost: Yup.string().when("sshEnabled", (sshEnabled, schema) => {
-      if (sshEnabled) {
-        return schema.required();
-      }
-    }),
-    sshPort: Yup.number().when("sshEnabled", (sshEnabled, schema) => {
-      if (sshEnabled) {
-        return schema.required();
-      }
-    }),
-    sshUsername: Yup.string().when("sshEnabled", (sshEnabled, schema) => {
-      if (sshEnabled) {
-        return schema.required();
-      }
-    }),
-    sshPassword: Yup.string().when("sshEnabled", (sshEnabled, schema) => {
-      if (sshEnabled) {
-        return schema.required();
-      }
-    }),
-  }),
-};
+const { Option } = Select;
+const { Step } = Steps;
 
-const virtualSourceValidObj = {
-  virtualSource: Yup.object().shape({
-    name: Yup.string().required(),
-    tables: Yup.array().of(
-      Yup.object().shape({
-        name: Yup.string().required(),
-        clipId: Yup.string().required(),
-      })
-    ),
-  }),
-};
+const steps = ["数据源", "配置"];
 
 const SourceCreate = () => {
   const toast = useToast();
   const router = useRouter();
+  const [form] = Form.useForm();
 
-  const numberOfSteps = 2;
-  const [currentStep, { setStep }] = useStep({
-    maxStep: numberOfSteps,
-    initialStep: 0,
-  });
-
-  const [validationDatabaseTypeSchema, setValidationDatabaseTypeSchema] =
-    useState<Record<string, any>>({});
+  const [current, setCurrent] = useState(0);
+  const [currentSourceType, setCurrentSourceType] = useState("");
 
   const [createDataBaseSource, { loading: createDataBaseSourceLoading }] =
     useCreateDatabaseSourceMutation();
   const [createVirtualSource, { loading: createVirtualSourceLoading }] =
     useCreateVirtualSourceMutation();
 
-  const form = useFormik({
-    initialValues: {
-      type: "",
-      dataSource: {
-        name: "",
-        host: "",
-        port: undefined,
-        database: "",
-        username: "",
-        password: "",
-        type: "" as DatabaseType,
-        sshEnabled: false,
-        sshHost: "",
-        sshPort: undefined,
-        sshUsername: "",
-        sshPassword: "",
-      },
-      virtualSource: {
-        name: "",
-        tables: [{ name: "", clipId: "" }],
-      },
-    },
-    isInitialValid: false,
-    validateOnBlur: false,
-    validateOnChange: false,
-    validateOnMount: false,
-    onSubmit: async (values) => {
-      try {
-        if (values.type === "DatabaseSource") {
-          await createDataBaseSource({
-            variables: {
-              input: {
-                ...values.dataSource,
-              },
-            },
-          });
-        }
-
-        if (values.type === "VirtualSource") {
-          await createVirtualSource({
-            variables: {
-              input: {
-                ...values.virtualSource,
-              },
-            },
-          });
-        }
-
-        toast({
-          description: "创建成功",
-          status: "success",
-          isClosable: true,
-        });
-
-        router.push(`/sources`);
-      } catch (err) {
-        console.log("err", err);
+  const getSourceForm = useCallback(
+    (type: "DatabaseSource" | "VirtualSource") => {
+      if (type === "DatabaseSource") {
+        return <DataSourceForm />;
+      } else {
+        return <VirtualSourceForm />;
       }
     },
-    validationSchema: Yup.object().shape({
-      type: Yup.string().required(),
-      ...validationDatabaseTypeSchema,
-    }),
-  });
+    []
+  );
+
+  const handleSubmit = useCallback(async () => {
+    try {
+      const values = await form.validateFields();
+
+      if (currentSourceType === "DatabaseSource") {
+        await createDataBaseSource({
+          variables: {
+            input: {
+              ...values.dataSource,
+            },
+          },
+        });
+      }
+
+      if (currentSourceType === "VirtualSource") {
+        await createVirtualSource({
+          variables: {
+            input: {
+              ...values.virtualSource,
+            },
+          },
+        });
+      }
+
+      toast({
+        description: "创建成功",
+        status: "success",
+        isClosable: true,
+      });
+
+      router.push(`/sources`);
+    } catch (err) {
+      console.log("err", err);
+    }
+  }, [
+    createDataBaseSource,
+    createVirtualSource,
+    currentSourceType,
+    form,
+    router,
+    toast,
+  ]);
 
   return (
     <>
@@ -160,97 +90,79 @@ const SourceCreate = () => {
       </Head>
 
       <Page title="创建数据源">
-        <Card>
-          <Box pt={8}>
-            <HStack spacing="0" justify="space-evenly">
-              {[...Array(numberOfSteps)].map((_, step) => (
-                <Step
-                  stepDescription={step === 0 ? "数据源" : "配置"}
-                  key={step}
-                  cursor={!form.values.type ? "not-allowed" : "pointer"}
-                  onClick={() => {
-                    if (!form.values.type) {
-                      return;
-                    }
-
-                    setValidationDatabaseTypeSchema(
-                      form.values.type === "DatabaseSource"
-                        ? dataSourceValidObj
-                        : virtualSourceValidObj
-                    );
-                    form.setErrors({});
-                    setStep(step);
-                  }}
-                  isActive={currentStep === step}
-                  isCompleted={currentStep > step}
-                  isLastStep={numberOfSteps === step + 1}
-                />
+        <Form form={form}>
+          <Card>
+            <Steps
+              onChange={(c) => {
+                setCurrent(c);
+              }}
+              current={current}
+            >
+              {steps.map((key) => (
+                <Step key={key} title={key} />
               ))}
-            </HStack>
-
-            <form onSubmit={form.handleSubmit}>
-              {currentStep === 0 && (
-                <VStack spacing={4} pt={4}>
-                  <Text textAlign="center">请选择数据源类型</Text>
-
-                  <FormControl isInvalid={!!form.errors.type}>
+            </Steps>
+            <div>
+              {current === 0 ? (
+                <Space
+                  direction="vertical"
+                  style={{ display: "flex", marginTop: 16 }}
+                >
+                  <Form.Item
+                    name="type"
+                    rules={[{ required: true, message: "请选择数据源" }]}
+                  >
                     <Select
-                      name="type"
-                      value={form.values.type}
-                      onChange={form.handleChange}
                       placeholder="请选择数据源"
+                      onChange={(sourceType) => {
+                        setCurrentSourceType(sourceType);
+                      }}
                     >
-                      <option value="DatabaseSource">DatabaseSource</option>
-                      <option value="VirtualSource">VirtualSource</option>
+                      <Option value="DatabaseSource">DatabaseSource</Option>
+                      <Option value="VirtualSource">VirtualSource</Option>
                     </Select>
+                  </Form.Item>
 
-                    <FormErrorMessage>请选择数据源</FormErrorMessage>
-                  </FormControl>
+                  <Row justify="center">
+                    <Button
+                      type="primary"
+                      onClick={async () => {
+                        try {
+                          const values = await form.validateFields();
 
-                  <Button
-                    onClick={async () => {
-                      const res = await form.validateForm();
+                          if (values?.type) {
+                            setCurrent(1);
+                          }
+                        } catch (err) {
+                          console.error(err);
+                        }
+                      }}
+                    >
+                      下一步
+                    </Button>
+                  </Row>
+                </Space>
+              ) : (
+                <div style={{ marginTop: 16 }}>
+                  {getSourceForm(form.getFieldValue("type"))}
 
-                      if (!res.type) {
-                        setValidationDatabaseTypeSchema(
-                          form.values.type === "DatabaseSource"
-                            ? dataSourceValidObj
-                            : virtualSourceValidObj
-                        );
-
-                        setStep(1);
-                        form.setErrors({});
+                  <Row justify="center">
+                    <Button
+                      loading={
+                        createDataBaseSourceLoading ||
+                        createVirtualSourceLoading
                       }
-                    }}
-                  >
-                    下一步
-                  </Button>
-                </VStack>
+                      type="primary"
+                      onClick={handleSubmit}
+                    >
+                      创建
+                    </Button>
+                  </Row>
+                </div>
               )}
-
-              {currentStep === 1 && (
-                <VStack spacing={4} pt={4}>
-                  {form.values.type === "DatabaseSource" && (
-                    <DataSourceForm form={form} />
-                  )}
-
-                  {form.values.type === "VirtualSource" && (
-                    <VirtualSourceForm form={form} />
-                  )}
-
-                  <Button
-                    isLoading={
-                      createDataBaseSourceLoading || createVirtualSourceLoading
-                    }
-                    type="submit"
-                  >
-                    创建
-                  </Button>
-                </VStack>
-              )}
-            </form>
-          </Box>
-        </Card>
+            </div>
+          </Card>
+        </Form>
       </Page>
     </>
   );

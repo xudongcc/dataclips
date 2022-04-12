@@ -1,166 +1,136 @@
-import {
-  Checkbox,
-  FormControl,
-  FormErrorMessage,
-  Input,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Select,
-} from "@chakra-ui/react";
 import { FC } from "react";
+import { Form, Select, Input, Checkbox, InputNumber, Row } from "antd";
+
+const { Option } = Select;
 
 interface DataSourceFormProps {
-  form: any;
+  passwordHasRequired?: boolean;
+  sshPasswordHasRequired?: boolean;
 }
 
-export const DataSourceForm: FC<DataSourceFormProps> = ({ form }) => {
+export const DataSourceForm: FC<DataSourceFormProps> = ({
+  passwordHasRequired = true,
+  sshPasswordHasRequired = true,
+}) => {
   return (
     <>
-      <FormControl isInvalid={!!form.errors.dataSource?.name}>
-        <Input
-          name="dataSource.name"
-          value={form.values.dataSource.name}
-          onChange={form.handleChange}
-          placeholder="请输入数据源名称"
-        />
-        <FormErrorMessage>请输入数据源名称</FormErrorMessage>
-      </FormControl>
-
-      <FormControl isInvalid={!!form.errors.dataSource?.type}>
-        <Select
-          name="dataSource.type"
-          value={form.values.dataSource.type}
-          onChange={form.handleChange}
-          placeholder="请选择数据类型"
-        >
-          <option value="MYSQL">MYSQL</option>
-          <option value="POSTGRESQL">POSTGRESQL</option>
-        </Select>
-
-        <FormErrorMessage>请选择数据类型</FormErrorMessage>
-      </FormControl>
-
-      <FormControl isInvalid={!!form.errors.dataSource?.host}>
-        <Input
-          name="dataSource.host"
-          value={form.values.dataSource.host}
-          onChange={form.handleChange}
-          placeholder="请输入主机名称"
-        />
-        <FormErrorMessage>请输入主机名称</FormErrorMessage>
-      </FormControl>
-
-      <FormControl isInvalid={!!form.errors.dataSource?.port}>
-        <NumberInput
-          value={form.values.dataSource.port}
-          onChange={(value) => {
-            form.setFieldValue("dataSource.port", +value);
-          }}
-          name="dataSource.port"
-        >
-          <NumberInputField type="number" placeholder="请输入端口号" />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
-        <FormErrorMessage>请输入端口号</FormErrorMessage>
-      </FormControl>
-
-      <FormControl isInvalid={!!form.errors.dataSource?.database}>
-        <Input
-          name="dataSource.database"
-          value={form.values.dataSource.database}
-          onChange={form.handleChange}
-          placeholder="请输入数据库名称"
-        />
-        <FormErrorMessage>请输入数据库名称</FormErrorMessage>
-      </FormControl>
-
-      <FormControl isInvalid={!!form.errors.dataSource?.username}>
-        <Input
-          name="dataSource.username"
-          value={form.values.dataSource.username}
-          onChange={form.handleChange}
-          placeholder="请输入用户名"
-        />
-        <FormErrorMessage>请输入用户名</FormErrorMessage>
-      </FormControl>
-
-      <FormControl isInvalid={!!form.errors.dataSource?.password}>
-        <Input
-          type="password"
-          name="dataSource.password"
-          value={form.values.dataSource.password}
-          onChange={form.handleChange}
-          placeholder="请输入密码"
-        />
-        <FormErrorMessage>请输入密码</FormErrorMessage>
-      </FormControl>
-
-      <Checkbox
-        name="dataSource.sshEnabled"
-        isChecked={form.values.dataSource.sshEnabled}
-        onChange={form.handleChange}
+      <Form.Item
+        name={["dataSource", "name"]}
+        rules={[{ required: true, message: "请输入数据源名称" }]}
       >
-        启用 ssh
-      </Checkbox>
+        <Input placeholder="请输入数据源名称" />
+      </Form.Item>
 
-      {form.values.dataSource.sshEnabled && (
-        <>
-          <FormControl isInvalid={!!form.errors.dataSource?.sshHost}>
-            <Input
-              name="dataSource.sshHost"
-              value={form.values.dataSource.sshHost}
-              onChange={form.handleChange}
-              placeholder="请输入 ssh 主机"
-            />
-            <FormErrorMessage>请输入 ssh 主机</FormErrorMessage>
-          </FormControl>
+      <Form.Item
+        name={["dataSource", "type"]}
+        rules={[{ required: true, message: "请选择数据类型" }]}
+      >
+        <Select placeholder="请选择数据类型">
+          <Option value="MYSQL">MYSQL</Option>
+          <Option value="POSTGRESQL">POSTGRESQL</Option>
+        </Select>
+      </Form.Item>
 
-          <FormControl isInvalid={!!form.errors.dataSource?.sshPort}>
-            <NumberInput
-              w="100%"
-              name="dataSource.sshPort"
-              value={form.values.dataSource.sshPort}
-              onChange={(value) => {
-                form.setFieldValue("dataSource.sshPort", +value);
-              }}
-            >
-              <NumberInputField type="number" placeholder="请输入 ssh 端口号" />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-            <FormErrorMessage>请输入 ssh 端口号</FormErrorMessage>
-          </FormControl>
+      <Form.Item
+        name={["dataSource", "host"]}
+        rules={[{ required: true, message: "请输入主机名称" }]}
+      >
+        <Input placeholder="请输入主机名称" />
+      </Form.Item>
 
-          <FormControl isInvalid={!!form.errors.dataSource?.sshUsername}>
-            <Input
-              name="dataSource.sshUsername"
-              value={form.values.dataSource.sshUsername}
-              onChange={form.handleChange}
-              placeholder="请输入 ssh 用户名"
-            />
-            <FormErrorMessage>请输入 ssh 用户名</FormErrorMessage>
-          </FormControl>
+      <Form.Item
+        name={["dataSource", "port"]}
+        rules={[{ required: true, message: "请输入端口号" }]}
+      >
+        <InputNumber
+          style={{ width: "100%" }}
+          placeholder="请输入端口号"
+        ></InputNumber>
+      </Form.Item>
 
-          <FormControl isInvalid={!!form.errors.dataSource?.sshPassword}>
-            <Input
-              type="password"
-              name="dataSource.sshPassword"
-              value={form.values.dataSource.sshPassword}
-              onChange={form.handleChange}
-              placeholder="请输入 ssh 密码"
-            />
-            <FormErrorMessage>请输入 ssh 密码</FormErrorMessage>
-          </FormControl>
-        </>
-      )}
+      <Form.Item
+        name={["dataSource", "database"]}
+        rules={[{ required: true, message: "请输入数据库名称" }]}
+      >
+        <Input placeholder="请输入数据库名称"></Input>
+      </Form.Item>
+
+      <Form.Item
+        name={["dataSource", "username"]}
+        rules={[{ required: true, message: "请输入用户名" }]}
+      >
+        <Input placeholder="请输入用户名"></Input>
+      </Form.Item>
+
+      <Form.Item
+        name={["dataSource", "password"]}
+        rules={[
+          {
+            required: passwordHasRequired ? true : false,
+            message: "请输入密码",
+          },
+        ]}
+      >
+        <Input type="password" placeholder="请输入密码"></Input>
+      </Form.Item>
+
+      <Row justify="center">
+        <Form.Item valuePropName="checked" name={["dataSource", "sshEnabled"]}>
+          <Checkbox>启用 ssh</Checkbox>
+        </Form.Item>
+      </Row>
+
+      <Form.Item noStyle shouldUpdate>
+        {({ getFieldValue }) => {
+          const sshEnabled = getFieldValue(["dataSource", "sshEnabled"]);
+
+          if (sshEnabled) {
+            return (
+              <>
+                <Form.Item
+                  name={["dataSource", "sshHost"]}
+                  rules={[{ required: true, message: "请输入 ssh 主机" }]}
+                >
+                  <Input placeholder="请输入 ssh 主机" />
+                </Form.Item>
+
+                <Form.Item
+                  name={["dataSource", "sshPort"]}
+                  rules={[{ required: true, message: "请输入 ssh 端口号" }]}
+                >
+                  <InputNumber
+                    style={{ width: "100%" }}
+                    placeholder="请输入 ssh 端口号"
+                  ></InputNumber>
+                </Form.Item>
+
+                <Form.Item
+                  name={["dataSource", "sshUsername"]}
+                  rules={[{ required: true, message: "请输入 ssh 用户名" }]}
+                >
+                  <Input placeholder="请输入 ssh 用户名" />
+                </Form.Item>
+
+                <Form.Item
+                  rules={[
+                    {
+                      required: sshPasswordHasRequired ? true : false,
+                      message: "请输入 ssh 密码",
+                    },
+                  ]}
+                  name={["dataSource", "sshPassword"]}
+                >
+                  <Input
+                    type="password"
+                    name="dataSource.sshPassword"
+                    placeholder="请输入 ssh 密码"
+                  />
+                </Form.Item>
+              </>
+            );
+          }
+        }}
+      </Form.Item>
     </>
   );
 };
