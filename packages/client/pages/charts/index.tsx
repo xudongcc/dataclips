@@ -1,143 +1,115 @@
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useRouter } from "next/router";
-import { useToast, Link, Text, Center, Divider } from "@chakra-ui/react";
+import { useToast, Link } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { useMemo } from "react";
-import { Table } from "../../components/common/Table";
-import { useChartConnectionQuery } from "../../generated/graphql";
+import { useChartConnectionLazyQuery } from "../../generated/graphql";
 import { chartTypeMap } from "../../components/chart/ChartEditTab";
-import moment from "moment";
-import { Column, TableOptions } from "react-table";
 import { Page } from "../../components/common/Page";
 import { useDeleteChartMutation } from "../../hooks/useDeleteChartMutation";
 import Head from "next/head";
 import { Modal } from "../../components/common/Modal";
+import {
+  GraphQLTable,
+  GraphQLTableColumnType,
+} from "../../components/common/GraphQLTable";
+import { ValueType } from "../../components/common/SimpleTable";
+import { Divider, Space } from "antd";
 
 const ChartList = () => {
   const router = useRouter();
 
   const toast = useToast();
 
-  const { data, loading: dataLoading } = useChartConnectionQuery({
-    variables: { first: 100 },
+  const [getCharts, { data, loading }] = useChartConnectionLazyQuery({
+    notifyOnNetworkStatusChange: true,
+    // fetchPolicy: "no-cache",
   });
+
   const [deleteChart] = useDeleteChartMutation();
 
-  const tableProps = useMemo<TableOptions<any>>(() => {
-    const columns: Column<any>[] = [
-      {
-        Header: "name",
-        accessor: "name",
-        Cell: ({
-          row: {
-            original: { id, name },
-          },
-        }) => {
-          return (
-            <NextLink href={`/charts/${id}`} passHref>
-              <Link color="blue.500">{name}</Link>
-            </NextLink>
-          );
-        },
+  const columns: GraphQLTableColumnType<any>[] = [
+    {
+      title: "名称",
+      dataIndex: "name",
+      key: "name",
+      render: (name, record) => {
+        return (
+          <NextLink href={`/charts/${record?.id}`} passHref>
+            <Link color="blue.500">{name}</Link>
+          </NextLink>
+        );
       },
-      {
-        Header: "type",
-        accessor: "type",
-        Cell: ({
-          row: {
-            values: { type },
-          },
-        }) => {
-          return chartTypeMap[type];
-        },
-      },
-      {
-        Header: "updatedAt",
-        accessor: "updatedAt",
-        Cell: ({
-          row: {
-            values: { updatedAt },
-          },
-        }) => {
-          return moment(updatedAt).format("YYYY-MM-DD HH:mm:ss");
-        },
-      },
-      {
-        Header: () => {
-          return (
-            <Text w="100%" textAlign="center">
-              operation
-            </Text>
-          );
-        },
-        accessor: "operation",
-        Cell: ({
-          row: {
-            original: { id, name },
-          },
-        }) => {
-          return (
-            <Center>
-              <Link
-                color="blue.500"
-                onClick={() => {
-                  router.push(`/charts/${id}/edit`);
-                }}
-              >
-                编辑
-              </Link>
+    },
+    {
+      title: "类型",
+      dataIndex: "type",
+      key: "type",
+      render: (type) => chartTypeMap[type],
+    },
+    {
+      title: "最后更新时间",
+      align: "center",
+      dataIndex: "updatedAt",
+      key: "updatedAt",
+      valueType: ValueType.DATE_TIME,
+    },
+    {
+      title: "操作",
+      dataIndex: "operation",
+      key: "operation",
+      align: "center",
+      render: (_, record) => {
+        return (
+          <Space>
+            <Link
+              color="blue.500"
+              onClick={() => {
+                router.push(`/charts/${record?.id}/edit`);
+              }}
+            >
+              编辑
+            </Link>
 
-              <Divider orientation="vertical" px={2}></Divider>
+            <Divider type="vertical" />
 
-              <Link
-                onClick={() => {
-                  const modal = Modal.confirm({
-                    title: "删除图表",
-                    content: `确定删除名称为 ${name} 的图表吗？`,
-                    okButtonProps: {
-                      danger: true,
-                    },
-                    okText: "确定",
-                    cancelText: "取消",
-                    onOk: async () => {
-                      modal.update({
-                        okButtonProps: { loading: true },
-                      });
+            <Link
+              onClick={() => {
+                const modal = Modal.confirm({
+                  title: "删除图表",
+                  content: `确定删除名称为 ${record?.name} 的图表？`,
+                  okText: "确定",
+                  okButtonProps: {
+                    danger: true,
+                  },
+                  cancelText: "取消",
+                  onOk: async () => {
+                    try {
+                      modal.update({ okButtonProps: { loading: true } });
 
-                      await deleteChart({ variables: { id } });
+                      await deleteChart({ variables: { id: record?.id } });
+
+                      modal.update({ okButtonProps: { loading: false } });
 
                       toast({
                         description: "删除成功",
                         status: "success",
                         isClosable: true,
                       });
-
-                      modal.update({
-                        okButtonProps: { loading: false },
-                      });
-                    },
-                  });
-                }}
-                color="red.500"
-              >
-                删除
-              </Link>
-            </Center>
-          );
-        },
+                    } catch (err) {
+                      console.error("err", err);
+                    }
+                  },
+                });
+              }}
+              color="red.500"
+            >
+              删除
+            </Link>
+          </Space>
+        );
       },
-    ];
-
-    columns.push();
-
-    const options: TableOptions<any> = {
-      columns,
-      data: data?.chartConnection.edges?.map((item) => item.node) || [],
-      loading: dataLoading,
-    };
-
-    return options;
-  }, [data?.chartConnection.edges, dataLoading, deleteChart, router, toast]);
+    },
+  ];
 
   return (
     <>
@@ -154,7 +126,18 @@ const ChartList = () => {
           },
         }}
       >
-        <Table {...tableProps} />
+        <GraphQLTable
+          id="charts"
+          pageSize={100}
+          // pageInfo={data?.clipConnection?.pageInfo}
+          options={false}
+          onVariablesChange={(variables) => {
+            getCharts({ variables });
+          }}
+          columns={columns}
+          dataSource={data?.chartConnection?.edges?.map((item) => item?.node)}
+          loading={loading}
+        />
       </Page>
     </>
   );

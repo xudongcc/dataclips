@@ -647,6 +647,7 @@ export type ChartConnectionQueryVariables = Exact<{
   after?: InputMaybe<Scalars['String']>;
   query?: InputMaybe<Scalars['String']>;
   orderBy?: InputMaybe<Ordering>;
+  filter?: InputMaybe<Scalars['String']>;
 }>;
 
 
@@ -666,6 +667,7 @@ export type ClipConnectionQueryVariables = Exact<{
   after?: InputMaybe<Scalars['String']>;
   query?: InputMaybe<Scalars['String']>;
   orderBy?: InputMaybe<Ordering>;
+  filter?: InputMaybe<Scalars['String']>;
 }>;
 
 
@@ -685,6 +687,7 @@ export type DashboardConnectionQueryVariables = Exact<{
   after?: InputMaybe<Scalars['String']>;
   query?: InputMaybe<Scalars['String']>;
   orderBy?: InputMaybe<Ordering>;
+  filter?: InputMaybe<Scalars['String']>;
 }>;
 
 
@@ -704,6 +707,7 @@ export type SourceConnectionQueryVariables = Exact<{
   after?: InputMaybe<Scalars['String']>;
   query?: InputMaybe<Scalars['String']>;
   orderBy?: InputMaybe<Ordering>;
+  filter?: InputMaybe<Scalars['String']>;
 }>;
 
 
@@ -1305,7 +1309,7 @@ export type ChartQueryHookResult = ReturnType<typeof useChartQuery>;
 export type ChartLazyQueryHookResult = ReturnType<typeof useChartLazyQuery>;
 export type ChartQueryResult = Apollo.QueryResult<ChartQuery, ChartQueryVariables>;
 export const ChartConnectionDocument = gql`
-    query ChartConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering) {
+    query ChartConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering, $filter: String) {
   chartConnection: charts(
     first: $first
     last: $last
@@ -1313,6 +1317,7 @@ export const ChartConnectionDocument = gql`
     after: $after
     query: $query
     orderBy: $orderBy
+    filter: $filter
   ) {
     edges {
       node {
@@ -1348,6 +1353,7 @@ export const ChartConnectionDocument = gql`
  *      after: // value for 'after'
  *      query: // value for 'query'
  *      orderBy: // value for 'orderBy'
+ *      filter: // value for 'filter'
  *   },
  * });
  */
@@ -1398,7 +1404,7 @@ export type ClipQueryHookResult = ReturnType<typeof useClipQuery>;
 export type ClipLazyQueryHookResult = ReturnType<typeof useClipLazyQuery>;
 export type ClipQueryResult = Apollo.QueryResult<ClipQuery, ClipQueryVariables>;
 export const ClipConnectionDocument = gql`
-    query ClipConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering) {
+    query ClipConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering, $filter: String) {
   clipConnection: clips(
     first: $first
     last: $last
@@ -1406,6 +1412,7 @@ export const ClipConnectionDocument = gql`
     after: $after
     query: $query
     orderBy: $orderBy
+    filter: $filter
   ) {
     edges {
       node {
@@ -1444,6 +1451,7 @@ export const ClipConnectionDocument = gql`
  *      after: // value for 'after'
  *      query: // value for 'query'
  *      orderBy: // value for 'orderBy'
+ *      filter: // value for 'filter'
  *   },
  * });
  */
@@ -1494,7 +1502,7 @@ export type DashboardQueryHookResult = ReturnType<typeof useDashboardQuery>;
 export type DashboardLazyQueryHookResult = ReturnType<typeof useDashboardLazyQuery>;
 export type DashboardQueryResult = Apollo.QueryResult<DashboardQuery, DashboardQueryVariables>;
 export const DashboardConnectionDocument = gql`
-    query DashboardConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering) {
+    query DashboardConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering, $filter: String) {
   dashboardConnection: dashboards(
     first: $first
     last: $last
@@ -1502,6 +1510,7 @@ export const DashboardConnectionDocument = gql`
     after: $after
     query: $query
     orderBy: $orderBy
+    filter: $filter
   ) {
     edges {
       node {
@@ -1537,6 +1546,7 @@ export const DashboardConnectionDocument = gql`
  *      after: // value for 'after'
  *      query: // value for 'query'
  *      orderBy: // value for 'orderBy'
+ *      filter: // value for 'filter'
  *   },
  * });
  */
@@ -1589,7 +1599,7 @@ export type SourceQueryHookResult = ReturnType<typeof useSourceQuery>;
 export type SourceLazyQueryHookResult = ReturnType<typeof useSourceLazyQuery>;
 export type SourceQueryResult = Apollo.QueryResult<SourceQuery, SourceQueryVariables>;
 export const SourceConnectionDocument = gql`
-    query SourceConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering) {
+    query SourceConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering, $filter: String) {
   sourceConnection: sources(
     first: $first
     last: $last
@@ -1597,6 +1607,7 @@ export const SourceConnectionDocument = gql`
     after: $after
     query: $query
     orderBy: $orderBy
+    filter: $filter
   ) {
     edges {
       node {
@@ -1653,6 +1664,7 @@ export const SourceConnectionDocument = gql`
  *      after: // value for 'after'
  *      query: // value for 'query'
  *      orderBy: // value for 'orderBy'
+ *      filter: // value for 'filter'
  *   },
  * });
  */

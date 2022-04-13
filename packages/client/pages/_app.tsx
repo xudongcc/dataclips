@@ -12,6 +12,7 @@ import { queryClient } from "../lib/queryClient";
 // import { ReactQueryDevtools } from "react-query/devtools";
 import { ConfigProvider as AntdConfigProvider } from "antd";
 import "../style/index.less";
+import { ThemeProvider } from "styled-components";
 
 const App: FC<AppProps & { Component: PC }> = ({
   Component,
@@ -25,20 +26,22 @@ const App: FC<AppProps & { Component: PC }> = ({
   return (
     <>
       <ChakraProvider theme={theme}>
-        <AntdConfigProvider>
-          <SessionProvider session={session}>
-            <ApolloProvider client={getApolloClient(null, apolloState)}>
-              <QueryClientProvider client={queryClient}>
-                <Layout>
-                  <Component {...pageProps} />
+        <ThemeProvider theme={{}}>
+          <AntdConfigProvider>
+            <SessionProvider session={session}>
+              <ApolloProvider client={getApolloClient(null, apolloState)}>
+                <QueryClientProvider client={queryClient}>
+                  <Layout>
+                    <Component {...pageProps} />
 
-                  {/* 调试的时候可打开 */}
-                  {/* <ReactQueryDevtools initialIsOpen={false} /> */}
-                </Layout>
-              </QueryClientProvider>
-            </ApolloProvider>
-          </SessionProvider>
-        </AntdConfigProvider>
+                    {/* 调试的时候可打开 */}
+                    {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+                  </Layout>
+                </QueryClientProvider>
+              </ApolloProvider>
+            </SessionProvider>
+          </AntdConfigProvider>
+        </ThemeProvider>
       </ChakraProvider>
     </>
   );

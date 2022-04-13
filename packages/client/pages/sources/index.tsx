@@ -5,32 +5,35 @@ import { useState } from "react";
 import {
   DatabaseSource,
   UpdateDatabaseSourceInput,
-  useSourceConnectionQuery,
   useSourceLazyQuery,
   useUpdateDatabaseSourceMutation,
   useUpdateVirtualSourceMutation,
   VirtualSource,
+  useSourceConnectionLazyQuery,
 } from "../../generated/graphql";
 import { useDeleteSourceMutation } from "../../hooks/useDeleteSourceMutation";
 import { omit } from "lodash";
-import { useCallback, useMemo } from "react";
-import { Column, TableOptions } from "react-table";
-import moment from "moment";
+import { useCallback } from "react";
 import { DataSourceForm } from "../../components/source/DataSourceForm";
 import { VirtualSourceForm } from "../../components/source/VirtualSourceForm";
-import { Table } from "../../components/common/Table";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
 import { Modal } from "../../components/common/Modal";
 import { Form } from "antd";
+import {
+  GraphQLTable,
+  GraphQLTableColumnType,
+} from "../../components/common/GraphQLTable";
+import { ValueType } from "../../components/common/SimpleTable";
 
 const SourceList = () => {
   const router = useRouter();
   const toast = useToast();
   const [form] = Form.useForm();
 
-  const { data, loading } = useSourceConnectionQuery({
-    variables: { first: 100 },
+  const [getSources, { data, loading }] = useSourceConnectionLazyQuery({
+    notifyOnNetworkStatusChange: true,
+    // fetchPolicy: "no-cache",
   });
 
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -105,151 +108,123 @@ const SourceList = () => {
     updateVirtualSource,
   ]);
 
-  const tableProps = useMemo<TableOptions<any>>(() => {
-    const columns: Column<any>[] = [
-      {
-        Header: "name",
-        accessor: "name",
-        Cell: ({
-          row: {
-            original: { id, name, typename },
-          },
-        }) => {
-          return (
-            <Link
-              onClick={async () => {
-                setSelectedSource({ id, type: typename });
-                setEditModalVisible(true);
+  const columns: GraphQLTableColumnType<any>[] = [
+    {
+      title: "名称",
+      dataIndex: "name",
+      key: "name",
+      render: (name, record) => {
+        return (
+          <Link
+            onClick={async () => {
+              setSelectedSource({ id: record?.id, type: record?.typename });
+              setEditModalVisible(true);
 
-                const result = await getSource({ variables: { id } });
+              const result = await getSource({ variables: { id: record?.id } });
 
-                const source = result.data?.source as
-                  | DatabaseSource
-                  | VirtualSource
-                  | undefined;
+              const source = result.data?.source as
+                | DatabaseSource
+                | VirtualSource
+                | undefined;
 
-                try {
-                  if (typename === "DatabaseSource") {
-                    if (source) {
-                      form.setFieldsValue({
-                        dataSource: {
-                          name: (source as DatabaseSource).name,
-                          host: (source as DatabaseSource).host,
-                          port: (source as DatabaseSource).port!,
-                          database: (source as DatabaseSource).database!,
-                          username: (source as DatabaseSource).username,
-                          password: "",
-                          type: (source as DatabaseSource).type,
-                          sshEnabled: (source as DatabaseSource).sshEnabled,
-                          sshHost: (source as DatabaseSource).sshHost || "",
-                          sshPort:
-                            (source as DatabaseSource).sshPort || undefined,
-                          sshUsername:
-                            (source as DatabaseSource).sshUsername || "",
-                        },
-                      });
-                    }
+              try {
+                if (record?.typename === "DatabaseSource") {
+                  if (source) {
+                    form.setFieldsValue({
+                      dataSource: {
+                        name: (source as DatabaseSource).name,
+                        host: (source as DatabaseSource).host,
+                        port: (source as DatabaseSource).port!,
+                        database: (source as DatabaseSource).database!,
+                        username: (source as DatabaseSource).username,
+                        password: "",
+                        type: (source as DatabaseSource).type,
+                        sshEnabled: (source as DatabaseSource).sshEnabled,
+                        sshHost: (source as DatabaseSource).sshHost || "",
+                        sshPort:
+                          (source as DatabaseSource).sshPort || undefined,
+                        sshUsername:
+                          (source as DatabaseSource).sshUsername || "",
+                      },
+                    });
                   }
-
-                  if (typename === "VirtualSource") {
-                    if (source) {
-                      form.setFieldsValue({
-                        virtualSource: {
-                          name: (source as VirtualSource).name,
-                          tables: (source as VirtualSource).tables.map(
-                            (table) => ({
-                              name: table.name,
-                              clipId: table.clipId,
-                              id: table.id,
-                            })
-                          ),
-                        },
-                      });
-                    }
-                  }
-                } catch (err) {
-                  console.log("err", err);
                 }
-              }}
-              color="blue.500"
-            >
-              {name}
-            </Link>
-          );
-        },
+
+                if (record?.typename === "VirtualSource") {
+                  if (source) {
+                    form.setFieldsValue({
+                      virtualSource: {
+                        name: (source as VirtualSource).name,
+                        tables: (source as VirtualSource).tables.map(
+                          (table) => ({
+                            name: table.name,
+                            clipId: table.clipId,
+                            id: table.id,
+                          })
+                        ),
+                      },
+                    });
+                  }
+                }
+              } catch (err) {
+                console.log("err", err);
+              }
+            }}
+            color="blue.500"
+          >
+            {name}
+          </Link>
+        );
       },
-      {
-        Header: "updatedAt",
-        accessor: "updatedAt",
-        Cell: ({
-          row: {
-            values: { updatedAt },
-          },
-        }) => {
-          return moment(updatedAt).format("YYYY-MM-DD HH:mm:ss");
-        },
+    },
+    {
+      title: "最后更新时间",
+      align: "center",
+      dataIndex: "updatedAt",
+      key: "updatedAt",
+      valueType: ValueType.DATE_TIME,
+    },
+    {
+      title: "操作",
+      dataIndex: "operation",
+      align: "center",
+      key: "operation",
+      render: (_, record) => {
+        return (
+          <Link
+            onClick={() => {
+              const modal = Modal.confirm({
+                title: "删除数据源",
+                content: `确定删除名称为 ${record?.name} 的数据源？`,
+                okText: "确认",
+                cancelText: "取消",
+                onOk: async () => {
+                  try {
+                    modal.update({ okButtonProps: { loading: true } });
+
+                    await deleteSource({ variables: { id: record?.id } });
+
+                    modal.update({ okButtonProps: { loading: false } });
+
+                    toast({
+                      description: "删除成功",
+                      status: "success",
+                      isClosable: true,
+                    });
+                  } catch (err) {
+                    console.error(err);
+                  }
+                },
+              });
+            }}
+            color="red.500"
+          >
+            删除
+          </Link>
+        );
       },
-      {
-        Header: "operation",
-        accessor: "operation",
-        Cell: ({
-          row: {
-            original: { id, typename },
-          },
-        }) => {
-          return (
-            <Link
-              onClick={() => {
-                const modal = Modal.confirm({
-                  title: "删除数据源",
-                  content: `确定删除名称为 ${typename} 的数据源？`,
-                  okText: "确认",
-                  cancelText: "取消",
-                  onOk: async () => {
-                    try {
-                      modal.update({ okButtonProps: { loading: true } });
-
-                      await deleteSource({ variables: { id } });
-
-                      modal.update({ okButtonProps: { loading: false } });
-
-                      toast({
-                        description: "删除成功",
-                        status: "success",
-                        isClosable: true,
-                      });
-                    } catch (err) {
-                      console.error(err);
-                    }
-                  },
-                });
-              }}
-              color="red.500"
-            >
-              删除
-            </Link>
-          );
-        },
-      },
-    ];
-
-    columns.push();
-
-    const options: TableOptions<any> = {
-      columns,
-      data: data?.sourceConnection.edges?.map((item) => item.node) || [],
-      loading,
-    };
-
-    return options;
-  }, [
-    data?.sourceConnection.edges,
-    deleteSource,
-    form,
-    getSource,
-    loading,
-    toast,
-  ]);
+    },
+  ];
 
   return (
     <>
@@ -266,7 +241,18 @@ const SourceList = () => {
           },
         }}
       >
-        <Table {...tableProps} />
+        <GraphQLTable
+          id="clips"
+          pageSize={100}
+          // pageInfo={data?.clipConnection?.pageInfo}
+          options={false}
+          onVariablesChange={(variables) => {
+            getSources({ variables });
+          }}
+          columns={columns}
+          dataSource={data?.sourceConnection?.edges?.map((item) => item?.node)}
+          loading={loading}
+        />
 
         {/* 编辑 modal */}
         <Modal
@@ -289,12 +275,10 @@ const SourceList = () => {
               <DataSourceForm
                 passwordHasRequired={false}
                 sshPasswordHasRequired={false}
-              ></DataSourceForm>
+              />
             )}
 
-            {selectedSource?.type === "VirtualSource" && (
-              <VirtualSourceForm></VirtualSourceForm>
-            )}
+            {selectedSource?.type === "VirtualSource" && <VirtualSourceForm />}
           </Form>
         </Modal>
       </Page>

@@ -15,7 +15,7 @@ import { signOut, useSession } from "next-auth/react";
 import { Loading } from "../../components/common/Loading";
 import { routes } from "../../router";
 import NextLink from "next/link";
-import { LeftOutlined } from "@ant-design/icons";
+import { LeftOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -174,20 +174,39 @@ const ProjectLayout: FC = ({ children }) => {
             <Row justify="space-between">
               {/* logo */}
               <Col style={{ display: "flex", alignItems: "center" }}>
-                <Image
-                  onClick={() => {
-                    if (window.document.body.clientWidth <= 768 && collapsed) {
-                      setMenuDrawerVisible(true);
-                    } else {
-                      setCollapsed(false);
-                    }
-                  }}
-                  style={{ cursor: "pointer" }}
-                  src="/dataclip.png"
-                  width={32}
-                  preview={false}
-                  alt="data-clip"
-                />
+                {collapsed ? (
+                  <MenuUnfoldOutlined
+                    style={{ fontSize: 18, cursor: "pointer" }}
+                    onClick={() => {
+                      if (
+                        window.document.body.clientWidth <= 768 &&
+                        collapsed
+                      ) {
+                        setMenuDrawerVisible(true);
+                      } else {
+                        setCollapsed(false);
+                      }
+                    }}
+                  />
+                ) : (
+                  <Image
+                    onClick={() => {
+                      if (
+                        window.document.body.clientWidth <= 768 &&
+                        collapsed
+                      ) {
+                        setMenuDrawerVisible(true);
+                      } else {
+                        setCollapsed(false);
+                      }
+                    }}
+                    style={{ cursor: "pointer" }}
+                    src="/dataclip.png"
+                    width={32}
+                    preview={false}
+                    alt="data-clip"
+                  />
+                )}
               </Col>
 
               {/* 头像 */}
