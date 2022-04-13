@@ -1,6 +1,7 @@
-import { Checkbox, Grid, Select, VStack } from "@chakra-ui/react";
 import { FC } from "react";
-import { Select as ChakraSelect } from "chakra-react-select";
+import { Select, Form, Checkbox } from "antd";
+
+const { Option } = Select;
 
 export interface BarChartEditConfig {
   xCol: string[];
@@ -8,77 +9,56 @@ export interface BarChartEditConfig {
 }
 
 interface BarChartConfigFormProps {
-  form: any;
   editOptionConfig?: BarChartEditConfig;
 }
 
 export const BarChartConfigForm: FC<BarChartConfigFormProps> = ({
-  form,
   editOptionConfig,
 }) => {
   return (
-    <VStack spacing={4}>
-      <Grid w="100%" gap={4}>
-        <Select
-          placeholder="请选择方向"
-          size="sm"
-          value={form.values.barConfig.variant}
-          onChange={form.handleChange}
-          name="barConfig.variant"
-        >
-          <option value="horizontal">水平</option>
-          <option value="vertical">垂直</option>
+    <>
+      <Form.Item label="方向" name={["barConfig", "variant"]}>
+        <Select allowClear placeholder="请选择方向">
+          <Option value="horizontal">水平</Option>
+          <Option value="vertical">垂直</Option>
         </Select>
+      </Form.Item>
 
-        <Select
-          placeholder="请选择 x 轴"
-          size="sm"
-          value={form.values.barConfig.xCol}
-          onChange={form.handleChange}
-          name="barConfig.xCol"
-        >
+      <Form.Item label="x 轴字段" name={["barConfig", "xCol"]}>
+        <Select allowClear placeholder="选择 x 轴">
           {editOptionConfig?.xCol.map((value) => (
-            <option value={value} key={value}>
+            <Option value={value} key={value}>
               {value}
-            </option>
+            </Option>
           ))}
         </Select>
+      </Form.Item>
 
-        <ChakraSelect
-          size="sm"
-          name="barConfig.yCol"
-          value={form.values.barConfig.yCol}
-          onChange={(values) => {
-            if (!values.length) {
-              form.setFieldValue("barConfig.yCol", []);
-            } else {
-              form.setFieldValue("barConfig.yCol", values);
-            }
-          }}
-          placeholder="请选择 y 轴"
-          isMulti
-          options={editOptionConfig?.yCol.map((value) => ({
-            label: value,
-            value,
-          }))}
-        />
+      <Form.Item label="y 轴字段" name={["barConfig", "yCol"]}>
+        <Select allowClear mode="multiple" placeholder="选择 y 轴">
+          {editOptionConfig?.xCol.map((value) => (
+            <Option value={value} key={value}>
+              {value}
+            </Option>
+          ))}
+        </Select>
+      </Form.Item>
 
-        <Checkbox
-          name="barConfig.isStack"
-          isChecked={form.values.barConfig.isStack}
-          onChange={form.handleChange}
-        >
-          显示堆栈
-        </Checkbox>
+      <Form.Item
+        style={{ marginBottom: 0 }}
+        valuePropName="checked"
+        name={["barConfig", "isStack"]}
+      >
+        <Checkbox>显示堆栈</Checkbox>
+      </Form.Item>
 
-        <Checkbox
-          name="barConfig.reverseOrder"
-          isChecked={form.values.barConfig.reverseOrder}
-          onChange={form.handleChange}
-        >
-          反序
-        </Checkbox>
-      </Grid>
-    </VStack>
+      <Form.Item
+        style={{ marginBottom: 0 }}
+        valuePropName="checked"
+        name={["barConfig", "reverseOrder"]}
+      >
+        <Checkbox>反序</Checkbox>
+      </Form.Item>
+    </>
   );
 };

@@ -10,13 +10,13 @@ import { sumBy } from "lodash";
 import { FC, useMemo } from "react";
 import { ResultFragment } from "../../../../../generated/graphql";
 import { formatPercent } from "../../../../../utils/formatPercent";
-import { getFormatValue } from "../../../ChartEditTab/components/FormatFieldForm";
+import { getFormatValue } from "../../../ChartEditTab";
 
 export interface PieChartConfig {
-  variant: string;
-  key: string;
-  value: string;
-  format: string;
+  variant?: string;
+  key?: string;
+  value?: string;
+  format?: string;
 }
 
 interface PieChartPreviewProps {
@@ -30,7 +30,7 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
 }) => {
   const data = useMemo(() => {
     if (!result?.error) {
-      if (config.key && config.value) {
+      if (config?.key && config?.value) {
         const keyIndex = result.fields.findIndex((key) => key === config.key);
         const valueIndex = result.fields.findIndex(
           (key) => key === config.value
@@ -61,24 +61,24 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
     return null;
   }
 
-  return config.variant === "range" ? (
+  return config?.variant === "range" ? (
     <DonutChart
       tooltip={{
-        fields: [config.key, config.value, "format"],
+        fields: [config?.key, config?.value, "format"],
         formatter: (item) => ({
-          name: item[config.key],
-          value: getFormatValue(item[config.value], item.format),
+          name: item[config?.key],
+          value: getFormatValue(item[config?.value], item?.format),
         }),
       }}
       label={{
         formatter: (_, value) =>
-          getFormatValue(value._origin?.[config.value], value._origin?.format),
+          getFormatValue(value._origin?.[config?.value], value._origin?.format),
       }}
       statistic={{
         content: {
           formatter: (_, values) =>
             getFormatValue(
-              sumBy(values, (o) => o?.[config.value]),
+              sumBy(values, (o) => o?.[config?.value]),
               values[0]?.format
             ),
         },
@@ -87,8 +87,8 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
       autoFit
       radius={0.8}
       padding="auto"
-      angleField={config.value}
-      colorField={config.key}
+      angleField={config?.value}
+      colorField={config?.key}
       legend={{ position: "bottom" }}
       pieStyle={{ stroke: "white", lineWidth: 5 }}
     />
@@ -108,7 +108,7 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
       <Interval
         position="percent"
         adjust="stack"
-        color={config.key}
+        color={config?.key}
         style={{
           lineWidth: 1,
           stroke: "#fff",

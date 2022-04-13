@@ -1,5 +1,4 @@
 import {
-  Box,
   Flex,
   Heading,
   HStack,
@@ -12,12 +11,12 @@ import { FC, useMemo } from "react";
 import { FiArrowDownRight, FiArrowUpRight } from "react-icons/fi";
 
 import { ResultFragment } from "../../../../../generated/graphql";
-import { getFormatValue } from "../../../ChartEditTab/components/FormatFieldForm";
+import { getFormatValue } from "../../../ChartEditTab";
 
 export interface MetricChartConfig {
-  valueCol: string;
-  compareCol: string;
-  format: string;
+  valueCol?: string;
+  compareCol?: string;
+  format?: string;
 }
 
 interface MetricChartPreviewProps {
@@ -27,15 +26,15 @@ interface MetricChartPreviewProps {
 
 export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
   result,
-  config = { valueCol: "", compareCol: "", format: "" },
+  config,
 }) => {
   const value = useMemo(() => {
     const valueColIndex = result.fields.findIndex(
-      (value) => value === config.valueCol
+      (value) => value === config?.valueCol
     );
 
     if (valueColIndex >= 0) {
-      return getFormatValue(result.values[0]?.[valueColIndex], config.format);
+      return getFormatValue(result.values[0]?.[valueColIndex], config?.format);
     }
 
     return null;
@@ -43,11 +42,14 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
 
   const compareValue = useMemo(() => {
     const compareColIndex = result.fields.findIndex(
-      (c) => c === config.compareCol
+      (c) => c === config?.compareCol
     );
 
     if (compareColIndex >= 0) {
-      return getFormatValue(result.values[0]?.[compareColIndex], config.format);
+      return getFormatValue(
+        result.values[0]?.[compareColIndex],
+        config?.format
+      );
     }
 
     return null;

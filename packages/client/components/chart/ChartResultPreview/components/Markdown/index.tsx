@@ -17,7 +17,9 @@ export const Markdown: FC<MarkdownConfig> = ({ content }) => {
           all: "revert",
         },
       }}
-      dangerouslySetInnerHTML={{ __html: marked.parse(content) }}
+      dangerouslySetInnerHTML={{
+        __html: marked.parse(content || ""),
+      }}
     />
   );
 };

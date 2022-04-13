@@ -3,15 +3,15 @@ import { isEqual } from "lodash";
 import { useEffect } from "react";
 import { FC, useMemo, useState } from "react";
 import { ResultFragment } from "../../../../../generated/graphql";
-import { getFormatValue } from "../../../ChartEditTab/components/FormatFieldForm";
+import { getFormatValue } from "../../../ChartEditTab";
 
 export interface BarChartConfig {
-  variant: string;
-  xCol: string;
-  yCol: { label: string; value: string }[];
-  isStack: boolean;
-  reverseOrder: boolean;
-  format: string;
+  variant?: string;
+  xCol?: string;
+  yCol?: string[];
+  isStack?: boolean;
+  reverseOrder?: boolean;
+  format?: string;
 }
 
 interface BarChartPreviewProps {
@@ -34,11 +34,11 @@ export const BarChartPreview: FC<BarChartPreviewProps> = ({
 
   const data = useMemo(() => {
     if (!result?.error) {
-      if (config.xCol && config.yCol.length) {
+      if (config?.xCol && config?.yCol?.length) {
         const keyIndex = result.fields.findIndex((key) => key === config.xCol);
 
         const valuesIndex = config.yCol.map((y) => {
-          const valueIndex = result.fields.findIndex((key) => key === y.value);
+          const valueIndex = result.fields.findIndex((key) => key === y);
 
           if (valueIndex !== -1) {
             return valueIndex;
@@ -89,14 +89,14 @@ export const BarChartPreview: FC<BarChartPreviewProps> = ({
         <Axis
           name="y"
           label={{
-            formatter: (val) => getFormatValue(val, config.format),
+            formatter: (val) => getFormatValue(val, config?.format),
           }}
         />
         {/* 说是不支持 children 其实是支持的。。 */}
         <Coordinate transpose={oldConfig?.variant === "horizontal"} />
       </ColumnChart>
     );
-  }, [config.format, oldConfig?.isStack, oldConfig?.variant, oldData]);
+  }, [config?.format, oldConfig?.isStack, oldConfig?.variant, oldData]);
 
   useEffect(() => {
     if (!isEqual(data, oldData)) {

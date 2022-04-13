@@ -1,16 +1,15 @@
 import { Axis, Chart, LineAdvance } from "bizcharts";
 import { FC, useMemo } from "react";
 import { ResultFragment } from "../../../../../generated/graphql";
-import { getFormatValue } from "../../../ChartEditTab/components/FormatFieldForm";
+import { getFormatValue } from "../../../ChartEditTab";
 
 export interface LineChartConfig {
-  xCol: string;
-  // 后面统一优化传入的值
-  yCol: { label: string; value: string }[];
-  format: string;
-  reverseOrder: boolean;
-  doubleAxes: boolean;
-  doubleAxesCol: string[];
+  xCol?: string;
+  yCol?: string[];
+  format?: string;
+  reverseOrder?: boolean;
+  doubleAxes?: boolean;
+  doubleAxesCol?: string[];
 }
 
 interface LineChartPreviewProps {
@@ -24,22 +23,20 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
 }) => {
   // 有没有开启双 y 轴
   const hasDoubleAxes = useMemo(() => {
-    return !!(config.doubleAxes && config.doubleAxesCol.length);
-  }, [config.doubleAxes, config.doubleAxesCol.length]);
+    return !!(config?.doubleAxes && config?.doubleAxesCol?.length);
+  }, [config?.doubleAxes, config?.doubleAxesCol?.length]);
 
   const data = useMemo(() => {
     if (!result?.error) {
       let res: Record<string, any>[] = [];
 
-      if (config.xCol) {
+      if (config?.xCol) {
         const keyIndex = result.fields.findIndex((key) => key === config.xCol);
 
         // 存在多条 y（单轴数据）
-        if (config.yCol.length) {
+        if (config?.yCol?.length) {
           const valuesIndex = config.yCol.map((y) => {
-            const valueIndex = result.fields.findIndex(
-              (key) => key === y.value
-            );
+            const valueIndex = result.fields.findIndex((key) => key === y);
 
             if (valueIndex !== -1) {
               return valueIndex;
@@ -96,7 +93,7 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
         }
       }
 
-      return config.reverseOrder ? res.flat(1).reverse() : res.flat(1);
+      return config?.reverseOrder ? res.flat(1).reverse() : res.flat(1);
     }
 
     return [];
@@ -138,7 +135,7 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
             ) {
               return {
                 name: diff,
-                value: getFormatValue(y, config.format),
+                value: getFormatValue(y, config?.format),
               };
             }
 
@@ -151,7 +148,7 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
             ) {
               return {
                 name: diff2,
-                value: getFormatValue(y1, config.format),
+                value: getFormatValue(y1, config?.format),
               };
             }
           },
@@ -165,7 +162,7 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
       <Axis
         name="y"
         label={{
-          formatter: (val) => getFormatValue(val, config.format),
+          formatter: (val) => getFormatValue(val, config?.format),
         }}
       />
 
@@ -182,7 +179,7 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
         visible={hasDoubleAxes}
         name="y1"
         label={{
-          formatter: (val) => getFormatValue(val, config.format),
+          formatter: (val) => getFormatValue(val, config?.format),
         }}
       />
     </Chart>
