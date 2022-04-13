@@ -187,6 +187,7 @@ const SourceList = () => {
     {
       title: "操作",
       dataIndex: "operation",
+      align: "center",
       key: "operation",
       render: (_, record) => {
         return (
