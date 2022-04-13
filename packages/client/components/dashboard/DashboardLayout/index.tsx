@@ -230,7 +230,9 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                 </DashboardCard>
               </DashboardDragWrapper>
             );
-          } else {
+          }
+
+          if (item.type === DashboardItemType.DIVIDER) {
             return (
               <DashboardDragWrapper key={item.layout.i}>
                 <Box pr={type === "edit" ? "20px" : undefined}>
