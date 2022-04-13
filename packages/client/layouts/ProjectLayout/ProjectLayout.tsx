@@ -8,14 +8,16 @@ import {
   Popover,
   Avatar,
   Button,
+  Typography,
   Drawer,
 } from "antd";
 import { useRouter } from "next/router";
 import { signOut, useSession } from "next-auth/react";
 import { Loading } from "../../components/common/Loading";
-import { routes } from "../../router";
+import { RouterProps, routes } from "../../router";
 import NextLink from "next/link";
 import { LeftOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+const { Text } = Typography;
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -37,30 +39,83 @@ const ProjectLayout: FC = ({ children }) => {
 
   // 路由菜单项
   const getSubMenus = useCallback(
-    (routes) => {
-      return routes.map((route) => {
-        if (route.children?.length) {
-          return (
-            <SubMenu key={route.name} title={route.name}>
-              {getSubMenus(route.children)}
-            </SubMenu>
-          );
-        } else {
-          return (
-            <Menu.Item
-              key={route.name}
-              icon={route?.icon}
-              onClick={() => {
-                if (menuDrawerVisible) {
-                  setMenuDrawerVisible(false);
+    (routes: RouterProps[], firstLevel: boolean) => {
+      if (routes.length) {
+        return routes
+          .map((route) => {
+            if (firstLevel) {
+              if (route?.items?.length) {
+                return (
+                  <>
+                    {route?.title && (
+                      <Text
+                        style={{
+                          paddingLeft: 24,
+                          margin: "24px 0",
+                          display: "block",
+                        }}
+                        type="secondary"
+                      >
+                        {route?.title}
+                      </Text>
+                    )}
+
+                    {route.items.map((item) => {
+                      if (item?.items?.length) {
+                        return (
+                          <SubMenu key={item.name} title={item.name}>
+                            {getSubMenus([{ items: item.items }], false)}
+                          </SubMenu>
+                        );
+                      } else {
+                        return (
+                          <Menu.Item
+                            key={item.name}
+                            icon={item?.icon}
+                            onClick={() => {
+                              if (menuDrawerVisible) {
+                                setMenuDrawerVisible(false);
+                              }
+                            }}
+                          >
+                            <NextLink href={item.path}>{item.name}</NextLink>
+                          </Menu.Item>
+                        );
+                      }
+                    })}
+                  </>
+                );
+              }
+            } else {
+              return route.items.map((item) => {
+                if (item?.items?.length) {
+                  return (
+                    <SubMenu key={item.name} title={item.name}>
+                      {getSubMenus([{ items: item.items }], false)}
+                    </SubMenu>
+                  );
+                } else {
+                  return (
+                    <Menu.Item
+                      key={item.name}
+                      icon={item?.icon}
+                      onClick={() => {
+                        if (menuDrawerVisible) {
+                          setMenuDrawerVisible(false);
+                        }
+                      }}
+                    >
+                      <NextLink href={item.path}>{item.name}</NextLink>
+                    </Menu.Item>
+                  );
                 }
-              }}
-            >
-              <NextLink href={route.path}>{route.name}</NextLink>
-            </Menu.Item>
-          );
-        }
-      });
+              });
+            }
+          })
+          .flat(1);
+      }
+
+      return [];
     },
     [menuDrawerVisible]
   );
@@ -81,6 +136,8 @@ const ProjectLayout: FC = ({ children }) => {
   if (session.status !== "authenticated") {
     return <Loading />;
   }
+
+  console.log("routes", routes);
 
   return (
     <>
@@ -125,10 +182,11 @@ const ProjectLayout: FC = ({ children }) => {
                 height: "100%",
               }}
               selectedKeys={[
-                routes.find((item) => router.asPath.includes(item.path))?.name,
+                "图表",
+                // routes.find((item) => router.asPath.includes(item.path))?.name,
               ]}
             >
-              {getSubMenus(routes)}
+              {getSubMenus(routes, true)}
             </Menu>
 
             <Row
@@ -254,11 +312,13 @@ const ProjectLayout: FC = ({ children }) => {
         <Menu
           mode="inline"
           style={{ height: "100%", borderRightWidth: 0 }}
-          selectedKeys={[
-            routes.find((item) => router.asPath.includes(item.path))?.name,
-          ]}
+          selectedKeys={
+            [
+              // routes.find((item) => router.asPath.includes(item.path))?.name,
+            ]
+          }
         >
-          {getSubMenus(routes)}
+          {getSubMenus(routes, true)}
         </Menu>
       </Drawer>
     </>
