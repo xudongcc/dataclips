@@ -11,6 +11,7 @@ import { FC, useMemo } from "react";
 import { ResultFragment } from "../../../../../generated/graphql";
 import { formatPercent } from "../../../../../utils/formatPercent";
 import { getFormatValue } from "../../../ChartEditTab";
+import sortBy from "lodash/sortBy";
 
 export interface PieChartConfig {
   variant?: string;
@@ -41,14 +42,17 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
             getFormatValue(arr[valueIndex])
           );
 
-          return result.values.map((value) => {
-            return {
-              [config.key]: value[keyIndex],
-              [config.value]: getFormatValue(value[valueIndex]),
-              percent: getFormatValue(value[valueIndex]) / total,
-              format: config.format,
-            };
-          });
+          return sortBy(
+            result.values.map((value) => {
+              return {
+                [config.key]: value[keyIndex],
+                [config.value]: getFormatValue(value[valueIndex]),
+                percent: getFormatValue(value[valueIndex]) / total,
+                format: config.format,
+              };
+            }),
+            ["percent"]
+          );
         }
         return [];
       }
