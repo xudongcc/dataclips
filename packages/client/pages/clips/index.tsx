@@ -1,131 +1,107 @@
-import { useToast, Link, Text, Divider, Center } from "@chakra-ui/react";
+import { useToast, Link } from "@chakra-ui/react";
 import NextLink from "next/link";
 import Head from "next/head";
-import { useClipConnectionQuery } from "../../generated/graphql";
+import { useClipConnectionLazyQuery } from "../../generated/graphql";
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useRouter } from "next/router";
 import { useDeleteClipMutation } from "../../hooks/useDeleteClipMutation";
-import { useMemo } from "react";
-import { Column, TableOptions } from "react-table";
-import moment from "moment";
 import { Page } from "../../components/common/Page";
-import { Table } from "../../components/common/Table";
 import { Modal } from "../../components/common/Modal";
+import {
+  GraphQLTable,
+  GraphQLTableColumnType,
+} from "../../components/common/GraphQLTable";
+import { ValueType } from "../../components/common/SimpleTable";
+import { Space, Divider } from "antd";
 
 const ClipList = () => {
   const router = useRouter();
   const toast = useToast();
 
-  const { data, loading: dataLoading } = useClipConnectionQuery({
-    variables: { first: 100 },
+  const [getClips, { data, loading, refetch }] = useClipConnectionLazyQuery({
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: "no-cache",
   });
 
   const [deleteClip] = useDeleteClipMutation();
 
-  const tableProps = useMemo<TableOptions<any>>(() => {
-    const columns: Column<any>[] = [
-      {
-        Header: "name",
-        accessor: "name",
-        Cell: ({
-          row: {
-            original: { id, name },
-          },
-        }) => {
-          return (
-            <NextLink href={`/clips/${id}`} passHref>
-              <Link color="blue.500">{name}</Link>
-            </NextLink>
-          );
-        },
+  const columns: GraphQLTableColumnType<any>[] = [
+    {
+      title: "名称",
+      dataIndex: "name",
+      key: "name",
+      render: (name, record) => {
+        return (
+          <NextLink href={`/clips/${record?.id}`} passHref>
+            <Link color="blue.500">{name}</Link>
+          </NextLink>
+        );
       },
-      {
-        Header: "updatedAt",
-        accessor: "updatedAt",
-        Cell: ({
-          row: {
-            values: { updatedAt },
-          },
-        }) => {
-          return moment(updatedAt).format("YYYY-MM-DD HH:mm:ss");
-        },
+    },
+    {
+      title: "最后更新时间",
+      align: "center",
+      dataIndex: "updatedAt",
+      key: "updatedAt",
+      valueType: ValueType.DATE_TIME,
+    },
+    {
+      title: "操作",
+      dataIndex: "operation",
+      key: "operation",
+      align: "center",
+      render: (_, record) => {
+        return (
+          <Space>
+            <Link
+              color="blue.500"
+              onClick={() => {
+                router.push(`/clips/${record?.id}/edit`);
+              }}
+            >
+              编辑
+            </Link>
+
+            <Divider type="vertical" />
+
+            <Link
+              onClick={() => {
+                const modal = Modal.confirm({
+                  title: "删除数据集",
+                  content: `确定删除名称为 ${record?.name} 的数据集？`,
+                  okText: "确定",
+                  okButtonProps: {
+                    danger: true,
+                  },
+                  cancelText: "取消",
+                  onOk: async () => {
+                    try {
+                      modal.update({ okButtonProps: { loading: true } });
+
+                      await deleteClip({ variables: { id: record?.id } });
+
+                      modal.update({ okButtonProps: { loading: false } });
+
+                      toast({
+                        description: "删除成功",
+                        status: "success",
+                        isClosable: true,
+                      });
+                    } catch (err) {
+                      console.error("err", err);
+                    }
+                  },
+                });
+              }}
+              color="red.500"
+            >
+              删除
+            </Link>
+          </Space>
+        );
       },
-      {
-        Header: () => {
-          return (
-            <Text w="100%" textAlign="center">
-              operation
-            </Text>
-          );
-        },
-        accessor: "operation",
-        Cell: ({
-          row: {
-            original: { id, name },
-          },
-        }) => {
-          return (
-            <Center>
-              <Link
-                color="blue.500"
-                onClick={() => {
-                  router.push(`/clips/${id}/edit`);
-                }}
-              >
-                编辑
-              </Link>
-
-              <Divider orientation="vertical" px={2}></Divider>
-
-              <Link
-                onClick={() => {
-                  const modal = Modal.confirm({
-                    title: "删除数据集",
-                    content: `确定删除名称为 ${name} 的数据集？`,
-                    okText: "确定",
-                    okButtonProps: {
-                      danger: true,
-                    },
-                    cancelText: "取消",
-                    onOk: async () => {
-                      try {
-                        modal.update({ okButtonProps: { loading: true } });
-
-                        await deleteClip({ variables: { id } });
-
-                        modal.update({ okButtonProps: { loading: false } });
-
-                        toast({
-                          description: "删除成功",
-                          status: "success",
-                          isClosable: true,
-                        });
-                      } catch (err) {
-                        console.error("err", err);
-                      }
-                    },
-                  });
-                }}
-                color="red.500"
-              >
-                删除
-              </Link>
-            </Center>
-          );
-        },
-      },
-    ];
-
-    columns.push();
-
-    const options: TableOptions<any> = {
-      columns,
-      data: data?.clipConnection.edges?.map((item: any) => item.node) || [],
-      loading: dataLoading,
-    };
-
-    return options;
-  }, [data?.clipConnection.edges, dataLoading, deleteClip, router, toast]);
+    },
+  ];
 
   return (
     <>
@@ -142,7 +118,16 @@ const ClipList = () => {
           },
         }}
       >
-        <Table {...tableProps} />
+        <GraphQLTable
+          id="clips"
+          pageSize={100}
+          // pageInfo={data?.clipConnection?.pageInfo}
+          options={false}
+          onVariablesChange={(variables) => getClips({ variables })}
+          columns={columns}
+          dataSource={data?.clipConnection?.edges?.map((item) => item?.node)}
+          loading={loading}
+        />
       </Page>
     </>
   );
