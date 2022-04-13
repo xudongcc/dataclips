@@ -25,7 +25,11 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
         name={["dataSource", "type"]}
         rules={[{ required: true, message: "请选择数据类型" }]}
       >
-        <Select placeholder="请选择数据类型">
+        <Select
+          optionFilterProp="children"
+          showSearch
+          placeholder="请选择数据类型"
+        >
           <Option value="MYSQL">MYSQL</Option>
           <Option value="POSTGRESQL">POSTGRESQL</Option>
         </Select>

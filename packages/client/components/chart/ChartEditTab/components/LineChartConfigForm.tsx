@@ -17,7 +17,12 @@ export const LineChartConfigForm: FC<LineChartConfigFormProps> = ({
   return (
     <>
       <Form.Item label="x 轴字段" name={["lineConfig", "xCol"]}>
-        <Select allowClear placeholder="选择 x 轴">
+        <Select
+          optionFilterProp="children"
+          showSearch
+          allowClear
+          placeholder="选择 x 轴"
+        >
           {editOptionConfig?.xCol.map((value) => (
             <Option value={value} key={value}>
               {value}
@@ -27,7 +32,13 @@ export const LineChartConfigForm: FC<LineChartConfigFormProps> = ({
       </Form.Item>
 
       <Form.Item label="y 轴字段" name={["lineConfig", "yCol"]}>
-        <Select allowClear mode="multiple" placeholder="选择 y 轴">
+        <Select
+          optionFilterProp="children"
+          showSearch
+          allowClear
+          mode="multiple"
+          placeholder="选择 y 轴"
+        >
           {editOptionConfig?.yCol.map((value) => (
             <Option value={value} key={value}>
               {value}
@@ -61,6 +72,8 @@ export const LineChartConfigForm: FC<LineChartConfigFormProps> = ({
               name={["lineConfig", "doubleAxesCol"]}
             >
               <Select
+                optionFilterProp="children"
+                showSearch
                 allowClear
                 disabled={!getFieldValue(["lineConfig", "doubleAxes"])}
                 mode="multiple"

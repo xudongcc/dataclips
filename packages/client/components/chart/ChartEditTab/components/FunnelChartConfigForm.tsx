@@ -22,7 +22,12 @@ export const FunnelChartConfigForm: FC<FunnelChartConfigFormProps> = ({
           label="分组列"
           name={["funnelConfig", "groupCol"]}
         >
-          <Select allowClear placeholder="选择分组列">
+          <Select
+            optionFilterProp="children"
+            showSearch
+            allowClear
+            placeholder="选择分组列"
+          >
             {editOptionConfig?.groupCol.map((key) => (
               <Option value={key} key={key}>
                 {key}
@@ -38,7 +43,12 @@ export const FunnelChartConfigForm: FC<FunnelChartConfigFormProps> = ({
           label="数值列"
           name={["funnelConfig", "valueCol"]}
         >
-          <Select allowClear placeholder="选择数值列">
+          <Select
+            optionFilterProp="children"
+            showSearch
+            allowClear
+            placeholder="选择数值列"
+          >
             {editOptionConfig?.valueCol.map((key) => (
               <Option value={key} key={key}>
                 {key}

@@ -18,14 +18,24 @@ export const PieChartConfigForm: FC<PieChartConfigFormProps> = ({
   return (
     <>
       <Form.Item label="饼图类型" name={["pieConfig", "variant"]}>
-        <Select allowClear placeholder="选择类型">
+        <Select
+          optionFilterProp="children"
+          showSearch
+          allowClear
+          placeholder="选择类型"
+        >
           <Option value="pie">饼图</Option>
           <Option value="range">环图</Option>
         </Select>
       </Form.Item>
 
       <Form.Item label="分类" name={["pieConfig", "key"]}>
-        <Select allowClear placeholder="选择分类">
+        <Select
+          optionFilterProp="children"
+          showSearch
+          allowClear
+          placeholder="选择分类"
+        >
           {editOptionConfig?.keys.map((value) => (
             <Option value={value} key={value}>
               {value}
@@ -39,7 +49,12 @@ export const PieChartConfigForm: FC<PieChartConfigFormProps> = ({
         label="数值列"
         name={["pieConfig", "value"]}
       >
-        <Select allowClear placeholder="选择数值列">
+        <Select
+          optionFilterProp="children"
+          showSearch
+          allowClear
+          placeholder="选择数值列"
+        >
           {editOptionConfig?.values.map((value) => (
             <Option value={value} key={value}>
               {value}

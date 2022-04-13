@@ -98,6 +98,8 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
         rules={[{ required: true, message: "请选择图表类型" }]}
       >
         <Select
+          optionFilterProp="children"
+          showSearch
           allowClear
           placeholder="请选择图表类型"
           onChange={(chartType) => {
