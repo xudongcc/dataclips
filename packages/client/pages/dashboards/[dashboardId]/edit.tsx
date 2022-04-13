@@ -17,9 +17,9 @@ import { Loading } from "../../../components/common/Loading";
 import { Page } from "../../../components/common/Page";
 import {
   ChartCard,
+  DashboardItemType,
   DashboardLayout,
   DragDivider,
-  isChartCard,
 } from "../../../components/dashboard/DashboardLayout";
 import { Checkbox, Form, Input, Select, Space } from "antd";
 import { Modal } from "../../../components/common/Modal";
@@ -70,6 +70,8 @@ const DashBoardEdit: PC = () => {
     []
   );
 
+  console.log("dragItems", dragItems);
+
   // 创建或编辑卡片的弹窗
   const [isAddOrEditCardModalVisible, setIsAddOrEditCardModalVisible] =
     useState(false);
@@ -108,24 +110,7 @@ const DashBoardEdit: PC = () => {
             id: dashboardId,
             input: {
               name: value,
-              config: dragItems.map((item) => {
-                if (isChartCard(item)) {
-                  return {
-                    name: item.name,
-                    chartId: item.chartId,
-                    hiddenName: !!item?.hiddenName,
-                    layout: item.layout,
-                    type: "chart",
-                  };
-                } else {
-                  return {
-                    name: item?.name,
-                    layout: item.layout,
-                    type: "divider",
-                    orientation: item?.orientation,
-                  };
-                }
-              }),
+              config: dragItems,
             },
           },
         });
@@ -162,10 +147,16 @@ const DashBoardEdit: PC = () => {
       });
 
       if (data?.chart) {
-        const current = {
-          name: values.name,
-          chartId: data.chart.id,
-          hiddenName: values.hiddenName,
+        const current: ChartCard = {
+          id: uuidv4(),
+          chart: {
+            id: data.chart.id,
+          },
+          type: DashboardItemType.CHART,
+          card: {
+            hiddenName: values.hiddenName,
+            name: values.name,
+          },
           layout: {
             i: uuidv4(),
             x: 0,
@@ -184,6 +175,7 @@ const DashBoardEdit: PC = () => {
             dragItems[updateIndex] = {
               ...current,
               layout: dragItems[updateIndex].layout,
+              id: dragItems[updateIndex].id,
             };
           }
           setDragItems([...dragItems]);
@@ -292,9 +284,9 @@ const DashBoardEdit: PC = () => {
               onClose();
 
               addOrEditCardForm.setFieldsValue({
-                name: item?.name,
-                chartId: item?.chartId,
-                hiddenName: !!item?.hiddenName,
+                name: item?.card?.name,
+                chartId: item?.chart?.id,
+                hiddenName: !!item?.card?.hiddenName,
               });
 
               setOperation({
@@ -308,7 +300,7 @@ const DashBoardEdit: PC = () => {
               onClose();
 
               const deleteIndex = dragItems.findIndex(
-                (chartCard) => chartCard?.layout?.i === item?.layout?.i
+                (chartCard) => chartCard.id === item.id
               );
 
               if (deleteIndex !== -1) {
@@ -317,12 +309,12 @@ const DashBoardEdit: PC = () => {
               }
             },
             onEditChartClick: (item) => {
-              router.push(`/charts/${item?.chartId}/edit`);
+              router.push(`/charts/${item?.chart?.id}/edit`);
             },
             onPreviewClipClick: async (item) => {
               try {
                 const { data } = await getChart({
-                  variables: { id: item.chartId },
+                  variables: { id: item.chart?.id },
                 });
 
                 if (data?.chart?.clipId) {
@@ -440,9 +432,12 @@ const DashBoardEdit: PC = () => {
             setDragItems([
               ...dragItems,
               {
-                name: values?.dividerName,
-                type: "divider",
-                orientation: (values?.orientation || "left") as any,
+                id: uuidv4(),
+                type: DashboardItemType.DIVIDER,
+                divider: {
+                  name: values?.dividerName,
+                  orientation: (values?.orientation || "left") as any,
+                },
                 layout: {
                   i: uuidv4(),
                   x: 0,
