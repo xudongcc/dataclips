@@ -70,8 +70,6 @@ const DashBoardEdit: PC = () => {
     []
   );
 
-  console.log("dragItems", dragItems);
-
   // 创建或编辑卡片的弹窗
   const [isAddOrEditCardModalVisible, setIsAddOrEditCardModalVisible] =
     useState(false);
@@ -169,7 +167,7 @@ const DashBoardEdit: PC = () => {
           setDragItems([...dragItems, current]);
         } else {
           const updateIndex = dragItems.findIndex(
-            (dragItem) => dragItem?.layout?.i === operation?.key
+            (dragItem) => dragItem.id === operation?.key
           );
           if (updateIndex !== -1) {
             dragItems[updateIndex] = {
@@ -202,7 +200,7 @@ const DashBoardEdit: PC = () => {
 
       newLayout.forEach((layout) => {
         const itemIndex = dragItems.findIndex(
-          (item) => item?.layout?.i === layout.i
+          (item) => item.layout.i === layout.i
         );
 
         if (itemIndex !== -1) {
@@ -277,21 +275,21 @@ const DashBoardEdit: PC = () => {
         <DashboardLayout
           type="edit"
           onLayoutChange={handleSetChartItemLayout}
-          layout={dragItems.map((item) => item?.layout)}
+          layout={dragItems.map((item) => item.layout)}
           dragItems={dragItems}
           cardExtraConfig={{
             onEditCardClick: (item, onClose) => {
               onClose();
 
               addOrEditCardForm.setFieldsValue({
-                name: item?.card?.name,
-                chartId: item?.chart?.id,
+                name: item?.card.name,
+                chartId: item?.chart.id,
                 hiddenName: !!item?.card?.hiddenName,
               });
 
               setOperation({
                 type: OperationType.EDIT,
-                key: item?.layout?.i,
+                key: item.id,
               });
 
               setIsAddOrEditCardModalVisible(true);
@@ -325,9 +323,9 @@ const DashBoardEdit: PC = () => {
               }
             },
           }}
-          onDividerDelete={(layoutKey) => {
+          onDividerDelete={(id) => {
             const deleteDividerIndex = dragItems.findIndex(
-              (dragItem) => dragItem.layout.i === layoutKey
+              (dragItem) => dragItem.id === id
             );
 
             if (deleteDividerIndex !== -1) {

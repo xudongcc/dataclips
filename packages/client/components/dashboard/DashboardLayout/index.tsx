@@ -237,10 +237,10 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
               <DashboardDragWrapper key={item.layout.i}>
                 <Box pr={type === "edit" ? "20px" : undefined}>
                   <DashboardDivider
-                    orientation={item?.divider?.orientation}
+                    orientation={item.divider?.orientation}
                     hasDelete={type === "edit"}
                     onDelete={() => {
-                      onDividerDelete?.(item.layout.i);
+                      onDividerDelete?.(item.id);
                     }}
                   >
                     {item?.divider?.name}
