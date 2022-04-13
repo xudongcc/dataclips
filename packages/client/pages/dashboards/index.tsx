@@ -1,20 +1,22 @@
-import { Link, useToast, Divider, Center, Text } from "@chakra-ui/react";
+import { Link, useToast } from "@chakra-ui/react";
 import Head from "next/head";
 import NextLink from "next/link";
 import { Page } from "../../components/common/Page";
 import { PC } from "../../interfaces/PageComponent";
 import { useRouter } from "next/router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import ProjectLayout from "../../layouts/ProjectLayout";
-import { Table } from "../../components/common/Table";
-import { useDashboardConnectionQuery } from "../../generated/graphql";
-import { Form, Input } from "antd";
+import { useDashboardConnectionLazyQuery } from "../../generated/graphql";
+import { Form, Input, Divider, Space } from "antd";
 import { Modal } from "../../components/common/Modal";
 
-import { Column, TableOptions } from "react-table";
-import moment from "moment";
 import { useCreateDashboardMutation } from "../../hooks/useCreateDashboardMutation";
 import { useDeleteDashboardMutation } from "../../hooks/useDeleteDashboardMutation";
+import {
+  GraphQLTable,
+  GraphQLTableColumnType,
+} from "../../components/common/GraphQLTable";
+import { ValueType } from "../../components/common/SimpleTable";
 
 const DashBoardList: PC = () => {
   const router = useRouter();
@@ -25,8 +27,9 @@ const DashBoardList: PC = () => {
   const [isCreateDashboardModalVisible, setIsCreateDashboardModalVisible] =
     useState(false);
 
-  const { data: dashboardListData, loading } = useDashboardConnectionQuery({
-    variables: { first: 100 },
+  const [getDashboards, { data, loading }] = useDashboardConnectionLazyQuery({
+    notifyOnNetworkStatusChange: true,
+    // fetchPolicy: "no-cache",
   });
 
   const [createDashboard, { loading: createDashboardLoading }] =
@@ -53,110 +56,83 @@ const DashBoardList: PC = () => {
     [deleteDashboard, toast]
   );
 
-  const tableProps = useMemo<TableOptions<any>>(() => {
-    const columns: Column<any>[] = [
-      {
-        Header: "name",
-        accessor: "name",
-        Cell: ({
-          row: {
-            original: { id, name },
-          },
-        }) => {
-          return (
-            <NextLink href={`/dashboards/${id}`} passHref>
-              <Link color="blue.500">{name}</Link>
-            </NextLink>
-          );
-        },
+  const columns: GraphQLTableColumnType<any>[] = [
+    {
+      title: "名称",
+      dataIndex: "name",
+      key: "name",
+      render: (name, record) => {
+        return (
+          <NextLink href={`/dashboards/${record?.id}`} passHref>
+            <Link color="blue.500">{name}</Link>
+          </NextLink>
+        );
       },
-      {
-        Header: "updatedAt",
-        accessor: "updatedAt",
-        Cell: ({
-          row: {
-            values: { updatedAt },
-          },
-        }) => {
-          return moment(updatedAt).format("YYYY-MM-DD HH:mm:ss");
-        },
-      },
-      {
-        Header: () => {
-          return (
-            <Text w="100%" textAlign="center">
-              operation
-            </Text>
-          );
-        },
-        accessor: "operation",
-        Cell: ({
-          row: {
-            original: { id, name },
-          },
-        }) => {
-          return (
-            <Center>
-              <Link
-                color="blue.500"
-                onClick={() => {
-                  router.push(`/dashboards/${id}/edit`);
-                }}
-              >
-                编辑
-              </Link>
+    },
+    {
+      title: "最后更新时间",
+      align: "center",
+      dataIndex: "updatedAt",
+      key: "updatedAt",
+      valueType: ValueType.DATE_TIME,
+    },
+    {
+      title: "操作",
+      dataIndex: "operation",
+      key: "operation",
+      align: "center",
+      render: (_, record) => {
+        return (
+          <Space>
+            <Link
+              color="blue.500"
+              onClick={() => {
+                router.push(`/dashboards/${record?.id}/edit`);
+              }}
+            >
+              编辑
+            </Link>
 
-              <Divider orientation="vertical" px={2}></Divider>
+            <Divider type="vertical" />
 
-              <Link
-                color="red.500"
-                onClick={() => {
-                  const modal = Modal.confirm({
-                    okButtonProps: { danger: true },
-                    title: "删除仪表盘",
-                    okText: "确定",
-                    cancelText: "取消",
-                    content: `确认删除名称为 ${name} 的仪表盘？`,
-                    onOk: async () => {
-                      modal.update({
-                        okButtonProps: { loading: true },
+            <Link
+              onClick={() => {
+                const modal = Modal.confirm({
+                  title: "删除仪表盘",
+                  content: `确定删除名称为 ${record?.name} 的仪表盘？`,
+                  okText: "确定",
+                  okButtonProps: {
+                    danger: true,
+                  },
+                  cancelText: "取消",
+                  onOk: async () => {
+                    try {
+                      modal.update({ okButtonProps: { loading: true } });
+
+                      await deleteDashboard({ variables: { id: record?.id } });
+
+                      modal.update({ okButtonProps: { loading: false } });
+
+                      toast({
+                        description: "删除成功",
+                        status: "success",
+                        isClosable: true,
                       });
-
-                      await handleDeleteDashboard(id);
-
-                      modal.update({
-                        okButtonProps: { loading: false },
-                      });
-                    },
-                  });
-                }}
-              >
-                删除
-              </Link>
-            </Center>
-          );
-        },
+                    } catch (err) {
+                      console.error("err", err);
+                    }
+                  },
+                });
+              }}
+              color="red.500"
+            >
+              删除
+            </Link>
+          </Space>
+        );
       },
-    ];
-
-    columns.push();
-
-    const options: TableOptions<any> = {
-      columns,
-      data:
-        dashboardListData?.dashboardConnection.edges?.map(
-          (item) => item.node
-        ) || [],
-      loading,
-    };
-
-    return options;
-  }, [
-    dashboardListData?.dashboardConnection.edges,
-    handleDeleteDashboard,
-    loading,
-    router,
-  ]);
+    },
+  ];
 
   const handleCloseCreateDashboardModal = useCallback(() => {
     setIsCreateDashboardModalVisible(false);
@@ -190,7 +166,20 @@ const DashBoardList: PC = () => {
           },
         }}
       >
-        <Table {...tableProps} />
+        <GraphQLTable
+          id="dashboards"
+          pageSize={100}
+          // pageInfo={data?.clipConnection?.pageInfo}
+          options={false}
+          onVariablesChange={(variables) => {
+            getDashboards({ variables });
+          }}
+          columns={columns}
+          dataSource={data?.dashboardConnection?.edges?.map(
+            (item) => item?.node
+          )}
+          loading={loading}
+        />
 
         {/* 创建仪表盘的弹窗 */}
         <Modal

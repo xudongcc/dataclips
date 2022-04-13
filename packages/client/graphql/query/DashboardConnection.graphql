@@ -5,6 +5,7 @@ query DashboardConnection(
   $after: String
   $query: String
   $orderBy: Ordering
+  $filter: String
 ) {
   dashboardConnection: dashboards(
     first: $first
@@ -13,6 +14,7 @@ query DashboardConnection(
     after: $after
     query: $query
     orderBy: $orderBy
+    filter: $filter
   ) {
     edges {
       node {

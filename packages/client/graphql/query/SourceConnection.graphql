@@ -5,6 +5,7 @@ query SourceConnection(
   $after: String
   $query: String
   $orderBy: Ordering
+  $filter: String
 ) {
   sourceConnection: sources(
     first: $first
@@ -13,6 +14,7 @@ query SourceConnection(
     after: $after
     query: $query
     orderBy: $orderBy
+    filter: $filter
   ) {
     edges {
       node {

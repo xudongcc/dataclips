@@ -20,7 +20,7 @@ const ClipList = () => {
 
   const [getClips, { data, loading, refetch }] = useClipConnectionLazyQuery({
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: "no-cache",
+    // fetchPolicy: "no-cache",
   });
 
   const [deleteClip] = useDeleteClipMutation();
@@ -123,7 +123,9 @@ const ClipList = () => {
           pageSize={100}
           // pageInfo={data?.clipConnection?.pageInfo}
           options={false}
-          onVariablesChange={(variables) => getClips({ variables })}
+          onVariablesChange={(variables) => {
+            getClips({ variables });
+          }}
           columns={columns}
           dataSource={data?.clipConnection?.edges?.map((item) => item?.node)}
           loading={loading}

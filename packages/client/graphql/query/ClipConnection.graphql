@@ -5,6 +5,7 @@ query ClipConnection(
   $after: String
   $query: String
   $orderBy: Ordering
+  $filter: String
 ) {
   clipConnection: clips(
     first: $first
@@ -13,6 +14,7 @@ query ClipConnection(
     after: $after
     query: $query
     orderBy: $orderBy
+    filter: $filter
   ) {
     edges {
       node {
