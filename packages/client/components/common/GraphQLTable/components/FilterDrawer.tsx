@@ -205,14 +205,14 @@ export default function FilterDrawer<T>({
                         column.filterType !== FilterType.DATE_RANGE_PICKER
                       }
                       style={{ width: "80%" }}
-                      value={
-                        bindValues[key]
-                          ? [
-                              moment(bindValues[key][0][0]),
-                              moment(bindValues[key][0][1]),
-                            ]
-                          : null
-                      }
+                      // value={
+                      //   bindValues[key]
+                      //     ? ([
+                      //         moment(bindValues[key][0][0]),
+                      //         moment(bindValues[key][0][1]),
+                      //       ]
+                      //     : null
+                      // }
                       onChange={(dates, dateStrings) => {
                         const tempBindValues = { ...bindValues };
                         const tempFilters = { ...filters };
