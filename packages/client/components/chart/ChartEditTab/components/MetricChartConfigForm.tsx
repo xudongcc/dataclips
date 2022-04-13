@@ -23,7 +23,12 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
           name={["metricConfig", "valueCol"]}
           label="显示值"
         >
-          <Select allowClear placeholder="选择显示值">
+          <Select
+            optionFilterProp="children"
+            showSearch
+            allowClear
+            placeholder="选择显示值"
+          >
             {editOptionConfig?.valueCol.map((value) => (
               <Option value={value} key={value}>
                 {value}
@@ -39,7 +44,12 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
           name={["metricConfig", "compareCol"]}
           label="对比值"
         >
-          <Select allowClear placeholder="选择对比值">
+          <Select
+            optionFilterProp="children"
+            showSearch
+            allowClear
+            placeholder="选择对比值"
+          >
             {editOptionConfig?.compareCol.map((value) => (
               <Option value={value} key={value}>
                 {value}

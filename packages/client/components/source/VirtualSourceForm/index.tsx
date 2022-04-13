@@ -48,7 +48,11 @@ export const VirtualSourceForm: FC = () => {
                         name={[name, "clipId"]}
                         rules={[{ required: true, message: "请选择数据集" }]}
                       >
-                        <Select placeholder="请选择数据集">
+                        <Select
+                          optionFilterProp="children"
+                          showSearch
+                          placeholder="请选择数据集"
+                        >
                           {clipIds.map(({ id, name }) => (
                             <Option key={id} value={id}>
                               {name}

@@ -373,6 +373,8 @@ const DashBoardEdit: PC = () => {
               rules={[{ required: true, message: "请选择图表" }]}
             >
               <Select
+                optionFilterProp="children"
+                showSearch
                 placeholder="请选择图表"
                 onChange={(_, { children }: { children: string }) => {
                   const value = addOrEditCardForm.getFieldValue("name");
@@ -469,7 +471,11 @@ const DashBoardEdit: PC = () => {
               name="orientation"
               label="文本方向"
             >
-              <Select placeholder="请选择文本方向">
+              <Select
+                optionFilterProp="children"
+                showSearch
+                placeholder="请选择文本方向"
+              >
                 <Option value="left">居左</Option>
                 <Option value="center">居中</Option>
                 <Option value="right">居右</Option>

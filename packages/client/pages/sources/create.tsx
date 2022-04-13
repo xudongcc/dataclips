@@ -115,6 +115,8 @@ const SourceCreate = () => {
                     rules={[{ required: true, message: "请选择数据源" }]}
                   >
                     <Select
+                      optionFilterProp="children"
+                      showSearch
                       placeholder="请选择数据源"
                       onChange={(sourceType) => {
                         setCurrentSourceType(sourceType);
