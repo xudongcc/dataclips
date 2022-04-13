@@ -136,6 +136,8 @@ const ChartEdit = () => {
                       rules={[{ required: true, message: "请选择数据集" }]}
                     >
                       <Select
+                        optionFilterProp="children"
+                        showSearch
                         onChange={(clipId) => {
                           setSelectClipId(clipId);
 
