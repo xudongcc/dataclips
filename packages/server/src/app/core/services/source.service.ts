@@ -162,7 +162,7 @@ export class SourceService extends mixinConnection(
       await Bluebird.map(
         tables,
         async (table) => {
-          const result = await this.clipService.query(table.clipId);
+          const result = await this.clipService.query(table.clipId, true);
 
           db.run(`CREATE TABLE ${table.name} (${result.fields.join(",")});`);
 

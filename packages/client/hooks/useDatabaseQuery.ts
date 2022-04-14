@@ -22,6 +22,10 @@ export const useDatabaseQuery = () => {
       // 删除表
       db.run(/* SQL */ `DROP TABLE IF EXISTS preview;`);
 
+      if (fields.length === 0 || values.length === 0) {
+        return { fields, values };
+      }
+
       // 创建表
       db.run(
         /* SQL */ `CREATE TABLE preview (${fields
@@ -30,29 +34,27 @@ export const useDatabaseQuery = () => {
       );
 
       // 插入数据
-      if (values.length > 0) {
-        db.run(
-          `INSERT INTO preview VALUES ${values
-            .map(
-              (value) =>
-                `(${value
-                  .map((val) => {
-                    if (val === null) {
-                      return "null";
-                    }
+      db.run(
+        `INSERT INTO preview VALUES ${values
+          .map(
+            (value) =>
+              `(${value
+                .map((val) => {
+                  if (val === null) {
+                    return "null";
+                  }
 
-                    switch (typeof val) {
-                      case "number":
-                        return val;
-                      default:
-                        return `'${val}'`;
-                    }
-                  })
-                  .join(",")})`
-            )
-            .join(",")};`
-        );
-      }
+                  switch (typeof val) {
+                    case "number":
+                      return val;
+                    default:
+                      return `'${val}'`;
+                  }
+                })
+                .join(",")})`
+          )
+          .join(",")};`
+      );
 
       const [queryExecResult] = db.exec(sql);
 
