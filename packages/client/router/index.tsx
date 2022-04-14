@@ -20,7 +20,6 @@ export interface RouterProps {
 
 export const routes: RouterProps[] = [
   {
-    title: "qwe",
     items: [
       {
         name: "仪表盘",

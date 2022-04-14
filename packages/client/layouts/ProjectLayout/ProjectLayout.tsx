@@ -94,34 +94,32 @@ const ProjectLayout: FC = ({ children }) => {
           });
         };
 
-        return routes
-          .map((route) => {
-            if (firstLevel) {
-              if (route?.items?.length) {
-                return (
-                  <>
-                    {route?.title && (
-                      <Text
-                        style={{
-                          paddingLeft: 24,
-                          margin: "24px 0",
-                          display: "block",
-                        }}
-                        type="secondary"
-                      >
-                        {route?.title}
-                      </Text>
-                    )}
+        return routes.map((route) => {
+          if (firstLevel) {
+            if (route?.items?.length) {
+              return (
+                <>
+                  {route?.title && (
+                    <Text
+                      style={{
+                        paddingLeft: 24,
+                        margin: "24px 0",
+                        display: "block",
+                      }}
+                      type="secondary"
+                    >
+                      {route?.title}
+                    </Text>
+                  )}
 
-                    {getSubMenus(route)}
-                  </>
-                );
-              }
-            } else {
-              return getSubMenus(route);
+                  {getSubMenus(route)}
+                </>
+              );
             }
-          })
-          .flat(1);
+          } else {
+            return getSubMenus(route);
+          }
+        });
       }
 
       return [];
