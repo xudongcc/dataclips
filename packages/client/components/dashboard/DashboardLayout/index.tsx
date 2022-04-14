@@ -26,32 +26,30 @@ export enum DashboardItemType {
   DIVIDER = "divider",
 }
 
-export interface ChartCard {
-  card: {
-    name: string;
-    hiddenName?: boolean;
-  };
+export interface DashboardCard {
+  id: string;
+  name: string;
+  hiddenName?: boolean;
+  position: Layout;
+  type: DashboardItemType;
+}
+
+export interface DashboardChartItem extends DashboardCard {
   chart: {
     id: string;
   };
-  layout: Layout;
-  type: DashboardItemType.CHART;
-  id: string;
 }
 
-export interface DragDivider {
-  layout: Layout;
+export interface DashboardDividerItem extends DashboardCard {
   divider: {
     orientation?: "left" | "center" | "right";
     name?: string;
   };
-  type: DashboardItemType.DIVIDER;
-  id: string;
 }
 
 interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
   type: "preview" | "edit";
-  dragItems: Array<DragDivider | ChartCard>;
+  dragItems: Array<DashboardChartItem | DashboardDividerItem>;
   cardExtraConfig?: {
     extra?: ReactNode;
     disabledExtra?: boolean;
@@ -59,10 +57,10 @@ interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
     disabledEditChart?: boolean;
     disabledDelete?: boolean;
     disabledPreviewClip?: boolean;
-    onEditCardClick?: (chart: ChartCard, close: () => void) => void;
-    onEditChartClick?: (chart: ChartCard, close: () => void) => void;
-    onPreviewClipClick?: (chart: ChartCard, close: () => void) => void;
-    onDeleteClick?: (chart: ChartCard, close: () => void) => void;
+    onEditCardClick?: (chart: DashboardChartItem, close: () => void) => void;
+    onEditChartClick?: (chart: DashboardChartItem, close: () => void) => void;
+    onPreviewClipClick?: (chart: DashboardChartItem, close: () => void) => void;
+    onDeleteClick?: (chart: DashboardChartItem, close: () => void) => void;
   };
   onDividerDelete?: (key: string) => void;
 }
@@ -109,7 +107,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
         {dragItems.map((item) => {
           if (item.type === DashboardItemType.CHART) {
             return (
-              <DashboardDragWrapper key={item?.layout?.i}>
+              <DashboardDragWrapper key={item?.position?.i}>
                 <DashboardCard
                   h="full"
                   sx={{
@@ -117,7 +115,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                       overflowY: "auto",
                     },
                   }}
-                  title={!item?.card?.hiddenName && item?.card?.name}
+                  title={!item?.hiddenName && item?.name}
                   extra={
                     cardExtraConfig?.extra ? (
                       cardExtraConfig?.extra
@@ -142,7 +140,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                                   ref={popoverRef}
                                   onClick={() => {
                                     cardExtraConfig?.onEditCardClick?.(
-                                      item,
+                                      item as DashboardChartItem,
                                       onClose
                                     );
 
@@ -159,12 +157,12 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                                 <Button
                                   variant="ghost"
                                   isDisabled={
-                                    !item?.chart?.id ||
+                                    !(item as DashboardChartItem)?.chart?.id ||
                                     cardExtraConfig.disabledEditChart
                                   }
                                   onClick={() => {
                                     cardExtraConfig?.onEditChartClick?.(
-                                      item,
+                                      item as DashboardChartItem,
                                       onClose
                                     );
 
@@ -181,12 +179,12 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                                 <Button
                                   variant="ghost"
                                   isDisabled={
-                                    !item?.chart?.id ||
+                                    !(item as DashboardChartItem)?.chart?.id ||
                                     cardExtraConfig.disabledPreviewClip
                                   }
                                   onClick={() => {
                                     cardExtraConfig?.onPreviewClipClick?.(
-                                      item,
+                                      item as DashboardChartItem,
                                       onClose
                                     );
 
@@ -207,7 +205,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                                   ref={popoverRef}
                                   onClick={() => {
                                     cardExtraConfig?.onDeleteClick?.(
-                                      item,
+                                      item as DashboardChartItem,
                                       onClose
                                     );
 
@@ -226,7 +224,9 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                     ) : undefined
                   }
                 >
-                  <DashboardChartResultPreview chartId={item?.chart?.id} />
+                  <DashboardChartResultPreview
+                    chartId={(item as DashboardChartItem)?.chart?.id}
+                  />
                 </DashboardCard>
               </DashboardDragWrapper>
             );
@@ -234,16 +234,18 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
 
           if (item.type === DashboardItemType.DIVIDER) {
             return (
-              <DashboardDragWrapper key={item.layout.i}>
+              <DashboardDragWrapper key={item.position.i}>
                 <Box pr={type === "edit" ? "20px" : undefined}>
                   <DashboardDivider
-                    orientation={item.divider?.orientation}
+                    orientation={
+                      (item as DashboardDividerItem).divider?.orientation
+                    }
                     hasDelete={type === "edit"}
                     onDelete={() => {
                       onDividerDelete?.(item.id);
                     }}
                   >
-                    {item?.divider?.name}
+                    {(item as DashboardDividerItem)?.divider?.name}
                   </DashboardDivider>
                 </Box>
               </DashboardDragWrapper>

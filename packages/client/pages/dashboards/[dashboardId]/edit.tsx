@@ -16,10 +16,10 @@ import { useCallback, useState, useEffect } from "react";
 import { Loading } from "../../../components/common/Loading";
 import { Page } from "../../../components/common/Page";
 import {
-  ChartCard,
   DashboardItemType,
   DashboardLayout,
-  DragDivider,
+  DashboardChartItem,
+  DashboardDividerItem,
 } from "../../../components/dashboard/DashboardLayout";
 import { Checkbox, Form, Input, Select, Space } from "antd";
 import { Modal } from "../../../components/common/Modal";
@@ -66,9 +66,9 @@ const DashBoardEdit: PC = () => {
   const [updateDashboard, { loading: updateDashboardLoading }] =
     useUpdateDashboardMutation();
 
-  const [dragItems, setDragItems] = useState<Array<DragDivider | ChartCard>>(
-    []
-  );
+  const [dragItems, setDragItems] = useState<
+    Array<DashboardDividerItem | DashboardChartItem>
+  >([]);
 
   // 创建或编辑卡片的弹窗
   const [isAddOrEditCardModalVisible, setIsAddOrEditCardModalVisible] =
@@ -145,7 +145,7 @@ const DashBoardEdit: PC = () => {
       });
 
       if (data?.chart) {
-        const current: ChartCard = {
+        const current: DashboardChartItem = {
           id: uuidv4(),
           chart: {
             id: data.chart.id,
