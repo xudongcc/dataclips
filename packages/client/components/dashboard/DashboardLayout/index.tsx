@@ -73,7 +73,7 @@ interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
         chart: DashboardChartItem,
         close: () => void
       ) => void;
-      onDeleteClick?: (chart: DashboardChartItem, close: () => void) => void;
+      onDeleteClick?: (chartId: string, close: () => void) => void;
     };
     divider?: {
       onDividerDelete?: (dividerId: string) => void;
@@ -222,7 +222,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                                   ref={popoverRef}
                                   onClick={() => {
                                     extraConfig?.chart?.onDeleteClick?.(
-                                      item as DashboardChartItem,
+                                      (item as DashboardChartItem).id,
                                       onClose
                                     );
 

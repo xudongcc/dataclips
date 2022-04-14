@@ -53,6 +53,7 @@ const DashBoardEdit: PC = () => {
   // 添加 markdown 的form
   const [mdForm] = Form.useForm();
 
+  // 当前表单弹窗的操作类型
   const [operation, setOperation] = useState<Operation>({
     type: OperationType.ADD,
   });
@@ -73,6 +74,7 @@ const DashBoardEdit: PC = () => {
   const [updateDashboard, { loading: updateDashboardLoading }] =
     useUpdateDashboardMutation();
 
+  // 拖拽项
   const [dragItems, setDragItems] = useState<
     Array<DashboardDividerItem | DashboardChartItem | DashboardMarkdownItem>
   >([]);
@@ -82,35 +84,43 @@ const DashBoardEdit: PC = () => {
     useState(false);
 
   // 编辑仪表盘名称
-  const [isDashboardNameModalVisible, setIsDashboardNameModalVisible] =
+  const [isEditDashboardNameModalVisible, setIsEditDashboardNameModalVisible] =
     useState(false);
 
-  // 添加块弹窗
+  // 添加块的弹窗
   const [isAddBlockModalVisible, setIsAddBlockModalVisible] = useState(false);
 
-  // 分隔线名称弹窗
-  const [isDividerNameModalVisible, setIsDividerNameModalVisible] =
-    useState(false);
+  // 分割线弹窗
+  const [isDividerModalVisible, setIsDividerModalVisible] = useState(false);
 
   // markdown弹窗
   const [isAddOrEditMarkdownModalVisible, setIsAddOrEditMarkdownModalVisible] =
     useState(false);
 
-  const handleCloseAddChartModal = useCallback(() => {
+  const handleCloseAddOrEditChartModal = useCallback(() => {
     setIsAddOrEditCardModalVisible(false);
     addOrEditCardForm.resetFields();
-    setOperation({ type: OperationType.ADD });
   }, [addOrEditCardForm]);
 
   const handleCloseEditDashboardNameModal = useCallback(() => {
-    setIsDashboardNameModalVisible(false);
+    setIsEditDashboardNameModalVisible(false);
     editDashboardNameForm.resetFields();
   }, [editDashboardNameForm]);
 
   const handleCloseDividerModal = useCallback(() => {
-    setIsDividerNameModalVisible(false);
+    setIsDividerModalVisible(false);
     dividerNameForm.resetFields();
   }, [dividerNameForm]);
+
+  const handleCloseBlockModal = useCallback(() => {
+    setIsAddBlockModalVisible(false);
+    blockForm.resetFields();
+  }, [blockForm]);
+
+  const handleCloseAddOrEditMarkdownModal = useCallback(() => {
+    setIsAddOrEditMarkdownModalVisible(false);
+    mdForm.resetFields();
+  }, [mdForm]);
 
   const handleUpdateDashboard = useCallback(
     async (goPreview?: boolean) => {
@@ -126,6 +136,7 @@ const DashBoardEdit: PC = () => {
                 ...data?.dashboard?.config,
                 blocks: dragItems.map((item) => ({
                   ...item,
+                  // 当前接口不给传递 i
                   position: { ...omit(item?.position, ["i"]) },
                 })),
               },
@@ -154,66 +165,6 @@ const DashBoardEdit: PC = () => {
       router,
     ]
   );
-
-  const handleAddOrEditMarkdown = useCallback(async () => {}, []);
-
-  const handleAddOrEditChartCard = useCallback(async () => {
-    try {
-      const values = await addOrEditCardForm.validateFields();
-
-      const { data } = await getChart({
-        variables: {
-          id: values.chartId,
-        },
-      });
-
-      if (data?.chart) {
-        const id = uuidv4();
-        const current: DashboardChartItem = {
-          id,
-          hiddenName: values.hiddenName,
-          name: values.name,
-          chart: {
-            id: data.chart.id,
-          },
-          type: DashboardItemType.CHART,
-          position: {
-            i: id,
-            x: 0,
-            y: maxBy(dragItems, (item) => item?.position?.y)?.position?.y || 0,
-            w: 12,
-            h: 6,
-          },
-        };
-        if (operation.type === OperationType.ADD) {
-          setDragItems([...dragItems, current]);
-        } else {
-          const updateIndex = dragItems.findIndex(
-            (dragItem) => dragItem.id === operation?.key
-          );
-          if (updateIndex !== -1) {
-            dragItems[updateIndex] = {
-              ...current,
-              position: dragItems[updateIndex].position,
-              id: dragItems[updateIndex].id,
-            };
-          }
-          setDragItems([...dragItems]);
-          setOperation({ type: OperationType.EDIT });
-        }
-      }
-      handleCloseAddChartModal();
-    } catch (err) {
-      console.error(err);
-    }
-  }, [
-    addOrEditCardForm,
-    dragItems,
-    getChart,
-    handleCloseAddChartModal,
-    operation?.key,
-    operation.type,
-  ]);
 
   // 布局发生变化时
   const handleSetChartItemLayout = useCallback(
@@ -245,6 +196,7 @@ const DashBoardEdit: PC = () => {
     [dragItems]
   );
 
+  // 获取和设置所有拖拽项
   useEffect(() => {
     if (data?.dashboard?.config?.blocks?.length) {
       // 添加 position 的 i，返回的数据没有
@@ -285,7 +237,7 @@ const DashBoardEdit: PC = () => {
               editDashboardNameForm.setFieldsValue({
                 dashboardName: data?.dashboard?.name,
               });
-              setIsDashboardNameModalVisible(true);
+              setIsEditDashboardNameModalVisible(true);
             },
           },
           {
@@ -325,11 +277,11 @@ const DashBoardEdit: PC = () => {
 
                 setIsAddOrEditCardModalVisible(true);
               },
-              onDeleteClick: (item, onClose) => {
+              onDeleteClick: (id, onClose) => {
                 onClose();
 
                 const deleteIndex = dragItems.findIndex(
-                  (chartCard) => chartCard.id === item.id
+                  (item) => item.id === id
                 );
 
                 if (deleteIndex !== -1) {
@@ -405,10 +357,60 @@ const DashBoardEdit: PC = () => {
             operation.type === OperationType.EDIT ? "编辑" : "添加"
           }卡片`}
           visible={isAddOrEditCardModalVisible}
-          onCancel={handleCloseAddChartModal}
+          onCancel={handleCloseAddOrEditChartModal}
           okButtonProps={{ loading: getChartLoading }}
           onOk={async () => {
-            await handleAddOrEditChartCard();
+            try {
+              const values = await addOrEditCardForm.validateFields();
+
+              const { data } = await getChart({
+                variables: {
+                  id: values.chartId,
+                },
+              });
+
+              if (data?.chart) {
+                const id = uuidv4();
+                const current: DashboardChartItem = {
+                  id,
+                  hiddenName: values.hiddenName,
+                  name: values.name,
+                  chart: {
+                    id: data.chart.id,
+                  },
+                  type: DashboardItemType.CHART,
+                  position: {
+                    i: id,
+                    x: 0,
+                    y:
+                      maxBy(dragItems, (item) => item?.position?.y)?.position
+                        ?.y || 0,
+                    w: 12,
+                    h: 6,
+                  },
+                };
+                if (operation.type === OperationType.ADD) {
+                  setDragItems([...dragItems, current]);
+                } else {
+                  const updateIndex = dragItems.findIndex(
+                    (dragItem) => dragItem.id === operation?.key
+                  );
+                  if (updateIndex !== -1) {
+                    dragItems[updateIndex] = {
+                      ...current,
+                      position: dragItems[updateIndex].position,
+                      id: dragItems[updateIndex].id,
+                    };
+                  }
+                  setDragItems([...dragItems]);
+                  setOperation({ type: OperationType.ADD });
+                }
+              }
+
+              handleCloseAddOrEditChartModal();
+            } catch (err) {
+              console.error(err);
+            }
           }}
         >
           <Form form={addOrEditCardForm} layout="vertical">
@@ -459,7 +461,7 @@ const DashBoardEdit: PC = () => {
         <Modal
           title="编辑仪表盘名称"
           okButtonProps={{ loading: getChartLoading || updateDashboardLoading }}
-          visible={isDashboardNameModalVisible}
+          visible={isEditDashboardNameModalVisible}
           onCancel={handleCloseEditDashboardNameModal}
           onOk={async () => {
             try {
@@ -484,11 +486,11 @@ const DashBoardEdit: PC = () => {
           </Form>
         </Modal>
 
-        {/* 添加编辑线弹窗 */}
+        {/* 添加分割线弹窗 */}
         <Modal
           title="添加分割线"
           onCancel={handleCloseDividerModal}
-          visible={isDividerNameModalVisible}
+          visible={isDividerModalVisible}
           onOk={() => {
             const values = dividerNameForm.getFieldsValue();
             const id = uuidv4();
@@ -505,7 +507,9 @@ const DashBoardEdit: PC = () => {
                 position: {
                   i: id,
                   x: 0,
-                  y: maxBy(dragItems, (item) => item.position.y).position.y,
+                  y:
+                    maxBy(dragItems, (item) => item?.position?.y)?.position
+                      ?.y || 0,
                   w: 24,
                   h: 1,
                   maxH: 1,
@@ -545,28 +549,25 @@ const DashBoardEdit: PC = () => {
         <Modal
           title="添加块"
           visible={isAddBlockModalVisible}
-          onCancel={() => {
-            setIsAddBlockModalVisible(false);
-            blockForm.resetFields();
-          }}
+          onCancel={handleCloseBlockModal}
           onOk={() => {
             const blockType = blockForm.getFieldValue("blockType");
-            if (blockType === "divider") {
-              setIsDividerNameModalVisible(true);
+
+            if (blockType === DashboardItemType.DIVIDER) {
+              setIsDividerModalVisible(true);
             }
 
-            if (blockType === "markdown") {
+            if (blockType === DashboardItemType.MARKDOWN) {
               setIsAddOrEditMarkdownModalVisible(true);
             }
 
-            setIsAddBlockModalVisible(false);
-            blockForm.resetFields();
+            handleCloseBlockModal();
           }}
         >
           <Form form={blockForm}>
             <Form.Item style={{ marginBottom: 0 }} name="blockType">
               <Select showSearch allowClear placeholder="选择要添加的块">
-                <Option value="divider">分隔线</Option>
+                <Option value="divider">分割线</Option>
                 <Option value="markdown">markdown</Option>
               </Select>
             </Form.Item>
@@ -575,39 +576,52 @@ const DashBoardEdit: PC = () => {
 
         {/* 添加或编辑 markdown 的弹窗 */}
         <Modal
-          title="添加 markdown"
+          title={`${
+            operation.type === OperationType.ADD ? "添加" : "编辑"
+          } markdown`}
           width={1200}
           visible={isAddOrEditMarkdownModalVisible}
-          onCancel={() => {
-            setIsAddOrEditMarkdownModalVisible(false);
-          }}
+          onCancel={handleCloseAddOrEditMarkdownModal}
           onOk={() => {
-            // TODO: 判断是添加状态下，还是编辑状态下
-
             const values = mdForm.getFieldsValue();
+
             const id = uuidv4();
-
-            setDragItems([
-              ...dragItems,
-              {
-                id,
-                type: DashboardItemType.MARKDOWN,
-                hiddenName: values?.hiddenName || false,
-                name: values?.name,
-                markdown: {
-                  content: values?.content,
-                },
-                position: {
-                  i: id,
-                  x: 0,
-                  y: maxBy(dragItems, (item) => item.position.y).position.y,
-                  w: 12,
-                  h: 6,
-                },
+            const current = {
+              id,
+              type: DashboardItemType.MARKDOWN,
+              hiddenName: values?.hiddenName || false,
+              name: values?.name,
+              markdown: {
+                content: values?.content,
               },
-            ]);
+              position: {
+                i: id,
+                x: 0,
+                y:
+                  maxBy(dragItems, (item) => item.position.y)?.position?.y || 0,
+                w: 12,
+                h: 6,
+              },
+            };
 
-            setIsAddOrEditMarkdownModalVisible(false);
+            if (operation.type === OperationType.ADD) {
+              setDragItems([...dragItems, current]);
+            } else {
+              const updateIndex = dragItems.findIndex(
+                (dragItem) => dragItem.id === operation?.key
+              );
+              if (updateIndex !== -1) {
+                dragItems[updateIndex] = {
+                  ...current,
+                  position: dragItems[updateIndex].position,
+                  id: dragItems[updateIndex].id,
+                };
+              }
+              setDragItems([...dragItems]);
+              setOperation({ type: OperationType.ADD });
+            }
+
+            handleCloseAddOrEditMarkdownModal();
           }}
           bodyStyle={{
             maxHeight: 510,
