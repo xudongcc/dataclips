@@ -1,4 +1,4 @@
-import { Form, Select, Divider, Input, AutoComplete } from "antd";
+import { Form, Select, Divider, AutoComplete } from "antd";
 import moment from "antd/node_modules/moment";
 import { FC, useState } from "react";
 import numeral from "numeral";
@@ -13,15 +13,12 @@ import {
   PieChartConfigForm,
 } from "./components";
 
-const { TextArea } = Input;
-
 export const chartTypeToFormFieldMap = {
   [ChartType.FUNNEL]: "funnelConfig",
   [ChartType.LINE]: "lineConfig",
   [ChartType.BAR]: "barConfig",
   [ChartType.METRIC]: "metricConfig",
   [ChartType.PIE]: "pieConfig",
-  [ChartType.MD]: "mdConfig",
 };
 
 enum FormatType {
@@ -112,7 +109,6 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
             ChartType.LINE,
             ChartType.BAR,
             ChartType.PIE,
-            ChartType.MD,
           ].map((item) => (
             <Option value={item} key={item}>
               {chartTypeMap[item]}
@@ -195,17 +191,6 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
                   values: result.fields,
                 }}
               />
-            ),
-          },
-          {
-            type: ChartType.MD,
-            component: (
-              <Form.Item
-                style={{ marginBottom: 0 }}
-                name={["mdConfig", "content"]}
-              >
-                <TextArea allowClear placeholder="输入 markdown 语法" />
-              </Form.Item>
             ),
           },
         ].find((item) => item.type === currentChartType)?.component

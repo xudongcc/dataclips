@@ -15,7 +15,6 @@ import {
   PieChartPreview,
   PieChartConfig,
 } from "./components";
-import { Markdown, MarkdownConfig } from "./components/Markdown";
 
 interface ChartResultPreviewProps extends ChartServerConfig {
   result: ResultFragment;
@@ -73,10 +72,6 @@ export const ChartResultPreview: FC<ChartResultPreviewProps> = ({
               config={config as PieChartConfig}
             />
           ),
-        },
-        {
-          type: ChartType.MD,
-          component: <Markdown content={(config as MarkdownConfig)?.content} />,
         },
       ].find((item) => item.type === type)?.component || <></>}
     </Box>

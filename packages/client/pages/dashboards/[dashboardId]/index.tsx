@@ -71,25 +71,31 @@ const DashboardPreview: PC = () => {
             static: true,
           }))}
           dragItems={dragItems}
-          cardExtraConfig={{
-            onEditChartClick: (item) => {
-              router.push(`/charts/${item?.chart?.id}/edit`);
-            },
-            onPreviewClipClick: async (item) => {
-              try {
-                const { data } = await getChart({
-                  variables: { id: item.chart?.id },
-                });
+          extraConfig={{
+            chart: {
+              onEditChartClick: (item) => {
+                router.push(`/charts/${item?.chart?.id}/edit`);
+              },
+              onPreviewClipClick: async (item) => {
+                try {
+                  const { data } = await getChart({
+                    variables: { id: item.chart?.id },
+                  });
 
-                if (data?.chart?.clipId) {
-                  router.push(`/clips/${data?.chart?.clipId}`);
+                  if (data?.chart?.clipId) {
+                    router.push(`/clips/${data?.chart?.clipId}`);
+                  }
+                } catch (err) {
+                  console.log("err", err);
                 }
-              } catch (err) {
-                console.log("err", err);
-              }
+              },
+              disabledDelete: true,
+              disabledEditCard: true,
             },
-            disabledDelete: true,
-            disabledEditCard: true,
+            markdown: {
+              disabledDelete: true,
+              disabledEditBlock: true,
+            },
           }}
         />
       </Page>

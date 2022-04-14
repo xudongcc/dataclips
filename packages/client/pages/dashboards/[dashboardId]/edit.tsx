@@ -20,11 +20,14 @@ import {
   DashboardLayout,
   DashboardChartItem,
   DashboardDividerItem,
+  DashboardMarkdownItem,
 } from "../../../components/dashboard/DashboardLayout";
-import { Checkbox, Form, Input, Select, Space } from "antd";
+import { Checkbox, Col, Form, Input, Row, Select, Space } from "antd";
 import { Modal } from "../../../components/common/Modal";
+import { Markdown } from "../../../components/chart/ChartResultPreview/components";
 
 const { Option } = Select;
+const { TextArea } = Input;
 
 enum OperationType {
   ADD = "ADD",
@@ -45,6 +48,10 @@ const DashBoardEdit: PC = () => {
   const [dividerNameForm] = Form.useForm();
   // 添加或编辑卡片的 form
   const [addOrEditCardForm] = Form.useForm();
+  // 添加块的 form
+  const [blockForm] = Form.useForm();
+  // 添加 markdown 的form
+  const [mdForm] = Form.useForm();
 
   const [operation, setOperation] = useState<Operation>({
     type: OperationType.ADD,
@@ -67,7 +74,7 @@ const DashBoardEdit: PC = () => {
     useUpdateDashboardMutation();
 
   const [dragItems, setDragItems] = useState<
-    Array<DashboardDividerItem | DashboardChartItem>
+    Array<DashboardDividerItem | DashboardChartItem | DashboardMarkdownItem>
   >([]);
 
   // 创建或编辑卡片的弹窗
@@ -78,8 +85,15 @@ const DashBoardEdit: PC = () => {
   const [isDashboardNameModalVisible, setIsDashboardNameModalVisible] =
     useState(false);
 
-  // 编辑线名称弹窗
+  // 添加块弹窗
+  const [isAddBlockModalVisible, setIsAddBlockModalVisible] = useState(false);
+
+  // 分隔线名称弹窗
   const [isDividerNameModalVisible, setIsDividerNameModalVisible] =
+    useState(false);
+
+  // markdown弹窗
+  const [isAddOrEditMarkdownModalVisible, setIsAddOrEditMarkdownModalVisible] =
     useState(false);
 
   const handleCloseAddChartModal = useCallback(() => {
@@ -140,6 +154,8 @@ const DashBoardEdit: PC = () => {
       router,
     ]
   );
+
+  const handleAddOrEditMarkdown = useCallback(async () => {}, []);
 
   const handleAddOrEditChartCard = useCallback(async () => {
     try {
@@ -273,9 +289,9 @@ const DashBoardEdit: PC = () => {
             },
           },
           {
-            text: "添加间隔线",
+            text: "添加块",
             onClick: () => {
-              setIsDividerNameModalVisible(true);
+              setIsAddBlockModalVisible(true);
             },
           },
           {
@@ -291,62 +307,95 @@ const DashBoardEdit: PC = () => {
           onLayoutChange={handleSetChartItemLayout}
           layout={dragItems.map((item) => item.position)}
           dragItems={dragItems}
-          cardExtraConfig={{
-            onEditCardClick: (item, onClose) => {
-              onClose();
+          extraConfig={{
+            chart: {
+              onEditCardClick: (item, onClose) => {
+                onClose();
 
-              addOrEditCardForm.setFieldsValue({
-                name: item?.name,
-                chartId: item?.chart.id,
-                hiddenName: !!item?.hiddenName,
-              });
-
-              setOperation({
-                type: OperationType.EDIT,
-                key: item.id,
-              });
-
-              setIsAddOrEditCardModalVisible(true);
-            },
-            onDeleteClick: (item, onClose) => {
-              onClose();
-
-              const deleteIndex = dragItems.findIndex(
-                (chartCard) => chartCard.id === item.id
-              );
-
-              if (deleteIndex !== -1) {
-                dragItems.splice(deleteIndex, 1);
-                setDragItems([...dragItems]);
-              }
-            },
-            onEditChartClick: (item) => {
-              router.push(`/charts/${item?.chart?.id}/edit`);
-            },
-            onPreviewClipClick: async (item) => {
-              try {
-                const { data } = await getChart({
-                  variables: { id: item.chart?.id },
+                addOrEditCardForm.setFieldsValue({
+                  name: item?.name,
+                  chartId: item?.chart.id,
+                  hiddenName: !!item?.hiddenName,
                 });
 
-                if (data?.chart?.clipId) {
-                  router.push(`/clips/${data?.chart?.clipId}`);
+                setOperation({
+                  type: OperationType.EDIT,
+                  key: item.id,
+                });
+
+                setIsAddOrEditCardModalVisible(true);
+              },
+              onDeleteClick: (item, onClose) => {
+                onClose();
+
+                const deleteIndex = dragItems.findIndex(
+                  (chartCard) => chartCard.id === item.id
+                );
+
+                if (deleteIndex !== -1) {
+                  dragItems.splice(deleteIndex, 1);
+                  setDragItems([...dragItems]);
                 }
-              } catch (err) {
-                console.error("err", err);
-              }
+              },
+              onEditChartClick: (item) => {
+                router.push(`/charts/${item?.chart?.id}/edit`);
+              },
+              onPreviewClipClick: async (item) => {
+                try {
+                  const { data } = await getChart({
+                    variables: { id: item.chart?.id },
+                  });
+
+                  if (data?.chart?.clipId) {
+                    router.push(`/clips/${data?.chart?.clipId}`);
+                  }
+                } catch (err) {
+                  console.error("err", err);
+                }
+              },
             },
-          }}
-          onDividerDelete={(id) => {
-            const deleteDividerIndex = dragItems.findIndex(
-              (dragItem) => dragItem.id === id
-            );
+            divider: {
+              onDividerDelete: (id) => {
+                const deleteDividerIndex = dragItems.findIndex(
+                  (dragItem) => dragItem.id === id
+                );
 
-            if (deleteDividerIndex !== -1) {
-              dragItems.splice(deleteDividerIndex, 1);
+                if (deleteDividerIndex !== -1) {
+                  dragItems.splice(deleteDividerIndex, 1);
 
-              setDragItems([...dragItems]);
-            }
+                  setDragItems([...dragItems]);
+                }
+              },
+            },
+            markdown: {
+              onDeleteClick: (id) => {
+                const deleteDividerIndex = dragItems.findIndex(
+                  (dragItem) => dragItem.id === id
+                );
+
+                if (deleteDividerIndex !== -1) {
+                  dragItems.splice(deleteDividerIndex, 1);
+
+                  setDragItems([...dragItems]);
+                }
+              },
+              onEditBlockClick: (item, onClose) => {
+                onClose();
+
+                mdForm.setFieldsValue({
+                  name: item?.name,
+                  content: item?.markdown?.content,
+                  hiddenName: !!item?.hiddenName,
+                });
+
+                setOperation({
+                  type: OperationType.EDIT,
+                  key: item.id,
+                });
+
+                setIsAddOrEditMarkdownModalVisible(true);
+              },
+            },
           }}
         />
 
@@ -489,6 +538,114 @@ const DashBoardEdit: PC = () => {
                 <Option value="right">居右</Option>
               </Select>
             </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* 添加块的弹窗 */}
+        <Modal
+          title="添加块"
+          visible={isAddBlockModalVisible}
+          onCancel={() => {
+            setIsAddBlockModalVisible(false);
+            blockForm.resetFields();
+          }}
+          onOk={() => {
+            const blockType = blockForm.getFieldValue("blockType");
+            if (blockType === "divider") {
+              setIsDividerNameModalVisible(true);
+            }
+
+            if (blockType === "markdown") {
+              setIsAddOrEditMarkdownModalVisible(true);
+            }
+
+            setIsAddBlockModalVisible(false);
+            blockForm.resetFields();
+          }}
+        >
+          <Form form={blockForm}>
+            <Form.Item style={{ marginBottom: 0 }} name="blockType">
+              <Select showSearch allowClear placeholder="选择要添加的块">
+                <Option value="divider">分隔线</Option>
+                <Option value="markdown">markdown</Option>
+              </Select>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* 添加或编辑 markdown 的弹窗 */}
+        <Modal
+          title="添加 markdown"
+          width={1200}
+          visible={isAddOrEditMarkdownModalVisible}
+          onCancel={() => {
+            setIsAddOrEditMarkdownModalVisible(false);
+          }}
+          onOk={() => {
+            // TODO: 判断是添加状态下，还是编辑状态下
+
+            const values = mdForm.getFieldsValue();
+            const id = uuidv4();
+
+            setDragItems([
+              ...dragItems,
+              {
+                id,
+                type: DashboardItemType.MARKDOWN,
+                hiddenName: values?.hiddenName || false,
+                name: values?.name,
+                markdown: {
+                  content: values?.content,
+                },
+                position: {
+                  i: id,
+                  x: 0,
+                  y: maxBy(dragItems, (item) => item.position.y).position.y,
+                  w: 12,
+                  h: 6,
+                },
+              },
+            ]);
+
+            setIsAddOrEditMarkdownModalVisible(false);
+          }}
+          bodyStyle={{
+            maxHeight: 510,
+          }}
+        >
+          <Form layout="vertical" form={mdForm}>
+            <Row gutter={16}>
+              <Col span={12}>
+                <div
+                  style={{
+                    overflow: "hidden scroll",
+                    height: 455,
+                  }}
+                >
+                  <Form.Item noStyle shouldUpdate>
+                    {({ getFieldValue }) => (
+                      <Markdown content={getFieldValue("content")}></Markdown>
+                    )}
+                  </Form.Item>
+                </div>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="markdown 名称" name="name">
+                  <Input placeholder="输入 markdown 名称"></Input>
+                </Form.Item>
+
+                <Form.Item label="markdown 内容" name="content">
+                  <TextArea
+                    autoSize={{ minRows: 13, maxRows: 13 }}
+                    placeholder="输入 markdown 语法"
+                  ></TextArea>
+                </Form.Item>
+
+                <Form.Item noStyle name="hiddenName" valuePropName="checked">
+                  <Checkbox>是否隐藏标题</Checkbox>
+                </Form.Item>
+              </Col>
+            </Row>
           </Form>
         </Modal>
       </Page>
