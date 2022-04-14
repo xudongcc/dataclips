@@ -43,6 +43,7 @@ const ClipList = () => {
       align: "center",
       dataIndex: "updatedAt",
       key: "updatedAt",
+      sorter: true,
       valueType: ValueType.DATE_TIME,
     },
     {

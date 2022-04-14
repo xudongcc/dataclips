@@ -73,6 +73,7 @@ const DashBoardList: PC = () => {
       title: "最后更新时间",
       align: "center",
       dataIndex: "updatedAt",
+      sorter: true,
       key: "updatedAt",
       valueType: ValueType.DATE_TIME,
     },
