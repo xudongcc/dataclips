@@ -30,21 +30,21 @@ export class ClipService extends mixinConnection(
     super();
   }
 
-  async query(id: Clip["id"]): Promise<Result> {
+  async query(id: Clip["id"], throwError = false): Promise<Result> {
     const clip = await this.findOne({ where: { id } });
 
     let queryResult: [string[], unknown[][]];
-    let error: string;
+    let queryError: Error;
 
     const startedAt = new Date();
 
     try {
       queryResult = await this.sourceService.query(clip.sourceId, clip.sql);
     } catch (err) {
-      error = err.message;
+      queryError = err;
 
       // eslint-disable-next-line no-console
-      console.error(err);
+      console.error(queryError);
     }
 
     const finishedAt = new Date();
@@ -53,15 +53,19 @@ export class ClipService extends mixinConnection(
       this.resultService.create({
         clip,
         name: clip.name,
-        fields: queryResult[0],
-        values: queryResult[1],
-        error,
+        fields: queryResult?.[0] || [],
+        values: queryResult?.[1] || [],
+        error: queryError.message,
         duration: finishedAt.getTime() - startedAt.getTime(),
         startedAt,
         finishedAt,
       }),
       this.update({ id }, { latestResultAt: finishedAt }),
     ]);
+
+    if (queryError && throwError) {
+      throw queryError;
+    }
 
     return result;
   }

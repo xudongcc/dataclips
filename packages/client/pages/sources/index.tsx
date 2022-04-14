@@ -179,6 +179,7 @@ const SourceList = () => {
     },
     {
       title: "最后更新时间",
+      sorter: true,
       align: "center",
       dataIndex: "updatedAt",
       key: "updatedAt",
