@@ -121,24 +121,46 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
         </Select>
       </Form.Item>
 
-      <Divider orientation="left">标准配置</Divider>
+      <Form.Item noStyle shouldUpdate>
+        {({ getFieldValue }) => {
+          return (
+            getFieldValue("type") !== ChartType.MD && (
+              <>
+                <Divider orientation="left">标准配置</Divider>
 
-      <Form.Item
-        name={[chartTypeToFormFieldMap[currentChartType], "format"]}
-        style={{ marginBottom: currentChartType ? undefined : 0 }}
-      >
-        <AutoComplete
-          allowClear
-          options={options}
-          placeholder="选择格式化方式"
-          disabled={!currentChartType}
-        />
+                <Form.Item
+                  name={[chartTypeToFormFieldMap[currentChartType], "format"]}
+                  style={{ marginBottom: currentChartType ? undefined : 0 }}
+                >
+                  <AutoComplete
+                    allowClear
+                    options={options}
+                    placeholder="选择格式化方式"
+                    disabled={!currentChartType}
+                  />
+                </Form.Item>
+              </>
+            )
+          );
+        }}
       </Form.Item>
 
       {currentChartType && (
-        <Divider style={{ marginTop: 0 }} orientation="left">
-          查询分析配置
-        </Divider>
+        <Form.Item noStyle shouldUpdate>
+          {({ getFieldValue }) => {
+            return (
+              <Divider
+                style={{
+                  marginTop:
+                    getFieldValue("type") !== ChartType.MD ? 0 : undefined,
+                }}
+                orientation="left"
+              >
+                查询分析配置
+              </Divider>
+            );
+          }}
+        </Form.Item>
       )}
       {
         [
@@ -204,7 +226,11 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
                 style={{ marginBottom: 0 }}
                 name={["mdConfig", "content"]}
               >
-                <TextArea allowClear placeholder="输入 markdown 语法" />
+                <TextArea
+                  rows={8}
+                  allowClear
+                  placeholder="输入 markdown 语法"
+                />
               </Form.Item>
             ),
           },
