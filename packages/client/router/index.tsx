@@ -6,32 +6,41 @@ import {
 } from "@ant-design/icons";
 import { ReactNode } from "react";
 
-interface RouterProps {
+export interface ItemsProps {
   name: string;
   path: string;
   icon?: ReactNode;
-  children?: Array<RouterProps>;
+  items?: Array<ItemsProps>;
+}
+
+export interface RouterProps {
+  title?: string;
+  items: ItemsProps[];
 }
 
 export const routes: RouterProps[] = [
   {
-    name: "仪表盘",
-    path: "/dashboards",
-    icon: <DashboardOutlined />,
-  },
-  {
-    name: "图表",
-    path: "/charts",
-    icon: <LineChartOutlined />,
-  },
-  {
-    name: "数据集",
-    path: "/clips",
-    icon: <DatabaseOutlined />,
-  },
-  {
-    name: "数据源",
-    path: "/sources",
-    icon: <NodeIndexOutlined />,
+    items: [
+      {
+        name: "仪表盘",
+        path: "/dashboards",
+        icon: <DashboardOutlined />,
+      },
+      {
+        name: "图表",
+        path: "/charts",
+        icon: <LineChartOutlined />,
+      },
+      {
+        name: "数据集",
+        path: "/clips",
+        icon: <DatabaseOutlined />,
+      },
+      {
+        name: "数据源",
+        path: "/sources",
+        icon: <NodeIndexOutlined />,
+      },
+    ],
   },
 ];
