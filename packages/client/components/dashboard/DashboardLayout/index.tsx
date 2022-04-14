@@ -28,7 +28,7 @@ export enum DashboardItemType {
 
 export interface DashboardCard {
   id: string;
-  name: string;
+  name?: string;
   hiddenName?: boolean;
   position: Layout;
   type: DashboardItemType;

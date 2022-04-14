@@ -11,7 +11,7 @@ import {
   useUpdateDashboardMutation,
   useChartLazyQuery,
 } from "../../../generated/graphql";
-import { cloneDeep, maxBy } from "lodash";
+import { cloneDeep, maxBy, omit } from "lodash";
 import { useCallback, useState, useEffect } from "react";
 import { Loading } from "../../../components/common/Loading";
 import { Page } from "../../../components/common/Page";
@@ -108,7 +108,13 @@ const DashBoardEdit: PC = () => {
             id: dashboardId,
             input: {
               name: value,
-              config: dragItems,
+              config: {
+                ...data?.dashboard?.config,
+                blocks: dragItems.map((item) => ({
+                  ...item,
+                  position: { ...omit(item?.position, ["i"]) },
+                })),
+              },
             },
           },
         });
@@ -128,6 +134,7 @@ const DashBoardEdit: PC = () => {
       editDashboardNameForm,
       updateDashboard,
       dashboardId,
+      data?.dashboard?.config,
       dragItems,
       toast,
       router,
@@ -145,20 +152,19 @@ const DashBoardEdit: PC = () => {
       });
 
       if (data?.chart) {
+        const id = uuidv4();
         const current: DashboardChartItem = {
-          id: uuidv4(),
+          id,
+          hiddenName: values.hiddenName,
+          name: values.name,
           chart: {
             id: data.chart.id,
           },
           type: DashboardItemType.CHART,
-          card: {
-            hiddenName: values.hiddenName,
-            name: values.name,
-          },
-          layout: {
-            i: uuidv4(),
+          position: {
+            i: id,
             x: 0,
-            y: maxBy(dragItems, (item) => item?.layout?.y)?.layout?.y || 0,
+            y: maxBy(dragItems, (item) => item?.position?.y)?.position?.y || 0,
             w: 12,
             h: 6,
           },
@@ -172,7 +178,7 @@ const DashBoardEdit: PC = () => {
           if (updateIndex !== -1) {
             dragItems[updateIndex] = {
               ...current,
-              layout: dragItems[updateIndex].layout,
+              position: dragItems[updateIndex].position,
               id: dragItems[updateIndex].id,
             };
           }
@@ -200,14 +206,14 @@ const DashBoardEdit: PC = () => {
 
       newLayout.forEach((layout) => {
         const itemIndex = dragItems.findIndex(
-          (item) => item.layout.i === layout.i
+          (item) => item.position.i === layout.i
         );
 
         if (itemIndex !== -1) {
           newDragItems[itemIndex] = {
             ...newDragItems[itemIndex],
-            layout: {
-              ...newDragItems[itemIndex].layout,
+            position: {
+              ...newDragItems[itemIndex].position,
               i: layout.i,
               x: layout.x,
               y: layout.y,
@@ -224,10 +230,18 @@ const DashBoardEdit: PC = () => {
   );
 
   useEffect(() => {
-    if (data?.dashboard?.config?.length) {
-      setDragItems(data.dashboard.config);
+    if (data?.dashboard?.config?.blocks?.length) {
+      // 添加 position 的 i，返回的数据没有
+      const blocks = data.dashboard.config.blocks.map((item) => ({
+        ...item,
+        position: {
+          ...item?.position,
+          i: item.id,
+        },
+      }));
+      setDragItems(blocks);
     }
-  }, [data?.dashboard?.config]);
+  }, [data?.dashboard?.config?.blocks]);
 
   if (loading) {
     return <Loading width="100%" />;
@@ -275,16 +289,16 @@ const DashBoardEdit: PC = () => {
         <DashboardLayout
           type="edit"
           onLayoutChange={handleSetChartItemLayout}
-          layout={dragItems.map((item) => item.layout)}
+          layout={dragItems.map((item) => item.position)}
           dragItems={dragItems}
           cardExtraConfig={{
             onEditCardClick: (item, onClose) => {
               onClose();
 
               addOrEditCardForm.setFieldsValue({
-                name: item?.card.name,
+                name: item?.name,
                 chartId: item?.chart.id,
-                hiddenName: !!item?.card?.hiddenName,
+                hiddenName: !!item?.hiddenName,
               });
 
               setOperation({
@@ -428,20 +442,21 @@ const DashBoardEdit: PC = () => {
           visible={isDividerNameModalVisible}
           onOk={() => {
             const values = dividerNameForm.getFieldsValue();
+            const id = uuidv4();
 
             setDragItems([
               ...dragItems,
               {
-                id: uuidv4(),
+                id,
                 type: DashboardItemType.DIVIDER,
                 divider: {
-                  name: values?.dividerName,
                   orientation: (values?.orientation || "left") as any,
+                  name: values?.dividerName,
                 },
-                layout: {
-                  i: uuidv4(),
+                position: {
+                  i: id,
                   x: 0,
-                  y: maxBy(dragItems, (item) => item.layout.y).layout.y,
+                  y: maxBy(dragItems, (item) => item.position.y).position.y,
                   w: 24,
                   h: 1,
                   maxH: 1,

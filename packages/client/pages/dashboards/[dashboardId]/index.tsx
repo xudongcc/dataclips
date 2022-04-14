@@ -5,22 +5,15 @@ import {
   useChartLazyQuery,
   useDashboardQuery,
 } from "../../../generated/graphql";
-import { Layout } from "react-grid-layout";
 import { Loading } from "../../../components/common/Loading";
 import ProjectLayout from "../../../layouts/ProjectLayout";
 import { Page } from "../../../components/common/Page";
 import Head from "next/head";
 import {
   DashboardLayout,
-  DragDivider,
+  DashboardChartItem,
+  DashboardDividerItem,
 } from "../../../components/dashboard/DashboardLayout";
-
-interface ChartCard {
-  name: string;
-  chartId: string;
-  hiddenName: boolean;
-  layout: Layout;
-}
 
 const DashboardPreview: PC = () => {
   const router = useRouter();
@@ -34,15 +27,23 @@ const DashboardPreview: PC = () => {
     skip: !dashboardId,
   });
 
-  const [dragItems, setDragItems] = useState<Array<DragDivider | ChartCard>>(
-    []
-  );
+  const [dragItems, setDragItems] = useState<
+    Array<DashboardDividerItem | DashboardChartItem>
+  >([]);
 
   useEffect(() => {
-    if (data?.dashboard?.config?.length) {
-      setDragItems(data.dashboard.config);
+    if (data?.dashboard?.config?.blocks?.length) {
+      // 添加 position 的 i，返回的数据没有
+      const blocks = data.dashboard.config.blocks.map((item) => ({
+        ...item,
+        position: {
+          ...item?.position,
+          i: item.id,
+        },
+      }));
+      setDragItems(blocks);
     }
-  }, [data?.dashboard?.config]);
+  }, [data?.dashboard?.config?.blocks]);
 
   if (loading) {
     return <Loading />;
@@ -66,18 +67,18 @@ const DashboardPreview: PC = () => {
         <DashboardLayout
           type="preview"
           layout={dragItems.map((item) => ({
-            ...item?.layout,
+            ...item?.position,
             static: true,
           }))}
           dragItems={dragItems}
           cardExtraConfig={{
             onEditChartClick: (item) => {
-              router.push(`/charts/${item?.chartId}/edit`);
+              router.push(`/charts/${item?.chart?.id}/edit`);
             },
             onPreviewClipClick: async (item) => {
               try {
                 const { data } = await getChart({
-                  variables: { id: item.chartId },
+                  variables: { id: item.chart?.id },
                 });
 
                 if (data?.chart?.clipId) {
