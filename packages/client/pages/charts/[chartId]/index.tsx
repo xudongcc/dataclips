@@ -4,7 +4,7 @@ import { useQueryResult } from "../../../hooks/useQueryResult";
 import { Loading } from "../../../components/common/Loading";
 import { Box } from "@chakra-ui/react";
 import { ChartResultPreview } from "../../../components/chart/ChartResultPreview";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { ChartType } from "../../../types";
 import {
   LineChartConfig,
@@ -15,15 +15,12 @@ import {
   MarkdownConfig,
 } from "../../../components/chart/ChartResultPreview/components";
 import { Page } from "../../../components/common/Page";
-import PreviewLayout from "../../../layouts/PreviewLayout";
 import ProjectLayout from "../../../layouts/ProjectLayout";
-import { useSession } from "next-auth/react";
 import { Card } from "../../../components/common/Card";
 import Head from "next/head";
 
 const ChartPreview = () => {
   const router = useRouter();
-  const session = useSession();
 
   const { chartId } = router.query as { chartId: string };
 
@@ -91,64 +88,50 @@ const ChartPreview = () => {
     return undefined;
   }, [data]);
 
-  const content = useMemo(() => {
-    if (isLoading || loading) {
-      return <Loading />;
-    }
-
-    return (
-      <>
-        <Head>
-          <title>{data?.chart?.name} - 预览 - 图表</title>
-        </Head>
-
-        <Page
-          title={data?.chart?.name}
-          primaryAction={{
-            text: "编辑",
-            onClick: () => {
-              router.push(`/charts/${chartId}/edit`);
-            },
-          }}
-        >
-          {data?.chart.type && data?.chart.config && result && (
-            <Box h="800px">
-              <Card
-                overflow="hidden"
-                h="full"
-                sx={{
-                  ".card-body": {
-                    overflowY:
-                      data.chart.type === ChartType.MD ? "auto" : undefined,
-                  },
-                }}
-              >
-                <ChartResultPreview
-                  type={data.chart.type}
-                  config={getChartTypePreviewConfig()}
-                  result={result}
-                />
-              </Card>
-            </Box>
-          )}
-        </Page>
-      </>
-    );
-  }, [
-    chartId,
-    data,
-    getChartTypePreviewConfig,
-    isLoading,
-    loading,
-    result,
-    router,
-  ]);
-
-  if (session.status === "authenticated") {
-    return <ProjectLayout>{content}</ProjectLayout>;
+  if (isLoading || loading) {
+    return <Loading />;
   }
 
-  return <PreviewLayout>{content}</PreviewLayout>;
+  return (
+    <>
+      <Head>
+        <title>{data?.chart?.name} - 预览 - 图表</title>
+      </Head>
+
+      <Page
+        title={data?.chart?.name}
+        primaryAction={{
+          text: "编辑",
+          onClick: () => {
+            router.push(`/charts/${chartId}/edit`);
+          },
+        }}
+      >
+        {data?.chart.type && data?.chart.config && result && (
+          <Box h="800px">
+            <Card
+              overflow="hidden"
+              h="full"
+              sx={{
+                ".card-body": {
+                  overflowY:
+                    data.chart.type === ChartType.MD ? "auto" : undefined,
+                },
+              }}
+            >
+              <ChartResultPreview
+                type={data.chart.type}
+                config={getChartTypePreviewConfig()}
+                result={result}
+              />
+            </Card>
+          </Box>
+        )}
+      </Page>
+    </>
+  );
 };
+
+ChartPreview.layout = ProjectLayout;
 
 export default ChartPreview;
