@@ -69,7 +69,10 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
     >
       <Stack>
         <Stack spacing="4">
-          <Heading size={useBreakpointValue({ base: "sm", md: "md" })}>
+          <Heading
+            wordBreak="break-all"
+            size={useBreakpointValue({ base: "sm", md: "md" })}
+          >
             {value}
           </Heading>
 
@@ -80,7 +83,10 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
                 as={isUpwardsTrend ? FiArrowUpRight : FiArrowDownRight}
                 boxSize="5"
               />
-              <Text color={isUpwardsTrend ? "success" : "error"}>
+              <Text
+                wordBreak="break-all"
+                color={isUpwardsTrend ? "success" : "error"}
+              >
                 {compareValue}
               </Text>
             </HStack>
