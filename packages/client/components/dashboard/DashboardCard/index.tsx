@@ -1,20 +1,23 @@
 import {
-  Box,
-  BoxProps,
-  Button,
+  // Box,
+  // BoxProps,
+  // Button,
   ButtonProps as BaseButtonProps,
-  Stack,
-  HStack,
-  Text,
-  useColorModeValue,
+  // Stack,
+  // HStack,
+  // Text,
+  // useColorModeValue,
 } from "@chakra-ui/react";
+import { CardProps } from "antd/lib/card";
 import { omit } from "lodash";
 import { FC, ReactNode } from "react";
+import { AntdCard } from "../../common/AntdCard";
+import { Button } from "antd";
 
 interface ButtonProps extends BaseButtonProps {
   text?: React.ReactNode;
 }
-export interface DashboardCardProps extends BoxProps {
+export interface DashboardCardProps extends CardProps {
   title?: string;
   description?: string;
   extra?: ReactNode;
@@ -29,70 +32,70 @@ export const DashboardCard: FC<DashboardCardProps> = ({
   extra,
   secondaryActions,
   primaryAction,
-  ...otherProps
 }) => (
-  <Stack
-    as="section"
-    bg="bg-surface"
-    boxShadow={useColorModeValue("sm", "sm-dark")}
-    borderRadius="lg"
-    className="card"
-    p={2}
-    {...otherProps}
-  >
-    <Stack spacing="5">
-      <Stack
-        justify="space-between"
-        direction={{ base: "column", sm: "row" }}
-        spacing="5"
-      >
-        <Stack spacing="1">
-          {title ? (
-            <Text wordBreak="break-all" fontSize="lg" fontWeight="medium">
-              {title}
-            </Text>
-          ) : null}
+  <AntdCard title></AntdCard>
+  // <Stack
+  //   as="section"
+  //   bg="bg-surface"
+  //   boxShadow={useColorModeValue("sm", "sm-dark")}
+  //   borderRadius="lg"
+  //   className="card"
+  //   p={2}
+  //   {...otherProps}
+  // >
+  //   <Stack spacing="5">
+  //     <Stack
+  //       justify="space-between"
+  //       direction={{ base: "column", sm: "row" }}
+  //       spacing="5"
+  //     >
+  //       <Stack spacing="1">
+  //         {title ? (
+  //           <Text wordBreak="break-all" fontSize="lg" fontWeight="medium">
+  //             {title}
+  //           </Text>
+  //         ) : null}
 
-          {description ? (
-            <Text fontSize="sm" color="muted">
-              {description}
-            </Text>
-          ) : null}
-        </Stack>
+  //         {description ? (
+  //           <Text fontSize="sm" color="muted">
+  //             {description}
+  //           </Text>
+  //         ) : null}
+  //       </Stack>
 
-        {extra}
+  //       {extra}
 
-        {!extra && (primaryAction || secondaryActions) && (
-          <HStack spacing="1">
-            {secondaryActions &&
-              secondaryActions?.length &&
-              secondaryActions.map((secondaryAction, index) => (
-                <Button
-                  key={index}
-                  variant="secondary"
-                  {...omit(secondaryAction, "text")}
-                >
-                  {secondaryAction.text}
-                </Button>
-              ))}
+  //       {!extra && (primaryAction || secondaryActions) && (
+  //         <HStack spacing="1">
+  //           {secondaryActions &&
+  //             secondaryActions?.length &&
+  //             secondaryActions.map((secondaryAction, index) => (
+  //               <Button
+  //                 key={index}
+  //                 variant="secondary"
+  //                 {...omit(secondaryAction, "text")}
+  //               >
+  //                 {secondaryAction.text}
+  //               </Button>
+  //             ))}
 
-            {primaryAction && (
-              <Button variant="primary" {...omit(primaryAction, "text")}>
-                {primaryAction?.text}
-              </Button>
-            )}
-          </HStack>
-        )}
-      </Stack>
-    </Stack>
+  //           {primaryAction && (
+  //             <Button variant="primary" {...omit(primaryAction, "text")}>
+  //               {primaryAction?.text}
+  //             </Button>
+  //           )}
+  //         </HStack>
+  //       )}
+  //     </Stack>
+  //   </Stack>
 
-    <Box
-      flex={1}
-      overflow="hidden"
-      h="inherit"
-      className="card-body dashboard-card-body"
-    >
-      {children}
-    </Box>
-  </Stack>
+  //   <Box
+  //     flex={1}
+  //     overflow="hidden"
+  //     h="inherit"
+  //     className="card-body dashboard-card-body"
+  //   >
+  //     {children}
+  //   </Box>
+  // </Stack>
 );
