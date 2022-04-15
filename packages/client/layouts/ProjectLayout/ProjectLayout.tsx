@@ -1,4 +1,4 @@
-import { FC, useState, useMemo, useCallback, useEffect } from "react";
+import { FC, useState, useMemo, useCallback, useEffect, useRef } from "react";
 import {
   Layout,
   Menu,
@@ -17,6 +17,7 @@ import { Loading } from "../../components/common/Loading";
 import { ItemsProps, RouterProps, routes } from "../../router";
 import NextLink from "next/link";
 import { LeftOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import { useLocalStorage } from "react-use";
 const { Text } = Typography;
 
 const { SubMenu } = Menu;
@@ -25,9 +26,10 @@ const { Header, Content, Sider } = Layout;
 const ProjectLayout: FC = ({ children }) => {
   const router = useRouter();
   const session = useSession();
+  const siderCollapsedRef = useRef(false);
 
   // 侧边栏收起状态
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useLocalStorage("collapsed", false);
 
   // 移动端路由抽屉收起状态
   const [menuDrawerVisible, setMenuDrawerVisible] = useState(false);
@@ -165,8 +167,13 @@ const ProjectLayout: FC = ({ children }) => {
           breakpoint="md"
           collapsed={collapsed}
           onCollapse={(state) => {
-            setMenuDrawerVisible(false);
-            setCollapsed(state);
+            // 忽略侧边栏第一次断点检查
+            if (!siderCollapsedRef.current) {
+              siderCollapsedRef.current = true;
+            } else {
+              setMenuDrawerVisible(false);
+              setCollapsed(state);
+            }
           }}
         >
           <Header
