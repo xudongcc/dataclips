@@ -34,7 +34,7 @@ export const VirtualSourceForm: FC = () => {
             <>
               {fields.map(({ key, name, ...restField }) => {
                 return (
-                  <Row key={key} gutter={8}>
+                  <Row key={key} gutter={8} wrap={false}>
                     <Col span={12}>
                       <Form.Item
                         name={[name, "name"]}
