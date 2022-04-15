@@ -19,7 +19,6 @@ import "react-resizable/css/styles.css";
 import { DashboardChartResultPreview } from "../DashboardChartResultPreview";
 import { DashboardDivider } from "../DashboardDivider";
 import { Markdown } from "../../chart/ChartResultPreview/components";
-import { AntdCard } from "../../common/AntdCard";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
@@ -122,12 +121,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
           if (item.type === DashboardItemType.CHART) {
             return (
               <DashboardDragWrapper key={item?.position?.i}>
-                <AntdCard
-                  style={{ height: "100%" }}
-                  bodyStyle={{
-                    overflowY: "auto",
-                    height: "inherit",
-                  }}
+                <DashboardCard
                   title={!item?.hiddenName && item?.name}
                   extra={
                     extraConfig?.extra ? (
@@ -244,7 +238,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                   <DashboardChartResultPreview
                     chartId={(item as DashboardChartItem)?.chart?.id}
                   />
-                </AntdCard>
+                </DashboardCard>
               </DashboardDragWrapper>
             );
           }
@@ -273,12 +267,6 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
             return (
               <DashboardDragWrapper key={item?.position?.i}>
                 <DashboardCard
-                  h="full"
-                  sx={{
-                    ".dashboard-card-body": {
-                      overflowY: "auto",
-                    },
-                  }}
                   title={!item?.hiddenName && item?.name}
                   extra={
                     extraConfig?.extra ? (

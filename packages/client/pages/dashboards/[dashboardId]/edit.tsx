@@ -35,7 +35,6 @@ import {
 } from "antd";
 import { Modal } from "../../../components/common/Modal";
 import { Markdown } from "../../../components/chart/ChartResultPreview/components";
-import { AntdCard } from "../../../components/common/AntdCard";
 
 const { Option } = Select;
 const { TextArea } = Input;
