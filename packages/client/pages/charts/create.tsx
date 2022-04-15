@@ -143,51 +143,34 @@ const ChartCreate = () => {
             </GridItem>
             <GridItem colSpan={2}>
               <Box h="500px">
-                <Form.Item shouldUpdate noStyle>
-                  {({ getFieldValue }) => {
-                    return (
-                      <Card
-                        overflow="hidden"
-                        h="full"
-                        sx={{
-                          ".card-body": {
-                            overflowY:
-                              getFieldValue("type") === ChartType.MD
-                                ? "auto"
-                                : undefined,
-                          },
-                        }}
-                      >
-                        {result && (
-                          <Form.Item
-                            shouldUpdate={(prevValues, curValues) => {
-                              if (
-                                isEqual(
-                                  omit(prevValues, "name"),
-                                  omit(curValues, "name")
-                                )
-                              ) {
-                                return false;
-                              }
-                              return true;
-                            }}
-                            noStyle
-                          >
-                            {({ getFieldValue }) => (
-                              <ChartResultPreview
-                                config={getFieldValue(
-                                  chartTypeToFormFieldMap[getFieldValue("type")]
-                                )}
-                                type={getFieldValue("type")}
-                                result={result}
-                              />
-                            )}
-                          </Form.Item>
-                        )}
-                      </Card>
-                    );
-                  }}
-                </Form.Item>
+                <Card overflow="hidden" h="full">
+                  {result && (
+                    <Form.Item
+                      shouldUpdate={(prevValues, curValues) => {
+                        if (
+                          isEqual(
+                            omit(prevValues, "name"),
+                            omit(curValues, "name")
+                          )
+                        ) {
+                          return false;
+                        }
+                        return true;
+                      }}
+                      noStyle
+                    >
+                      {({ getFieldValue }) => (
+                        <ChartResultPreview
+                          config={getFieldValue(
+                            chartTypeToFormFieldMap[getFieldValue("type")]
+                          )}
+                          type={getFieldValue("type")}
+                          result={result}
+                        />
+                      )}
+                    </Form.Item>
+                  )}
+                </Card>
               </Box>
             </GridItem>
             <GridItem colSpan={1}>
