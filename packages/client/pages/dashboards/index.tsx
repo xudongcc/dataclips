@@ -37,25 +37,6 @@ const DashBoardList: PC = () => {
 
   const [deleteDashboard] = useDeleteDashboardMutation();
 
-  const handleDeleteDashboard = useCallback(
-    async (deleteId: string) => {
-      try {
-        if (deleteId) {
-          await deleteDashboard({ variables: { id: deleteId } });
-
-          toast({
-            description: "删除成功",
-            status: "success",
-            isClosable: true,
-          });
-        }
-      } catch (err) {
-        console.log("err", err);
-      }
-    },
-    [deleteDashboard, toast]
-  );
-
   const columns: GraphQLTableColumnType<any>[] = [
     {
       title: "名称",

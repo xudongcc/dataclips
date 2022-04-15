@@ -24,9 +24,12 @@ export class Dashboard {
   @Column({ nullable: true, generator: () => nanoid() })
   token: string;
 
-  @Field(() => [GraphQLJSONObject])
-  @Column({ type: "json", generator: () => [] })
-  config: Record<string, any>[];
+  @Field(() => GraphQLJSONObject)
+  @Column({
+    type: "json",
+    generator: () => ({ version: "1.0", blocks: [] }),
+  })
+  config: Record<string, any>;
 
   @Field()
   @CreateDateColumn()

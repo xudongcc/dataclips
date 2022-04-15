@@ -17,6 +17,6 @@ export class UpdateDashboardInput {
    *    }
    * ]
    */
-  @Field(() => [GraphQLJSONObject], { nullable: true })
-  config?: Record<string, any>[];
+  @Field(() => GraphQLJSONObject, { nullable: true })
+  config?: Record<string, any>;
 }

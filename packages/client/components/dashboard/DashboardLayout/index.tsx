@@ -18,60 +18,80 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { DashboardChartResultPreview } from "../DashboardChartResultPreview";
 import { DashboardDivider } from "../DashboardDivider";
+import { Markdown } from "../../chart/ChartResultPreview/components";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
-export interface ChartCard {
-  name: string;
-  chartId: string;
-  hiddenName: boolean;
-  layout: Layout;
-  type?: "chart";
+export enum DashboardItemType {
+  CHART = "chart",
+  DIVIDER = "divider",
+  MARKDOWN = "markdown",
 }
 
-export interface DragDivider {
+export interface DashboardItem {
+  id: string;
   name?: string;
-  layout: Layout;
-  type?: "divider";
-  orientation?: "left" | "center" | "right";
+  hiddenName?: boolean;
+  position: Layout;
+  type: DashboardItemType;
 }
 
-export function isChartCard(arg: DragDivider | ChartCard): arg is ChartCard {
-  return (arg as ChartCard).chartId !== undefined;
+export interface DashboardChartItem extends DashboardItem {
+  chart: {
+    id: string;
+  };
 }
 
+export interface DashboardDividerItem extends DashboardItem {
+  divider: {
+    orientation?: "left" | "center" | "right";
+    name?: string;
+  };
+}
+
+export interface DashboardMarkdownItem extends DashboardItem {
+  markdown: {
+    content?: string;
+  };
+}
 interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
   type: "preview" | "edit";
-  dragItems: Array<DragDivider | ChartCard>;
-  cardExtraConfig?: {
+  dragItems: Array<
+    DashboardChartItem | DashboardDividerItem | DashboardMarkdownItem
+  >;
+  extraConfig?: {
     extra?: ReactNode;
     disabledExtra?: boolean;
-    disabledEditCard?: boolean;
-    disabledEditChart?: boolean;
-    disabledDelete?: boolean;
-    disabledPreviewClip?: boolean;
-    onEditCardClick?: (chart: ChartCard, close: () => void) => void;
-    onEditChartClick?: (chart: ChartCard, close: () => void) => void;
-    onPreviewClipClick?: (chart: ChartCard, close: () => void) => void;
-    onDeleteClick?: (chart: ChartCard, close: () => void) => void;
+    chart?: {
+      disabledEditChart?: boolean;
+      disabledEditCard?: boolean;
+      disabledDelete?: boolean;
+      disabledPreviewClip?: boolean;
+      onEditCardClick?: (chart: DashboardChartItem, close: () => void) => void;
+      onEditChartClick?: (chart: DashboardChartItem, close: () => void) => void;
+      onPreviewClipClick?: (
+        chart: DashboardChartItem,
+        close: () => void
+      ) => void;
+      onDeleteClick?: (chartId: string, close: () => void) => void;
+    };
+    divider?: {
+      onDividerDelete?: (dividerId: string) => void;
+    };
+    markdown?: {
+      disabledEditBlock?: boolean;
+      disabledDelete?: boolean;
+      onEditBlockClick?: (
+        markdown: DashboardMarkdownItem,
+        close: () => void
+      ) => void;
+      onDeleteClick?: (markdownId: string) => void;
+    };
   };
-  onDividerDelete?: (key: string) => void;
 }
 
 export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
-  const {
-    dragItems = [],
-    cardExtraConfig = {
-      disabledExtra: false,
-      disabledDelete: false,
-      disabledEditCard: false,
-      disabledEditChart: false,
-      disabledPreviewClip: false,
-    },
-    onDividerDelete,
-    type,
-    ...rest
-  } = props;
+  const { dragItems = [], type, extraConfig, ...rest } = props;
   const [borderRadius] = useToken("radii", ["lg"]);
   const popoverRef = useRef();
 
@@ -98,9 +118,9 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
         {...rest}
       >
         {dragItems.map((item) => {
-          if (isChartCard(item)) {
+          if (item.type === DashboardItemType.CHART) {
             return (
-              <DashboardDragWrapper key={item?.layout?.i}>
+              <DashboardDragWrapper key={item?.position?.i}>
                 <DashboardCard
                   h="full"
                   sx={{
@@ -110,9 +130,9 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                   }}
                   title={!item?.hiddenName && item?.name}
                   extra={
-                    cardExtraConfig?.extra ? (
-                      cardExtraConfig?.extra
-                    ) : !cardExtraConfig.disabledExtra ? (
+                    extraConfig?.extra ? (
+                      extraConfig?.extra
+                    ) : !extraConfig?.disabledExtra ? (
                       <Popover
                         initialFocusRef={popoverRef}
                         placement="bottom-end"
@@ -128,21 +148,23 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                             <PopoverContent w="100%">
                               <PopoverBody d="flex" flexDir="column">
                                 <Button
-                                  disabled={cardExtraConfig.disabledEditCard}
+                                  disabled={
+                                    extraConfig?.chart?.disabledEditCard
+                                  }
                                   variant="ghost"
                                   ref={popoverRef}
                                   onClick={() => {
-                                    cardExtraConfig?.onEditCardClick?.(
-                                      item,
+                                    extraConfig?.chart?.onEditCardClick?.(
+                                      item as DashboardChartItem,
                                       onClose
                                     );
 
-                                    if (!cardExtraConfig?.onEditCardClick) {
+                                    if (!extraConfig?.chart?.onEditCardClick) {
                                       onClose();
                                     }
                                   }}
                                 >
-                                  编辑卡片
+                                  编辑块
                                 </Button>
 
                                 <Divider my={1} />
@@ -150,16 +172,16 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                                 <Button
                                   variant="ghost"
                                   isDisabled={
-                                    !item?.chartId ||
-                                    cardExtraConfig.disabledEditChart
+                                    !(item as DashboardChartItem)?.chart?.id ||
+                                    extraConfig?.chart?.disabledEditChart
                                   }
                                   onClick={() => {
-                                    cardExtraConfig?.onEditChartClick?.(
-                                      item,
+                                    extraConfig?.chart?.onEditChartClick?.(
+                                      item as DashboardChartItem,
                                       onClose
                                     );
 
-                                    if (!cardExtraConfig?.onEditChartClick) {
+                                    if (!extraConfig?.chart?.onEditChartClick) {
                                       onClose();
                                     }
                                   }}
@@ -172,16 +194,18 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                                 <Button
                                   variant="ghost"
                                   isDisabled={
-                                    !item?.chartId ||
-                                    cardExtraConfig.disabledPreviewClip
+                                    !(item as DashboardChartItem)?.chart?.id ||
+                                    extraConfig?.chart?.disabledPreviewClip
                                   }
                                   onClick={() => {
-                                    cardExtraConfig?.onPreviewClipClick?.(
-                                      item,
+                                    extraConfig?.chart?.onPreviewClipClick?.(
+                                      item as DashboardChartItem,
                                       onClose
                                     );
 
-                                    if (!cardExtraConfig?.onPreviewClipClick) {
+                                    if (
+                                      !extraConfig?.chart?.onPreviewClipClick
+                                    ) {
                                       onClose();
                                     }
                                   }}
@@ -192,17 +216,17 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                                 <Divider my={1} />
 
                                 <Button
-                                  disabled={cardExtraConfig.disabledDelete}
+                                  disabled={extraConfig?.chart?.disabledDelete}
                                   variant="ghost"
                                   color="red.500"
                                   ref={popoverRef}
                                   onClick={() => {
-                                    cardExtraConfig?.onDeleteClick?.(
-                                      item,
+                                    extraConfig?.chart?.onDeleteClick?.(
+                                      (item as DashboardChartItem).id,
                                       onClose
                                     );
 
-                                    if (!cardExtraConfig?.onDeleteClick) {
+                                    if (!extraConfig?.chart?.onDeleteClick) {
                                       onClose();
                                     }
                                   }}
@@ -217,24 +241,118 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                     ) : undefined
                   }
                 >
-                  <DashboardChartResultPreview chartId={item?.chartId} />
+                  <DashboardChartResultPreview
+                    chartId={(item as DashboardChartItem)?.chart?.id}
+                  />
                 </DashboardCard>
               </DashboardDragWrapper>
             );
-          } else {
+          }
+
+          if (item.type === DashboardItemType.DIVIDER) {
             return (
-              <DashboardDragWrapper key={item.layout.i}>
+              <DashboardDragWrapper key={item.position.i}>
                 <Box pr={type === "edit" ? "20px" : undefined}>
                   <DashboardDivider
-                    orientation={item?.orientation}
+                    orientation={
+                      (item as DashboardDividerItem).divider?.orientation
+                    }
                     hasDelete={type === "edit"}
                     onDelete={() => {
-                      onDividerDelete?.(item.layout.i);
+                      extraConfig?.divider?.onDividerDelete?.(item.id);
                     }}
                   >
-                    {item?.name}
+                    {(item as DashboardDividerItem)?.divider?.name}
                   </DashboardDivider>
                 </Box>
+              </DashboardDragWrapper>
+            );
+          }
+
+          if (item.type === DashboardItemType.MARKDOWN) {
+            return (
+              <DashboardDragWrapper key={item?.position?.i}>
+                <DashboardCard
+                  h="full"
+                  sx={{
+                    ".dashboard-card-body": {
+                      overflowY: "auto",
+                    },
+                  }}
+                  title={!item?.hiddenName && item?.name}
+                  extra={
+                    extraConfig?.extra ? (
+                      extraConfig?.extra
+                    ) : !extraConfig?.disabledExtra ? (
+                      <Popover
+                        initialFocusRef={popoverRef}
+                        placement="bottom-end"
+                      >
+                        {({ onClose }) => (
+                          <>
+                            <PopoverTrigger>
+                              <Text cursor="pointer" fontWeight="bold">
+                                ⋮
+                              </Text>
+                            </PopoverTrigger>
+
+                            <PopoverContent w="100%">
+                              <PopoverBody d="flex" flexDir="column">
+                                <Button
+                                  disabled={
+                                    extraConfig?.markdown?.disabledEditBlock
+                                  }
+                                  variant="ghost"
+                                  ref={popoverRef}
+                                  onClick={() => {
+                                    extraConfig?.markdown?.onEditBlockClick?.(
+                                      item as DashboardMarkdownItem,
+                                      onClose
+                                    );
+
+                                    if (
+                                      !extraConfig?.markdown?.onEditBlockClick
+                                    ) {
+                                      onClose();
+                                    }
+                                  }}
+                                >
+                                  编辑块
+                                </Button>
+
+                                <Divider my={1} />
+
+                                <Button
+                                  disabled={
+                                    extraConfig?.markdown?.disabledDelete
+                                  }
+                                  variant="ghost"
+                                  color="red.500"
+                                  ref={popoverRef}
+                                  onClick={() => {
+                                    extraConfig?.markdown?.onDeleteClick?.(
+                                      item.id
+                                    );
+
+                                    if (!extraConfig?.markdown?.onDeleteClick) {
+                                      onClose();
+                                    }
+                                  }}
+                                >
+                                  删除
+                                </Button>
+                              </PopoverBody>
+                            </PopoverContent>
+                          </>
+                        )}
+                      </Popover>
+                    ) : undefined
+                  }
+                >
+                  <Markdown
+                    content={(item as DashboardMarkdownItem).markdown?.content}
+                  />
+                </DashboardCard>
               </DashboardDragWrapper>
             );
           }

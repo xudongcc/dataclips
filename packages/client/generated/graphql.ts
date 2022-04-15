@@ -125,7 +125,7 @@ export type CreateClipInput = {
 };
 
 export type CreateDashboardInput = {
-  config?: InputMaybe<Array<Scalars['JSONObject']>>;
+  config?: InputMaybe<Scalars['JSONObject']>;
   name: Scalars['String'];
 };
 
@@ -157,7 +157,7 @@ export type CreateVirtualSourceTableInput = {
 
 export type Dashboard = {
   __typename?: 'Dashboard';
-  config: Array<Scalars['JSONObject']>;
+  config: Scalars['JSONObject'];
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
   name: Scalars['String'];
@@ -460,7 +460,7 @@ export type UpdateClipInput = {
 };
 
 export type UpdateDashboardInput = {
-  config?: InputMaybe<Array<Scalars['JSONObject']>>;
+  config?: InputMaybe<Scalars['JSONObject']>;
   name?: InputMaybe<Scalars['String']>;
 };
 
@@ -516,7 +516,7 @@ export type ChartFragment = { __typename?: 'Chart', id: string, name: string, to
 
 export type ClipFragment = { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, sourceId: string, createdAt: any, updatedAt: any };
 
-export type DashboardFragment = { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: Array<any>, createdAt: any, updatedAt: any };
+export type DashboardFragment = { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: any, createdAt: any, updatedAt: any };
 
 export type DatabaseSourceFragment = { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null };
 
@@ -549,7 +549,7 @@ export type CreateDashboardMutationVariables = Exact<{
 }>;
 
 
-export type CreateDashboardMutation = { __typename?: 'Mutation', createDashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: Array<any>, createdAt: any, updatedAt: any } };
+export type CreateDashboardMutation = { __typename?: 'Mutation', createDashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: any, createdAt: any, updatedAt: any } };
 
 export type CreateDatabaseSourceMutationVariables = Exact<{
   input: CreateDatabaseSourceInput;
@@ -615,7 +615,7 @@ export type UpdateDashboardMutationVariables = Exact<{
 }>;
 
 
-export type UpdateDashboardMutation = { __typename?: 'Mutation', updateDashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: Array<any>, createdAt: any, updatedAt: any } };
+export type UpdateDashboardMutation = { __typename?: 'Mutation', updateDashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: any, createdAt: any, updatedAt: any } };
 
 export type UpdateDatabaseSourceMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -678,7 +678,7 @@ export type DashboardQueryVariables = Exact<{
 }>;
 
 
-export type DashboardQuery = { __typename?: 'Query', dashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: Array<any>, createdAt: any, updatedAt: any } };
+export type DashboardQuery = { __typename?: 'Query', dashboard: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: any, createdAt: any, updatedAt: any } };
 
 export type DashboardConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
@@ -691,7 +691,7 @@ export type DashboardConnectionQueryVariables = Exact<{
 }>;
 
 
-export type DashboardConnectionQuery = { __typename?: 'Query', dashboardConnection: { __typename?: 'DashboardConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'DashboardEdge', node: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: Array<any>, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+export type DashboardConnectionQuery = { __typename?: 'Query', dashboardConnection: { __typename?: 'DashboardConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'DashboardEdge', node: { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: any, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export type SourceQueryVariables = Exact<{
   id: Scalars['ID'];
