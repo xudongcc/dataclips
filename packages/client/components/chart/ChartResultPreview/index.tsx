@@ -1,4 +1,3 @@
-import { Box } from "@chakra-ui/react";
 import { FC } from "react";
 
 import { ResultFragment } from "../../../generated/graphql";
@@ -26,54 +25,46 @@ export const ChartResultPreview: FC<ChartResultPreviewProps> = ({
   type,
 }) => {
   return (
-    <Box h="full">
-      {[
-        {
-          type: ChartType.FUNNEL,
-          component: (
-            <FunnelChartPreview
-              config={config as FunnelChartConfig}
-              result={result}
-            />
-          ),
-        },
-        {
-          type: ChartType.METRIC,
-          component: (
-            <MetricChartPreview
-              config={config as MetricChartConfig}
-              result={result}
-            />
-          ),
-        },
-        {
-          type: ChartType.LINE,
-          component: (
-            <LineChartPreview
-              result={result}
-              config={config as LineChartConfig}
-            />
-          ),
-        },
-        {
-          type: ChartType.BAR,
-          component: (
-            <BarChartPreview
-              result={result}
-              config={config as BarChartConfig}
-            />
-          ),
-        },
-        {
-          type: ChartType.PIE,
-          component: (
-            <PieChartPreview
-              result={result}
-              config={config as PieChartConfig}
-            />
-          ),
-        },
-      ].find((item) => item.type === type)?.component || <></>}
-    </Box>
+    [
+      {
+        type: ChartType.FUNNEL,
+        component: (
+          <FunnelChartPreview
+            config={config as FunnelChartConfig}
+            result={result}
+          />
+        ),
+      },
+      {
+        type: ChartType.METRIC,
+        component: (
+          <MetricChartPreview
+            config={config as MetricChartConfig}
+            result={result}
+          />
+        ),
+      },
+      {
+        type: ChartType.LINE,
+        component: (
+          <LineChartPreview
+            result={result}
+            config={config as LineChartConfig}
+          />
+        ),
+      },
+      {
+        type: ChartType.BAR,
+        component: (
+          <BarChartPreview result={result} config={config as BarChartConfig} />
+        ),
+      },
+      {
+        type: ChartType.PIE,
+        component: (
+          <PieChartPreview result={result} config={config as PieChartConfig} />
+        ),
+      },
+    ].find((item) => item.type === type)?.component || <></>
   );
 };

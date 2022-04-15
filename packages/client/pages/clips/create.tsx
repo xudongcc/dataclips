@@ -5,10 +5,10 @@ import { useSourceConnectionQuery } from "../../generated/graphql";
 import { useCallback, useState } from "react";
 import { SQLEditor } from "../../components/clip/SQLEditor";
 import { useCreateClipMutation } from "../../hooks/useCreateClipMutation";
-import { Card } from "../../components/common/Card/Card";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
 import { Row, Col, Form, Input, Select, Button, Space } from "antd";
+import { AntdCard } from "../../components/common/AntdCard";
 
 const { Option } = Select;
 
@@ -55,7 +55,7 @@ const ClipCreate = () => {
 
       <Page title="创建数据集">
         <Form form={form}>
-          <Card>
+          <AntdCard>
             <Space
               direction="vertical"
               size="middle"
@@ -122,7 +122,7 @@ const ClipCreate = () => {
                 />
               </div>
             </Space>
-          </Card>
+          </AntdCard>
         </Form>
       </Page>
     </>

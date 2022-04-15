@@ -11,9 +11,9 @@ import { useQueryResult } from "../../../hooks/useQueryResult";
 import { ResultPreview } from "../../../components/clip/ResultPreview";
 import { SQLEditor } from "../../../components/clip/SQLEditor";
 import { Page } from "../../../components/common/Page";
-import { Card } from "../../../components/common/Card";
 import Head from "next/head";
 import { Row, Col, Form, Select, Input, Space, Button } from "antd";
+import { AntdCard } from "../../../components/common/AntdCard";
 
 const { Option } = Select;
 
@@ -80,7 +80,7 @@ const ClipEdit = () => {
       <Page title={result?.name}>
         <Space direction="vertical" size="large" style={{ display: "flex" }}>
           <Form form={form}>
-            <Card>
+            <AntdCard>
               <Space
                 direction="vertical"
                 size="middle"
@@ -147,7 +147,7 @@ const ClipEdit = () => {
                   />
                 </div>
               </Space>
-            </Card>
+            </AntdCard>
           </Form>
 
           <div style={{ flex: 1 }}>

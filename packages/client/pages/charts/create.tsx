@@ -17,9 +17,9 @@ import { useRouter } from "next/router";
 import { useCreateChartMutation } from "../../hooks/useCreateChartMutation";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
-import { Card } from "../../components/common/Card";
 import { Form, Select, Input, Button, Row, Col } from "antd";
 import { isEqual, omit } from "lodash";
+import { AntdCard } from "../../components/common/AntdCard";
 
 const { Option } = Select;
 
@@ -86,7 +86,7 @@ const ChartCreate = () => {
         <Form form={form} layout="vertical">
           <Grid templateColumns="repeat(3, 1fr)" gap={4} w="100%">
             <GridItem colSpan={3}>
-              <Card>
+              <AntdCard>
                 <Row gutter={16} justify="space-between">
                   <Col span={8}>
                     <Form.Item
@@ -139,11 +139,11 @@ const ChartCreate = () => {
                     </Form.Item>
                   </Col>
                 </Row>
-              </Card>
+              </AntdCard>
             </GridItem>
             <GridItem colSpan={2}>
               <Box h="500px">
-                <Card overflow="hidden" h="full">
+                <AntdCard>
                   {result && (
                     <Form.Item
                       shouldUpdate={(prevValues, curValues) => {
@@ -170,13 +170,13 @@ const ChartCreate = () => {
                       )}
                     </Form.Item>
                   )}
-                </Card>
+                </AntdCard>
               </Box>
             </GridItem>
             <GridItem colSpan={1}>
-              <Card>
+              <AntdCard>
                 <ChartEditTab result={result} />
-              </Card>
+              </AntdCard>
             </GridItem>
           </Grid>
         </Form>

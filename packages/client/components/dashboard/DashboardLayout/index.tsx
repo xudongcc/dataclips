@@ -124,7 +124,10 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
               <DashboardDragWrapper key={item?.position?.i}>
                 <AntdCard
                   style={{ height: "100%" }}
-                  bodyStyle={{ overflowY: "auto" }}
+                  bodyStyle={{
+                    overflowY: "auto",
+                    height: "inherit",
+                  }}
                   title={!item?.hiddenName && item?.name}
                   extra={
                     extraConfig?.extra ? (

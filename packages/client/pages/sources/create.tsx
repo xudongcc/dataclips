@@ -6,10 +6,10 @@ import { DataSourceForm } from "../../components/source/DataSourceForm";
 import { VirtualSourceForm } from "../../components/source/VirtualSourceForm";
 import { useCreateVirtualSourceMutation } from "../../hooks/useCreateVirtualSourceMutation";
 import { useCreateDatabaseSourceMutation } from "../../hooks/useCreateDatabaseSourceMutation";
-import { Card } from "../../components/common/Card/Card";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
 import { Form, Select, Button, Steps, Space, Row } from "antd";
+import { AntdCard } from "../../components/common/AntdCard";
 
 const { Option } = Select;
 const { Step } = Steps;
@@ -92,7 +92,7 @@ const SourceCreate = () => {
 
       <Page title="创建数据源">
         <Form form={form}>
-          <Card>
+          <AntdCard>
             <Steps
               labelPlacement="vertical"
               onChange={(c) => {
@@ -171,7 +171,7 @@ const SourceCreate = () => {
                 </div>
               )}
             </div>
-          </Card>
+          </AntdCard>
         </Form>
       </Page>
     </>

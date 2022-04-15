@@ -1,10 +1,8 @@
 import {
-  Box,
   Flex,
   Input,
   InputGroup,
   InputLeftAddon,
-  useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
@@ -17,7 +15,7 @@ import { Table } from "../../common/Table";
 import { DownloadButtonGroup } from "./components/DownloadButtonGroup";
 import { ResultError } from "./components/ResultError";
 import { StatResult } from "./components/StatResult";
-import { Card } from "../../common/Card/Card";
+import { AntdCard } from "../../common/AntdCard";
 
 export interface ResultPreviewProps {
   token?: string;
@@ -102,14 +100,14 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
 
   if (result?.error) {
     return (
-      <Card>
+      <AntdCard>
         <ResultError error={result.error} />;
-      </Card>
+      </AntdCard>
     );
   }
 
   return (
-    <Card overflow="hidden">
+    <AntdCard>
       <Flex mb={4} justify="space-between">
         <StatResult result={result} />
 
@@ -137,6 +135,6 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
         mb={{ base: -4, md: -6 }}
         {...tableProps}
       />
-    </Card>
+    </AntdCard>
   );
 };
