@@ -419,7 +419,7 @@ const DashBoardEdit: PC = () => {
               name="name"
               rules={[{ required: true, message: "请输入图表名称" }]}
             >
-              <Input placeholder="请输入图表名称"></Input>
+              <Input placeholder="请输入图表名称" />
             </Form.Item>
 
             <Form.Item
@@ -522,9 +522,8 @@ const DashBoardEdit: PC = () => {
           }}
         >
           <Form form={dividerNameForm} layout="vertical">
-            <Space direction="vertical"></Space>
             <Form.Item name="dividerName" label="分割线名称">
-              <Input placeholder="请输入分割线名称"></Input>
+              <Input placeholder="请输入分割线名称" />
             </Form.Item>
 
             <Form.Item
@@ -645,14 +644,14 @@ const DashBoardEdit: PC = () => {
               </Col>
               <Col span={12}>
                 <Form.Item label="markdown 名称" name="name">
-                  <Input placeholder="输入 markdown 名称"></Input>
+                  <Input placeholder="输入 markdown 名称" />
                 </Form.Item>
 
                 <Form.Item label="markdown 内容" name="content">
                   <TextArea
                     autoSize={{ minRows: 13, maxRows: 13 }}
                     placeholder="输入 markdown 语法"
-                  ></TextArea>
+                  />
                 </Form.Item>
 
                 <Form.Item noStyle name="hiddenName" valuePropName="checked">
