@@ -22,7 +22,7 @@ export const BarChartConfigForm: FC<BarChartConfigFormProps> = ({
           optionFilterProp="children"
           showSearch
           allowClear
-          placeholder="请选择方向"
+          placeholder="选择方向"
         >
           <Option value="horizontal">水平</Option>
           <Option value="vertical">垂直</Option>

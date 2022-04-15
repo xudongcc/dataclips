@@ -143,22 +143,9 @@ const ChartCreate = () => {
             </GridItem>
             <GridItem colSpan={2}>
               <Box h="500px">
-                {result && (
-                  <Form.Item
-                    shouldUpdate={(prevValues, curValues) => {
-                      if (
-                        isEqual(
-                          omit(prevValues, "name"),
-                          omit(curValues, "name")
-                        )
-                      ) {
-                        return false;
-                      }
-                      return true;
-                    }}
-                    noStyle
-                  >
-                    {({ getFieldValue }) => (
+                <Form.Item shouldUpdate noStyle>
+                  {({ getFieldValue }) => {
+                    return (
                       <Card
                         overflow="hidden"
                         h="full"
@@ -171,17 +158,36 @@ const ChartCreate = () => {
                           },
                         }}
                       >
-                        <ChartResultPreview
-                          config={getFieldValue(
-                            chartTypeToFormFieldMap[getFieldValue("type")]
-                          )}
-                          type={getFieldValue("type")}
-                          result={result}
-                        />
+                        {result && (
+                          <Form.Item
+                            shouldUpdate={(prevValues, curValues) => {
+                              if (
+                                isEqual(
+                                  omit(prevValues, "name"),
+                                  omit(curValues, "name")
+                                )
+                              ) {
+                                return false;
+                              }
+                              return true;
+                            }}
+                            noStyle
+                          >
+                            {({ getFieldValue }) => (
+                              <ChartResultPreview
+                                config={getFieldValue(
+                                  chartTypeToFormFieldMap[getFieldValue("type")]
+                                )}
+                                type={getFieldValue("type")}
+                                result={result}
+                              />
+                            )}
+                          </Form.Item>
+                        )}
                       </Card>
-                    )}
-                  </Form.Item>
-                )}
+                    );
+                  }}
+                </Form.Item>
               </Box>
             </GridItem>
             <GridItem colSpan={1}>
