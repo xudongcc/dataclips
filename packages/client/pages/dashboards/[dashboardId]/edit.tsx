@@ -22,7 +22,17 @@ import {
   DashboardDividerItem,
   DashboardMarkdownItem,
 } from "../../../components/dashboard/DashboardLayout";
-import { Checkbox, Col, Form, Input, Row, Select } from "antd";
+import {
+  Checkbox,
+  Col,
+  Form,
+  Input,
+  Row,
+  Select,
+  Dropdown,
+  Button,
+  Menu,
+} from "antd";
 import { Modal } from "../../../components/common/Modal";
 import { Markdown } from "../../../components/chart/ChartResultPreview/components";
 import { AntdCard } from "../../../components/common/AntdCard";
@@ -49,8 +59,6 @@ const DashBoardEdit: PC = () => {
   const [dividerNameForm] = Form.useForm();
   // 添加或编辑卡片的 form
   const [addOrEditCardForm] = Form.useForm();
-  // 添加块的 form
-  const [blockForm] = Form.useForm();
   // 添加 markdown 的form
   const [mdForm] = Form.useForm();
 
@@ -222,36 +230,36 @@ const DashBoardEdit: PC = () => {
 
       <Page
         extra={
-          <Form form={blockForm}>
-            <Form.Item style={{ marginBottom: 0 }} name="blockType">
-              <Select
-                size="large"
-                style={{ width: 200 }}
-                showSearch
-                onChange={(val) => {
-                  if (val === DashboardItemType.CHART) {
+          <Dropdown
+            trigger={["click"]}
+            overlay={
+              <Menu>
+                <Menu.Item
+                  onClick={() => {
                     setIsAddOrEditCardModalVisible(true);
-                  }
-
-                  if (val === DashboardItemType.DIVIDER) {
+                  }}
+                >
+                  图表
+                </Menu.Item>
+                <Menu.Item
+                  onClick={() => {
                     setIsDividerModalVisible(true);
-                  }
-
-                  if (val === DashboardItemType.MARKDOWN) {
+                  }}
+                >
+                  分割线
+                </Menu.Item>
+                <Menu.Item
+                  onClick={() => {
                     setIsAddOrEditMarkdownModalVisible(true);
-                  }
-
-                  blockForm.resetFields();
-                }}
-                allowClear
-                placeholder="选择要添加的块"
-              >
-                <Option value="chart">图表</Option>
-                <Option value="divider">分割线</Option>
-                <Option value="markdown">Markdown</Option>
-              </Select>
-            </Form.Item>
-          </Form>
+                  }}
+                >
+                  Markdown
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <Button size="large">添加块</Button>
+          </Dropdown>
         }
         title={data?.dashboard?.name}
         primaryAction={{
