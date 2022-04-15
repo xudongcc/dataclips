@@ -17,6 +17,7 @@ interface ButtonProps extends BaseButtonProps {
 }
 
 interface PageProps {
+  extra?: React.ReactNode;
   title: React.ReactNode;
   description?: React.ReactNode;
   primaryAction?: ButtonProps;
@@ -26,6 +27,7 @@ interface PageProps {
 export const Page: FC<PageProps> = ({
   children,
   title,
+  extra,
   description,
   primaryAction,
   secondaryActions,
@@ -48,6 +50,8 @@ export const Page: FC<PageProps> = ({
 
         <Col>
           <Space wrap>
+            {extra}
+
             {secondaryActions?.length &&
               secondaryActions.map((secondaryAction, index) => (
                 <Button

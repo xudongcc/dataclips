@@ -22,7 +22,7 @@ import {
   DashboardDividerItem,
   DashboardMarkdownItem,
 } from "../../../components/dashboard/DashboardLayout";
-import { Checkbox, Col, Form, Input, Row, Select, Space } from "antd";
+import { Checkbox, Col, Form, Input, Row, Select } from "antd";
 import { Modal } from "../../../components/common/Modal";
 import { Markdown } from "../../../components/chart/ChartResultPreview/components";
 
@@ -87,9 +87,6 @@ const DashBoardEdit: PC = () => {
   const [isEditDashboardNameModalVisible, setIsEditDashboardNameModalVisible] =
     useState(false);
 
-  // 添加块的弹窗
-  const [isAddBlockModalVisible, setIsAddBlockModalVisible] = useState(false);
-
   // 分割线弹窗
   const [isDividerModalVisible, setIsDividerModalVisible] = useState(false);
 
@@ -111,11 +108,6 @@ const DashBoardEdit: PC = () => {
     setIsDividerModalVisible(false);
     dividerNameForm.resetFields();
   }, [dividerNameForm]);
-
-  const handleCloseBlockModal = useCallback(() => {
-    setIsAddBlockModalVisible(false);
-    blockForm.resetFields();
-  }, [blockForm]);
 
   const handleCloseAddOrEditMarkdownModal = useCallback(() => {
     setIsAddOrEditMarkdownModalVisible(false);
@@ -222,6 +214,37 @@ const DashBoardEdit: PC = () => {
       </Head>
 
       <Page
+        extra={
+          <Form form={blockForm}>
+            <Form.Item style={{ marginBottom: 0 }} name="blockType">
+              <Select
+                size="large"
+                style={{ width: 200 }}
+                showSearch
+                onChange={(val) => {
+                  if (val === DashboardItemType.CHART) {
+                    setIsAddOrEditCardModalVisible(true);
+                  }
+
+                  if (val === DashboardItemType.DIVIDER) {
+                    setIsDividerModalVisible(true);
+                  }
+
+                  if (val === DashboardItemType.MARKDOWN) {
+                    setIsAddOrEditMarkdownModalVisible(true);
+                  }
+
+                  blockForm.resetFields();
+                }}
+                allowClear
+                placeholder="选择要添加的块"
+              >
+                <Option value="divider">分割线</Option>
+                <Option value="markdown">markdown</Option>
+              </Select>
+            </Form.Item>
+          </Form>
+        }
         title={data?.dashboard?.name}
         primaryAction={{
           text: "保存",
@@ -238,18 +261,6 @@ const DashBoardEdit: PC = () => {
                 dashboardName: data?.dashboard?.name,
               });
               setIsEditDashboardNameModalVisible(true);
-            },
-          },
-          {
-            text: "添加块",
-            onClick: () => {
-              setIsAddBlockModalVisible(true);
-            },
-          },
-          {
-            text: "添加卡片",
-            onClick: () => {
-              setIsAddOrEditCardModalVisible(true);
             },
           },
         ]}
@@ -539,35 +550,6 @@ const DashBoardEdit: PC = () => {
                 <Option value="left">居左</Option>
                 <Option value="center">居中</Option>
                 <Option value="right">居右</Option>
-              </Select>
-            </Form.Item>
-          </Form>
-        </Modal>
-
-        {/* 添加块的弹窗 */}
-        <Modal
-          title="添加块"
-          visible={isAddBlockModalVisible}
-          onCancel={handleCloseBlockModal}
-          onOk={() => {
-            const blockType = blockForm.getFieldValue("blockType");
-
-            if (blockType === DashboardItemType.DIVIDER) {
-              setIsDividerModalVisible(true);
-            }
-
-            if (blockType === DashboardItemType.MARKDOWN) {
-              setIsAddOrEditMarkdownModalVisible(true);
-            }
-
-            handleCloseBlockModal();
-          }}
-        >
-          <Form form={blockForm}>
-            <Form.Item style={{ marginBottom: 0 }} name="blockType">
-              <Select showSearch allowClear placeholder="选择要添加的块">
-                <Option value="divider">分割线</Option>
-                <Option value="markdown">markdown</Option>
               </Select>
             </Form.Item>
           </Form>
