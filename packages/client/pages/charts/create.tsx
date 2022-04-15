@@ -109,12 +109,9 @@ const ChartCreate = () => {
                         onChange={(clipId) => {
                           setSelectClipId(clipId);
 
-                          const type = form.getFieldValue("type");
-
-                          form.resetFields([
-                            "type",
-                            chartTypeToFormFieldMap[type],
-                          ]);
+                          form.setFieldsValue({
+                            type: undefined,
+                          });
                         }}
                         placeholder="请选择数据集"
                       >

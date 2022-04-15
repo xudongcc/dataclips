@@ -141,12 +141,20 @@ const ChartEdit = () => {
                         onChange={(clipId) => {
                           setSelectClipId(clipId);
 
-                          const type = form.getFieldValue("type");
-
-                          form.resetFields([
-                            "type",
-                            chartTypeToFormFieldMap[type],
-                          ]);
+                          if (clipId === data?.chart?.clipId) {
+                            form.setFieldsValue(
+                              omit(data?.chart, [
+                                "createdAt",
+                                "id",
+                                "token",
+                                "config",
+                                "updatedAt",
+                                "__typename",
+                              ])
+                            );
+                          } else {
+                            form.setFieldsValue({ type: undefined });
+                          }
                         }}
                         placeholder="请选择数据集"
                       >
