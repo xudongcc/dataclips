@@ -1,7 +1,7 @@
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useToast, Link } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DatabaseSource,
   UpdateDatabaseSourceInput,
@@ -33,7 +33,7 @@ const SourceList = () => {
 
   const [getSources, { data, loading }] = useSourceConnectionLazyQuery({
     notifyOnNetworkStatusChange: true,
-    // fetchPolicy: "no-cache",
+    fetchPolicy: "no-cache",
   });
 
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -227,6 +227,13 @@ const SourceList = () => {
     },
   ];
 
+  const handleGetSource = useCallback(
+    (variables) => {
+      getSources({ variables });
+    },
+    [getSources]
+  );
+
   return (
     <>
       <Head>
@@ -248,7 +255,7 @@ const SourceList = () => {
           // pageInfo={data?.clipConnection?.pageInfo}
           options={false}
           onVariablesChange={(variables) => {
-            getSources({ variables });
+            handleGetSource(variables);
           }}
           columns={columns}
           dataSource={data?.sourceConnection?.edges?.map((item) => item?.node)}
