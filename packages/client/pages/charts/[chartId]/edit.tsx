@@ -187,35 +187,24 @@ const ChartEdit = () => {
 
             <GridItem colSpan={2}>
               <Box h="500px">
-                {result && (
-                  <Form.Item
-                    shouldUpdate={(prevValues, curValues) => {
-                      if (
-                        isEqual(
-                          omit(prevValues, "name"),
-                          omit(curValues, "name")
-                        )
-                      ) {
-                        return false;
-                      }
-                      return true;
-                    }}
-                    noStyle
-                  >
-                    {({ getFieldValue }) => {
-                      return (
-                        <Card
-                          overflow="hidden"
-                          h="full"
-                          sx={{
-                            ".card-body": {
-                              overflowY:
-                                getFieldValue("type") === ChartType.MD
-                                  ? "auto"
-                                  : undefined,
-                            },
-                          }}
-                        >
+                <Card overflow="hidden" h="full">
+                  {result && (
+                    <Form.Item
+                      shouldUpdate={(prevValues, curValues) => {
+                        if (
+                          isEqual(
+                            omit(prevValues, "name"),
+                            omit(curValues, "name")
+                          )
+                        ) {
+                          return false;
+                        }
+                        return true;
+                      }}
+                      noStyle
+                    >
+                      {({ getFieldValue }) => {
+                        return (
                           <ChartResultPreview
                             config={getFieldValue(
                               chartTypeToFormFieldMap[getFieldValue("type")]
@@ -223,11 +212,11 @@ const ChartEdit = () => {
                             type={getFieldValue("type")}
                             result={result}
                           />
-                        </Card>
-                      );
-                    }}
-                  </Form.Item>
-                )}
+                        );
+                      }}
+                    </Form.Item>
+                  )}
+                </Card>
               </Box>
             </GridItem>
             <GridItem colSpan={1}>
