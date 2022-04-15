@@ -17,7 +17,7 @@ import {
 import { Page } from "../../../components/common/Page";
 import ProjectLayout from "../../../layouts/ProjectLayout";
 import Head from "next/head";
-import { AntdCard } from "../../../components/common/AntdCard";
+import { Card } from "../../../components/common/Card";
 
 const ChartPreview = () => {
   const router = useRouter();
@@ -109,13 +109,13 @@ const ChartPreview = () => {
       >
         {data?.chart.type && data?.chart.config && result && (
           <Box h="800px">
-            <AntdCard>
+            <Card>
               <ChartResultPreview
                 type={data.chart.type}
                 config={getChartTypePreviewConfig()}
                 result={result}
               />
-            </AntdCard>
+            </Card>
           </Box>
         )}
       </Page>

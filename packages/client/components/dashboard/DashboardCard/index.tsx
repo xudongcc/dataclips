@@ -1,11 +1,11 @@
 import { FC } from "react";
-import { AntdCard, AntdCardProps } from "../../common/AntdCard";
+import { Card, CardProps } from "../../common/Card";
 
-export interface DashboardCardProps extends AntdCardProps {}
+export interface DashboardCardProps extends CardProps {}
 
 export const DashboardCard: FC<DashboardCardProps> = (props) => {
   return (
-    <AntdCard
+    <Card
       style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}
       size="small"
       bodyStyle={{ overflowY: "auto" }}

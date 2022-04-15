@@ -19,7 +19,7 @@ import { Page } from "../../components/common/Page";
 import Head from "next/head";
 import { Form, Select, Input, Button, Row, Col } from "antd";
 import { isEqual, omit } from "lodash";
-import { AntdCard } from "../../components/common/AntdCard";
+import { Card } from "../../components/common/Card";
 
 const { Option } = Select;
 
@@ -86,7 +86,7 @@ const ChartCreate = () => {
         <Form form={form} layout="vertical">
           <Grid templateColumns="repeat(3, 1fr)" gap={4} w="100%">
             <GridItem colSpan={3}>
-              <AntdCard>
+              <Card>
                 <Row gutter={16} justify="space-between">
                   <Col span={8}>
                     <Form.Item
@@ -139,11 +139,11 @@ const ChartCreate = () => {
                     </Form.Item>
                   </Col>
                 </Row>
-              </AntdCard>
+              </Card>
             </GridItem>
             <GridItem colSpan={2}>
               <Box h="500px">
-                <AntdCard>
+                <Card>
                   {result && (
                     <Form.Item
                       shouldUpdate={(prevValues, curValues) => {
@@ -170,13 +170,13 @@ const ChartCreate = () => {
                       )}
                     </Form.Item>
                   )}
-                </AntdCard>
+                </Card>
               </Box>
             </GridItem>
             <GridItem colSpan={1}>
-              <AntdCard>
+              <Card>
                 <ChartEditTab result={result} />
-              </AntdCard>
+              </Card>
             </GridItem>
           </Grid>
         </Form>

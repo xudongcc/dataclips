@@ -8,7 +8,7 @@ import { useCreateClipMutation } from "../../hooks/useCreateClipMutation";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
 import { Row, Col, Form, Input, Select, Button, Space } from "antd";
-import { AntdCard } from "../../components/common/AntdCard";
+import { Card } from "../../components/common/Card";
 
 const { Option } = Select;
 
@@ -55,7 +55,7 @@ const ClipCreate = () => {
 
       <Page title="创建数据集">
         <Form form={form}>
-          <AntdCard>
+          <Card>
             <Space
               direction="vertical"
               size="middle"
@@ -122,7 +122,7 @@ const ClipCreate = () => {
                 />
               </div>
             </Space>
-          </AntdCard>
+          </Card>
         </Form>
       </Page>
     </>

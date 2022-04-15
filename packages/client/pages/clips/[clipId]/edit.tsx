@@ -13,7 +13,7 @@ import { SQLEditor } from "../../../components/clip/SQLEditor";
 import { Page } from "../../../components/common/Page";
 import Head from "next/head";
 import { Row, Col, Form, Select, Input, Space, Button } from "antd";
-import { AntdCard } from "../../../components/common/AntdCard";
+import { Card } from "../../../components/common/Card";
 
 const { Option } = Select;
 
@@ -80,7 +80,7 @@ const ClipEdit = () => {
       <Page title={result?.name}>
         <Space direction="vertical" size="large" style={{ display: "flex" }}>
           <Form form={form}>
-            <AntdCard>
+            <Card>
               <Space
                 direction="vertical"
                 size="middle"
@@ -147,7 +147,7 @@ const ClipEdit = () => {
                   />
                 </div>
               </Space>
-            </AntdCard>
+            </Card>
           </Form>
 
           <div style={{ flex: 1 }}>

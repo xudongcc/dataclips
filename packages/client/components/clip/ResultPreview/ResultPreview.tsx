@@ -15,7 +15,7 @@ import { Table } from "../../common/Table";
 import { DownloadButtonGroup } from "./components/DownloadButtonGroup";
 import { ResultError } from "./components/ResultError";
 import { StatResult } from "./components/StatResult";
-import { AntdCard } from "../../common/AntdCard";
+import { Card } from "../../common/Card";
 
 export interface ResultPreviewProps {
   token?: string;
@@ -100,14 +100,14 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
 
   if (result?.error) {
     return (
-      <AntdCard>
+      <Card>
         <ResultError error={result.error} />;
-      </AntdCard>
+      </Card>
     );
   }
 
   return (
-    <AntdCard>
+    <Card>
       <Flex mb={4} justify="space-between">
         <StatResult result={result} />
 
@@ -135,6 +135,6 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
         mb={{ base: -4, md: -6 }}
         {...tableProps}
       />
-    </AntdCard>
+    </Card>
   );
 };

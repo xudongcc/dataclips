@@ -9,7 +9,7 @@ import { useCreateDatabaseSourceMutation } from "../../hooks/useCreateDatabaseSo
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
 import { Form, Select, Button, Steps, Space, Row } from "antd";
-import { AntdCard } from "../../components/common/AntdCard";
+import { Card } from "../../components/common/Card";
 
 const { Option } = Select;
 const { Step } = Steps;
@@ -92,7 +92,7 @@ const SourceCreate = () => {
 
       <Page title="创建数据源">
         <Form form={form}>
-          <AntdCard>
+          <Card>
             <Steps
               labelPlacement="vertical"
               onChange={(c) => {
@@ -171,7 +171,7 @@ const SourceCreate = () => {
                 </div>
               )}
             </div>
-          </AntdCard>
+          </Card>
         </Form>
       </Page>
     </>

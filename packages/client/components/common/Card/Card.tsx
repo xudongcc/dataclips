@@ -1,99 +1,65 @@
 import {
-  Box,
-  BoxProps,
   Button,
   ButtonProps as BaseButtonProps,
-  Stack,
-  HStack,
-  Text,
-  useColorModeValue,
-} from "@chakra-ui/react";
+  Card as BaseCard,
+  CardProps as BaseCardProps,
+  Space,
+} from "antd";
 import { omit } from "lodash";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useCallback } from "react";
 
 interface ButtonProps extends BaseButtonProps {
-  text?: React.ReactNode;
+  text?: ReactNode;
 }
-export interface CardProps extends BoxProps {
-  title?: string;
+
+export interface CardProps extends BaseCardProps {
   description?: string;
-  extra?: ReactNode;
   primaryAction?: ButtonProps;
   secondaryActions?: ButtonProps[];
 }
 
-export const Card: FC<CardProps> = ({
-  title,
-  description,
-  children,
-  extra,
-  secondaryActions,
-  primaryAction,
-  ...otherProps
-}) => (
-  <Stack
-    as="section"
-    bg="bg-surface"
-    boxShadow={useColorModeValue("sm", "sm-dark")}
-    borderRadius="lg"
-    className="card"
-    spacing="5"
-    p={{ base: "4", md: "6" }}
-    {...otherProps}
-  >
-    <Stack spacing="5">
-      <Stack
-        justify="space-between"
-        direction={{ base: "column", sm: "row" }}
-        spacing="5"
-      >
-        <Stack spacing="1">
-          {title ? (
-            <Text fontSize="lg" fontWeight="medium">
-              {title}
-            </Text>
-          ) : null}
+export const Card: FC<CardProps> = (props) => {
+  const {
+    style,
+    bodyStyle,
+    headStyle,
+    primaryAction,
+    secondaryActions,
+    extra,
+    ...rest
+  } = props;
 
-          {description ? (
-            <Text fontSize="sm" color="muted">
-              {description}
-            </Text>
-          ) : null}
-        </Stack>
-
-        {extra}
-
-        {!extra && (primaryAction || secondaryActions) && (
-          <HStack spacing="1">
-            {secondaryActions &&
-              secondaryActions?.length &&
-              secondaryActions.map((secondaryAction, index) => (
-                <Button
-                  key={index}
-                  variant="secondary"
-                  {...omit(secondaryAction, "text")}
-                >
-                  {secondaryAction.text}
-                </Button>
-              ))}
-
-            {primaryAction && (
-              <Button variant="primary" {...omit(primaryAction, "text")}>
-                {primaryAction?.text}
+  const getActionButtons = useCallback(() => {
+    if (!extra && (primaryAction || secondaryActions)) {
+      return (
+        <Space wrap>
+          {secondaryActions &&
+            secondaryActions?.length &&
+            secondaryActions.map((secondaryAction, index) => (
+              <Button key={index} {...omit(secondaryAction, "text")}>
+                {secondaryAction?.text}
               </Button>
-            )}
-          </HStack>
-        )}
-      </Stack>
-    </Stack>
+            ))}
 
-    <Box
-      flex={1}
-      h="inherit"
-      className="card-body"
-      mt={!title && !description && !extra ? "0px !important" : undefined}
-    >
-      {children}
-    </Box>
-  </Stack>
-);
+          {primaryAction && (
+            <Button type="primary" {...omit(primaryAction, "text")}>
+              {primaryAction?.text}
+            </Button>
+          )}
+        </Space>
+      );
+    }
+
+    return <></>;
+  }, [extra, primaryAction, secondaryActions]);
+
+  return (
+    <BaseCard
+      extra={extra ? extra : getActionButtons()}
+      style={{ height: "inherit", ...style }}
+      headStyle={{ borderBottom: 0, ...headStyle }}
+      bodyStyle={{ height: "inherit", ...bodyStyle }}
+      {...rest}
+    />
+  );
+};
