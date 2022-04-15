@@ -97,6 +97,9 @@ const DashBoardEdit: PC = () => {
   const handleCloseAddOrEditChartModal = useCallback(() => {
     setIsAddOrEditCardModalVisible(false);
     addOrEditCardForm.resetFields();
+    setOperation({
+      type: OperationType.ADD,
+    });
   }, [addOrEditCardForm]);
 
   const handleCloseEditDashboardNameModal = useCallback(() => {
@@ -112,6 +115,9 @@ const DashBoardEdit: PC = () => {
   const handleCloseAddOrEditMarkdownModal = useCallback(() => {
     setIsAddOrEditMarkdownModalVisible(false);
     mdForm.resetFields();
+    setOperation({
+      type: OperationType.ADD,
+    });
   }, [mdForm]);
 
   const handleUpdateDashboard = useCallback(
@@ -239,8 +245,9 @@ const DashBoardEdit: PC = () => {
                 allowClear
                 placeholder="选择要添加的块"
               >
+                <Option value="chart">图表</Option>
                 <Option value="divider">分割线</Option>
-                <Option value="markdown">markdown</Option>
+                <Option value="markdown">Markdown</Option>
               </Select>
             </Form.Item>
           </Form>
@@ -364,9 +371,7 @@ const DashBoardEdit: PC = () => {
 
         {/* 添加或编辑卡片的弹窗 */}
         <Modal
-          title={`${
-            operation.type === OperationType.EDIT ? "编辑" : "添加"
-          }卡片`}
+          title={`${operation.type === OperationType.EDIT ? "编辑" : "添加"}块`}
           visible={isAddOrEditCardModalVisible}
           onCancel={handleCloseAddOrEditChartModal}
           okButtonProps={{ loading: getChartLoading }}
@@ -425,12 +430,8 @@ const DashBoardEdit: PC = () => {
           }}
         >
           <Form form={addOrEditCardForm} layout="vertical">
-            <Form.Item
-              label="图表名称"
-              name="name"
-              rules={[{ required: true, message: "请输入图表名称" }]}
-            >
-              <Input placeholder="请输入图表名称" />
+            <Form.Item label="图表名称" name="name">
+              <Input placeholder="输入图表名称" />
             </Form.Item>
 
             <Form.Item
@@ -559,7 +560,7 @@ const DashBoardEdit: PC = () => {
         <Modal
           title={`${
             operation.type === OperationType.ADD ? "添加" : "编辑"
-          } markdown`}
+          } Markdown`}
           width={1200}
           visible={isAddOrEditMarkdownModalVisible}
           onCancel={handleCloseAddOrEditMarkdownModal}
@@ -625,14 +626,14 @@ const DashBoardEdit: PC = () => {
                 </div>
               </Col>
               <Col span={12}>
-                <Form.Item label="markdown 名称" name="name">
-                  <Input placeholder="输入 markdown 名称" />
+                <Form.Item label="Markdown 名称" name="name">
+                  <Input placeholder="输入 Markdown 名称" />
                 </Form.Item>
 
-                <Form.Item label="markdown 内容" name="content">
+                <Form.Item label="Markdown 内容" name="content">
                   <TextArea
                     autoSize={{ minRows: 13, maxRows: 13 }}
-                    placeholder="输入 markdown 语法"
+                    placeholder="输入 Markdown 语法"
                   />
                 </Form.Item>
 

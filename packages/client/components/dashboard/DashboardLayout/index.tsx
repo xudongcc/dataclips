@@ -164,7 +164,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                                     }
                                   }}
                                 >
-                                  编辑卡片
+                                  编辑块
                                 </Button>
 
                                 <Divider my={1} />
