@@ -48,7 +48,7 @@ export const DashboardCard: FC<DashboardCardProps> = ({
       >
         <Stack spacing="1">
           {title ? (
-            <Text fontSize="lg" fontWeight="medium">
+            <Text wordBreak="break-all" fontSize="lg" fontWeight="medium">
               {title}
             </Text>
           ) : null}

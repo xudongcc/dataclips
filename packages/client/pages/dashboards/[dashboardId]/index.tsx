@@ -13,6 +13,7 @@ import {
   DashboardLayout,
   DashboardChartItem,
   DashboardDividerItem,
+  DashboardMarkdownItem,
 } from "../../../components/dashboard/DashboardLayout";
 
 const DashboardPreview: PC = () => {
@@ -28,7 +29,7 @@ const DashboardPreview: PC = () => {
   });
 
   const [dragItems, setDragItems] = useState<
-    Array<DashboardDividerItem | DashboardChartItem>
+    Array<DashboardDividerItem | DashboardChartItem | DashboardMarkdownItem>
   >([]);
 
   useEffect(() => {

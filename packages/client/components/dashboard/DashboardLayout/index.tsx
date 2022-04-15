@@ -28,7 +28,7 @@ export enum DashboardItemType {
   MARKDOWN = "markdown",
 }
 
-export interface DashboardCard {
+export interface DashboardItem {
   id: string;
   name?: string;
   hiddenName?: boolean;
@@ -36,20 +36,20 @@ export interface DashboardCard {
   type: DashboardItemType;
 }
 
-export interface DashboardChartItem extends DashboardCard {
+export interface DashboardChartItem extends DashboardItem {
   chart: {
     id: string;
   };
 }
 
-export interface DashboardDividerItem extends DashboardCard {
+export interface DashboardDividerItem extends DashboardItem {
   divider: {
     orientation?: "left" | "center" | "right";
     name?: string;
   };
 }
 
-export interface DashboardMarkdownItem extends DashboardCard {
+export interface DashboardMarkdownItem extends DashboardItem {
   markdown: {
     content?: string;
   };
