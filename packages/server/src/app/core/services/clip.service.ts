@@ -55,7 +55,7 @@ export class ClipService extends mixinConnection(
         name: clip.name,
         fields: queryResult?.[0] || [],
         values: queryResult?.[1] || [],
-        error: queryError.message,
+        error: queryError?.message,
         duration: finishedAt.getTime() - startedAt.getTime(),
         startedAt,
         finishedAt,
