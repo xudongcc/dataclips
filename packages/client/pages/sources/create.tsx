@@ -152,6 +152,12 @@ const SourceCreate = () => {
 
                   <Row justify="center">
                     <Button
+                      style={{
+                        marginTop:
+                          currentSourceType === "VirtualSource"
+                            ? 16
+                            : undefined,
+                      }}
                       loading={
                         createDataBaseSourceLoading ||
                         createVirtualSourceLoading
