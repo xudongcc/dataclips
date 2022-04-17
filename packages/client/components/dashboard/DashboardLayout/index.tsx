@@ -108,7 +108,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
       }}
     >
       <ResponsiveGridLayout
-        draggableHandle=".ant-card-body"
+        draggableHandle=".drag-item"
         className="layout"
         margin={[24, 24]}
         rowHeight={50}

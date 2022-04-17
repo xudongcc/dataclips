@@ -15,6 +15,7 @@ interface ButtonProps extends BaseButtonProps {
 export interface CardProps extends BaseCardProps {
   description?: string;
   primaryAction?: ButtonProps;
+  bodyClassName?: string;
   secondaryActions?: ButtonProps[];
 }
 
@@ -26,6 +27,8 @@ export const Card: FC<CardProps> = (props) => {
     primaryAction,
     secondaryActions,
     extra,
+    children,
+    bodyClassName,
     ...rest
   } = props;
 
@@ -50,16 +53,26 @@ export const Card: FC<CardProps> = (props) => {
       );
     }
 
-    return <></>;
+    return undefined;
   }, [extra, primaryAction, secondaryActions]);
 
   return (
     <BaseCard
       extra={extra ? extra : getActionButtons()}
-      style={{ height: "inherit", ...style }}
+      style={{
+        height: "inherit",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        ...style,
+      }}
       headStyle={{ borderBottom: 0, ...headStyle }}
       bodyStyle={{ height: "inherit", ...bodyStyle }}
       {...rest}
-    />
+    >
+      <div className={bodyClassName} style={{ height: "100%" }}>
+        {children}
+      </div>
+    </BaseCard>
   );
 };
