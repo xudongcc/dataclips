@@ -9,6 +9,7 @@ import { useDeleteChartMutation } from "../../hooks/useDeleteChartMutation";
 import Head from "next/head";
 import { Modal } from "../../components/common/Modal";
 import {
+  FilterType,
   GraphQLTable,
   GraphQLTableColumnType,
 } from "../../components/common/GraphQLTable";
@@ -49,6 +50,7 @@ const ChartList = () => {
     {
       title: "标签",
       dataIndex: "tags",
+      filterType: FilterType.INPUT,
       key: "tags",
       valueType: {
         type: ValueType.TAG,
