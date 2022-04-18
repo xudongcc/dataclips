@@ -12,7 +12,7 @@ import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { Clip } from "./clip.entity";
 
 @ObjectType()
-@Entity({ searchable: true })
+@Entity()
 export class Result {
   @Field(() => ID)
   @PrimarySnowflakeColumn()
