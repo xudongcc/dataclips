@@ -27,6 +27,7 @@ import useRouteParamsState from "./hooks/useRouteParamsState";
 import { GraphQLTableColumnType } from "./interfaces/GraphQLTableColumnType";
 import { OrderDirection, PageInfo, Variables } from "./types/BaseTypes";
 import { filterToQuery } from "./utils/filterToQuery";
+import { filterToStr } from "./utils/filterToStr";
 
 const StyledRadio = styled(Radio)`
   display: block;
@@ -121,23 +122,14 @@ export function GraphQLTable<T>(props: GraphQLTableProps<T>): ReactElement {
 
     if (routeParams.query) {
       setQuery(routeParams.query);
-      // 配合 dataclip 的搜索使用的是 filter，本来是 tempVariables.query
-      tempVariables.filter = routeParams.query;
-      // tempVariables.query = routeParams.query;
+      tempVariables.query = routeParams.query;
     }
     if (routeParams.filter) {
       const tempFilter = JSON.parse(decodeURIComponent(routeParams.filter));
       setFilters(tempFilter);
       setBindValues(tempFilter);
-      // 配合 dataclip 的搜索使用的是 filter，本来是 tempVariables.query
-      tempVariables.filter = `${tempVariables.filter || ""} ${filterToQuery(
-        tempFilter,
-        columns
-      )}`.trim();
-      // tempVariables.filter = `${tempVariables.query || ""} ${filterToQuery(
-      //   tempFilter,
-      //   columns
-      // )}`.trim();
+
+      tempVariables.filter = filterToStr(tempFilter);
     }
     if (routeParams.orderBy) {
       const decodeSortValue = decodeURIComponent(routeParams.orderBy);
@@ -154,15 +146,12 @@ export function GraphQLTable<T>(props: GraphQLTableProps<T>): ReactElement {
   // 点击筛选或排序触发
   const handleVariablesChange = useCallback(
     (parameterFilters?: FilterProps, parameterOrderBy?: string) => {
-      // filter 转换成 query
-      const changedQuery = filterToQuery(parameterFilters || filters, columns);
-
       // 改变筛选或排序后只需要 query 和 orderBy，不需要 before after
+
       const tempVariables = {
         first: Number(pageSize),
-        // 配合 dataclip 的搜索使用的是 filter，本来是 query
-        filter: `${query} ${changedQuery}`.trim(),
-        // query: `${query} ${changedQuery}`.trim(),
+        filter: filterToStr(parameterFilters || filters),
+        query: `${query}`.trim(),
         // parameterOrderBy 有值是刚改变， null 是清空，其它是改变筛选时使用 sortValue
         orderBy: JSON.parse(
           parameterOrderBy || parameterOrderBy === null
@@ -170,13 +159,15 @@ export function GraphQLTable<T>(props: GraphQLTableProps<T>): ReactElement {
             : sortValue
         ),
       };
+
       if (!tempVariables.filter) {
         delete tempVariables.filter;
       }
 
-      // if (!tempVariables.query) {
-      //   delete tempVariables.query;
-      // }
+      if (!tempVariables.query) {
+        delete tempVariables.query;
+      }
+
       if (!tempVariables.orderBy) {
         delete tempVariables.orderBy;
       }
@@ -185,28 +176,30 @@ export function GraphQLTable<T>(props: GraphQLTableProps<T>): ReactElement {
 
       return tempVariables;
     },
-    [filters, columns, pageSize, query, sortValue, onVariablesChange]
+    [filters, pageSize, query, sortValue, onVariablesChange]
   );
 
   // 需要传给 Pagination 用
   const variables = useMemo(() => {
-    const changedQuery = filterToQuery(filters, columns);
-
     const tempVariables = {
-      // 配合 dataclip 的搜索使用的是 filter，本来是 query
-      filter: `${query} ${changedQuery}`.trim(),
-      // query: `${query} ${changedQuery}`.trim(),
+      query: `${query}`.trim(),
+      filter: filterToStr(filters),
       orderBy: JSON.parse(sortValue),
     };
+    if (!tempVariables.query) {
+      delete tempVariables.query;
+    }
+
     if (!tempVariables.filter) {
       delete tempVariables.filter;
     }
+
     if (!tempVariables.orderBy) {
       delete tempVariables.orderBy;
     }
 
     return tempVariables;
-  }, [columns, filters, query, sortValue]);
+  }, [filters, query, sortValue]);
 
   const columnsFilterResults = useMemo(
     () => columns.filter((column) => column.filters || column.filterType),

@@ -33,6 +33,10 @@ export class Chart {
   @Column()
   type: ChartType;
 
+  @Field(() => [String])
+  @Column({ type: "json", default: [], generator: () => [] })
+  tags: string[];
+
   @Field(() => GraphQLJSONObject)
   @Column({ type: "json" })
   config: Record<string, any>;

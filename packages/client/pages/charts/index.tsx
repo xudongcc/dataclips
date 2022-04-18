@@ -2,27 +2,32 @@ import ProjectLayout from "../../layouts/ProjectLayout";
 import { useRouter } from "next/router";
 import { useToast, Link } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { useChartConnectionLazyQuery } from "../../generated/graphql";
+import {
+  useChartConnectionLazyQuery,
+  useDeleteChartMutation,
+} from "../../generated/graphql";
 import { chartTypeMap } from "../../components/chart/ChartEditTab";
 import { Page } from "../../components/common/Page";
-import { useDeleteChartMutation } from "../../hooks/useDeleteChartMutation";
 import Head from "next/head";
 import { Modal } from "../../components/common/Modal";
 import {
+  FilterType,
   GraphQLTable,
   GraphQLTableColumnType,
 } from "../../components/common/GraphQLTable";
 import { ValueType } from "../../components/common/SimpleTable";
 import { Divider, Space } from "antd";
+import { useEffect, useState } from "react";
 
 const ChartList = () => {
   const router = useRouter();
-
   const toast = useToast();
 
-  const [getCharts, { data, loading }] = useChartConnectionLazyQuery({
+  const [chartsData, setChartsData] = useState([]);
+  // 直接用 data 然后在清除筛选值时莫名其妙会请求两次和有几率把列表卡空，先用 effect 解决
+  const [getCharts, { data, loading, refetch }] = useChartConnectionLazyQuery({
     notifyOnNetworkStatusChange: true,
-    // fetchPolicy: "no-cache",
+    fetchPolicy: "no-cache",
   });
 
   const [deleteChart] = useDeleteChartMutation();
@@ -45,6 +50,13 @@ const ChartList = () => {
       dataIndex: "type",
       key: "type",
       render: (type) => chartTypeMap[type],
+    },
+    {
+      title: "标签",
+      dataIndex: "tags",
+      filterType: FilterType.TAG,
+      key: "tags",
+      valueType: ValueType.TAG,
     },
     {
       title: "最后更新时间",
@@ -96,6 +108,8 @@ const ChartList = () => {
                         status: "success",
                         isClosable: true,
                       });
+
+                      await refetch();
                     } catch (err) {
                       console.error("err", err);
                     }
@@ -111,6 +125,12 @@ const ChartList = () => {
       },
     },
   ];
+
+  useEffect(() => {
+    if (data?.chartConnection?.edges?.length) {
+      setChartsData(data?.chartConnection?.edges?.map((item) => item?.node));
+    }
+  }, [data?.chartConnection?.edges]);
 
   return (
     <>
@@ -136,7 +156,7 @@ const ChartList = () => {
             getCharts({ variables });
           }}
           columns={columns}
-          dataSource={data?.chartConnection?.edges?.map((item) => item?.node)}
+          dataSource={chartsData}
           loading={loading}
         />
       </Page>

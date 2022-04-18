@@ -3,6 +3,7 @@ fragment Chart on Chart {
   name
   token
   type
+  tags
   config
   clipId
   createdAt
