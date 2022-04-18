@@ -196,6 +196,12 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
         ].find((item) => item.type === currentChartType)?.component
       }
 
+      {/* 标签 */}
+      <Divider orientation="left">标签</Divider>
+      <Form.Item style={{ marginBottom: 0 }} name="tags">
+        <Select allowClear mode="tags" placeholder="查找或创建标签" />
+      </Form.Item>
+
       {/* 只为了监听 type 是否为空，空的话隐藏查询分析配置 */}
       <Form.Item noStyle shouldUpdate>
         {({ getFieldValue }) => {
