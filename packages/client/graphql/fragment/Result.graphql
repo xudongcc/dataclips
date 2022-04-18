@@ -1,0 +1,10 @@
+fragment Result on Result {
+  id
+  name
+  error
+  fields
+  values
+  duration
+  startedAt
+  finishedAt
+}

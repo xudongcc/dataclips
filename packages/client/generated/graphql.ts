@@ -78,6 +78,7 @@ export type Clip = {
   lastViewedAt?: Maybe<Scalars['DateTime']>;
   latestResultAt?: Maybe<Scalars['DateTime']>;
   name: Scalars['String'];
+  results: Array<Result>;
   sourceId: Scalars['ID'];
   sql: Scalars['String'];
   token?: Maybe<Scalars['String']>;
@@ -384,6 +385,20 @@ export type QuerySourcesArgs = {
   query?: InputMaybe<Scalars['String']>;
 };
 
+export type Result = {
+  __typename?: 'Result';
+  createdAt: Scalars['DateTime'];
+  duration: Scalars['Int'];
+  error?: Maybe<Scalars['String']>;
+  fields: Array<Scalars['String']>;
+  finishedAt?: Maybe<Scalars['DateTime']>;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  startedAt?: Maybe<Scalars['DateTime']>;
+  updatedAt: Scalars['DateTime'];
+  values: Array<Array<Scalars['String']>>;
+};
+
 export type Source = DatabaseSource | VirtualSource;
 
 export type SourceConnection = {
@@ -480,6 +495,8 @@ export type ClipFragment = { __typename?: 'Clip', id: string, name: string, toke
 export type DashboardFragment = { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: any, createdAt: any, updatedAt: any };
 
 export type DatabaseSourceFragment = { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null };
+
+export type ResultFragment = { __typename?: 'Result', id: string, name: string, error?: string | null, fields: Array<string>, values: Array<Array<string>>, duration: number, startedAt?: any | null, finishedAt?: any | null };
 
 type Source_DatabaseSource_Fragment = { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null };
 
@@ -704,6 +721,18 @@ export const DashboardFragmentDoc = gql`
   config
   createdAt
   updatedAt
+}
+    `;
+export const ResultFragmentDoc = gql`
+    fragment Result on Result {
+  id
+  name
+  error
+  fields
+  values
+  duration
+  startedAt
+  finishedAt
 }
     `;
 export const DatabaseSourceFragmentDoc = gql`

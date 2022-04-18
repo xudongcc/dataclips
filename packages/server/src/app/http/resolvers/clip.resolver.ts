@@ -12,13 +12,13 @@ import {
 import _ from "lodash";
 
 import { Clip } from "../../core/entities/clip.entity";
+import { Result } from "../../core/entities/result.entity";
 import { ClipService } from "../../core/services/clip.service";
 import { ResultService } from "../../core/services/result.service";
 import { AuthGuard } from "../guards/auth.guard";
 import { CreateClipInput } from "../inputs/create-clip.input";
 import { UpdateClipInput } from "../inputs/update-clip.input";
 import { ClipConnection } from "../objects/clip-connection.object";
-import { ResultConnection } from "../objects/result-connection.object";
 
 @UseGuards(AuthGuard)
 @Resolver(() => Clip)
@@ -70,5 +70,16 @@ export class ClipResolver {
   ): Promise<string> {
     await this.clipService.delete({ id });
     return id;
+  }
+
+  @ResolveField(() => [Result])
+  async results(@Parent() clip: Clip): Promise<Result[]> {
+    return await this.resultService.findAll({
+      where: {
+        clip: { id: clip.id },
+      },
+      take: 10,
+      order: { createdAt: "DESC" },
+    });
   }
 }
