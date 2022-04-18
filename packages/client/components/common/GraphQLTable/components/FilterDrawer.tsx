@@ -6,6 +6,7 @@ import {
   Drawer,
   Input,
   Radio,
+  Select,
 } from "antd";
 import moment from "moment";
 import React, { ReactElement, useEffect, useRef } from "react";
@@ -141,6 +142,7 @@ export default function FilterDrawer<T>({
                 const tempFilters = { ...filters };
                 delete tempBindValues[key];
                 delete tempFilters[key];
+
                 onBindValuesChange(tempBindValues);
                 onFiltersChange(tempFilters);
                 onSubmit(tempFilters);
@@ -191,6 +193,37 @@ export default function FilterDrawer<T>({
                         onFiltersChange(tempFilters);
                         onSubmit(tempFilters);
                       }
+                    }}
+                  />
+                  {ClearButton}
+                </>
+              )}
+
+              {column.filterType === FilterType.TAG && (
+                <>
+                  <Select
+                    value={bindValues[key] || []}
+                    style={{ width: "100%" }}
+                    mode="tags"
+                    onChange={(values) => {
+                      const tempBindValues = { ...bindValues };
+                      tempBindValues[key] = values;
+                      const tempFilters = { ...filters };
+                      tempFilters[key] = values;
+
+                      if (!values.length) {
+                        delete tempBindValues[key];
+                        delete tempFilters[key];
+                      }
+
+                      onBindValuesChange(tempBindValues);
+
+                      onRouteParamsChange({
+                        ...routeParams,
+                        filter: encodeURIComponent(JSON.stringify(tempFilters)),
+                      });
+                      onFiltersChange(tempFilters);
+                      onSubmit(tempFilters);
                     }}
                   />
                   {ClearButton}
@@ -259,6 +292,7 @@ export default function FilterDrawer<T>({
                   {ClearButton}
                 </>
               )}
+
               {column.filterType === FilterType.CHECKBOX && column.filters && (
                 <>
                   <Checkbox.Group

@@ -2,10 +2,12 @@ import ProjectLayout from "../../layouts/ProjectLayout";
 import { useRouter } from "next/router";
 import { useToast, Link } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { useChartConnectionLazyQuery } from "../../generated/graphql";
+import {
+  useChartConnectionLazyQuery,
+  useDeleteChartMutation,
+} from "../../generated/graphql";
 import { chartTypeMap } from "../../components/chart/ChartEditTab";
 import { Page } from "../../components/common/Page";
-import { useDeleteChartMutation } from "../../hooks/useDeleteChartMutation";
 import Head from "next/head";
 import { Modal } from "../../components/common/Modal";
 import {
@@ -21,9 +23,9 @@ const ChartList = () => {
 
   const toast = useToast();
 
-  const [getCharts, { data, loading }] = useChartConnectionLazyQuery({
+  const [getCharts, { data, loading, refetch }] = useChartConnectionLazyQuery({
     notifyOnNetworkStatusChange: true,
-    // fetchPolicy: "no-cache",
+    fetchPolicy: "no-cache",
   });
 
   const [deleteChart] = useDeleteChartMutation();
@@ -50,7 +52,7 @@ const ChartList = () => {
     {
       title: "标签",
       dataIndex: "tags",
-      filterType: FilterType.INPUT,
+      filterType: FilterType.TAG,
       key: "tags",
       valueType: {
         type: ValueType.TAG,
@@ -107,6 +109,8 @@ const ChartList = () => {
                         status: "success",
                         isClosable: true,
                       });
+
+                      await refetch();
                     } catch (err) {
                       console.error("err", err);
                     }
