@@ -178,6 +178,11 @@ const SourceList = () => {
       },
     },
     {
+      title: "类型",
+      dataIndex: "typename",
+      key: "typename",
+    },
+    {
       title: "最后更新时间",
       sorter: true,
       align: "center",
