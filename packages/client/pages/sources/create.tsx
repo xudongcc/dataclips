@@ -6,10 +6,10 @@ import { DataSourceForm } from "../../components/source/DataSourceForm";
 import { VirtualSourceForm } from "../../components/source/VirtualSourceForm";
 import { useCreateVirtualSourceMutation } from "../../hooks/useCreateVirtualSourceMutation";
 import { useCreateDatabaseSourceMutation } from "../../hooks/useCreateDatabaseSourceMutation";
-import { Card } from "../../components/common/Card/Card";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
 import { Form, Select, Button, Steps, Space, Row } from "antd";
+import { Card } from "../../components/common/Card";
 
 const { Option } = Select;
 const { Step } = Steps;

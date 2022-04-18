@@ -55,6 +55,7 @@ module.exports = withLess({
     lessOptions: {
       modifyVars: {
         "primary-color": "#165dff",
+        "border-radius-base": "4px",
       },
     },
   },

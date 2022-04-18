@@ -11,9 +11,9 @@ import { useQueryResult } from "../../../hooks/useQueryResult";
 import { ResultPreview } from "../../../components/clip/ResultPreview";
 import { SQLEditor } from "../../../components/clip/SQLEditor";
 import { Page } from "../../../components/common/Page";
-import { Card } from "../../../components/common/Card";
 import Head from "next/head";
 import { Row, Col, Form, Select, Input, Space, Button } from "antd";
+import { Card } from "../../../components/common/Card";
 
 const { Option } = Select;
 

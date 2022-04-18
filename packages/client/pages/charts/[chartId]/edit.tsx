@@ -18,9 +18,9 @@ import {
 } from "../../../components/chart/ChartEditTab";
 import { ChartResultPreview } from "../../../components/chart/ChartResultPreview";
 import { Page } from "../../../components/common/Page";
-import { Card } from "../../../components/common/Card";
 import Head from "next/head";
 import { Col, Form, Row, Select, Button, Input } from "antd";
+import { Card } from "../../../components/common/Card";
 
 const { Option } = Select;
 
@@ -187,7 +187,7 @@ const ChartEdit = () => {
 
             <GridItem colSpan={2}>
               <Box h="500px">
-                <Card overflow="hidden" h="full">
+                <Card>
                   {result && (
                     <Form.Item
                       shouldUpdate={(prevValues, curValues) => {

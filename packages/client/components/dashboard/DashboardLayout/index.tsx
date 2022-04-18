@@ -108,7 +108,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
       }}
     >
       <ResponsiveGridLayout
-        draggableHandle=".dashboard-card-body"
+        draggableHandle=".drag-item"
         className="layout"
         margin={[24, 24]}
         rowHeight={50}
@@ -122,12 +122,6 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
             return (
               <DashboardDragWrapper key={item?.position?.i}>
                 <DashboardCard
-                  h="full"
-                  sx={{
-                    ".dashboard-card-body": {
-                      overflowY: "auto",
-                    },
-                  }}
                   title={!item?.hiddenName && item?.name}
                   extra={
                     extraConfig?.extra ? (
@@ -273,12 +267,6 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
             return (
               <DashboardDragWrapper key={item?.position?.i}>
                 <DashboardCard
-                  h="full"
-                  sx={{
-                    ".dashboard-card-body": {
-                      overflowY: "auto",
-                    },
-                  }}
                   title={!item?.hiddenName && item?.name}
                   extra={
                     extraConfig?.extra ? (

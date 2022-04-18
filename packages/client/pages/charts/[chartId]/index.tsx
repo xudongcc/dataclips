@@ -16,8 +16,8 @@ import {
 } from "../../../components/chart/ChartResultPreview/components";
 import { Page } from "../../../components/common/Page";
 import ProjectLayout from "../../../layouts/ProjectLayout";
-import { Card } from "../../../components/common/Card";
 import Head from "next/head";
+import { Card } from "../../../components/common/Card";
 
 const ChartPreview = () => {
   const router = useRouter();
@@ -109,16 +109,7 @@ const ChartPreview = () => {
       >
         {data?.chart.type && data?.chart.config && result && (
           <Box h="800px">
-            <Card
-              overflow="hidden"
-              h="full"
-              sx={{
-                ".card-body": {
-                  overflowY:
-                    data.chart.type === ChartType.MD ? "auto" : undefined,
-                },
-              }}
-            >
+            <Card>
               <ChartResultPreview
                 type={data.chart.type}
                 config={getChartTypePreviewConfig()}

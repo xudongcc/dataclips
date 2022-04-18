@@ -5,10 +5,10 @@ import { useSourceConnectionQuery } from "../../generated/graphql";
 import { useCallback, useState } from "react";
 import { SQLEditor } from "../../components/clip/SQLEditor";
 import { useCreateClipMutation } from "../../hooks/useCreateClipMutation";
-import { Card } from "../../components/common/Card/Card";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
 import { Row, Col, Form, Input, Select, Button, Space } from "antd";
+import { Card } from "../../components/common/Card";
 
 const { Option } = Select;
 
