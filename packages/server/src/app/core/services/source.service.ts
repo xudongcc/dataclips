@@ -1,3 +1,4 @@
+import { Logger } from "@nest-boot/common";
 import {
   createEntityService,
   DeepPartial,
@@ -9,7 +10,6 @@ import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import Bluebird, { promisify } from "bluebird";
 import _ from "lodash";
 import mysql, { FieldPacket, RowDataPacket } from "mysql2";
-import { Logger } from "nestjs-pino";
 import pg, { QueryArrayResult } from "pg";
 import initSqlJs from "sql.js";
 import tunnelSSH from "tunnel-ssh";
@@ -88,7 +88,7 @@ export class SourceService extends mixinConnection(
       });
 
       tunnel.on("error", (err) => {
-        this.logger.error({ err, sourceId: source.id }, "SSH tunnel error");
+        this.logger.error("SSH tunnel error", { err, sourceId: source.id });
       });
     }
 

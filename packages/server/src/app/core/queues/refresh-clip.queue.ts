@@ -1,4 +1,4 @@
-import { PinoLogger } from "@nest-boot/logger";
+import { Logger } from "@nest-boot/common";
 import { BaseQueue, Job, Queue } from "@nest-boot/queue";
 import { forwardRef, Inject, OnModuleInit } from "@nestjs/common";
 import Bluebird from "bluebird";
@@ -19,7 +19,7 @@ type RefreshClipScheduleJob = Job<{}, void, "schedule">;
 })
 export class RefreshClipQueue extends BaseQueue implements OnModuleInit {
   constructor(
-    readonly logger: PinoLogger,
+    readonly logger: Logger,
     @Inject(forwardRef(() => ClipService))
     readonly clipService: ClipService
   ) {
