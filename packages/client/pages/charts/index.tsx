@@ -56,7 +56,6 @@ const ChartList = () => {
       key: "tags",
       valueType: {
         type: ValueType.TAG,
-        onClick: () => {},
       },
     },
     {
