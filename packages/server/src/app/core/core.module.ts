@@ -1,5 +1,5 @@
+import { LoggerModule } from "@nest-boot/common";
 import { DatabaseModule } from "@nest-boot/database";
-import { LoggerModule } from "@nest-boot/logger";
 import { QueueModule } from "@nest-boot/queue";
 import { RedisModule } from "@nest-boot/redis";
 import { SearchModule } from "@nest-boot/search";
