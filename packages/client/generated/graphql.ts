@@ -42,6 +42,7 @@ export type Chart = {
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
   name: Scalars['String'];
+  tags: Array<Scalars['String']>;
   token?: Maybe<Scalars['String']>;
   type: ChartType;
   updatedAt: Scalars['DateTime'];
@@ -77,24 +78,10 @@ export type Clip = {
   lastViewedAt?: Maybe<Scalars['DateTime']>;
   latestResultAt?: Maybe<Scalars['DateTime']>;
   name: Scalars['String'];
-  results: ResultConnection;
   sourceId: Scalars['ID'];
   sql: Scalars['String'];
   token?: Maybe<Scalars['String']>;
   updatedAt: Scalars['DateTime'];
-};
-
-
-export type ClipResultsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  filter?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Ordering>;
-  page?: InputMaybe<Scalars['Int']>;
-  pageSize?: InputMaybe<Scalars['Int']>;
-  query?: InputMaybe<Scalars['String']>;
 };
 
 export type ClipConnection = {
@@ -115,6 +102,7 @@ export type CreateChartInput = {
   clipId: Scalars['ID'];
   config: Scalars['JSONObject'];
   name: Scalars['String'];
+  tags: Array<Scalars['String']>;
   type: ChartType;
 };
 
@@ -396,34 +384,6 @@ export type QuerySourcesArgs = {
   query?: InputMaybe<Scalars['String']>;
 };
 
-export type Result = {
-  __typename?: 'Result';
-  createdAt: Scalars['DateTime'];
-  duration: Scalars['Int'];
-  error?: Maybe<Scalars['String']>;
-  fields: Array<Scalars['String']>;
-  finishedAt?: Maybe<Scalars['DateTime']>;
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  startedAt?: Maybe<Scalars['DateTime']>;
-  updatedAt: Scalars['DateTime'];
-  values: Array<Array<Scalars['String']>>;
-};
-
-export type ResultConnection = {
-  __typename?: 'ResultConnection';
-  edges?: Maybe<Array<ResultEdge>>;
-  nodes?: Maybe<Array<Result>>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars['Int']>;
-};
-
-export type ResultEdge = {
-  __typename?: 'ResultEdge';
-  cursor: Scalars['String'];
-  node: Result;
-};
-
 export type Source = DatabaseSource | VirtualSource;
 
 export type SourceConnection = {
@@ -450,6 +410,7 @@ export type UpdateChartInput = {
   clipId: Scalars['ID'];
   config: Scalars['JSONObject'];
   name?: InputMaybe<Scalars['String']>;
+  tags: Array<Scalars['String']>;
   type: ChartType;
 };
 
@@ -512,15 +473,13 @@ export type VirtualSourceTable = {
   virtualSourceId: Scalars['ID'];
 };
 
-export type ChartFragment = { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any };
+export type ChartFragment = { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, clipId: string, createdAt: any, updatedAt: any };
 
 export type ClipFragment = { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, sourceId: string, createdAt: any, updatedAt: any };
 
 export type DashboardFragment = { __typename?: 'Dashboard', id: string, name: string, token?: string | null, config: any, createdAt: any, updatedAt: any };
 
 export type DatabaseSourceFragment = { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null };
-
-export type ResultFragment = { __typename?: 'Result', id: string, name: string, error?: string | null, fields: Array<string>, values: Array<Array<string>>, duration: number, startedAt?: any | null, finishedAt?: any | null };
 
 type Source_DatabaseSource_Fragment = { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null };
 
@@ -535,7 +494,7 @@ export type CreateChartMutationVariables = Exact<{
 }>;
 
 
-export type CreateChartMutation = { __typename?: 'Mutation', createChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
+export type CreateChartMutation = { __typename?: 'Mutation', createChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, clipId: string, createdAt: any, updatedAt: any } };
 
 export type CreateClipMutationVariables = Exact<{
   input: CreateClipInput;
@@ -599,7 +558,7 @@ export type UpdateChartMutationVariables = Exact<{
 }>;
 
 
-export type UpdateChartMutation = { __typename?: 'Mutation', updateChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
+export type UpdateChartMutation = { __typename?: 'Mutation', updateChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, clipId: string, createdAt: any, updatedAt: any } };
 
 export type UpdateClipMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -638,7 +597,7 @@ export type ChartQueryVariables = Exact<{
 }>;
 
 
-export type ChartQuery = { __typename?: 'Query', chart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } };
+export type ChartQuery = { __typename?: 'Query', chart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, clipId: string, createdAt: any, updatedAt: any } };
 
 export type ChartConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
@@ -651,7 +610,7 @@ export type ChartConnectionQueryVariables = Exact<{
 }>;
 
 
-export type ChartConnectionQuery = { __typename?: 'Query', chartConnection: { __typename?: 'ChartConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ChartEdge', node: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, config: any, clipId: string, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+export type ChartConnectionQuery = { __typename?: 'Query', chartConnection: { __typename?: 'ChartConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ChartEdge', node: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, clipId: string, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export type ClipQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -719,6 +678,7 @@ export const ChartFragmentDoc = gql`
   name
   token
   type
+  tags
   config
   clipId
   createdAt
@@ -744,18 +704,6 @@ export const DashboardFragmentDoc = gql`
   config
   createdAt
   updatedAt
-}
-    `;
-export const ResultFragmentDoc = gql`
-    fragment Result on Result {
-  id
-  name
-  error
-  fields
-  values
-  duration
-  startedAt
-  finishedAt
 }
     `;
 export const DatabaseSourceFragmentDoc = gql`

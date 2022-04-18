@@ -47,6 +47,15 @@ const ChartList = () => {
       render: (type) => chartTypeMap[type],
     },
     {
+      title: "标签",
+      dataIndex: "tags",
+      key: "tags",
+      valueType: {
+        type: ValueType.TAG,
+        onClick: () => {},
+      },
+    },
+    {
       title: "最后更新时间",
       align: "center",
       dataIndex: "updatedAt",

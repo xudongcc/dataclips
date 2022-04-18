@@ -1,14 +1,14 @@
 import { MigrationInterface, QueryRunner } from "@nest-boot/database";
 
 export class ChartTagsMigration implements MigrationInterface {
-  name = "chart-tags-1650248318918";
+  name = "chart-tags-1650261170178";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(/* SQL */ `
       ALTER TABLE
         "chart"
       ADD
-        "tags" json
+        "tags" json NOT NULL DEFAULT '[]'
     `);
   }
 

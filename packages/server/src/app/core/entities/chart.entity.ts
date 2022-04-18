@@ -34,7 +34,7 @@ export class Chart {
   type: ChartType;
 
   @Field(() => [String])
-  @Column({ type: "json", nullable: true, generator: () => [] })
+  @Column({ type: "json", default: [], generator: () => [] })
   tags: string[];
 
   @Field(() => GraphQLJSONObject)
