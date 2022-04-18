@@ -71,14 +71,4 @@ export class ClipResolver {
     await this.clipService.delete({ id });
     return id;
   }
-
-  @ResolveField(() => ResultConnection)
-  async results(
-    @Parent() clip: Clip,
-    @Args() args: QueryConnectionArgs
-  ): Promise<ResultConnection> {
-    return await this.resultService.getConnection(args, {
-      clipId: clip.id,
-    });
-  }
 }
