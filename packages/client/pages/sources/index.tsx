@@ -215,6 +215,9 @@ const SourceList = () => {
                 title: "删除数据源",
                 content: `确定删除名称为 ${record?.name} 的数据源？`,
                 okText: "确认",
+                okButtonProps: {
+                  danger: true,
+                },
                 cancelText: "取消",
                 onOk: async () => {
                   try {
