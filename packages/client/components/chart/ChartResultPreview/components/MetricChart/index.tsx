@@ -51,31 +51,35 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
       config?.threshold?.value &&
       config?.threshold?.type
     ) {
+      const formatValue = getFormatValue(value);
+      const compareValue = config.threshold.value;
+      const isNumberType = config.threshold.type === "number";
+
       switch (config.threshold.condition) {
         case ">":
-          return config?.threshold?.type === "number"
-            ? getFormatValue(value) > config.threshold.value
-            : getFormatValue(value) > config.threshold.value / 100;
+          return (
+            formatValue > (isNumberType ? compareValue : compareValue / 100)
+          );
         case "<":
-          return config?.threshold?.type === "number"
-            ? getFormatValue(value) < config.threshold.value
-            : getFormatValue(value) < config.threshold.value / 100;
+          return (
+            formatValue < (isNumberType ? compareValue : compareValue / 100)
+          );
         case "===":
-          return config?.threshold?.type === "number"
-            ? getFormatValue(value) === config.threshold.value
-            : getFormatValue(value) === config.threshold.value / 100;
+          return (
+            formatValue === (isNumberType ? compareValue : compareValue / 100)
+          );
         case "!==":
-          return config?.threshold?.type === "number"
-            ? getFormatValue(value) !== config.threshold.value
-            : getFormatValue(value) !== config.threshold.value / 100;
+          return (
+            formatValue !== (isNumberType ? compareValue : compareValue / 100)
+          );
         case ">=":
-          return config?.threshold?.type === "number"
-            ? getFormatValue(value) >= config.threshold.value
-            : getFormatValue(value) >= config.threshold.value / 100;
+          return (
+            formatValue >= (isNumberType ? compareValue : compareValue / 100)
+          );
         case "<=":
-          return config?.threshold?.type === "number"
-            ? getFormatValue(value) <= config.threshold.value
-            : getFormatValue(value) <= config.threshold.value / 100;
+          return (
+            formatValue <= (isNumberType ? compareValue : compareValue / 100)
+          );
         default:
           return false;
       }
