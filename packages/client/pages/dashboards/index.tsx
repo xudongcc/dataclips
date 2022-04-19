@@ -9,11 +9,11 @@ import ProjectLayout from "../../layouts/ProjectLayout";
 import {
   useDashboardConnectionLazyQuery,
   useDeleteDashboardMutation,
+  useCreateDashboardMutation,
 } from "../../generated/graphql";
 import { Form, Input, Divider, Space } from "antd";
 import { Modal } from "../../components/common/Modal";
 
-import { useCreateDashboardMutation } from "../../hooks/useCreateDashboardMutation";
 import {
   FilterType,
   GraphQLTable,
@@ -146,7 +146,9 @@ const DashBoardList: PC = () => {
         },
       },
     });
-  }, [createDashboard, form]);
+
+    refetch();
+  }, [createDashboard, form, refetch]);
 
   useEffect(() => {
     if (data?.dashboardConnection?.edges?.length) {
