@@ -56,6 +56,7 @@ const ChartList = () => {
       dataIndex: "tags",
       filterType: FilterType.TAG,
       key: "tags",
+      width: 200,
       valueType: ValueType.TAG,
     },
     {

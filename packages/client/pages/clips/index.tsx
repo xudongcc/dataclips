@@ -50,6 +50,7 @@ const ClipList = () => {
       filterType: FilterType.TAG,
       key: "tags",
       valueType: ValueType.TAG,
+      width: 200,
     },
     {
       title: "最后更新时间",
