@@ -75,12 +75,12 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
               placeholder="选择阈值条件"
             >
               {[
-                { label: "大于", value: ">" },
-                { label: "小于", value: "<" },
-                { label: "等于", value: "===" },
-                { label: "不等于", value: "!==" },
-                { label: "大于等于", value: ">=" },
-                { label: "小于等于", value: "<=" },
+                { label: "大于", value: "greater" },
+                { label: "小于", value: "less" },
+                { label: "等于", value: "equal" },
+                { label: "不等于", value: "not_equal" },
+                { label: "大于等于", value: "great_than_or_equal" },
+                { label: "小于等于", value: "less_than_or_equal" },
               ].map((item) => (
                 <Option key={item.label} value={item.value}>
                   {item.label}

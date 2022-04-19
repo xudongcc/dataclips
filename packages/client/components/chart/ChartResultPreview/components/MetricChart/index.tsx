@@ -56,27 +56,27 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
       const isNumberType = config.threshold.type === "number";
 
       switch (config.threshold.condition) {
-        case ">":
+        case "greater":
           return (
             formatValue > (isNumberType ? compareValue : compareValue / 100)
           );
-        case "<":
+        case "less":
           return (
             formatValue < (isNumberType ? compareValue : compareValue / 100)
           );
-        case "===":
+        case "equal":
           return (
             formatValue === (isNumberType ? compareValue : compareValue / 100)
           );
-        case "!==":
+        case "not_equal":
           return (
             formatValue !== (isNumberType ? compareValue : compareValue / 100)
           );
-        case ">=":
+        case "great_than_or_equal":
           return (
             formatValue >= (isNumberType ? compareValue : compareValue / 100)
           );
-        case "<=":
+        case "less_than_or_equal":
           return (
             formatValue <= (isNumberType ? compareValue : compareValue / 100)
           );
