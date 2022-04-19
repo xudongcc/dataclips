@@ -1,4 +1,4 @@
-import { Form, Select, Divider, AutoComplete } from "antd";
+import { Form, Select, Divider } from "antd";
 import moment from "antd/node_modules/moment";
 import { FC, useState } from "react";
 import numeral from "numeral";
@@ -12,6 +12,7 @@ import {
   LineChartConfigForm,
   PieChartConfigForm,
 } from "./components";
+import { AutoComplete } from "../../common/AutoComplete";
 
 export const chartTypeToFormFieldMap = {
   [ChartType.FUNNEL]: "funnelConfig",
