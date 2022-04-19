@@ -16,7 +16,7 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
   editOptionConfig,
 }) => {
   return (
-    <Space direction="vertical" style={{ width: "100%" }}>
+    <Space direction="vertical" size="middle" style={{ width: "100%" }}>
       <Row gutter={[16, 16]}>
         <Col span={12}>
           <Form.Item
@@ -62,10 +62,10 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
       </Row>
 
       <Row gutter={[16, 16]}>
-        <Col span={12}>
+        <Col span={24}>
           <Form.Item
             style={{ marginBottom: 0 }}
-            name={["metricConfig", "thresholdCondition"]}
+            name={["metricConfig", "thresholdConfig", "condition"]}
             label="阈值条件"
           >
             <Select
@@ -89,15 +89,80 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
             </Select>
           </Form.Item>
         </Col>
-        <Col span={12}>
-          <Form.Item
-            style={{ marginBottom: 0 }}
-            name={["metricConfig", "threshold"]}
-            label="阈值"
-          >
-            <InputNumber style={{ width: "100%" }} placeholder="输入阈值" />
+
+        <Col span={24}>
+          <Form.Item noStyle shouldUpdate>
+            {({ setFieldsValue }) => {
+              return (
+                <Form.Item
+                  style={{ marginBottom: 0 }}
+                  label="阈值类型"
+                  name={["metricConfig", "thresholdConfig", "type"]}
+                >
+                  <Select
+                    placeholder="选择阈值类型"
+                    allowClear
+                    onChange={() => {
+                      setFieldsValue({
+                        metricConfig: {
+                          thresholdConfig: {
+                            value: undefined,
+                          },
+                        },
+                      });
+                    }}
+                  >
+                    <Option value="number">数值</Option>
+                    <Option value="percent">百分比</Option>
+                  </Select>
+                </Form.Item>
+              );
+            }}
           </Form.Item>
         </Col>
+
+        <Form.Item noStyle shouldUpdate>
+          {({ getFieldValue }) => {
+            const thresholdType = getFieldValue([
+              "metricConfig",
+              "thresholdConfig",
+              "type",
+            ]);
+
+            if (!thresholdType) {
+              return null;
+            }
+
+            return (
+              <Col span={24}>
+                {thresholdType === "number" ? (
+                  <Form.Item
+                    style={{ marginBottom: 0 }}
+                    name={["metricConfig", "thresholdConfig", "value"]}
+                    label="阈值"
+                  >
+                    <InputNumber
+                      style={{ width: "100%" }}
+                      placeholder="输入数值"
+                    />
+                  </Form.Item>
+                ) : (
+                  <Form.Item
+                    style={{ marginBottom: 0 }}
+                    name={["metricConfig", "thresholdConfig", "value"]}
+                    label="阈值"
+                  >
+                    <InputNumber
+                      style={{ width: "100%" }}
+                      placeholder="输入百分比数值"
+                      addonAfter="%"
+                    />
+                  </Form.Item>
+                )}
+              </Col>
+            );
+          }}
+        </Form.Item>
       </Row>
     </Space>
   );

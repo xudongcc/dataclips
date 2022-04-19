@@ -17,8 +17,11 @@ export interface MetricChartConfig {
   valueCol?: string;
   compareCol?: string;
   format?: string;
-  threshold?: number;
-  thresholdCondition?: string;
+  thresholdConfig?: {
+    value?: number;
+    condition?: string;
+    type?: string;
+  };
 }
 
 interface MetricChartPreviewProps {
@@ -30,8 +33,6 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
   result,
   config,
 }) => {
-  console.log("config", config);
-
   const value = useMemo(() => {
     const valueColIndex = result.fields.findIndex(
       (value) => value === config?.valueCol
@@ -45,27 +46,48 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
   }, [result, config]);
 
   const isHighlightValue = useMemo(() => {
-    if (config?.thresholdCondition && config?.threshold) {
-      switch (config.thresholdCondition) {
+    if (
+      config?.thresholdConfig?.condition &&
+      config?.thresholdConfig?.value &&
+      config?.thresholdConfig?.type
+    ) {
+      switch (config.thresholdConfig.condition) {
         case ">":
-          return value > config.threshold;
+          return config?.thresholdConfig?.type === "number"
+            ? getFormatValue(value) > config.thresholdConfig.value
+            : getFormatValue(value) > config.thresholdConfig.value / 100;
         case "<":
-          return value < config.threshold;
+          return config?.thresholdConfig?.type === "number"
+            ? getFormatValue(value) < config.thresholdConfig.value
+            : getFormatValue(value) < config.thresholdConfig.value / 100;
         case "===":
-          return value === config.threshold;
+          return config?.thresholdConfig?.type === "number"
+            ? getFormatValue(value) === config.thresholdConfig.value
+            : getFormatValue(value) === config.thresholdConfig.value / 100;
         case "!==":
-          return value !== config.threshold;
+          return config?.thresholdConfig?.type === "number"
+            ? getFormatValue(value) !== config.thresholdConfig.value
+            : getFormatValue(value) !== config.thresholdConfig.value / 100;
         case ">=":
-          return value >= config.threshold;
+          return config?.thresholdConfig?.type === "number"
+            ? getFormatValue(value) >= config.thresholdConfig.value
+            : getFormatValue(value) >= config.thresholdConfig.value / 100;
         case "<=":
-          return value <= config.threshold;
+          return config?.thresholdConfig?.type === "number"
+            ? getFormatValue(value) <= config.thresholdConfig.value
+            : getFormatValue(value) <= config.thresholdConfig.value / 100;
         default:
           return false;
       }
     }
 
     return false;
-  }, [config.threshold, config.thresholdCondition, value]);
+  }, [
+    config?.thresholdConfig?.condition,
+    config?.thresholdConfig?.type,
+    config?.thresholdConfig?.value,
+    value,
+  ]);
 
   const compareValue = useMemo(() => {
     const compareColIndex = result.fields.findIndex(
