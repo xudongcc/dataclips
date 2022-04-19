@@ -6,6 +6,7 @@ import {
   PieChartConfig,
   MarkdownConfig,
 } from "../components/chart/ChartResultPreview/components";
+export * from "./comparisonOperator";
 
 export enum ChartType {
   FUNNEL = "FUNNEL",

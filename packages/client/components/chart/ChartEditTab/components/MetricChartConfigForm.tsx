@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { Select, Row, Col, Form, Space, InputNumber } from "antd";
+import { ComparisonOperator } from "../../../../types";
 
 const { Option } = Select;
 
@@ -75,12 +76,18 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
               placeholder="选择阈值条件"
             >
               {[
-                { label: "大于", value: "greater" },
-                { label: "小于", value: "less" },
-                { label: "等于", value: "equal" },
-                { label: "不等于", value: "not_equal" },
-                { label: "大于等于", value: "great_than_or_equal" },
-                { label: "小于等于", value: "less_than_or_equal" },
+                { label: "大于", value: ComparisonOperator.GREATER },
+                { label: "小于", value: ComparisonOperator.LESS },
+                { label: "等于", value: ComparisonOperator.EQUAL },
+                { label: "不等于", value: ComparisonOperator.NOT_EQUAL },
+                {
+                  label: "大于等于",
+                  value: ComparisonOperator.GREAT_THAN_OR_EQUAL,
+                },
+                {
+                  label: "小于等于",
+                  value: ComparisonOperator.LESS_THAN_OR_EQUAL,
+                },
               ].map((item) => (
                 <Option key={item.label} value={item.value}>
                   {item.label}

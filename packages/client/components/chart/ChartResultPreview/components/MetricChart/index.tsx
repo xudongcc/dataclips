@@ -11,6 +11,7 @@ import { FC, useMemo } from "react";
 import { FiArrowDownRight, FiArrowUpRight } from "react-icons/fi";
 
 import { ResultFragment } from "../../../../../generated/graphql";
+import { ComparisonOperator } from "../../../../../types";
 import { getFormatValue } from "../../../ChartEditTab";
 
 export interface MetricChartConfig {
@@ -56,27 +57,27 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
       const isNumberType = config.threshold.type === "number";
 
       switch (config.threshold.condition) {
-        case "greater":
+        case ComparisonOperator.GREATER:
           return (
             formatValue > (isNumberType ? compareValue : compareValue / 100)
           );
-        case "less":
+        case ComparisonOperator.LESS:
           return (
             formatValue < (isNumberType ? compareValue : compareValue / 100)
           );
-        case "equal":
+        case ComparisonOperator.EQUAL:
           return (
             formatValue === (isNumberType ? compareValue : compareValue / 100)
           );
-        case "not_equal":
+        case ComparisonOperator.NOT_EQUAL:
           return (
             formatValue !== (isNumberType ? compareValue : compareValue / 100)
           );
-        case "great_than_or_equal":
+        case ComparisonOperator.GREAT_THAN_OR_EQUAL:
           return (
             formatValue >= (isNumberType ? compareValue : compareValue / 100)
           );
-        case "less_than_or_equal":
+        case ComparisonOperator.LESS_THAN_OR_EQUAL:
           return (
             formatValue <= (isNumberType ? compareValue : compareValue / 100)
           );
