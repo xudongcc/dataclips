@@ -20,6 +20,10 @@ export class Dashboard {
   @Column()
   name: string;
 
+  // @Field(() => [String])
+  // @Column({ type: "json", default: [], generator: () => [] })
+  // tags: string[];
+
   @Field({ nullable: true })
   @Column({ nullable: true, generator: () => nanoid() })
   token: string;

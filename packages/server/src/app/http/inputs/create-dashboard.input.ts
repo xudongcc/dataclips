@@ -6,17 +6,9 @@ export class CreateDashboardInput {
   @Field()
   name: string;
 
-  /**
-   * [
-   *    {
-   *        name: '小图表的 name',
-   *        chartId,
-   *        layout: {
-   *          x,y,w,h,i
-   *        }
-   *    }
-   * ]
-   */
   @Field(() => GraphQLJSONObject, { nullable: true })
   config?: Record<string, any>;
+
+  @Field(() => [String])
+  tags: string[];
 }
