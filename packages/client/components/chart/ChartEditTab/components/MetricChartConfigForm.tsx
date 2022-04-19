@@ -100,6 +100,8 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
                   name={["metricConfig", "threshold", "type"]}
                 >
                   <Select
+                    optionFilterProp="children"
+                    showSearch
                     placeholder="选择阈值类型"
                     allowClear
                     onChange={() => {
