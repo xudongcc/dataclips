@@ -11,12 +11,18 @@ import { FC, useMemo } from "react";
 import { FiArrowDownRight, FiArrowUpRight } from "react-icons/fi";
 
 import { ResultFragment } from "../../../../../generated/graphql";
+import { ComparisonOperator } from "../../../../../types";
 import { getFormatValue } from "../../../ChartEditTab";
 
 export interface MetricChartConfig {
   valueCol?: string;
   compareCol?: string;
   format?: string;
+  threshold?: {
+    value?: number;
+    condition?: string;
+    type?: string;
+  };
 }
 
 interface MetricChartPreviewProps {
@@ -39,6 +45,54 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
 
     return null;
   }, [result, config]);
+
+  const isHighlightValue = useMemo(() => {
+    if (
+      config?.threshold?.condition &&
+      config?.threshold?.value &&
+      config?.threshold?.type
+    ) {
+      const formatValue = getFormatValue(value);
+      const compareValue = config.threshold.value;
+      const isNumberType = config.threshold.type === "number";
+
+      switch (config.threshold.condition) {
+        case ComparisonOperator.GREATER:
+          return (
+            formatValue > (isNumberType ? compareValue : compareValue / 100)
+          );
+        case ComparisonOperator.LESS:
+          return (
+            formatValue < (isNumberType ? compareValue : compareValue / 100)
+          );
+        case ComparisonOperator.EQUAL:
+          return (
+            formatValue === (isNumberType ? compareValue : compareValue / 100)
+          );
+        case ComparisonOperator.NOT_EQUAL:
+          return (
+            formatValue !== (isNumberType ? compareValue : compareValue / 100)
+          );
+        case ComparisonOperator.GREAT_THAN_OR_EQUAL:
+          return (
+            formatValue >= (isNumberType ? compareValue : compareValue / 100)
+          );
+        case ComparisonOperator.LESS_THAN_OR_EQUAL:
+          return (
+            formatValue <= (isNumberType ? compareValue : compareValue / 100)
+          );
+        default:
+          return false;
+      }
+    }
+
+    return false;
+  }, [
+    config?.threshold?.condition,
+    config?.threshold?.type,
+    config?.threshold?.value,
+    value,
+  ]);
 
   const compareValue = useMemo(() => {
     const compareColIndex = result.fields.findIndex(
@@ -72,6 +126,7 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
           <Heading
             wordBreak="break-all"
             size={useBreakpointValue({ base: "sm", md: "md" })}
+            color={isHighlightValue ? "red.500" : undefined}
           >
             {value}
           </Heading>
