@@ -17,7 +17,7 @@ export interface MetricChartConfig {
   valueCol?: string;
   compareCol?: string;
   format?: string;
-  thresholdConfig?: {
+  threshold?: {
     value?: number;
     condition?: string;
     type?: string;
@@ -47,35 +47,35 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
 
   const isHighlightValue = useMemo(() => {
     if (
-      config?.thresholdConfig?.condition &&
-      config?.thresholdConfig?.value &&
-      config?.thresholdConfig?.type
+      config?.threshold?.condition &&
+      config?.threshold?.value &&
+      config?.threshold?.type
     ) {
-      switch (config.thresholdConfig.condition) {
+      switch (config.threshold.condition) {
         case ">":
-          return config?.thresholdConfig?.type === "number"
-            ? getFormatValue(value) > config.thresholdConfig.value
-            : getFormatValue(value) > config.thresholdConfig.value / 100;
+          return config?.threshold?.type === "number"
+            ? getFormatValue(value) > config.threshold.value
+            : getFormatValue(value) > config.threshold.value / 100;
         case "<":
-          return config?.thresholdConfig?.type === "number"
-            ? getFormatValue(value) < config.thresholdConfig.value
-            : getFormatValue(value) < config.thresholdConfig.value / 100;
+          return config?.threshold?.type === "number"
+            ? getFormatValue(value) < config.threshold.value
+            : getFormatValue(value) < config.threshold.value / 100;
         case "===":
-          return config?.thresholdConfig?.type === "number"
-            ? getFormatValue(value) === config.thresholdConfig.value
-            : getFormatValue(value) === config.thresholdConfig.value / 100;
+          return config?.threshold?.type === "number"
+            ? getFormatValue(value) === config.threshold.value
+            : getFormatValue(value) === config.threshold.value / 100;
         case "!==":
-          return config?.thresholdConfig?.type === "number"
-            ? getFormatValue(value) !== config.thresholdConfig.value
-            : getFormatValue(value) !== config.thresholdConfig.value / 100;
+          return config?.threshold?.type === "number"
+            ? getFormatValue(value) !== config.threshold.value
+            : getFormatValue(value) !== config.threshold.value / 100;
         case ">=":
-          return config?.thresholdConfig?.type === "number"
-            ? getFormatValue(value) >= config.thresholdConfig.value
-            : getFormatValue(value) >= config.thresholdConfig.value / 100;
+          return config?.threshold?.type === "number"
+            ? getFormatValue(value) >= config.threshold.value
+            : getFormatValue(value) >= config.threshold.value / 100;
         case "<=":
-          return config?.thresholdConfig?.type === "number"
-            ? getFormatValue(value) <= config.thresholdConfig.value
-            : getFormatValue(value) <= config.thresholdConfig.value / 100;
+          return config?.threshold?.type === "number"
+            ? getFormatValue(value) <= config.threshold.value
+            : getFormatValue(value) <= config.threshold.value / 100;
         default:
           return false;
       }
@@ -83,9 +83,9 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
 
     return false;
   }, [
-    config?.thresholdConfig?.condition,
-    config?.thresholdConfig?.type,
-    config?.thresholdConfig?.value,
+    config?.threshold?.condition,
+    config?.threshold?.type,
+    config?.threshold?.value,
     value,
   ]);
 

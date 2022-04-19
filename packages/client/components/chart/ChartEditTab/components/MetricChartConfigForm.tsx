@@ -65,7 +65,7 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
         <Col span={24}>
           <Form.Item
             style={{ marginBottom: 0 }}
-            name={["metricConfig", "thresholdConfig", "condition"]}
+            name={["metricConfig", "threshold", "condition"]}
             label="阈值条件"
           >
             <Select
@@ -97,7 +97,7 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
                 <Form.Item
                   style={{ marginBottom: 0 }}
                   label="阈值类型"
-                  name={["metricConfig", "thresholdConfig", "type"]}
+                  name={["metricConfig", "threshold", "type"]}
                 >
                   <Select
                     placeholder="选择阈值类型"
@@ -105,7 +105,7 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
                     onChange={() => {
                       setFieldsValue({
                         metricConfig: {
-                          thresholdConfig: {
+                          threshold: {
                             value: undefined,
                           },
                         },
@@ -125,7 +125,7 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
           {({ getFieldValue }) => {
             const thresholdType = getFieldValue([
               "metricConfig",
-              "thresholdConfig",
+              "threshold",
               "type",
             ]);
 
@@ -138,7 +138,7 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
                 {thresholdType === "number" ? (
                   <Form.Item
                     style={{ marginBottom: 0 }}
-                    name={["metricConfig", "thresholdConfig", "value"]}
+                    name={["metricConfig", "threshold", "value"]}
                     label="阈值"
                   >
                     <InputNumber
@@ -149,7 +149,7 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
                 ) : (
                   <Form.Item
                     style={{ marginBottom: 0 }}
-                    name={["metricConfig", "thresholdConfig", "value"]}
+                    name={["metricConfig", "threshold", "value"]}
                     label="阈值"
                   >
                     <InputNumber

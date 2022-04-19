@@ -45,7 +45,7 @@ const ChartPreview = () => {
         format: data.chart.config?.format || "",
         valueCol: data.chart.config?.valueCol || "",
         compareCol: data.chart.config?.compareCol || "",
-        thresholdConfig: data.chart.config?.thresholdConfig || {},
+        threshold: data.chart.config?.threshold || {},
       } as MetricChartConfig;
     }
 
