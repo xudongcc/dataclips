@@ -25,7 +25,11 @@ export const VirtualSourceForm: FC = () => {
         name={["virtualSource", "name"]}
         rules={[{ required: true, message: "请输入数据源名字" }]}
       >
-        <Input placeholder="请输入数据源名字"></Input>
+        <Input placeholder="请输入数据源名字" />
+      </Form.Item>
+
+      <Form.Item name={["virtualSource", "tags"]}>
+        <Select allowClear mode="tags" placeholder="使用标签" />
       </Form.Item>
 
       <Form.List name={["virtualSource", "tables"]}>

@@ -4,15 +4,18 @@ import NextLink from "next/link";
 import { Page } from "../../components/common/Page";
 import { PC } from "../../interfaces/PageComponent";
 import { useRouter } from "next/router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ProjectLayout from "../../layouts/ProjectLayout";
-import { useDashboardConnectionLazyQuery } from "../../generated/graphql";
+import {
+  useDashboardConnectionLazyQuery,
+  useDeleteDashboardMutation,
+} from "../../generated/graphql";
 import { Form, Input, Divider, Space } from "antd";
 import { Modal } from "../../components/common/Modal";
 
 import { useCreateDashboardMutation } from "../../hooks/useCreateDashboardMutation";
-import { useDeleteDashboardMutation } from "../../hooks/useDeleteDashboardMutation";
 import {
+  FilterType,
   GraphQLTable,
   GraphQLTableColumnType,
 } from "../../components/common/GraphQLTable";
@@ -27,10 +30,13 @@ const DashBoardList: PC = () => {
   const [isCreateDashboardModalVisible, setIsCreateDashboardModalVisible] =
     useState(false);
 
-  const [getDashboards, { data, loading }] = useDashboardConnectionLazyQuery({
-    notifyOnNetworkStatusChange: true,
-    // fetchPolicy: "no-cache",
-  });
+  const [dashboardsData, setDashboardsData] = useState([]);
+
+  const [getDashboards, { data, loading, refetch }] =
+    useDashboardConnectionLazyQuery({
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "no-cache",
+    });
 
   const [createDashboard, { loading: createDashboardLoading }] =
     useCreateDashboardMutation();
@@ -49,6 +55,13 @@ const DashBoardList: PC = () => {
           </NextLink>
         );
       },
+    },
+    {
+      title: "标签",
+      dataIndex: "tags",
+      filterType: FilterType.TAG,
+      key: "tags",
+      valueType: ValueType.TAG,
     },
     {
       title: "最后更新时间",
@@ -100,6 +113,8 @@ const DashBoardList: PC = () => {
                         status: "success",
                         isClosable: true,
                       });
+
+                      refetch();
                     } catch (err) {
                       console.error("err", err);
                     }
@@ -133,6 +148,14 @@ const DashBoardList: PC = () => {
     });
   }, [createDashboard, form]);
 
+  useEffect(() => {
+    if (data?.dashboardConnection?.edges?.length) {
+      setDashboardsData(
+        data?.dashboardConnection?.edges?.map((item) => item?.node)
+      );
+    }
+  }, [data?.dashboardConnection?.edges]);
+
   return (
     <>
       <Head>
@@ -157,9 +180,7 @@ const DashBoardList: PC = () => {
             getDashboards({ variables });
           }}
           columns={columns}
-          dataSource={data?.dashboardConnection?.edges?.map(
-            (item) => item?.node
-          )}
+          dataSource={dashboardsData}
           loading={loading}
         />
 

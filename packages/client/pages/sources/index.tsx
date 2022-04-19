@@ -1,7 +1,7 @@
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useToast, Link } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DatabaseSource,
   UpdateDatabaseSourceInput,
@@ -10,8 +10,9 @@ import {
   useUpdateVirtualSourceMutation,
   VirtualSource,
   useSourceConnectionLazyQuery,
+  useDeleteSourceMutation,
 } from "../../generated/graphql";
-import { useDeleteSourceMutation } from "../../hooks/useDeleteSourceMutation";
+// import { useDeleteSourceMutation } from "../../hooks/useDeleteSourceMutation";
 import { omit } from "lodash";
 import { useCallback } from "react";
 import { DataSourceForm } from "../../components/source/DataSourceForm";
@@ -21,6 +22,7 @@ import Head from "next/head";
 import { Modal } from "../../components/common/Modal";
 import { Form } from "antd";
 import {
+  FilterType,
   GraphQLTable,
   GraphQLTableColumnType,
 } from "../../components/common/GraphQLTable";
@@ -31,10 +33,14 @@ const SourceList = () => {
   const toast = useToast();
   const [form] = Form.useForm();
 
-  const [getSources, { data, loading }] = useSourceConnectionLazyQuery({
-    notifyOnNetworkStatusChange: true,
-    // fetchPolicy: "no-cache",
-  });
+  const [sourcesData, setSourcesData] = useState([]);
+
+  const [getSources, { data, loading, refetch }] = useSourceConnectionLazyQuery(
+    {
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "no-cache",
+    }
+  );
 
   const [editModalVisible, setEditModalVisible] = useState(false);
 
@@ -178,6 +184,18 @@ const SourceList = () => {
       },
     },
     {
+      title: "类型",
+      dataIndex: "typename",
+      key: "typename",
+    },
+    {
+      title: "标签",
+      dataIndex: "tags",
+      filterType: FilterType.TAG,
+      key: "tags",
+      valueType: ValueType.TAG,
+    },
+    {
       title: "最后更新时间",
       sorter: true,
       align: "center",
@@ -212,6 +230,8 @@ const SourceList = () => {
                       status: "success",
                       isClosable: true,
                     });
+
+                    refetch();
                   } catch (err) {
                     console.error(err);
                   }
@@ -226,6 +246,12 @@ const SourceList = () => {
       },
     },
   ];
+
+  useEffect(() => {
+    if (data?.sourceConnection?.edges?.length) {
+      setSourcesData(data?.sourceConnection?.edges?.map((item) => item?.node));
+    }
+  }, [data?.sourceConnection?.edges]);
 
   return (
     <>
@@ -251,7 +277,7 @@ const SourceList = () => {
             getSources({ variables });
           }}
           columns={columns}
-          dataSource={data?.sourceConnection?.edges?.map((item) => item?.node)}
+          dataSource={sourcesData}
           loading={loading}
         />
 

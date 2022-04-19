@@ -199,7 +199,7 @@ export const ChartEditTab: FC<ChartEditTabProps> = ({
       {/* 标签 */}
       <Divider orientation="left">标签</Divider>
       <Form.Item style={{ marginBottom: 0 }} name="tags">
-        <Select allowClear mode="tags" placeholder="查找或创建标签" />
+        <Select allowClear mode="tags" placeholder="使用标签" />
       </Form.Item>
 
       {/* 只为了监听 type 是否为空，空的话隐藏查询分析配置 */}
