@@ -17,6 +17,8 @@ export interface MetricChartConfig {
   valueCol?: string;
   compareCol?: string;
   format?: string;
+  threshold?: number;
+  thresholdCondition?: string;
 }
 
 interface MetricChartPreviewProps {
@@ -28,6 +30,8 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
   result,
   config,
 }) => {
+  console.log("config", config);
+
   const value = useMemo(() => {
     const valueColIndex = result.fields.findIndex(
       (value) => value === config?.valueCol
@@ -39,6 +43,29 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
 
     return null;
   }, [result, config]);
+
+  const isHighlightValue = useMemo(() => {
+    if (config?.thresholdCondition && config?.threshold) {
+      switch (config.thresholdCondition) {
+        case ">":
+          return value > config.threshold;
+        case "<":
+          return value < config.threshold;
+        case "===":
+          return value === config.threshold;
+        case "!==":
+          return value !== config.threshold;
+        case ">=":
+          return value >= config.threshold;
+        case "<=":
+          return value <= config.threshold;
+        default:
+          return false;
+      }
+    }
+
+    return false;
+  }, [config.threshold, config.thresholdCondition, value]);
 
   const compareValue = useMemo(() => {
     const compareColIndex = result.fields.findIndex(
@@ -72,6 +99,7 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
           <Heading
             wordBreak="break-all"
             size={useBreakpointValue({ base: "sm", md: "md" })}
+            color={isHighlightValue ? "red.500" : undefined}
           >
             {value}
           </Heading>
