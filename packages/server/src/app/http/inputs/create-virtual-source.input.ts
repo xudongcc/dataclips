@@ -7,6 +7,9 @@ export class CreateVirtualSourceInput {
   @Field()
   name: string;
 
+  @Field(() => [String])
+  tags: string[];
+
   @Field(() => [CreateVirtualSourceTableInput])
   tables: CreateVirtualSourceTableInput[];
 }

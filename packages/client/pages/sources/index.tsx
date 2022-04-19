@@ -12,7 +12,6 @@ import {
   useSourceConnectionLazyQuery,
   useDeleteSourceMutation,
 } from "../../generated/graphql";
-// import { useDeleteSourceMutation } from "../../hooks/useDeleteSourceMutation";
 import { omit } from "lodash";
 import { useCallback } from "react";
 import { DataSourceForm } from "../../components/source/DataSourceForm";

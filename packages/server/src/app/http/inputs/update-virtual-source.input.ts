@@ -7,6 +7,9 @@ export class UpdateVirtualSourceInput {
   @Field({ nullable: true })
   name?: string;
 
+  @Field(() => [String])
+  tags: string[];
+
   @Field(() => [UpdateVirtualSourceTableInput])
   tables: UpdateVirtualSourceTableInput[];
 }

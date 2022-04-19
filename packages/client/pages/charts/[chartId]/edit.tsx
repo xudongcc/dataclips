@@ -120,7 +120,7 @@ const ChartEdit = () => {
           <Grid templateColumns="repeat(3, 1fr)" gap={4}>
             <GridItem colSpan={3}>
               <Card>
-                <Row gutter={16} justify="space-between">
+                <Row gutter={[16, 16]} justify="space-between">
                   <Col span={8}>
                     <Form.Item
                       name="name"
