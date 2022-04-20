@@ -187,8 +187,18 @@ const SourceList = () => {
     },
     {
       title: "类型",
+      align: "center",
       dataIndex: "typename",
       key: "typename",
+      render: (typename) => {
+        if (typename === "VirtualSource") {
+          return "虚拟数据源";
+        }
+
+        if (typename === "DatabaseSource") {
+          return "真实数据源";
+        }
+      },
     },
     {
       title: "标签",
