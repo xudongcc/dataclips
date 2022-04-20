@@ -75,6 +75,10 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
         <Input type="password" placeholder="请输入密码" />
       </Form.Item>
 
+      <Form.Item name={["dataSource", "tags"]}>
+        <Select allowClear mode="tags" placeholder="使用标签" />
+      </Form.Item>
+
       <Row justify="center">
         <Form.Item valuePropName="checked" name={["dataSource", "sshEnabled"]}>
           <Checkbox>启用 ssh</Checkbox>

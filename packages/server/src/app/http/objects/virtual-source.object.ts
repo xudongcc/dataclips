@@ -18,4 +18,7 @@ export class VirtualSource {
 
   @Field()
   updatedAt: Date;
+
+  @Field(() => [String])
+  tags: string[];
 }

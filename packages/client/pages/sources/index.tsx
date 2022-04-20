@@ -10,8 +10,8 @@ import {
   useUpdateVirtualSourceMutation,
   VirtualSource,
   useSourceConnectionLazyQuery,
+  useDeleteSourceMutation,
 } from "../../generated/graphql";
-import { useDeleteSourceMutation } from "../../hooks/useDeleteSourceMutation";
 import { omit } from "lodash";
 import { useCallback } from "react";
 import { DataSourceForm } from "../../components/source/DataSourceForm";
@@ -21,6 +21,7 @@ import Head from "next/head";
 import { Modal } from "../../components/common/Modal";
 import { Form } from "antd";
 import {
+  FilterType,
   GraphQLTable,
   GraphQLTableColumnType,
 } from "../../components/common/GraphQLTable";
@@ -31,10 +32,12 @@ const SourceList = () => {
   const toast = useToast();
   const [form] = Form.useForm();
 
-  const [getSources, { data, loading }] = useSourceConnectionLazyQuery({
-    notifyOnNetworkStatusChange: true,
-    // fetchPolicy: "no-cache",
-  });
+  const [getSources, { data, loading, refetch }] = useSourceConnectionLazyQuery(
+    {
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "no-cache",
+    }
+  );
 
   const [editModalVisible, setEditModalVisible] = useState(false);
 
@@ -95,12 +98,15 @@ const SourceList = () => {
           status: "success",
           isClosable: true,
         });
+
+        refetch();
       }
     } catch (err) {
       console.error(err);
     }
   }, [
     form,
+    refetch,
     selectedSource?.id,
     selectedSource?.type,
     toast,
@@ -139,6 +145,7 @@ const SourceList = () => {
                         username: (source as DatabaseSource).username,
                         password: "",
                         type: (source as DatabaseSource).type,
+                        tags: (source as DatabaseSource).tags,
                         sshEnabled: (source as DatabaseSource).sshEnabled,
                         sshHost: (source as DatabaseSource).sshHost || "",
                         sshPort:
@@ -155,6 +162,7 @@ const SourceList = () => {
                     form.setFieldsValue({
                       virtualSource: {
                         name: (source as VirtualSource).name,
+                        tags: (source as VirtualSource).tags,
                         tables: (source as VirtualSource).tables.map(
                           (table) => ({
                             name: table.name,
@@ -178,6 +186,29 @@ const SourceList = () => {
       },
     },
     {
+      title: "类型",
+      align: "center",
+      dataIndex: "typename",
+      key: "typename",
+      render: (typename) => {
+        if (typename === "VirtualSource") {
+          return "虚拟数据源";
+        }
+
+        if (typename === "DatabaseSource") {
+          return "真实数据源";
+        }
+      },
+    },
+    {
+      title: "标签",
+      dataIndex: "tags",
+      filterType: FilterType.TAG,
+      key: "tags",
+      valueType: ValueType.TAG,
+      width: 200,
+    },
+    {
       title: "最后更新时间",
       sorter: true,
       align: "center",
@@ -198,6 +229,9 @@ const SourceList = () => {
                 title: "删除数据源",
                 content: `确定删除名称为 ${record?.name} 的数据源？`,
                 okText: "确认",
+                okButtonProps: {
+                  danger: true,
+                },
                 cancelText: "取消",
                 onOk: async () => {
                   try {
@@ -212,6 +246,8 @@ const SourceList = () => {
                       status: "success",
                       isClosable: true,
                     });
+
+                    refetch();
                   } catch (err) {
                     console.error(err);
                   }

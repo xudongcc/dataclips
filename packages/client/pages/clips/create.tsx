@@ -61,8 +61,8 @@ const ClipCreate = () => {
               size="middle"
               style={{ display: "flex" }}
             >
-              <Row gutter={16} justify="space-between">
-                <Col span={8}>
+              <Row gutter={[16, 16]} justify="space-between">
+                <Col flex={0.5}>
                   <Form.Item
                     name="name"
                     style={{ marginBottom: 0 }}
@@ -94,6 +94,13 @@ const ClipCreate = () => {
                     </Select>
                   </Form.Item>
                 </Col>
+
+                <Col flex={1}>
+                  <Form.Item style={{ marginBottom: 0 }} name="tags">
+                    <Select allowClear mode="tags" placeholder="使用标签" />
+                  </Form.Item>
+                </Col>
+
                 <Col>
                   <Form.Item noStyle>
                     <Button

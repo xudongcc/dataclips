@@ -17,14 +17,11 @@ import {
 } from "../../components/common/GraphQLTable";
 import { ValueType } from "../../components/common/SimpleTable";
 import { Divider, Space } from "antd";
-import { useEffect, useState } from "react";
 
 const ChartList = () => {
   const router = useRouter();
   const toast = useToast();
 
-  const [chartsData, setChartsData] = useState([]);
-  // 直接用 data 然后在清除筛选值时莫名其妙会请求两次和有几率把列表卡空，先用 effect 解决
   const [getCharts, { data, loading, refetch }] = useChartConnectionLazyQuery({
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "no-cache",
@@ -56,6 +53,7 @@ const ChartList = () => {
       dataIndex: "tags",
       filterType: FilterType.TAG,
       key: "tags",
+      width: 200,
       valueType: ValueType.TAG,
     },
     {
@@ -126,12 +124,6 @@ const ChartList = () => {
     },
   ];
 
-  useEffect(() => {
-    if (data?.chartConnection?.edges?.length) {
-      setChartsData(data?.chartConnection?.edges?.map((item) => item?.node));
-    }
-  }, [data?.chartConnection?.edges]);
-
   return (
     <>
       <Head>
@@ -156,7 +148,7 @@ const ChartList = () => {
             getCharts({ variables });
           }}
           columns={columns}
-          dataSource={chartsData}
+          dataSource={data?.chartConnection?.edges?.map((item) => item?.node)}
           loading={loading}
         />
       </Page>

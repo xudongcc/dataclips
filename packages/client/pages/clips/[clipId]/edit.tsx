@@ -67,6 +67,7 @@ const ClipEdit = () => {
       form.setFieldsValue({
         name: clip?.name,
         sourceId: clip?.sourceId,
+        tags: clip?.tags,
       });
     }
   }, [clip, form]);
@@ -86,8 +87,8 @@ const ClipEdit = () => {
                 size="middle"
                 style={{ display: "flex" }}
               >
-                <Row gutter={16} justify="space-between">
-                  <Col span={8}>
+                <Row gutter={[16, 16]} justify="space-between">
+                  <Col flex={0.5}>
                     <Form.Item
                       name="name"
                       style={{ marginBottom: 0 }}
@@ -119,6 +120,13 @@ const ClipEdit = () => {
                       </Select>
                     </Form.Item>
                   </Col>
+
+                  <Col flex={1}>
+                    <Form.Item style={{ marginBottom: 0 }} name="tags">
+                      <Select allowClear mode="tags" placeholder="使用标签" />
+                    </Form.Item>
+                  </Col>
+
                   <Col>
                     <Form.Item noStyle>
                       <Button

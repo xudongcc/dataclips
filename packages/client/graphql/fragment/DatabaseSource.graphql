@@ -12,4 +12,5 @@ fragment DatabaseSource on DatabaseSource {
   sshHost
   sshPort
   sshUsername
+  tags
 }

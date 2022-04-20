@@ -1,13 +1,16 @@
 import { useToast, Link } from "@chakra-ui/react";
 import NextLink from "next/link";
 import Head from "next/head";
-import { useClipConnectionLazyQuery } from "../../generated/graphql";
+import {
+  useClipConnectionLazyQuery,
+  useDeleteClipMutation,
+} from "../../generated/graphql";
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useRouter } from "next/router";
-import { useDeleteClipMutation } from "../../hooks/useDeleteClipMutation";
 import { Page } from "../../components/common/Page";
 import { Modal } from "../../components/common/Modal";
 import {
+  FilterType,
   GraphQLTable,
   GraphQLTableColumnType,
 } from "../../components/common/GraphQLTable";
@@ -20,7 +23,7 @@ const ClipList = () => {
 
   const [getClips, { data, loading, refetch }] = useClipConnectionLazyQuery({
     notifyOnNetworkStatusChange: true,
-    // fetchPolicy: "no-cache",
+    fetchPolicy: "no-cache",
   });
 
   const [deleteClip] = useDeleteClipMutation();
@@ -37,6 +40,14 @@ const ClipList = () => {
           </NextLink>
         );
       },
+    },
+    {
+      title: "标签",
+      dataIndex: "tags",
+      filterType: FilterType.TAG,
+      key: "tags",
+      valueType: ValueType.TAG,
+      width: 200,
     },
     {
       title: "最后更新时间",
@@ -88,6 +99,8 @@ const ClipList = () => {
                         status: "success",
                         isClosable: true,
                       });
+
+                      refetch();
                     } catch (err) {
                       console.error("err", err);
                     }
