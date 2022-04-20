@@ -100,12 +100,15 @@ const SourceList = () => {
           status: "success",
           isClosable: true,
         });
+
+        refetch();
       }
     } catch (err) {
       console.error(err);
     }
   }, [
     form,
+    refetch,
     selectedSource?.id,
     selectedSource?.type,
     toast,
@@ -144,6 +147,7 @@ const SourceList = () => {
                         username: (source as DatabaseSource).username,
                         password: "",
                         type: (source as DatabaseSource).type,
+                        tags: (source as DatabaseSource).tags,
                         sshEnabled: (source as DatabaseSource).sshEnabled,
                         sshHost: (source as DatabaseSource).sshHost || "",
                         sshPort:
@@ -160,6 +164,7 @@ const SourceList = () => {
                     form.setFieldsValue({
                       virtualSource: {
                         name: (source as VirtualSource).name,
+                        tags: (source as VirtualSource).tags,
                         tables: (source as VirtualSource).tables.map(
                           (table) => ({
                             name: table.name,

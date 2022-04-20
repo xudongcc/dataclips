@@ -26,9 +26,9 @@ export class Source {
   @Column()
   type: SourceType | DatabaseType;
 
-  // @Field(() => [String])
-  // @Column({ type: "json", default: [], generator: () => [] })
-  // tags: string[];
+  @Field(() => [String])
+  @Column({ type: "json", default: [], generator: () => [] })
+  tags: string[];
 
   @Column({ nullable: true })
   host?: string;

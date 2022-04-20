@@ -29,12 +29,14 @@ query SourceConnection(
           sshHost
           sshPort
           sshUsername
+          tags
         }
         ... on VirtualSource {
           id
           name
           createdAt
           updatedAt
+          tags
           tables {
             name
             clipId

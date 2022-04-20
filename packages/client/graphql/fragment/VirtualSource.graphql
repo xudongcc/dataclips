@@ -8,6 +8,7 @@ fragment VirtualSource on VirtualSource {
     createdAt
     updatedAt
   }
+  tags
   createdAt
   updatedAt
 }

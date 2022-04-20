@@ -1,6 +1,7 @@
 fragment Dashboard on Dashboard {
   id
   name
+  tags
   token
   config
   createdAt

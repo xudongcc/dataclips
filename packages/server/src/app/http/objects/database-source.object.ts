@@ -42,4 +42,7 @@ export class DatabaseSource {
 
   @Field()
   updatedAt: Date;
+
+  @Field(() => [String])
+  tags: string[];
 }

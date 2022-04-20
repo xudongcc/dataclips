@@ -142,14 +142,16 @@ const DashBoardEdit: PC = () => {
   const handleUpdateDashboard = useCallback(
     async (goPreview?: boolean) => {
       try {
-        const value = editDashboardNameForm.getFieldValue("dashboardName");
+        const dashboardName =
+          editDashboardNameForm.getFieldValue("dashboardName");
+        const tags = editDashboardTagsForm.getFieldValue("tags");
 
         await updateDashboard({
           variables: {
             id: dashboardId,
             input: {
-              name: value,
-              tags: value?.tags,
+              name: dashboardName,
+              tags: tags,
               config: {
                 ...data?.dashboard?.config,
                 blocks: dragItems.map((item) => ({
@@ -175,6 +177,7 @@ const DashBoardEdit: PC = () => {
     },
     [
       editDashboardNameForm,
+      editDashboardTagsForm,
       updateDashboard,
       dashboardId,
       data?.dashboard?.config,
