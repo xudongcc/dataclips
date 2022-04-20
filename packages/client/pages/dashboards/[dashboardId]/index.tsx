@@ -15,6 +15,7 @@ import {
   DashboardDividerItem,
   DashboardMarkdownItem,
 } from "../../../components/dashboard/DashboardLayout";
+import { Switch } from "antd";
 
 const DashboardPreview: PC = () => {
   const router = useRouter();
@@ -27,6 +28,8 @@ const DashboardPreview: PC = () => {
     variables: { id: dashboardId },
     skip: !dashboardId,
   });
+
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(false);
 
   const [dragItems, setDragItems] = useState<
     Array<DashboardDividerItem | DashboardChartItem | DashboardMarkdownItem>
@@ -64,9 +67,20 @@ const DashboardPreview: PC = () => {
             router.push(`/dashboards/${dashboardId}/edit`);
           },
         }}
+        extra={
+          <Switch
+            onChange={(checked) => {
+              setAutoRefreshEnabled(checked);
+            }}
+            checked={autoRefreshEnabled}
+            checkedChildren="自动刷新"
+            unCheckedChildren="自动刷新"
+          />
+        }
       >
         <DashboardLayout
           type="preview"
+          autoRefresh={autoRefreshEnabled}
           layout={dragItems.map((item) => ({
             ...item?.position,
             static: true,

@@ -1,22 +1,37 @@
-import { FC } from "react";
-import { useChartQuery } from "../../../generated/graphql";
+import { FC, useMemo } from "react";
+import { QueryObserverOptions } from "react-query";
+import { ResultFragment, useChartQuery } from "../../../generated/graphql";
 import { useQueryResult } from "../../../hooks/useQueryResult";
 import { ChartResultPreview } from "../../chart/ChartResultPreview";
 import { Loading } from "../../common/Loading";
 
 interface DashboardChartResultPreviewProps {
   chartId: string;
+  autoRefresh?: boolean;
 }
 
 export const DashboardChartResultPreview: FC<
   DashboardChartResultPreviewProps
-> = ({ chartId }) => {
+> = ({ chartId, autoRefresh = true }) => {
   const { data, loading: chartLoading } = useChartQuery({
     variables: { id: chartId },
   });
 
+  const refreshConfig: QueryObserverOptions = useMemo(() => {
+    if (!autoRefresh) {
+      return {
+        refetchInterval: false,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+      };
+    }
+
+    return {};
+  }, [autoRefresh]);
+
   const { data: result, isLoading: resultLoading } = useQueryResult(
-    data?.chart?.clipId
+    data?.chart?.clipId,
+    refreshConfig
   );
 
   if (chartLoading || resultLoading) {
@@ -25,7 +40,7 @@ export const DashboardChartResultPreview: FC<
 
   return (
     <ChartResultPreview
-      result={result}
+      result={result as ResultFragment}
       type={data?.chart?.type}
       config={data?.chart?.config}
     />
