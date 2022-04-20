@@ -1,24 +1,15 @@
 import GridLayout, { Layout, WidthProvider } from "react-grid-layout";
-import { FC, ReactNode, useRef } from "react";
+import { FC, ReactNode } from "react";
 import { DashboardDragWrapper } from "../DashboardDragWrapper";
 
 import { DashboardCard } from "../DashboardCard";
-import {
-  Box,
-  Button,
-  Divider,
-  Popover,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
-  Text,
-  useToken,
-} from "@chakra-ui/react";
+import { Box, useToken } from "@chakra-ui/react";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { DashboardChartResultPreview } from "../DashboardChartResultPreview";
 import { DashboardDivider } from "../DashboardDivider";
 import { Markdown } from "../../chart/ChartResultPreview/components";
+import { Dropdown, Menu } from "antd";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
@@ -67,13 +58,10 @@ interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
       disabledEditCard?: boolean;
       disabledDelete?: boolean;
       disabledPreviewClip?: boolean;
-      onEditCardClick?: (chart: DashboardChartItem, close: () => void) => void;
-      onEditChartClick?: (chart: DashboardChartItem, close: () => void) => void;
-      onPreviewClipClick?: (
-        chart: DashboardChartItem,
-        close: () => void
-      ) => void;
-      onDeleteClick?: (chartId: string, close: () => void) => void;
+      onEditCardClick?: (chart: DashboardChartItem) => void;
+      onEditChartClick?: (chart: DashboardChartItem) => void;
+      onPreviewClipClick?: (chart: DashboardChartItem) => void;
+      onDeleteClick?: (chartId: string) => void;
     };
     divider?: {
       onDividerDelete?: (dividerId: string) => void;
@@ -81,10 +69,7 @@ interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
     markdown?: {
       disabledEditBlock?: boolean;
       disabledDelete?: boolean;
-      onEditBlockClick?: (
-        markdown: DashboardMarkdownItem,
-        close: () => void
-      ) => void;
+      onEditBlockClick?: (markdown: DashboardMarkdownItem) => void;
       onDeleteClick?: (markdownId: string) => void;
     };
   };
@@ -93,7 +78,6 @@ interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
 export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
   const { dragItems = [], type, extraConfig, ...rest } = props;
   const [borderRadius] = useToken("radii", ["lg"]);
-  const popoverRef = useRef();
 
   return (
     <Box
@@ -127,111 +111,65 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                     extraConfig?.extra ? (
                       extraConfig?.extra
                     ) : !extraConfig?.disabledExtra ? (
-                      <Popover
-                        initialFocusRef={popoverRef}
-                        placement="bottom-end"
+                      <Dropdown
+                        trigger={["click"]}
+                        placement="bottomRight"
+                        overlay={
+                          <Menu>
+                            <Menu.Item
+                              disabled={extraConfig?.chart?.disabledEditCard}
+                              onClick={() => {
+                                extraConfig?.chart?.onEditCardClick?.(
+                                  item as DashboardChartItem
+                                );
+                              }}
+                            >
+                              编辑块
+                            </Menu.Item>
+                            <Menu.Item
+                              disabled={
+                                !(item as DashboardChartItem)?.chart?.id ||
+                                extraConfig?.chart?.disabledEditChart
+                              }
+                              onClick={() => {
+                                extraConfig?.chart?.onEditChartClick?.(
+                                  item as DashboardChartItem
+                                );
+                              }}
+                            >
+                              编辑图表
+                            </Menu.Item>
+                            <Menu.Item
+                              disabled={
+                                !(item as DashboardChartItem)?.chart?.id ||
+                                extraConfig?.chart?.disabledPreviewClip
+                              }
+                              onClick={() => {
+                                extraConfig?.chart?.onPreviewClipClick?.(
+                                  item as DashboardChartItem
+                                );
+                              }}
+                            >
+                              预览数据集
+                            </Menu.Item>
+                            <Menu.Item
+                              disabled={extraConfig?.chart?.disabledDelete}
+                              onClick={() => {
+                                extraConfig?.chart?.onDeleteClick?.(
+                                  (item as DashboardChartItem).id
+                                );
+                              }}
+                              danger
+                            >
+                              删除
+                            </Menu.Item>
+                          </Menu>
+                        }
                       >
-                        {({ onClose }) => (
-                          <>
-                            <PopoverTrigger>
-                              <Text cursor="pointer" fontWeight="bold">
-                                ⋮
-                              </Text>
-                            </PopoverTrigger>
-
-                            <PopoverContent w="100%">
-                              <PopoverBody d="flex" flexDir="column">
-                                <Button
-                                  disabled={
-                                    extraConfig?.chart?.disabledEditCard
-                                  }
-                                  variant="ghost"
-                                  ref={popoverRef}
-                                  onClick={() => {
-                                    extraConfig?.chart?.onEditCardClick?.(
-                                      item as DashboardChartItem,
-                                      onClose
-                                    );
-
-                                    if (!extraConfig?.chart?.onEditCardClick) {
-                                      onClose();
-                                    }
-                                  }}
-                                >
-                                  编辑块
-                                </Button>
-
-                                <Divider my={1} />
-
-                                <Button
-                                  variant="ghost"
-                                  isDisabled={
-                                    !(item as DashboardChartItem)?.chart?.id ||
-                                    extraConfig?.chart?.disabledEditChart
-                                  }
-                                  onClick={() => {
-                                    extraConfig?.chart?.onEditChartClick?.(
-                                      item as DashboardChartItem,
-                                      onClose
-                                    );
-
-                                    if (!extraConfig?.chart?.onEditChartClick) {
-                                      onClose();
-                                    }
-                                  }}
-                                >
-                                  编辑图表
-                                </Button>
-
-                                <Divider my={1} />
-
-                                <Button
-                                  variant="ghost"
-                                  isDisabled={
-                                    !(item as DashboardChartItem)?.chart?.id ||
-                                    extraConfig?.chart?.disabledPreviewClip
-                                  }
-                                  onClick={() => {
-                                    extraConfig?.chart?.onPreviewClipClick?.(
-                                      item as DashboardChartItem,
-                                      onClose
-                                    );
-
-                                    if (
-                                      !extraConfig?.chart?.onPreviewClipClick
-                                    ) {
-                                      onClose();
-                                    }
-                                  }}
-                                >
-                                  预览数据集
-                                </Button>
-
-                                <Divider my={1} />
-
-                                <Button
-                                  disabled={extraConfig?.chart?.disabledDelete}
-                                  variant="ghost"
-                                  color="red.500"
-                                  ref={popoverRef}
-                                  onClick={() => {
-                                    extraConfig?.chart?.onDeleteClick?.(
-                                      (item as DashboardChartItem).id,
-                                      onClose
-                                    );
-
-                                    if (!extraConfig?.chart?.onDeleteClick) {
-                                      onClose();
-                                    }
-                                  }}
-                                >
-                                  删除
-                                </Button>
-                              </PopoverBody>
-                            </PopoverContent>
-                          </>
-                        )}
-                      </Popover>
+                        <div style={{ cursor: "pointer", fontWeight: "bold" }}>
+                          ⋮
+                        </div>
+                      </Dropdown>
                     ) : undefined
                   }
                 >
@@ -272,68 +210,39 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                     extraConfig?.extra ? (
                       extraConfig?.extra
                     ) : !extraConfig?.disabledExtra ? (
-                      <Popover
-                        initialFocusRef={popoverRef}
-                        placement="bottom-end"
+                      <Dropdown
+                        trigger={["click"]}
+                        placement="bottomRight"
+                        overlay={
+                          <Menu>
+                            <Menu.Item
+                              disabled={
+                                extraConfig?.markdown?.disabledEditBlock
+                              }
+                              onClick={() => {
+                                extraConfig?.markdown?.onEditBlockClick?.(
+                                  item as DashboardMarkdownItem
+                                );
+                              }}
+                            >
+                              编辑块
+                            </Menu.Item>
+                            <Menu.Item
+                              disabled={extraConfig?.markdown?.disabledDelete}
+                              onClick={() => {
+                                extraConfig?.markdown?.onDeleteClick?.(item.id);
+                              }}
+                              danger
+                            >
+                              删除
+                            </Menu.Item>
+                          </Menu>
+                        }
                       >
-                        {({ onClose }) => (
-                          <>
-                            <PopoverTrigger>
-                              <Text cursor="pointer" fontWeight="bold">
-                                ⋮
-                              </Text>
-                            </PopoverTrigger>
-
-                            <PopoverContent w="100%">
-                              <PopoverBody d="flex" flexDir="column">
-                                <Button
-                                  disabled={
-                                    extraConfig?.markdown?.disabledEditBlock
-                                  }
-                                  variant="ghost"
-                                  ref={popoverRef}
-                                  onClick={() => {
-                                    extraConfig?.markdown?.onEditBlockClick?.(
-                                      item as DashboardMarkdownItem,
-                                      onClose
-                                    );
-
-                                    if (
-                                      !extraConfig?.markdown?.onEditBlockClick
-                                    ) {
-                                      onClose();
-                                    }
-                                  }}
-                                >
-                                  编辑块
-                                </Button>
-
-                                <Divider my={1} />
-
-                                <Button
-                                  disabled={
-                                    extraConfig?.markdown?.disabledDelete
-                                  }
-                                  variant="ghost"
-                                  color="red.500"
-                                  ref={popoverRef}
-                                  onClick={() => {
-                                    extraConfig?.markdown?.onDeleteClick?.(
-                                      item.id
-                                    );
-
-                                    if (!extraConfig?.markdown?.onDeleteClick) {
-                                      onClose();
-                                    }
-                                  }}
-                                >
-                                  删除
-                                </Button>
-                              </PopoverBody>
-                            </PopoverContent>
-                          </>
-                        )}
-                      </Popover>
+                        <div style={{ cursor: "pointer", fontWeight: "bold" }}>
+                          ⋮
+                        </div>
+                      </Dropdown>
                     ) : undefined
                   }
                 >
