@@ -40,7 +40,7 @@ export const DashboardChartResultPreview: FC<
 
   return (
     <ChartResultPreview
-      result={result as ResultFragment}
+      result={result}
       type={data?.chart?.type}
       config={data?.chart?.config}
     />
