@@ -47,6 +47,7 @@ export interface DashboardMarkdownItem extends DashboardItem {
 }
 interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
   type: "preview" | "edit";
+  autoRefresh?: boolean;
   dragItems: Array<
     DashboardChartItem | DashboardDividerItem | DashboardMarkdownItem
   >;
@@ -76,7 +77,7 @@ interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
 }
 
 export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
-  const { dragItems = [], type, extraConfig, ...rest } = props;
+  const { dragItems = [], type, extraConfig, autoRefresh, ...rest } = props;
   const [borderRadius] = useToken("radii", ["lg"]);
 
   return (
@@ -174,6 +175,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                   }
                 >
                   <DashboardChartResultPreview
+                    autoRefresh={autoRefresh}
                     chartId={(item as DashboardChartItem)?.chart?.id}
                   />
                 </DashboardCard>

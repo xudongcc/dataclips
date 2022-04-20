@@ -1,10 +1,10 @@
-import { useChartQuery } from "../../../generated/graphql";
+import { ResultFragment, useChartQuery } from "../../../generated/graphql";
 import { useRouter } from "next/router";
 import { useQueryResult } from "../../../hooks/useQueryResult";
 import { Loading } from "../../../components/common/Loading";
 import { Box } from "@chakra-ui/react";
 import { ChartResultPreview } from "../../../components/chart/ChartResultPreview";
-import { useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ChartType } from "../../../types";
 import {
   LineChartConfig,
@@ -18,6 +18,8 @@ import { Page } from "../../../components/common/Page";
 import ProjectLayout from "../../../layouts/ProjectLayout";
 import Head from "next/head";
 import { Card } from "../../../components/common/Card";
+import { Switch } from "antd";
+import { QueryObserverOptions } from "react-query";
 
 const ChartPreview = () => {
   const router = useRouter();
@@ -29,7 +31,25 @@ const ChartPreview = () => {
     skip: !chartId,
   });
 
-  const { data: result, isLoading } = useQueryResult(data?.chart.clipId);
+  // 请求根据设定的间隔自动重新获取
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(false);
+
+  const refreshConfig: QueryObserverOptions<ResultFragment> = useMemo(() => {
+    if (!autoRefreshEnabled) {
+      return {
+        refetchInterval: false,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+      };
+    }
+
+    return {};
+  }, [autoRefreshEnabled]);
+
+  const { data: result, isLoading } = useQueryResult(
+    data?.chart.clipId,
+    refreshConfig
+  );
 
   const getChartTypePreviewConfig = useCallback(() => {
     if (data?.chart.type === ChartType.FUNNEL) {
@@ -107,6 +127,16 @@ const ChartPreview = () => {
             router.push(`/charts/${chartId}/edit`);
           },
         }}
+        extra={
+          <Switch
+            onChange={(checked) => {
+              setAutoRefreshEnabled(checked);
+            }}
+            checked={autoRefreshEnabled}
+            checkedChildren="自动刷新"
+            unCheckedChildren="自动刷新"
+          />
+        }
       >
         {data?.chart.type && data?.chart.config && result && (
           <Box h="800px">
