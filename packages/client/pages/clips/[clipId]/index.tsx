@@ -5,13 +5,32 @@ import { ResultPreview } from "../../../components/clip/ResultPreview";
 import { useQueryResult } from "../../../hooks/useQueryResult";
 import ProjectLayout from "../../../layouts/ProjectLayout";
 import Head from "next/head";
+import { useMemo, useState } from "react";
+import { QueryObserverOptions } from "react-query";
+import { ResultFragment } from "../../../generated/graphql";
+import { Switch } from "antd";
 
 const ClipPreview = () => {
   const router = useRouter();
 
   const { clipId } = router.query as { clipId: string };
 
-  const { data: result, isLoading } = useQueryResult(clipId);
+  // 请求根据设定的间隔自动重新获取
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(false);
+
+  const refreshConfig: QueryObserverOptions<ResultFragment> = useMemo(() => {
+    if (!autoRefreshEnabled) {
+      return {
+        refetchInterval: false,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+      };
+    }
+
+    return {};
+  }, [autoRefreshEnabled]);
+
+  const { data: result, isLoading } = useQueryResult(clipId, refreshConfig);
 
   if (isLoading) {
     return <Loading />;
@@ -31,6 +50,16 @@ const ClipPreview = () => {
             router.push(`/clips/${clipId}/edit`);
           },
         }}
+        extra={
+          <Switch
+            onChange={(checked) => {
+              setAutoRefreshEnabled(checked);
+            }}
+            checked={autoRefreshEnabled}
+            checkedChildren="自动刷新"
+            unCheckedChildren="自动刷新"
+          />
+        }
       >
         <ResultPreview token={clipId} result={result} />
       </Page>

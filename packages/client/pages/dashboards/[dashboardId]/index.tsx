@@ -29,6 +29,7 @@ const DashboardPreview: PC = () => {
     skip: !dashboardId,
   });
 
+  // 请求根据设定的间隔自动重新获取
   const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(false);
 
   const [dragItems, setDragItems] = useState<

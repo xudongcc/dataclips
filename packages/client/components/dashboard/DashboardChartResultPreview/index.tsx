@@ -17,7 +17,7 @@ export const DashboardChartResultPreview: FC<
     variables: { id: chartId },
   });
 
-  const refreshConfig: QueryObserverOptions = useMemo(() => {
+  const refreshConfig: QueryObserverOptions<ResultFragment> = useMemo(() => {
     if (!autoRefresh) {
       return {
         refetchInterval: false,
