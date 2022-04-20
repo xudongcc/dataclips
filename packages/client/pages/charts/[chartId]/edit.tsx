@@ -55,7 +55,7 @@ const ChartEdit = () => {
       const input = {
         name: values.name,
         type: values.type,
-        tags: values?.tags || [],
+        tags: values?.tags,
         config: [
           { type: ChartType.FUNNEL, config: values.funnelConfig },
           { type: ChartType.METRIC, config: values.metricConfig },
