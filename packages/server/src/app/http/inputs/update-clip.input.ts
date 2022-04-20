@@ -5,8 +5,8 @@ export class UpdateClipInput {
   @Field({ nullable: true })
   name?: string;
 
-  @Field(() => [String])
-  tags: string[];
+  @Field(() => [String], { nullable: true })
+  tags?: string[];
 
   @Field({ nullable: true })
   sql?: string;

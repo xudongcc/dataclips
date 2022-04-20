@@ -43,6 +43,6 @@ export class CreateDatabaseSourceInput {
   @Field({ nullable: true })
   sshKey?: string;
 
-  @Field(() => [String])
-  tags: string[];
+  @Field(() => [String], { nullable: true })
+  tags?: string[];
 }

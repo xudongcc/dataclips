@@ -44,5 +44,5 @@ export class UpdateDatabaseSourceInput {
   sshKey?: string;
 
   @Field(() => [String])
-  tags: string[];
+  tags?: string[];
 }
