@@ -6,13 +6,16 @@ import { PC } from "../../interfaces/PageComponent";
 import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
 import ProjectLayout from "../../layouts/ProjectLayout";
-import { useDashboardConnectionLazyQuery } from "../../generated/graphql";
+import {
+  useDashboardConnectionLazyQuery,
+  useDeleteDashboardMutation,
+  useCreateDashboardMutation,
+} from "../../generated/graphql";
 import { Form, Input, Divider, Space } from "antd";
 import { Modal } from "../../components/common/Modal";
 
-import { useCreateDashboardMutation } from "../../hooks/useCreateDashboardMutation";
-import { useDeleteDashboardMutation } from "../../hooks/useDeleteDashboardMutation";
 import {
+  FilterType,
   GraphQLTable,
   GraphQLTableColumnType,
 } from "../../components/common/GraphQLTable";
@@ -27,10 +30,11 @@ const DashBoardList: PC = () => {
   const [isCreateDashboardModalVisible, setIsCreateDashboardModalVisible] =
     useState(false);
 
-  const [getDashboards, { data, loading }] = useDashboardConnectionLazyQuery({
-    notifyOnNetworkStatusChange: true,
-    // fetchPolicy: "no-cache",
-  });
+  const [getDashboards, { data, loading, refetch }] =
+    useDashboardConnectionLazyQuery({
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "no-cache",
+    });
 
   const [createDashboard, { loading: createDashboardLoading }] =
     useCreateDashboardMutation();
@@ -49,6 +53,14 @@ const DashBoardList: PC = () => {
           </NextLink>
         );
       },
+    },
+    {
+      title: "标签",
+      dataIndex: "tags",
+      filterType: FilterType.TAG,
+      key: "tags",
+      valueType: ValueType.TAG,
+      width: 200,
     },
     {
       title: "最后更新时间",
@@ -100,6 +112,8 @@ const DashBoardList: PC = () => {
                         status: "success",
                         isClosable: true,
                       });
+
+                      refetch();
                     } catch (err) {
                       console.error("err", err);
                     }
@@ -131,7 +145,9 @@ const DashBoardList: PC = () => {
         },
       },
     });
-  }, [createDashboard, form]);
+
+    refetch();
+  }, [createDashboard, form, refetch]);
 
   return (
     <>

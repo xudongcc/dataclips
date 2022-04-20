@@ -45,7 +45,7 @@ const ChartCreate = () => {
       const input = {
         name: values.name,
         type: values.type,
-        tags: values?.tags || [],
+        tags: values?.tags,
         config: [
           { type: ChartType.FUNNEL, config: values.funnelConfig },
           { type: ChartType.METRIC, config: values.metricConfig },
@@ -88,7 +88,7 @@ const ChartCreate = () => {
           <Grid templateColumns="repeat(3, 1fr)" gap={4} w="100%">
             <GridItem colSpan={3}>
               <Card>
-                <Row gutter={16} justify="space-between">
+                <Row gutter={[16, 16]} justify="space-between">
                   <Col span={8}>
                     <Form.Item
                       name="name"

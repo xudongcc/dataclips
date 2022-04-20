@@ -5,6 +5,9 @@ export class CreateClipInput {
   @Field()
   name: string;
 
+  @Field(() => [String], { nullable: true })
+  tags?: string[];
+
   @Field()
   sql: string;
 

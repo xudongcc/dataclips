@@ -54,6 +54,8 @@ const DashBoardEdit: PC = () => {
   const router = useRouter();
   // 编辑仪表盘名称的 form
   const [editDashboardNameForm] = Form.useForm();
+  // 编辑仪表盘标签的 form
+  const [editDashboardTagsForm] = Form.useForm();
   // 添加分隔线的 form
   const [dividerNameForm] = Form.useForm();
   // 添加或编辑卡片的 form
@@ -91,7 +93,11 @@ const DashBoardEdit: PC = () => {
   const [isAddOrEditCardModalVisible, setIsAddOrEditCardModalVisible] =
     useState(false);
 
-  // 编辑仪表盘名称
+  // 编辑标签弹窗
+  const [isEditDashboardTagsModalVisible, setIsEditDashboardTagsModalVisible] =
+    useState(false);
+
+  // 编辑仪表盘名称弹窗
   const [isEditDashboardNameModalVisible, setIsEditDashboardNameModalVisible] =
     useState(false);
 
@@ -115,6 +121,11 @@ const DashBoardEdit: PC = () => {
     editDashboardNameForm.resetFields();
   }, [editDashboardNameForm]);
 
+  const handleCloseEditDashboardTagsModal = useCallback(() => {
+    setIsEditDashboardTagsModalVisible(false);
+    editDashboardTagsForm.resetFields();
+  }, [editDashboardTagsForm]);
+
   const handleCloseDividerModal = useCallback(() => {
     setIsDividerModalVisible(false);
     dividerNameForm.resetFields();
@@ -131,13 +142,16 @@ const DashBoardEdit: PC = () => {
   const handleUpdateDashboard = useCallback(
     async (goPreview?: boolean) => {
       try {
-        const value = editDashboardNameForm.getFieldValue("dashboardName");
+        const dashboardName =
+          editDashboardNameForm.getFieldValue("dashboardName");
+        const tags = editDashboardTagsForm.getFieldValue("tags");
 
         await updateDashboard({
           variables: {
             id: dashboardId,
             input: {
-              name: value,
+              name: dashboardName,
+              tags: tags,
               config: {
                 ...data?.dashboard?.config,
                 blocks: dragItems.map((item) => ({
@@ -163,6 +177,7 @@ const DashBoardEdit: PC = () => {
     },
     [
       editDashboardNameForm,
+      editDashboardTagsForm,
       updateDashboard,
       dashboardId,
       data?.dashboard?.config,
@@ -276,6 +291,15 @@ const DashBoardEdit: PC = () => {
                 dashboardName: data?.dashboard?.name,
               });
               setIsEditDashboardNameModalVisible(true);
+            },
+          },
+          {
+            text: "编辑标签",
+            onClick: () => {
+              editDashboardTagsForm.setFieldsValue({
+                tags: data?.dashboard?.tags,
+              });
+              setIsEditDashboardTagsModalVisible(true);
             },
           },
         ]}
@@ -496,6 +520,28 @@ const DashBoardEdit: PC = () => {
               rules={[{ required: true, message: "请输入仪表盘名称" }]}
             >
               <Input placeholder="请输入仪表盘名称"></Input>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* 编辑仪表盘标签弹窗 */}
+        <Modal
+          title="编辑仪表盘标签"
+          okButtonProps={{ loading: getChartLoading || updateDashboardLoading }}
+          visible={isEditDashboardTagsModalVisible}
+          onCancel={handleCloseEditDashboardTagsModal}
+          onOk={async () => {
+            await handleUpdateDashboard();
+            handleCloseEditDashboardTagsModal();
+          }}
+        >
+          <Form form={editDashboardTagsForm} layout="vertical">
+            <Form.Item
+              name="tags"
+              label="仪表盘标签"
+              style={{ marginBottom: 0 }}
+            >
+              <Select allowClear mode="tags" placeholder="使用标签" />
             </Form.Item>
           </Form>
         </Modal>

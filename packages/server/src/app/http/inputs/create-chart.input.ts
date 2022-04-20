@@ -11,8 +11,8 @@ export class CreateChartInput {
   @Field(() => ChartType)
   type: ChartType;
 
-  @Field(() => [String])
-  tags: string[];
+  @Field(() => [String], { nullable: true })
+  tags?: string[];
 
   @Field(() => GraphQLJSONObject)
   config: Record<string, any>;

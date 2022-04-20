@@ -72,7 +72,7 @@ export class VirtualSourceResolver {
       throw new BadRequestException("存在重复的数据裁剪选项");
     }
 
-    await this.sourceService.update({ id }, _.pick(input, ["name"]));
+    await this.sourceService.update({ id }, _.pick(input, ["name", "tags"]));
 
     const tables = await this.virtualSourceTableService.findAll({
       where: { source: { id } },

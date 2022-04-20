@@ -267,7 +267,11 @@ export function GraphQLTable<T>(props: GraphQLTableProps<T>): ReactElement {
         onClose={() => setDrawerVisible(false)}
         onFiltersChange={setFilters}
         onRouteParamsChange={setRouteParams}
-        onSubmit={handleVariablesChange}
+        onSubmit={(filters) => {
+          setTimeout(() => {
+            handleVariablesChange(filters);
+          });
+        }}
       />
       <SearchWrapper>
         <Input
@@ -277,8 +281,11 @@ export function GraphQLTable<T>(props: GraphQLTableProps<T>): ReactElement {
           addonAfter={
             <SearchButton
               onClick={() => {
-                handleVariablesChange(filters);
                 setRouteParams({ ...routeParams, query });
+
+                setTimeout(() => {
+                  handleVariablesChange(filters);
+                });
               }}
             >
               搜索
@@ -286,8 +293,11 @@ export function GraphQLTable<T>(props: GraphQLTableProps<T>): ReactElement {
           }
           onChange={(event) => setQuery(event.target.value)}
           onPressEnter={() => {
-            handleVariablesChange(filters);
             setRouteParams({ ...routeParams, query });
+
+            setTimeout(() => {
+              handleVariablesChange(filters);
+            });
           }}
         />
         {columnsFilterResults.length > 0 && (
@@ -339,8 +349,11 @@ export function GraphQLTable<T>(props: GraphQLTableProps<T>): ReactElement {
                   type="link"
                   onClick={() => {
                     setSortValue(null);
-                    handleVariablesChange(filters, null);
                     setRouteParams({ ...routeParams, orderBy: null });
+
+                    setTimeout(() => {
+                      handleVariablesChange(filters, null);
+                    });
                   }}
                 >
                   清除
@@ -413,7 +426,10 @@ export function GraphQLTable<T>(props: GraphQLTableProps<T>): ReactElement {
                   filter: encodeURIComponent(JSON.stringify(tempFilters)),
                 });
                 setFilters(tempFilters);
-                handleVariablesChange(tempFilters);
+
+                setTimeout(() => {
+                  handleVariablesChange(tempFilters);
+                });
               }}
             >
               {columns.find((column) => column.key === tag.field)?.title ||
