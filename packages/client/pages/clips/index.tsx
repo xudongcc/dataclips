@@ -16,13 +16,10 @@ import {
 } from "../../components/common/GraphQLTable";
 import { ValueType } from "../../components/common/SimpleTable";
 import { Space, Divider } from "antd";
-import { useEffect, useState } from "react";
 
 const ClipList = () => {
   const router = useRouter();
   const toast = useToast();
-
-  const [clipsData, setClipsData] = useState([]);
 
   const [getClips, { data, loading, refetch }] = useClipConnectionLazyQuery({
     notifyOnNetworkStatusChange: true,
@@ -120,12 +117,6 @@ const ClipList = () => {
     },
   ];
 
-  useEffect(() => {
-    if (data?.clipConnection?.edges?.length) {
-      setClipsData(data?.clipConnection?.edges?.map((item) => item?.node));
-    }
-  }, [data?.clipConnection?.edges]);
-
   return (
     <>
       <Head>
@@ -150,7 +141,7 @@ const ClipList = () => {
             getClips({ variables });
           }}
           columns={columns}
-          dataSource={clipsData}
+          dataSource={data?.clipConnection?.edges?.map((item) => item?.node)}
           loading={loading}
         />
       </Page>

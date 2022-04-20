@@ -1,7 +1,7 @@
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useToast, Link } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   DatabaseSource,
   UpdateDatabaseSourceInput,
@@ -31,8 +31,6 @@ const SourceList = () => {
   const router = useRouter();
   const toast = useToast();
   const [form] = Form.useForm();
-
-  const [sourcesData, setSourcesData] = useState([]);
 
   const [getSources, { data, loading, refetch }] = useSourceConnectionLazyQuery(
     {
@@ -255,12 +253,6 @@ const SourceList = () => {
     },
   ];
 
-  useEffect(() => {
-    if (data?.sourceConnection?.edges?.length) {
-      setSourcesData(data?.sourceConnection?.edges?.map((item) => item?.node));
-    }
-  }, [data?.sourceConnection?.edges]);
-
   return (
     <>
       <Head>
@@ -285,7 +277,7 @@ const SourceList = () => {
             getSources({ variables });
           }}
           columns={columns}
-          dataSource={sourcesData}
+          dataSource={data?.sourceConnection?.edges?.map((item) => item?.node)}
           loading={loading}
         />
 

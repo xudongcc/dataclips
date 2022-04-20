@@ -4,7 +4,7 @@ import NextLink from "next/link";
 import { Page } from "../../components/common/Page";
 import { PC } from "../../interfaces/PageComponent";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import ProjectLayout from "../../layouts/ProjectLayout";
 import {
   useDashboardConnectionLazyQuery,
@@ -29,8 +29,6 @@ const DashBoardList: PC = () => {
   // 创建仪表盘的弹窗
   const [isCreateDashboardModalVisible, setIsCreateDashboardModalVisible] =
     useState(false);
-
-  const [dashboardsData, setDashboardsData] = useState([]);
 
   const [getDashboards, { data, loading, refetch }] =
     useDashboardConnectionLazyQuery({
@@ -151,14 +149,6 @@ const DashBoardList: PC = () => {
     refetch();
   }, [createDashboard, form, refetch]);
 
-  useEffect(() => {
-    if (data?.dashboardConnection?.edges?.length) {
-      setDashboardsData(
-        data?.dashboardConnection?.edges?.map((item) => item?.node)
-      );
-    }
-  }, [data?.dashboardConnection?.edges]);
-
   return (
     <>
       <Head>
@@ -183,7 +173,9 @@ const DashBoardList: PC = () => {
             getDashboards({ variables });
           }}
           columns={columns}
-          dataSource={dashboardsData}
+          dataSource={data?.dashboardConnection?.edges?.map(
+            (item) => item?.node
+          )}
           loading={loading}
         />
 
