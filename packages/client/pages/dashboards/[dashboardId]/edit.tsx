@@ -311,9 +311,7 @@ const DashBoardEdit: PC = () => {
           dragItems={dragItems}
           extraConfig={{
             chart: {
-              onEditCardClick: (item, onClose) => {
-                onClose();
-
+              onEditCardClick: (item) => {
                 addOrEditCardForm.setFieldsValue({
                   name: item?.name,
                   chartId: item?.chart.id,
@@ -327,9 +325,7 @@ const DashBoardEdit: PC = () => {
 
                 setIsAddOrEditCardModalVisible(true);
               },
-              onDeleteClick: (id, onClose) => {
-                onClose();
-
+              onDeleteClick: (id) => {
                 const deleteIndex = dragItems.findIndex(
                   (item) => item.id === id
                 );
@@ -381,9 +377,7 @@ const DashBoardEdit: PC = () => {
                   setDragItems([...dragItems]);
                 }
               },
-              onEditBlockClick: (item, onClose) => {
-                onClose();
-
+              onEditBlockClick: (item) => {
                 mdForm.setFieldsValue({
                   name: item?.name,
                   content: item?.markdown?.content,
