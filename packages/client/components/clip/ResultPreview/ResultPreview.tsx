@@ -107,13 +107,12 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
   }
 
   return (
-    <Card>
-      <Flex mb={4} justify="space-between">
-        <StatResult result={result} />
-
-        {token ? <DownloadButtonGroup token={token} /> : null}
-      </Flex>
-
+    <Card
+      title={<StatResult result={result} />}
+      extra={
+        token ? <DownloadButtonGroup result={result} token={token} /> : null
+      }
+    >
       <InputGroup mb={4}>
         <InputLeftAddon>过滤</InputLeftAddon>
         <Input
