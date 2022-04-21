@@ -10,4 +10,8 @@ export default {
   metadataProvider: TsMorphMetadataProvider,
   entities: ["dist/app/core/entities/**/*.js"],
   entitiesTs: ["src/app/core/entities/**/*.ts"],
+  migrations: {
+    path: "dist/database/migrations",
+    pathTs: "src/database/migrations",
+  },
 };
