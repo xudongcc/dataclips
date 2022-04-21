@@ -64,6 +64,7 @@
     "styled-components": "^5.3.5",
     "use-url-search-params": "^2.5.1",
     "uuid": "^8.3.2",
+    "xlsx": "^0.18.5",
     "yup": "^0.32.11"
   },
   "devDependencies": {

@@ -4,6 +4,7 @@ import moment from "moment";
 import { FC, useCallback } from "react";
 import { ResultFragment } from "../../../../generated/graphql";
 import { VerticalAlignBottomOutlined } from "@ant-design/icons";
+import * as xlsx from "xlsx";
 
 enum DownloadType {
   ALL = "all",
@@ -20,26 +21,38 @@ export const DownloadButtonGroup: FC<DownloadButtonGroupProps> = ({
 }) => {
   const handleDownload = useCallback(
     (extname: string, downloadType: DownloadType) => {
-      let content: any;
-
       if (downloadType === DownloadType.ALL) {
-        content = `/clips/${token}${extname}`;
+        saveAs(
+          `/clips/${token}${extname}`,
+          `${moment().format("YYYYMMDD-HHmmss")}${extname}`
+        );
       }
 
       if (downloadType === DownloadType.FILTER) {
-        content = new Blob([JSON.stringify(result)], {
-          type: [
-            { extname: ".csv", type: "text/csv" },
-            {
-              extname: ".xlsx",
-              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            },
-            { extname: ".json", type: "application/json" },
-          ].find((item) => item.extname === extname)?.type,
-        });
-      }
+        if ([".json"].includes(extname)) {
+          saveAs(
+            new Blob([JSON.stringify(result)], {
+              type: "application/json",
+            }),
+            `${moment().format("YYYYMMDD-HHmmss")}${extname}`
+          );
+        }
 
-      saveAs(content, `${moment().format("YYYYMMDD-HHmmss")}${extname}`);
+        if ([".csv", ".xlsx"].includes(extname)) {
+          xlsx.writeFile(
+            {
+              Sheets: {
+                Sheet1: xlsx.utils.aoa_to_sheet([
+                  result.fields,
+                  ...result.values,
+                ]),
+              },
+              SheetNames: ["Sheet1"],
+            },
+            `${moment().format("YYYYMMDD-HHmmss")}${extname}`
+          );
+        }
+      }
     },
     [token, result]
   );
