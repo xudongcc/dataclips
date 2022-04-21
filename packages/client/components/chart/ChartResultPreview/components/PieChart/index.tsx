@@ -110,7 +110,7 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
       <Coordinate type="theta" radius={0.75} />
       <Tooltip showTitle={false} />
       <Interval
-        position="percent"
+        position={config?.value}
         adjust="stack"
         color={config?.key}
         style={{
