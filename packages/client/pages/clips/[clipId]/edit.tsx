@@ -6,6 +6,9 @@ import {
   useUpdateClipMutation,
   useClipQuery,
   useSourceConnectionQuery,
+  useSourceQuery,
+  DatabaseSource,
+  DatabaseType,
 } from "../../../generated/graphql";
 import { useQueryResult } from "../../../hooks/useQueryResult";
 import { ResultPreview } from "../../../components/clip/ResultPreview";
@@ -30,6 +33,13 @@ const ClipEdit = () => {
   const { data: { clip } = {} } = useClipQuery({
     variables: { id: clipId! },
     skip: !clipId,
+  });
+
+  const { data: sourceData } = useSourceQuery({
+    variables: {
+      id: clip?.sourceId,
+    },
+    skip: !clip?.sourceId,
   });
 
   const { data: { sourceConnection } = {}, loading: isSourcesLoading } =
@@ -148,6 +158,12 @@ const ClipEdit = () => {
                   }}
                 >
                   <SQLEditor
+                    formatType={
+                      ((sourceData?.source as DatabaseSource)
+                        ?.type as DatabaseType) === DatabaseType.POSTGRESQL
+                        ? "postgresql"
+                        : "mysql"
+                    }
                     value={sqlValue}
                     onChange={(value) => {
                       setSqlValue(value);
@@ -159,7 +175,7 @@ const ClipEdit = () => {
           </Form>
 
           <div style={{ flex: 1 }}>
-            {result && !result?.message ? (
+            {result && !(result as any)?.message ? (
               <ResultPreview token={clip?.token!} result={result} />
             ) : null}
           </div>

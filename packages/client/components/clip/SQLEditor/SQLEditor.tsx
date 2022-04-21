@@ -1,6 +1,6 @@
 import { Box, useColorModeValue, useToken } from "@chakra-ui/react";
 import Editor, { loader } from "@monaco-editor/react";
-import { FC, useCallback, useEffect } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 import { format } from "prettier-sql";
 
 loader.config({
@@ -9,11 +9,18 @@ loader.config({
 
 export interface SQLEditorProps {
   value: string;
+  formatType?: "mysql" | "postgresql";
   onChange: (value: string) => void;
 }
 
-export const SQLEditor: FC<SQLEditorProps> = ({ value, onChange }) => {
+export const SQLEditor: FC<SQLEditorProps> = ({
+  value,
+  onChange,
+  formatType = "mysql",
+}) => {
   const theme = useColorModeValue("dataclips-light", "dataclips-dark");
+  const editorRef = useRef(null);
+
   const [
     lightBackground,
     lightLineHighlightBackground,
@@ -64,7 +71,9 @@ export const SQLEditor: FC<SQLEditorProps> = ({ value, onChange }) => {
       const formatValue = () => {
         e.preventDefault();
 
-        onChange(format((document.activeElement as HTMLTextAreaElement).value));
+        onChange(
+          format(editorRef.current?.getValue(), { language: formatType })
+        );
       };
 
       // 焦点建立在 TextArea 的情况下
@@ -89,7 +98,7 @@ export const SQLEditor: FC<SQLEditorProps> = ({ value, onChange }) => {
       window.removeEventListener("keydown", handleSqlFormat);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [formatType]);
 
   return (
     <Box h="200px">
@@ -109,6 +118,9 @@ export const SQLEditor: FC<SQLEditorProps> = ({ value, onChange }) => {
         }}
         value={value}
         onChange={handleChange}
+        onMount={(editor) => {
+          editorRef.current = editor;
+        }}
         beforeMount={handleBeforeMount}
       />
     </Box>
