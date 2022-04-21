@@ -71,6 +71,7 @@ export const DownloadButtonGroup: FC<DownloadButtonGroupProps> = ({
                 全部数据
               </Menu.Item>
               <Menu.Item
+                disabled={!result?.fields?.length && !result?.values?.length}
                 onClick={() => {
                   handleDownload(extname, DownloadType.FILTER);
                 }}
@@ -86,7 +87,7 @@ export const DownloadButtonGroup: FC<DownloadButtonGroupProps> = ({
         </Dropdown>
       );
     },
-    [handleDownload]
+    [handleDownload, result?.fields?.length, result?.values?.length]
   );
 
   return (
