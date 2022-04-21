@@ -88,7 +88,8 @@ export const SQLEditor: FC<SQLEditorProps> = ({ value, onChange }) => {
     return () => {
       window.removeEventListener("keydown", handleSqlFormat);
     };
-  }, [onChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Box h="200px">
