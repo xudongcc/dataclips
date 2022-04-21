@@ -1,3 +1,4 @@
+import { QueryOrder } from "@mikro-orm/core";
 import { QueryConnectionArgs } from "@nest-boot/graphql";
 import { UseGuards } from "@nestjs/common";
 import {
@@ -30,7 +31,7 @@ export class ClipResolver {
 
   @Query(() => Clip)
   async clip(@Args("id", { type: () => ID }) id: string): Promise<Clip> {
-    return await this.clipService.findOne({ where: { id } });
+    return this.clipService.repository.findOne({ id });
   }
 
   @Query(() => ClipConnection)
@@ -40,10 +41,14 @@ export class ClipResolver {
 
   @Mutation(() => Clip)
   async createClip(@Args("input") input: CreateClipInput): Promise<Clip> {
-    return await this.clipService.create({
+    const clip = this.clipService.repository.create({
       ...input,
       source: { id: input.sourceId },
     });
+
+    await this.clipService.repository.persistAndFlush(clip);
+
+    return clip;
   }
 
   @Mutation(() => Clip)
@@ -51,35 +56,30 @@ export class ClipResolver {
     @Args("id", { type: () => ID }) id: string,
     @Args("input") input: UpdateClipInput
   ): Promise<Clip> {
-    await this.clipService.update(
-      { id },
-      {
-        ..._.omit(input, "sourceId"),
-        ...(input.sourceId ? { source: { id: input.sourceId } } : {}),
-      }
-    );
+    const clip = await this.clipService.repository.findOneOrFail({ id });
 
     await this.clipService.query(id);
 
-    return await this.clipService.findOne({ where: { id } });
+    return clip;
   }
 
   @Mutation(() => ID)
   async deleteClip(
     @Args("id", { type: () => ID }) id: string
   ): Promise<string> {
-    await this.clipService.delete({ id });
+    const clip = await this.clipService.repository.findOneOrFail({ id });
+    await this.clipService.repository.persistAndFlush(clip);
     return id;
   }
 
   @ResolveField(() => [Result])
   async results(@Parent() clip: Clip): Promise<Result[]> {
-    return await this.resultService.findAll({
-      where: {
-        clip: { id: clip.id },
-      },
-      take: 10,
-      order: { createdAt: "DESC" },
-    });
+    return this.resultService.repository.find(
+      { clip },
+      {
+        limit: 10,
+        orderBy: { createdAt: QueryOrder.DESC },
+      }
+    );
   }
 }

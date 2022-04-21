@@ -1,45 +1,43 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimarySnowflakeColumn,
-  UpdateDateColumn,
-} from "@nest-boot/database";
+import { Entity, PrimaryKey, Property, t } from "@mikro-orm/core";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-type-json";
 import { nanoid } from "nanoid";
+import { SnowflakeIdGenerator } from "snowflake-id-generator";
 
 @ObjectType()
-@Entity({ searchable: true })
+@Entity()
 export class Dashboard {
   @Field(() => ID)
-  @PrimarySnowflakeColumn()
+  @PrimaryKey({
+    type: t.bigint,
+    onCreate: () => SnowflakeIdGenerator.next().toString(),
+  })
   id: string;
 
   @Field()
-  @Column()
+  @Property()
   name: string;
 
   @Field(() => [String])
-  @Column({ type: "json", default: [], generator: () => [] })
+  @Property({ type: t.json, onCreate: () => [] })
   tags: string[];
 
   @Field({ nullable: true })
-  @Column({ nullable: true, generator: () => nanoid() })
+  @Property({ nullable: true, onCreate: () => nanoid() })
   token: string;
 
   @Field(() => GraphQLJSONObject)
-  @Column({
-    type: "json",
-    generator: () => ({ version: "1.0", blocks: [] }),
+  @Property({
+    type: t.json,
+    onCreate: () => ({ version: "1.0", blocks: [] }),
   })
-  config: Record<string, any>;
+  config: Record<string, unknown>;
 
   @Field()
-  @CreateDateColumn()
-  createdAt: Date;
+  @Property()
+  createdAt: Date = new Date();
 
   @Field()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Property({ onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
 }

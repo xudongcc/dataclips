@@ -1,3 +1,4 @@
+import { Loaded } from "@mikro-orm/core";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
@@ -29,10 +30,19 @@ export class JwtPassportStrategy extends PassportStrategy(Strategy) {
     email: string;
     picture: string;
   }): Promise<User> {
-    const user =
-      (await this.userService.findOne({ where: { email } })) ||
-      (await this.userService.create({ name, email, avatar }));
+    return (
+      (await this.userService.repository.findOne({ email })) ||
+      (await (async () => {
+        const user = this.userService.repository.create({
+          name,
+          email,
+          avatar,
+        });
 
-    return user;
+        await this.userService.repository.persistAndFlush(user);
+
+        return user;
+      })())
+    );
   }
 }

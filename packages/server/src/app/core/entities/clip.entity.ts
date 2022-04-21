@@ -1,15 +1,16 @@
 import {
-  Column,
-  CreateDateColumn,
+  Collection,
   Entity,
+  IdentifiedReference,
   ManyToOne,
   OneToMany,
-  PrimarySnowflakeColumn,
-  RelationId,
-  UpdateDateColumn,
-} from "@nest-boot/database";
+  PrimaryKey,
+  Property,
+  t,
+} from "@mikro-orm/core";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { nanoid } from "nanoid";
+import { SnowflakeIdGenerator } from "snowflake-id-generator";
 
 import { Chart } from "./chart.entity";
 import { Result } from "./result.entity";
@@ -17,62 +18,59 @@ import { Source } from "./source.entity";
 import { VirtualSourceTable } from "./virtual-source-table.entity";
 
 @ObjectType()
-@Entity({ searchable: true })
+@Entity()
 export class Clip {
   @Field(() => ID)
-  @PrimarySnowflakeColumn()
+  @PrimaryKey({
+    type: t.bigint,
+    onCreate: () => SnowflakeIdGenerator.next().toString(),
+  })
   id: string;
 
   @Field()
-  @Column()
+  @Property()
   name: string;
 
   @Field(() => [String])
-  @Column({ type: "json", default: [], generator: () => [] })
+  @Property({ type: t.json, onCreate: () => [] })
   tags: string[];
 
   @Field({ nullable: true })
-  @Column({ nullable: true, generator: () => nanoid() })
+  @Property({ nullable: true, onCreate: () => nanoid() })
   token: string;
 
   @Field()
-  @Column()
+  @Property()
   sql: string;
 
   @Field({ nullable: true })
-  @Column({ type: "timestamp", precision: 3, nullable: true })
+  @Property({ nullable: true })
   lastViewedAt: Date;
 
   @Field({ nullable: true })
-  @Column({ type: "timestamp", precision: 3, nullable: true })
+  @Property({ nullable: true })
   latestResultAt: Date;
 
   @Field()
-  @CreateDateColumn()
-  createdAt: Date;
+  @Property()
+  createdAt: Date = new Date();
 
   @Field()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Property({ onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
 
-  @ManyToOne(() => Source, (source) => source.clips, {
-    cascade: true,
-  })
-  source: Source;
-
-  @Field(() => ID)
-  @RelationId((clip: Clip) => clip.source)
-  sourceId: Source["id"];
+  @ManyToOne()
+  source: IdentifiedReference<Source>;
 
   @OneToMany(() => Result, (result) => result.clip)
-  results: Result[];
+  results = new Collection<Result>(this);
 
   @OneToMany(
     () => VirtualSourceTable,
     (virtualSourceTable) => virtualSourceTable.clip
   )
-  virtualSourceTables: VirtualSourceTable[];
+  virtualSourceTables = new Collection<VirtualSourceTable>(this);
 
   @OneToMany(() => Chart, (chart) => chart.clip)
-  charts: Chart[];
+  charts = new Collection<Chart>(this);
 }

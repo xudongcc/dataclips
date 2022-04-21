@@ -5,29 +5,29 @@ import {
   NotFoundException,
   Param,
   Res,
+  UseInterceptors,
 } from "@nestjs/common";
 import { Response } from "express";
 import xlsx from "node-xlsx";
 import Papa from "papaparse";
 
 import { ClipService } from "../../core/services/clip.service";
+import { ClipViewLoggingInterceptor } from "../interceptors/clip-view-logging.interceptor";
 
 @Controller("/clips")
+@UseInterceptors(ClipViewLoggingInterceptor)
 export class ShareClipController {
   constructor(private readonly clipService: ClipService) {}
 
   @Get(":token.json")
   async json(@Param("token") token: string) {
-    const clip = await this.clipService.findOneByToken(token);
+    const clip = await this.clipService.repository.findOneOrFail({ token });
 
     if (!clip) {
       throw new NotFoundException();
     }
 
-    const [result] = await Promise.all([
-      this.clipService.fetchResult(clip.id),
-      this.clipService.update({ id: clip.id }, { lastViewedAt: new Date() }),
-    ]);
+    const result = await this.clipService.fetchResult(clip.id);
 
     if (!result) {
       throw new NotFoundException();
@@ -39,16 +39,13 @@ export class ShareClipController {
   @Get(":token.csv")
   @Header("Content-Type", "text/csv")
   async csv(@Param("token") token: string) {
-    const clip = await this.clipService.findOneByToken(token);
+    const clip = await this.clipService.repository.findOneOrFail({ token });
 
     if (!clip) {
       throw new NotFoundException();
     }
 
-    const [result] = await Promise.all([
-      this.clipService.fetchResult(clip.id),
-      this.clipService.update({ id: clip.id }, { lastViewedAt: new Date() }),
-    ]);
+    const result = await this.clipService.fetchResult(clip.id);
 
     if (!result) {
       throw new NotFoundException();
@@ -62,16 +59,13 @@ export class ShareClipController {
 
   @Get(":token.xlsx")
   async xlsx(@Res() res: Response, @Param("token") token: string) {
-    const clip = await this.clipService.findOneByToken(token);
+    const clip = await this.clipService.repository.findOneOrFail({ token });
 
     if (!clip) {
       throw new NotFoundException();
     }
 
-    const [result] = await Promise.all([
-      this.clipService.fetchResult(clip.id),
-      this.clipService.update({ id: clip.id }, { lastViewedAt: new Date() }),
-    ]);
+    const result = await this.clipService.fetchResult(clip.id);
 
     if (!result) {
       throw new NotFoundException();

@@ -1,4 +1,5 @@
 import { ContextMiddleware } from "@nest-boot/common";
+import { DatabaseMiddleware } from "@nest-boot/database";
 import { ApolloDriver } from "@nestjs/apollo";
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
@@ -40,6 +41,6 @@ import { JwtPassportStrategy } from "./strategies/jwt.strategy";
 })
 export class HttpModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(ContextMiddleware).forRoutes("*");
+    consumer.apply(ContextMiddleware, DatabaseMiddleware).forRoutes("*");
   }
 }

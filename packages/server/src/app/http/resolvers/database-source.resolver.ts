@@ -25,7 +25,14 @@ export class DatabaseSourceResolver {
     @Args("id", { type: () => ID }) id: string,
     @Args("input") input: UpdateDatabaseSourceInput
   ): Promise<Source> {
-    await this.sourceService.update({ id }, input);
-    return await this.sourceService.findOne({ where: { id } });
+    const source = this.sourceService.repository.findOneOrFail({ id });
+
+    Object.entries(input).forEach(([key, value]) => {
+      source[key] = value;
+    });
+
+    await this.sourceService.repository.persistAndFlush(source);
+
+    return source;
   }
 }

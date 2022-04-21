@@ -5,7 +5,6 @@ fragment Chart on Chart {
   type
   tags
   config
-  clipId
   createdAt
   updatedAt
 }

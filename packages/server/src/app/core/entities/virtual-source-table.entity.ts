@@ -1,48 +1,42 @@
 import {
-  Column,
-  CreateDateColumn,
   Entity,
+  IdentifiedReference,
   ManyToOne,
-  PrimarySnowflakeColumn,
-  RelationId,
-  UpdateDateColumn,
-} from "@nest-boot/database";
+  PrimaryKey,
+  Property,
+  t,
+} from "@mikro-orm/core";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { SnowflakeIdGenerator } from "snowflake-id-generator";
 
 import { Clip } from "./clip.entity";
 import { Source } from "./source.entity";
 
 @ObjectType()
-@Entity({ searchable: true })
+@Entity()
 export class VirtualSourceTable {
   @Field(() => ID)
-  @PrimarySnowflakeColumn()
+  @PrimaryKey({
+    type: t.bigint,
+    onCreate: () => SnowflakeIdGenerator.next().toString(),
+  })
   id: string;
 
   @Field()
-  @Column()
+  @Property()
   name: string;
 
   @Field()
-  @CreateDateColumn()
-  createdAt: Date;
+  @Property()
+  createdAt: Date = new Date();
 
   @Field()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Property({ onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
 
-  @ManyToOne(() => Source, (source) => source.tables, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
-  })
-  source: Source;
+  @ManyToOne()
+  source: IdentifiedReference<Source>;
 
-  @RelationId((table: VirtualSourceTable) => table.source)
-  sourceId: Source["id"];
-
-  @ManyToOne(() => Clip, (clip) => clip.virtualSourceTables)
-  clip: Clip;
-
-  @RelationId((table: VirtualSourceTable) => table.clip)
-  clipId: Clip["id"];
+  @ManyToOne()
+  clip: IdentifiedReference<Clip>;
 }

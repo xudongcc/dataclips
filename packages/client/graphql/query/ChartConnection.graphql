@@ -5,7 +5,6 @@ query ChartConnection(
   $after: String
   $query: String
   $orderBy: Ordering
-  $filter: String
 ) {
   chartConnection: charts(
     first: $first
@@ -14,7 +13,6 @@ query ChartConnection(
     after: $after
     query: $query
     orderBy: $orderBy
-    filter: $filter
   ) {
     edges {
       node {

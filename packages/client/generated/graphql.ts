@@ -37,7 +37,6 @@ export type Scalars = {
 
 export type Chart = {
   __typename?: 'Chart';
-  clipId: Scalars['ID'];
   config: Scalars['JSONObject'];
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
@@ -79,7 +78,6 @@ export type Clip = {
   latestResultAt?: Maybe<Scalars['DateTime']>;
   name: Scalars['String'];
   results: Array<Result>;
-  sourceId: Scalars['ID'];
   sql: Scalars['String'];
   tags: Array<Scalars['String']>;
   token?: Maybe<Scalars['String']>;
@@ -104,7 +102,7 @@ export type CreateChartInput = {
   clipId: Scalars['ID'];
   config: Scalars['JSONObject'];
   name: Scalars['String'];
-  tags: Array<Scalars['String']>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
   type: ChartType;
 };
 
@@ -112,7 +110,7 @@ export type CreateClipInput = {
   name: Scalars['String'];
   sourceId?: InputMaybe<Scalars['ID']>;
   sql: Scalars['String'];
-  tags: Array<Scalars['String']>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
 export type CreateDashboardInput = {
@@ -133,7 +131,7 @@ export type CreateDatabaseSourceInput = {
   sshPassword?: InputMaybe<Scalars['String']>;
   sshPort?: InputMaybe<Scalars['Int']>;
   sshUsername?: InputMaybe<Scalars['String']>;
-  tags: Array<Scalars['String']>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
   type: DatabaseType;
   username: Scalars['String'];
 };
@@ -141,7 +139,7 @@ export type CreateDatabaseSourceInput = {
 export type CreateVirtualSourceInput = {
   name: Scalars['String'];
   tables: Array<CreateVirtualSourceTableInput>;
-  tags: Array<Scalars['String']>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
 export type CreateVirtualSourceTableInput = {
@@ -329,7 +327,6 @@ export type QueryChartArgs = {
 export type QueryChartsArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
-  filter?: InputMaybe<Scalars['String']>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<Ordering>;
@@ -347,7 +344,6 @@ export type QueryClipArgs = {
 export type QueryClipsArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
-  filter?: InputMaybe<Scalars['String']>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<Ordering>;
@@ -365,7 +361,6 @@ export type QueryDashboardArgs = {
 export type QueryDashboardsArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
-  filter?: InputMaybe<Scalars['String']>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<Ordering>;
@@ -383,7 +378,6 @@ export type QuerySourceArgs = {
 export type QuerySourcesArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
-  filter?: InputMaybe<Scalars['String']>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<Ordering>;
@@ -432,7 +426,7 @@ export type UpdateChartInput = {
   clipId: Scalars['ID'];
   config: Scalars['JSONObject'];
   name?: InputMaybe<Scalars['String']>;
-  tags: Array<Scalars['String']>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
   type: ChartType;
 };
 
@@ -440,13 +434,13 @@ export type UpdateClipInput = {
   name?: InputMaybe<Scalars['String']>;
   sourceId?: InputMaybe<Scalars['ID']>;
   sql?: InputMaybe<Scalars['String']>;
-  tags: Array<Scalars['String']>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
 export type UpdateDashboardInput = {
   config?: InputMaybe<Scalars['JSONObject']>;
   name?: InputMaybe<Scalars['String']>;
-  tags: Array<Scalars['String']>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
 export type UpdateDatabaseSourceInput = {
@@ -469,7 +463,7 @@ export type UpdateDatabaseSourceInput = {
 export type UpdateVirtualSourceInput = {
   name?: InputMaybe<Scalars['String']>;
   tables: Array<UpdateVirtualSourceTableInput>;
-  tags: Array<Scalars['String']>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
 export type UpdateVirtualSourceTableInput = {
@@ -491,7 +485,6 @@ export type VirtualSource = {
 export type VirtualSourceTable = {
   __typename?: 'VirtualSourceTable';
   clip: Clip;
-  clipId: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
   name: Scalars['String'];
@@ -500,9 +493,9 @@ export type VirtualSourceTable = {
   virtualSourceId: Scalars['ID'];
 };
 
-export type ChartFragment = { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, clipId: string, createdAt: any, updatedAt: any };
+export type ChartFragment = { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, createdAt: any, updatedAt: any };
 
-export type ClipFragment = { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, sourceId: string, createdAt: any, updatedAt: any };
+export type ClipFragment = { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, createdAt: any, updatedAt: any };
 
 export type DashboardFragment = { __typename?: 'Dashboard', id: string, name: string, tags: Array<string>, token?: string | null, config: any, createdAt: any, updatedAt: any };
 
@@ -512,25 +505,25 @@ export type ResultFragment = { __typename?: 'Result', id: string, name: string, 
 
 type Source_DatabaseSource_Fragment = { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null, tags: Array<string> };
 
-type Source_VirtualSource_Fragment = { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, clipId: string, createdAt: any, updatedAt: any }> };
+type Source_VirtualSource_Fragment = { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, createdAt: any, updatedAt: any }> };
 
 export type SourceFragment = Source_DatabaseSource_Fragment | Source_VirtualSource_Fragment;
 
-export type VirtualSourceFragment = { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, clipId: string, createdAt: any, updatedAt: any }> };
+export type VirtualSourceFragment = { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, createdAt: any, updatedAt: any }> };
 
 export type CreateChartMutationVariables = Exact<{
   input: CreateChartInput;
 }>;
 
 
-export type CreateChartMutation = { __typename?: 'Mutation', createChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, clipId: string, createdAt: any, updatedAt: any } };
+export type CreateChartMutation = { __typename?: 'Mutation', createChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, createdAt: any, updatedAt: any } };
 
 export type CreateClipMutationVariables = Exact<{
   input: CreateClipInput;
 }>;
 
 
-export type CreateClipMutation = { __typename?: 'Mutation', createClip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, sourceId: string, createdAt: any, updatedAt: any } };
+export type CreateClipMutation = { __typename?: 'Mutation', createClip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, createdAt: any, updatedAt: any } };
 
 export type CreateDashboardMutationVariables = Exact<{
   input: CreateDashboardInput;
@@ -551,7 +544,7 @@ export type CreateVirtualSourceMutationVariables = Exact<{
 }>;
 
 
-export type CreateVirtualSourceMutation = { __typename?: 'Mutation', createVirtualSource: { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, clipId: string, createdAt: any, updatedAt: any }> } };
+export type CreateVirtualSourceMutation = { __typename?: 'Mutation', createVirtualSource: { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, createdAt: any, updatedAt: any }> } };
 
 export type DeleteChartMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -587,7 +580,7 @@ export type UpdateChartMutationVariables = Exact<{
 }>;
 
 
-export type UpdateChartMutation = { __typename?: 'Mutation', updateChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, clipId: string, createdAt: any, updatedAt: any } };
+export type UpdateChartMutation = { __typename?: 'Mutation', updateChart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, createdAt: any, updatedAt: any } };
 
 export type UpdateClipMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -595,7 +588,7 @@ export type UpdateClipMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClipMutation = { __typename?: 'Mutation', updateClip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, sourceId: string, createdAt: any, updatedAt: any } };
+export type UpdateClipMutation = { __typename?: 'Mutation', updateClip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, createdAt: any, updatedAt: any } };
 
 export type UpdateDashboardMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -626,7 +619,7 @@ export type ChartQueryVariables = Exact<{
 }>;
 
 
-export type ChartQuery = { __typename?: 'Query', chart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, clipId: string, createdAt: any, updatedAt: any } };
+export type ChartQuery = { __typename?: 'Query', chart: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, createdAt: any, updatedAt: any } };
 
 export type ChartConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
@@ -635,18 +628,17 @@ export type ChartConnectionQueryVariables = Exact<{
   after?: InputMaybe<Scalars['String']>;
   query?: InputMaybe<Scalars['String']>;
   orderBy?: InputMaybe<Ordering>;
-  filter?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type ChartConnectionQuery = { __typename?: 'Query', chartConnection: { __typename?: 'ChartConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ChartEdge', node: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, clipId: string, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+export type ChartConnectionQuery = { __typename?: 'Query', chartConnection: { __typename?: 'ChartConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ChartEdge', node: { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export type ClipQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type ClipQuery = { __typename?: 'Query', clip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, sourceId: string, createdAt: any, updatedAt: any } };
+export type ClipQuery = { __typename?: 'Query', clip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, createdAt: any, updatedAt: any } };
 
 export type ClipConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
@@ -655,7 +647,6 @@ export type ClipConnectionQueryVariables = Exact<{
   after?: InputMaybe<Scalars['String']>;
   query?: InputMaybe<Scalars['String']>;
   orderBy?: InputMaybe<Ordering>;
-  filter?: InputMaybe<Scalars['String']>;
 }>;
 
 
@@ -675,7 +666,6 @@ export type DashboardConnectionQueryVariables = Exact<{
   after?: InputMaybe<Scalars['String']>;
   query?: InputMaybe<Scalars['String']>;
   orderBy?: InputMaybe<Ordering>;
-  filter?: InputMaybe<Scalars['String']>;
 }>;
 
 
@@ -686,7 +676,7 @@ export type SourceQueryVariables = Exact<{
 }>;
 
 
-export type SourceQuery = { __typename?: 'Query', source: { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null, tags: Array<string> } | { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, clipId: string, createdAt: any, updatedAt: any }> } };
+export type SourceQuery = { __typename?: 'Query', source: { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null, tags: Array<string> } | { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, createdAt: any, updatedAt: any }> } };
 
 export type SourceConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
@@ -695,11 +685,10 @@ export type SourceConnectionQueryVariables = Exact<{
   after?: InputMaybe<Scalars['String']>;
   query?: InputMaybe<Scalars['String']>;
   orderBy?: InputMaybe<Ordering>;
-  filter?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type SourceConnectionQuery = { __typename?: 'Query', sourceConnection: { __typename?: 'SourceConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'SourceEdge', node: { __typename: 'DatabaseSource', id: string, name: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null, tags: Array<string>, typename: 'DatabaseSource' } | { __typename: 'VirtualSource', id: string, name: string, createdAt: any, updatedAt: any, tags: Array<string>, typename: 'VirtualSource', tables: Array<{ __typename?: 'VirtualSourceTable', name: string, clipId: string }> } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+export type SourceConnectionQuery = { __typename?: 'Query', sourceConnection: { __typename?: 'SourceConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'SourceEdge', node: { __typename: 'DatabaseSource', id: string, name: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null, tags: Array<string>, typename: 'DatabaseSource' } | { __typename: 'VirtualSource', id: string, name: string, createdAt: any, updatedAt: any, tags: Array<string>, typename: 'VirtualSource', tables: Array<{ __typename?: 'VirtualSourceTable', name: string, clip: { __typename?: 'Clip', id: string } }> } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export const ChartFragmentDoc = gql`
     fragment Chart on Chart {
@@ -709,7 +698,6 @@ export const ChartFragmentDoc = gql`
   type
   tags
   config
-  clipId
   createdAt
   updatedAt
 }
@@ -721,7 +709,6 @@ export const ClipFragmentDoc = gql`
   token
   sql
   tags
-  sourceId
   createdAt
   updatedAt
 }
@@ -774,7 +761,6 @@ export const VirtualSourceFragmentDoc = gql`
   tables {
     id
     name
-    clipId
     createdAt
     updatedAt
   }
@@ -1302,7 +1288,7 @@ export type ChartQueryHookResult = ReturnType<typeof useChartQuery>;
 export type ChartLazyQueryHookResult = ReturnType<typeof useChartLazyQuery>;
 export type ChartQueryResult = Apollo.QueryResult<ChartQuery, ChartQueryVariables>;
 export const ChartConnectionDocument = gql`
-    query ChartConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering, $filter: String) {
+    query ChartConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering) {
   chartConnection: charts(
     first: $first
     last: $last
@@ -1310,7 +1296,6 @@ export const ChartConnectionDocument = gql`
     after: $after
     query: $query
     orderBy: $orderBy
-    filter: $filter
   ) {
     edges {
       node {
@@ -1346,7 +1331,6 @@ export const ChartConnectionDocument = gql`
  *      after: // value for 'after'
  *      query: // value for 'query'
  *      orderBy: // value for 'orderBy'
- *      filter: // value for 'filter'
  *   },
  * });
  */
@@ -1397,7 +1381,7 @@ export type ClipQueryHookResult = ReturnType<typeof useClipQuery>;
 export type ClipLazyQueryHookResult = ReturnType<typeof useClipLazyQuery>;
 export type ClipQueryResult = Apollo.QueryResult<ClipQuery, ClipQueryVariables>;
 export const ClipConnectionDocument = gql`
-    query ClipConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering, $filter: String) {
+    query ClipConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering) {
   clipConnection: clips(
     first: $first
     last: $last
@@ -1405,7 +1389,6 @@ export const ClipConnectionDocument = gql`
     after: $after
     query: $query
     orderBy: $orderBy
-    filter: $filter
   ) {
     edges {
       node {
@@ -1445,7 +1428,6 @@ export const ClipConnectionDocument = gql`
  *      after: // value for 'after'
  *      query: // value for 'query'
  *      orderBy: // value for 'orderBy'
- *      filter: // value for 'filter'
  *   },
  * });
  */
@@ -1496,7 +1478,7 @@ export type DashboardQueryHookResult = ReturnType<typeof useDashboardQuery>;
 export type DashboardLazyQueryHookResult = ReturnType<typeof useDashboardLazyQuery>;
 export type DashboardQueryResult = Apollo.QueryResult<DashboardQuery, DashboardQueryVariables>;
 export const DashboardConnectionDocument = gql`
-    query DashboardConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering, $filter: String) {
+    query DashboardConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering) {
   dashboardConnection: dashboards(
     first: $first
     last: $last
@@ -1504,7 +1486,6 @@ export const DashboardConnectionDocument = gql`
     after: $after
     query: $query
     orderBy: $orderBy
-    filter: $filter
   ) {
     edges {
       node {
@@ -1540,7 +1521,6 @@ export const DashboardConnectionDocument = gql`
  *      after: // value for 'after'
  *      query: // value for 'query'
  *      orderBy: // value for 'orderBy'
- *      filter: // value for 'filter'
  *   },
  * });
  */
@@ -1593,7 +1573,7 @@ export type SourceQueryHookResult = ReturnType<typeof useSourceQuery>;
 export type SourceLazyQueryHookResult = ReturnType<typeof useSourceLazyQuery>;
 export type SourceQueryResult = Apollo.QueryResult<SourceQuery, SourceQueryVariables>;
 export const SourceConnectionDocument = gql`
-    query SourceConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering, $filter: String) {
+    query SourceConnection($first: Int, $last: Int, $before: String, $after: String, $query: String, $orderBy: Ordering) {
   sourceConnection: sources(
     first: $first
     last: $last
@@ -1601,7 +1581,6 @@ export const SourceConnectionDocument = gql`
     after: $after
     query: $query
     orderBy: $orderBy
-    filter: $filter
   ) {
     edges {
       node {
@@ -1626,7 +1605,9 @@ export const SourceConnectionDocument = gql`
           tags
           tables {
             name
-            clipId
+            clip {
+              id
+            }
           }
         }
       }
@@ -1660,7 +1641,6 @@ export const SourceConnectionDocument = gql`
  *      after: // value for 'after'
  *      query: // value for 'query'
  *      orderBy: // value for 'orderBy'
- *      filter: // value for 'filter'
  *   },
  * });
  */

@@ -20,11 +20,15 @@ export class SourceResolver {
   async source(
     @Args("id", { type: () => ID }) id: string
   ): Promise<DatabaseSource | VirtualSource> {
-    const source = await this.sourceService.findOne({ where: { id } });
+    const source = await this.sourceService.repository.findOne({ id });
 
     return source.type === SourceType.VIRTUAL
-      ? plainToInstance(VirtualSource, source)
-      : plainToInstance(DatabaseSource, source);
+      ? plainToInstance(VirtualSource, source, {
+          enableCircularCheck: true,
+        })
+      : plainToInstance(DatabaseSource, source, {
+          enableCircularCheck: true,
+        });
   }
 
   @Query(() => SourceConnection)
@@ -32,22 +36,28 @@ export class SourceResolver {
     const connection = await this.sourceService.getConnection(args);
 
     connection.edges = connection.edges.map((edge) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const node: any =
         edge.node.type === SourceType.VIRTUAL
-          ? plainToInstance(VirtualSource, edge.node)
-          : plainToInstance(DatabaseSource, edge.node);
+          ? plainToInstance(VirtualSource, edge.node, {
+              enableCircularCheck: true,
+            })
+          : plainToInstance(DatabaseSource, edge.node, {
+              enableCircularCheck: true,
+            });
 
       return { ...edge, node };
     });
 
-    return connection;
+    return connection as SourceConnection;
   }
 
   @Mutation(() => ID)
   async deleteSource(
     @Args("id", { type: () => ID }) id: string
   ): Promise<string> {
-    await this.sourceService.delete({ id });
+    const source = await this.sourceService.repository.findOneOrFail({ id });
+    await this.sourceService.repository.removeAndFlush(source);
     return id;
   }
 }

@@ -4,7 +4,6 @@ fragment VirtualSource on VirtualSource {
   tables {
     id
     name
-    clipId
     createdAt
     updatedAt
   }

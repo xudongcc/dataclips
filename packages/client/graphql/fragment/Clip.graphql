@@ -4,7 +4,6 @@ fragment Clip on Clip {
   token
   sql
   tags
-  sourceId
   createdAt
   updatedAt
 }

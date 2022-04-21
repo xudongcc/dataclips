@@ -1,29 +1,26 @@
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimarySnowflakeColumn,
-  UpdateDateColumn,
-} from "@nest-boot/database";
+import { Entity, PrimaryKey, Property, t } from "@mikro-orm/core";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { SnowflakeIdGenerator } from "snowflake-id-generator";
 
 @ObjectType()
-@Entity({ searchable: true })
-export class Project extends BaseEntity {
+@Entity()
+export class Project {
   @Field(() => ID)
-  @PrimarySnowflakeColumn()
+  @PrimaryKey({
+    type: t.bigint,
+    onCreate: () => SnowflakeIdGenerator.next().toString(),
+  })
   id: string;
 
   @Field()
-  @Column()
+  @Property()
   name: string;
 
   @Field()
-  @CreateDateColumn()
-  createdAt: Date;
+  @Property()
+  createdAt: Date = new Date();
 
   @Field()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Property({ onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
 }

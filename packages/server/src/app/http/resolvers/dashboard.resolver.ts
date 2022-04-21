@@ -18,7 +18,7 @@ export class DashboardResolver {
   async dashboard(
     @Args("id", { type: () => ID }) id: string
   ): Promise<Dashboard> {
-    return await this.dashboardService.findOne({ where: { id } });
+    return this.dashboardService.repository.findOne({ id });
   }
 
   @Query(() => DashboardConnection)
@@ -32,9 +32,11 @@ export class DashboardResolver {
   async createDashboard(
     @Args("input") input: CreateDashboardInput
   ): Promise<Dashboard> {
-    return await this.dashboardService.create({
-      ...input,
-    });
+    const dashboard = this.dashboardService.repository.create(input);
+
+    await this.dashboardService.repository.persistAndFlush(dashboard);
+
+    return dashboard;
   }
 
   @Mutation(() => Dashboard)
@@ -42,16 +44,27 @@ export class DashboardResolver {
     @Args("id", { type: () => ID }) id: string,
     @Args("input") input: UpdateDashboardInput
   ): Promise<Dashboard> {
-    await this.dashboardService.update({ id }, input);
+    const dashboard = this.dashboardService.repository.findOneOrFail({ id });
 
-    return await this.dashboardService.findOne({ where: { id } });
+    Object.entries(input).forEach(([key, value]) => {
+      dashboard[key] = value;
+    });
+
+    await this.dashboardService.repository.persistAndFlush(dashboard);
+
+    return dashboard;
   }
 
   @Mutation(() => ID)
   async deleteDashboard(
     @Args("id", { type: () => ID }) id: string
   ): Promise<string> {
-    await this.dashboardService.delete({ id });
+    const dashboard = await this.dashboardService.repository.findOneOrFail({
+      id,
+    });
+
+    await this.dashboardService.repository.removeAndFlush(dashboard);
+
     return id;
   }
 }

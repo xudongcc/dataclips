@@ -1,12 +1,13 @@
+import { EntityManager } from "@mikro-orm/postgresql";
 import { LoggerModule } from "@nest-boot/common";
 import { DatabaseModule } from "@nest-boot/database";
 import { QueueModule } from "@nest-boot/queue";
 import { RedisModule } from "@nest-boot/redis";
 import { SearchModule } from "@nest-boot/search";
-import { MeiliSearchEngine } from "@nest-boot/search-engine-meilisearch";
+import { PostgresqlSearchEngine } from "@nest-boot/search-engine-postgresql";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { TypeOrmModule } from "@nestjs/typeorm";
+import { DiscoveryService } from "@nestjs/core";
 
 import { CryptoModule } from "../../crypto";
 import { Chart } from "./entities/chart.entity";
@@ -51,9 +52,7 @@ const services = [
 
 const queues = [RefreshClipQueue];
 
-const DatabaseDynamicModule = DatabaseModule.register({
-  entities: Object.values(entities),
-});
+const DatabaseDynamicModule = DatabaseModule.forRoot();
 
 const RedisDynamicModule = RedisModule.registerAsync({
   imports: [],
@@ -70,13 +69,13 @@ const RedisDynamicModule = RedisModule.registerAsync({
 });
 
 const SearchDynamicModule = SearchModule.registerAsync({
-  imports: [],
-  inject: [ConfigService],
-  useFactory: (configService: ConfigService) => ({
-    engine: new MeiliSearchEngine({
-      host: configService.get("MEILISEARCH_HOST"),
-      apiKey: configService.get("MEILISEARCH_KEY"),
-    }),
+  imports: [DatabaseDynamicModule],
+  inject: [DiscoveryService, EntityManager],
+  useFactory: (
+    discoveryService: DiscoveryService,
+    entityManager: EntityManager
+  ) => ({
+    engine: new PostgresqlSearchEngine(discoveryService, entityManager),
   }),
 });
 
@@ -91,7 +90,7 @@ const providers = [...services, ...queues];
     ConfigModule.forRoot({ isGlobal: true, expandVariables: true }),
     CryptoModule,
     LoggerModule.register(),
-    TypeOrmModule.forFeature(Object.values(entities)),
+    DatabaseModule.forFeature(Object.values(entities)),
     RedisDynamicModule,
     SearchDynamicModule,
     QueueDynamicModule,

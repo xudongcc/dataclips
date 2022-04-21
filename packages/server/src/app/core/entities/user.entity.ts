@@ -1,36 +1,34 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimarySnowflakeColumn,
-  UpdateDateColumn,
-} from "@nest-boot/database";
+import { Entity, PrimaryKey, Property, t } from "@mikro-orm/core";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { SnowflakeIdGenerator } from "snowflake-id-generator";
 
 @ObjectType()
 @Entity()
 export class User {
   @Field(() => ID)
-  @PrimarySnowflakeColumn()
+  @PrimaryKey({
+    type: t.bigint,
+    onCreate: () => SnowflakeIdGenerator.next().toString(),
+  })
   id: string;
 
   @Field()
-  @Column()
+  @Property()
   name: string;
 
   @Field()
-  @Column({ unique: true })
+  @Property({ unique: true })
   email: string;
 
   @Field({ nullable: true })
-  @Column({ type: "text", nullable: true })
+  @Property({ type: t.text, nullable: true })
   avatar?: string;
 
   @Field()
-  @CreateDateColumn()
-  createdAt: Date;
+  @Property()
+  createdAt: Date = new Date();
 
   @Field()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Property({ onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
 }

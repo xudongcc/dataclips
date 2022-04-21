@@ -7,5 +7,9 @@ import { User } from "../entities/user.entity";
 
 @Injectable()
 export class UserService extends mixinConnection(
-  mixinSearchable(createEntityService(User))
+  mixinSearchable(createEntityService(User), {
+    index: "User",
+    searchableAttributes: ["id", "name", "email"],
+    sortableAttributes: [],
+  })
 ) {}

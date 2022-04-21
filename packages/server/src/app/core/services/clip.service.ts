@@ -1,13 +1,8 @@
-import {
-  createEntityService,
-  FindOneOptions,
-  LessThan,
-  MoreThan,
-} from "@nest-boot/database";
+import { QueryOrder } from "@mikro-orm/core";
+import { createEntityService } from "@nest-boot/database";
 import { mixinConnection } from "@nest-boot/graphql";
 import { mixinSearchable } from "@nest-boot/search";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import _ from "lodash";
 import moment from "moment";
 
 import { Clip } from "../entities/clip.entity";
@@ -18,7 +13,11 @@ import { SourceService } from "./source.service";
 
 @Injectable()
 export class ClipService extends mixinConnection(
-  mixinSearchable(createEntityService(Clip))
+  mixinSearchable(createEntityService(Clip), {
+    index: "Clip",
+    searchableAttributes: ["id", "name"],
+    sortableAttributes: [],
+  })
 ) {
   constructor(
     @Inject(forwardRef(() => SourceService))
@@ -31,15 +30,18 @@ export class ClipService extends mixinConnection(
   }
 
   async query(id: Clip["id"], throwError = false): Promise<Result> {
-    const clip = await this.findOne({ where: { id } });
+    const clip = await this.repository.findOne({ id });
 
-    let queryResult: [string[], unknown[][]];
+    let queryResult: [string[], (string | number | boolean | Date)[][]];
     let queryError: Error;
 
     const startedAt = new Date();
 
     try {
-      queryResult = await this.sourceService.query(clip.sourceId, clip.sql);
+      queryResult = await this.sourceService.query(
+        clip.source.getEntity(),
+        clip.sql
+      );
     } catch (err) {
       queryError = err;
 
@@ -50,7 +52,7 @@ export class ClipService extends mixinConnection(
     const finishedAt = new Date();
 
     const [result] = await Promise.all([
-      this.resultService.create({
+      this.resultService.repository.create({
         clip,
         name: clip.name,
         fields: queryResult?.[0] || [],
@@ -60,8 +62,9 @@ export class ClipService extends mixinConnection(
         startedAt,
         finishedAt,
       }),
-      this.update({ id }, { latestResultAt: finishedAt }),
     ]);
+    clip.latestResultAt = finishedAt;
+    await this.resultService.repository.flush();
 
     if (queryError && throwError) {
       throw queryError;
@@ -70,21 +73,13 @@ export class ClipService extends mixinConnection(
     return result;
   }
 
-  async findOneByToken(
-    idOrToken: string,
-    options?: FindOneOptions<Clip>
-  ): Promise<Clip> {
-    return await this.findOne({
-      ...options,
-      where: { token: idOrToken },
-    });
-  }
-
   async fetchResult(id: Clip["id"], sync = false) {
-    const result = await this.resultService.findOne({
-      where: { clip: { id } },
-      order: { startedAt: "DESC" },
-    });
+    const result = await this.resultService.repository.findOne(
+      { clip: { id } },
+      {
+        orderBy: { startedAt: QueryOrder.DESC },
+      }
+    );
 
     if (!result || moment().subtract(1, "m").isAfter(result.finishedAt)) {
       await this.refreshClipQueue.add("query", { clipId: id });
@@ -96,12 +91,14 @@ export class ClipService extends mixinConnection(
   async schedule() {
     await this.chunkById(
       {
-        where: {
-          lastViewedAt: MoreThan(moment().subtract(7, "d").toDate()),
-          latestResultAt: LessThan(moment().subtract(1, "h").toDate()),
+        lastViewedAt: {
+          $gt: moment().subtract(7, "d").toDate(),
+        },
+        latestResultAt: {
+          $lt: moment().subtract(1, "h").toDate(),
         },
       },
-      500,
+      { limit: 500 },
       async (clips) => {
         await this.refreshClipQueue.addBulk(
           clips.map((clip) => ({

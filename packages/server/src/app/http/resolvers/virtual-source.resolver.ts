@@ -1,4 +1,3 @@
-import { In } from "@nest-boot/database";
 import { BadRequestException, UseGuards } from "@nestjs/common";
 import {
   Args,
@@ -40,22 +39,18 @@ export class VirtualSourceResolver {
       throw new BadRequestException("存在重复的数据裁剪选项");
     }
 
-    const source = await this.sourceService.create({
+    const source = this.sourceService.repository.create({
       ..._.omit(input, "tables"),
       type: SourceType.VIRTUAL,
     });
 
-    await Bluebird.map(
-      input.tables,
-      async (table) => {
-        await this.virtualSourceTableService.create({
-          name: table.name,
-          clip: { id: table.clipId },
-          source,
-        });
-      },
-      { concurrency: 5 }
+    source.tables.add(
+      ...input.tables.map((item) =>
+        this.virtualSourceTableService.repository.create(item)
+      )
     );
+
+    await this.sourceService.repository.persistAndFlush(source);
 
     return source;
   }
@@ -72,69 +67,45 @@ export class VirtualSourceResolver {
       throw new BadRequestException("存在重复的数据裁剪选项");
     }
 
-    await this.sourceService.update({ id }, _.pick(input, ["name", "tags"]));
+    const source = await this.sourceService.repository.findOneOrFail(
+      { id },
+      { populate: ["tables"] }
+    );
 
-    const tables = await this.virtualSourceTableService.findAll({
-      where: { source: { id } },
+    Object.entries(_.pick(input, ["name", "tags"])).forEach(([key, value]) => {
+      source[key] = value;
     });
 
-    const inputTableIds = input.tables.map((item) => item.id);
+    const newTableIds = input.tables.map((item) => item.id);
 
-    // 将要删除的项
-    const willDeleteTableIds = tables
-      .filter((item) => !inputTableIds.includes(item.id))
-      .map((item) => item.id);
+    // 删除新表中不存在的项目
+    source.tables.remove((item) => !newTableIds.includes(item.id));
 
-    if (willDeleteTableIds.length) {
-      await this.virtualSourceTableService.delete({
-        id: In(willDeleteTableIds),
-      });
-    }
+    input.tables.forEach((newTable) => {
+      if (newTable.id) {
+        const table = source.tables
+          .getItems()
+          .find((oldTable) => oldTable.id === newTable.id);
 
-    // 将要增加的项
-    const willAddTables = input.tables.filter((item) => !item?.id);
-
-    if (willAddTables.length) {
-      await Bluebird.map(
-        willAddTables,
-        async (table) => {
-          await this.virtualSourceTableService.create({
-            name: table.name,
-            clip: { id: table.clipId },
-            source: { id },
+        if (table) {
+          Object.entries(newTable).forEach(([key, value]) => {
+            table[key] = value;
           });
-        },
-        { concurrency: 5 }
-      );
-    }
+        }
+      } else {
+        source.tables.add(
+          this.virtualSourceTableService.repository.create(newTable)
+        );
+      }
+    });
 
-    // 将要更新的项
-    const willUpdateTableIds = tables
-      .filter((item) => !willDeleteTableIds.includes(item.id))
-      .map((item) => item.id);
+    await this.virtualSourceTableService.repository.flush();
 
-    if (willUpdateTableIds.length) {
-      const willUpdateInputTables = input.tables.filter((item) =>
-        willUpdateTableIds.includes(item.id)
-      );
-
-      await Bluebird.map(
-        willUpdateInputTables,
-        async (table) => {
-          await this.virtualSourceTableService.update(
-            { id: table.id },
-            { name: table.name }
-          );
-        },
-        { concurrency: 5 }
-      );
-    }
-
-    return await this.sourceService.findOne({ where: { id } });
+    return source;
   }
 
   @ResolveField(() => [VirtualSourceTable])
   async tables(@Parent() source: Source): Promise<VirtualSourceTable[]> {
-    return await this.virtualSourceTableService.findAll({ where: { source } });
+    return this.virtualSourceTableService.repository.find({ source });
   }
 }

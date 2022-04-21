@@ -1,13 +1,13 @@
 import {
-  Column,
-  CreateDateColumn,
   Entity,
+  IdentifiedReference,
   ManyToOne,
-  PrimarySnowflakeColumn,
-  RelationId,
-  UpdateDateColumn,
-} from "@nest-boot/database";
+  PrimaryKey,
+  Property,
+  t,
+} from "@mikro-orm/core";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
+import { SnowflakeIdGenerator } from "snowflake-id-generator";
 
 import { Clip } from "./clip.entity";
 
@@ -15,51 +15,48 @@ import { Clip } from "./clip.entity";
 @Entity()
 export class Result {
   @Field(() => ID)
-  @PrimarySnowflakeColumn()
+  @PrimaryKey({
+    type: t.bigint,
+    onCreate: () => SnowflakeIdGenerator.next().toString(),
+  })
   id: string;
 
   @Field()
-  @Column()
+  @Property()
   name: string;
 
   @Field(() => [String])
-  @Column({ type: "json", generator: () => [] })
+  @Property({ type: t.json, onCreate: () => [] })
   fields: string[];
 
   @Field(() => [[String]])
-  @Column({ type: "json", generator: () => [] })
+  @Property({ type: t.json, onCreate: () => [] })
   values: (string | number | boolean | Date)[][];
 
   @Field({ nullable: true })
-  @Column({ type: "text", nullable: true })
+  @Property({ type: t.text, nullable: true })
   error?: string;
 
   @Field(() => Int)
-  @Column({ type: "int" })
+  @Property({ type: t.integer })
   duration: number;
 
   @Field({ nullable: true })
-  @Column({ type: "timestamp", precision: 3, nullable: true })
+  @Property({ nullable: true })
   startedAt: Date;
 
   @Field({ nullable: true })
-  @Column({ type: "timestamp", precision: 3, nullable: true })
+  @Property({ nullable: true })
   finishedAt: Date;
 
   @Field()
-  @CreateDateColumn()
-  createdAt: Date;
+  @Property()
+  createdAt: Date = new Date();
 
   @Field()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Property({ onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
 
-  @ManyToOne(() => Clip, (clip) => clip.results, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
-  })
-  clip: Clip;
-
-  @RelationId((result: Result) => result.clip)
-  clipId: Clip["id"];
+  @ManyToOne()
+  clip: IdentifiedReference<Clip>;
 }

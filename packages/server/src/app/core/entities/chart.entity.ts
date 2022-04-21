@@ -1,60 +1,57 @@
 import {
-  Column,
-  CreateDateColumn,
   Entity,
+  IdentifiedReference,
   ManyToOne,
-  PrimarySnowflakeColumn,
-  RelationId,
-  UpdateDateColumn,
-} from "@nest-boot/database";
+  PrimaryKey,
+  Property,
+  t,
+} from "@mikro-orm/core";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-type-json";
 import { nanoid } from "nanoid";
+import { SnowflakeIdGenerator } from "snowflake-id-generator";
 
 import { ChartType } from "../enums/chart-type.enum";
 import { Clip } from "./clip.entity";
 
 @ObjectType()
-@Entity({ searchable: true })
+@Entity()
 export class Chart {
   @Field(() => ID)
-  @PrimarySnowflakeColumn()
+  @PrimaryKey({
+    type: t.bigint,
+    onCreate: () => SnowflakeIdGenerator.next().toString(),
+  })
   id: string;
 
   @Field()
-  @Column()
+  @Property()
   name: string;
 
   @Field({ nullable: true })
-  @Column({ nullable: true, generator: () => nanoid() })
+  @Property({ nullable: true, onCreate: () => nanoid() })
   token: string;
 
   @Field(() => ChartType)
-  @Column()
+  @Property()
   type: ChartType;
 
   @Field(() => [String])
-  @Column({ type: "json", default: [], generator: () => [] })
+  @Property({ type: t.json, onCreate: () => [] })
   tags: string[];
 
   @Field(() => GraphQLJSONObject)
-  @Column({ type: "json" })
-  config: Record<string, any>;
+  @Property({ type: t.json })
+  config: Record<string, unknown>;
 
   @Field()
-  @CreateDateColumn()
-  createdAt: Date;
+  @Property()
+  createdAt: Date = new Date();
 
   @Field()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Property({ onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
 
-  @ManyToOne(() => Clip, (clip) => clip.charts, {
-    cascade: true,
-  })
-  clip: Clip;
-
-  @Field(() => ID)
-  @RelationId((chart: Chart) => chart.clip)
-  clipId: Clip["id"];
+  @ManyToOne()
+  clip: IdentifiedReference<Clip>;
 }

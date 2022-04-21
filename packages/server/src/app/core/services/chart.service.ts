@@ -7,5 +7,9 @@ import { Chart } from "../entities/chart.entity";
 
 @Injectable()
 export class ChartService extends mixinConnection(
-  mixinSearchable(createEntityService(Chart))
+  mixinSearchable(createEntityService(Chart), {
+    index: "Chart",
+    searchableAttributes: ["id", "name"],
+    sortableAttributes: [],
+  })
 ) {}

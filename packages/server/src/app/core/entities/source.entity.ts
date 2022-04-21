@@ -1,12 +1,13 @@
 import {
-  Column,
-  CreateDateColumn,
+  Collection,
   Entity,
   OneToMany,
-  PrimarySnowflakeColumn,
-  UpdateDateColumn,
-} from "@nest-boot/database";
+  PrimaryKey,
+  Property,
+  t,
+} from "@mikro-orm/core";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { SnowflakeIdGenerator } from "snowflake-id-generator";
 
 import { DatabaseType } from "../enums/database-type.enum";
 import { SourceType } from "../enums/source-type.enum";
@@ -14,66 +15,69 @@ import { Clip } from "./clip.entity";
 import { VirtualSourceTable } from "./virtual-source-table.entity";
 
 @ObjectType()
-@Entity({ searchable: true })
+@Entity()
 export class Source {
   @Field(() => ID)
-  @PrimarySnowflakeColumn()
+  @PrimaryKey({
+    type: t.bigint,
+    onCreate: () => SnowflakeIdGenerator.next().toString(),
+  })
   id: string;
 
-  @Column()
+  @Property()
   name: string;
 
-  @Column()
+  @Property()
   type: SourceType | DatabaseType;
 
   @Field(() => [String])
-  @Column({ type: "json", default: [], generator: () => [] })
+  @Property({ type: t.json, onCreate: () => [] })
   tags: string[];
 
-  @Column({ nullable: true })
+  @Property({ nullable: true })
   host?: string;
 
-  @Column({ type: "int", nullable: true })
+  @Property({ type: t.integer, nullable: true })
   port?: number;
 
-  @Column({ nullable: true })
+  @Property({ nullable: true })
   database?: string;
 
-  @Column({ nullable: true })
+  @Property({ nullable: true })
   username: string;
 
-  @Column({ nullable: true })
+  @Property({ nullable: true })
   password?: string;
 
-  @Column({ default: false })
+  @Property({ default: false })
   sshEnabled: boolean;
 
-  @Column({ nullable: true })
+  @Property({ nullable: true })
   sshHost?: string;
 
-  @Column({ type: "int", nullable: true })
+  @Property({ type: t.integer, nullable: true })
   sshPort?: number;
 
-  @Column({ nullable: true })
+  @Property({ nullable: true })
   sshUsername?: string;
 
-  @Column({ nullable: true })
+  @Property({ nullable: true })
   sshPassword?: string;
 
-  @Column({ nullable: true })
+  @Property({ nullable: true })
   sshKey?: string;
 
   @Field()
-  @CreateDateColumn()
-  createdAt: Date;
+  @Property()
+  createdAt: Date = new Date();
 
   @Field()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Property({ onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
 
   @OneToMany(() => Clip, (clip) => clip.source)
-  clips: Clip[];
+  clips = new Collection<Clip>(this);
 
   @OneToMany(() => VirtualSourceTable, (tables) => tables.source)
-  tables: VirtualSourceTable[];
+  tables = new Collection<VirtualSourceTable>(this);
 }

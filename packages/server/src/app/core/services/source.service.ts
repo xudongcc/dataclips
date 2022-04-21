@@ -1,9 +1,5 @@
 import { Logger } from "@nest-boot/common";
-import {
-  createEntityService,
-  DeepPartial,
-  FindConditions,
-} from "@nest-boot/database";
+import { createEntityService } from "@nest-boot/database";
 import { mixinConnection } from "@nest-boot/graphql";
 import { mixinSearchable } from "@nest-boot/search";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
@@ -24,7 +20,11 @@ const createTunnel = promisify(tunnelSSH);
 
 @Injectable()
 export class SourceService extends mixinConnection(
-  mixinSearchable(createEntityService(Source))
+  mixinSearchable(createEntityService(Source), {
+    index: "Source",
+    searchableAttributes: ["id", "name"],
+    sortableAttributes: [],
+  })
 ) {
   constructor(
     private readonly logger: Logger,
@@ -36,7 +36,7 @@ export class SourceService extends mixinConnection(
     super();
   }
 
-  async create(input: DeepPartial<Source>): Promise<Source> {
+  async create(input: Partial<Source>): Promise<Source> {
     if (input.password) {
       // eslint-disable-next-line no-param-reassign
       input.password = this.cryptoService.encrypt(input.password);
@@ -47,29 +47,16 @@ export class SourceService extends mixinConnection(
       input.sshPassword = this.cryptoService.encrypt(input.sshPassword);
     }
 
-    return await super.create(input);
+    const source = this.repository.create(input);
+    await this.repository.persistAndFlush(source);
+
+    return source;
   }
 
-  async update(
-    conditions: FindConditions<Source>,
-    input?: DeepPartial<Source>
-  ): Promise<this> {
-    if (input.password) {
-      // eslint-disable-next-line no-param-reassign
-      input.password = this.cryptoService.encrypt(input.password);
-    }
-
-    if (input.sshPassword) {
-      // eslint-disable-next-line no-param-reassign
-      input.sshPassword = this.cryptoService.encrypt(input.sshPassword);
-    }
-
-    return await super.update(conditions, input);
-  }
-
-  async query(id: Source["id"], sql: string): Promise<[string[], unknown[][]]> {
-    const source = await this.findOne({ where: { id } });
-
+  async query(
+    source: Source,
+    sql: string
+  ): Promise<[string[], (string | number | boolean | Date)[][]]> {
     const localHost = "localhost";
     const localPort = _.random(30000, 60000);
 
@@ -122,7 +109,10 @@ export class SourceService extends mixinConnection(
         await mysqlConnection.end();
       }
 
-      return [result[1].map((item) => item.name), result[0] as unknown[][]];
+      return [
+        result[1].map((item) => item.name),
+        result[0] as (string | number | boolean | Date)[][],
+      ];
     }
 
     if (source.type === SourceType.POSTGRESQL) {
@@ -135,7 +125,7 @@ export class SourceService extends mixinConnection(
       });
       await pgClient.connect();
 
-      let result: QueryArrayResult<unknown[]>;
+      let result: QueryArrayResult<(string | number | boolean | Date)[]>;
 
       try {
         result = await pgClient.query({ rowMode: "array", text: sql });
@@ -152,8 +142,8 @@ export class SourceService extends mixinConnection(
     }
 
     if (source.type === SourceType.VIRTUAL) {
-      const tables = await this.virtualSourceTableService.findAll({
-        where: { source },
+      const tables = await this.virtualSourceTableService.repository.find({
+        source,
       });
 
       const { Database } = await initSqlJs();
@@ -162,7 +152,7 @@ export class SourceService extends mixinConnection(
       await Bluebird.map(
         tables,
         async (table) => {
-          const result = await this.clipService.query(table.clipId, true);
+          const result = await this.clipService.query(table.clip.id, true);
 
           db.run(`CREATE TABLE ${table.name} (${result.fields.join(",")});`);
 
@@ -195,7 +185,7 @@ export class SourceService extends mixinConnection(
 
       const [{ columns, values }] = db.exec(sql);
 
-      return [columns, values];
+      return [columns, values as (string | number | boolean | Date)[][]];
     }
 
     return null;

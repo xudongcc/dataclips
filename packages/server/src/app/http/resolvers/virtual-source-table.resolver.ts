@@ -2,6 +2,7 @@ import { UseGuards } from "@nestjs/common";
 import { ID, Parent, ResolveField, Resolver } from "@nestjs/graphql";
 
 import { Clip } from "../../core/entities/clip.entity";
+import { Source } from "../../core/entities/source.entity";
 import { VirtualSourceTable } from "../../core/entities/virtual-source-table.entity";
 import { SourceType } from "../../core/enums/source-type.enum";
 import { ClipService } from "../../core/services/clip.service";
@@ -19,24 +20,18 @@ export class VirtualSourceTableResolver {
 
   @ResolveField(() => Clip)
   async clip(@Parent() virtualSourceTable: VirtualSourceTable): Promise<Clip> {
-    return await this.clipService.findOne({
-      where: { id: virtualSourceTable.clipId },
+    return await this.clipService.repository.findOne({
+      id: virtualSourceTable.clip.id,
     });
-  }
-
-  @ResolveField(() => ID)
-  async clipId(
-    @Parent() virtualSourceTable: VirtualSourceTable
-  ): Promise<Clip["id"]> {
-    return virtualSourceTable.clipId;
   }
 
   @ResolveField(() => VirtualSource)
   async virtualSource(
     @Parent() virtualSourceTable: VirtualSourceTable
-  ): Promise<VirtualSource> {
-    return await this.sourceService.findOne({
-      where: { id: virtualSourceTable.sourceId, type: SourceType.VIRTUAL },
+  ): Promise<Source> {
+    return await this.sourceService.repository.findOne({
+      id: virtualSourceTable.source.id,
+      type: SourceType.VIRTUAL,
     });
   }
 
@@ -44,6 +39,6 @@ export class VirtualSourceTableResolver {
   async virtualSourceId(
     @Parent() virtualSourceTable: VirtualSourceTable
   ): Promise<VirtualSource["id"]> {
-    return virtualSourceTable.sourceId;
+    return virtualSourceTable.source.id;
   }
 }

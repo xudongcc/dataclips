@@ -7,5 +7,9 @@ import { Dashboard } from "../entities/dashboard.entity";
 
 @Injectable()
 export class DashboardService extends mixinConnection(
-  mixinSearchable(createEntityService(Dashboard))
+  mixinSearchable(createEntityService(Dashboard), {
+    index: "Dashboard",
+    searchableAttributes: ["id", "name"],
+    sortableAttributes: [],
+  })
 ) {}
