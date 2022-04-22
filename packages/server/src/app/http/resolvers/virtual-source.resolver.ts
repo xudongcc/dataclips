@@ -118,6 +118,6 @@ export class VirtualSourceResolver {
 
   @ResolveField(() => [VirtualSourceTable])
   async tables(@Parent() source: Source): Promise<VirtualSourceTable[]> {
-    return this.virtualSourceTableService.repository.find({ source });
+    return await this.virtualSourceTableService.repository.find({ source });
   }
 }

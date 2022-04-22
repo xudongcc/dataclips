@@ -10,6 +10,7 @@ import { DatabaseSource } from "../objects/database-source.object";
 import { SourceObject } from "../objects/source.object";
 import { SourceConnection } from "../objects/source-connection.object";
 import { VirtualSource } from "../objects/virtual-source.object";
+import { omit } from "lodash";
 
 @UseGuards(AuthGuard)
 @Resolver(() => SourceObject)
@@ -50,6 +51,41 @@ export class SourceResolver {
     });
 
     return connection as SourceConnection;
+
+    // console.log(
+    //   "vvvvv",
+    //   plainToInstance(
+    //     VirtualSource,
+    //     omit(connection.edges?.[2]?.node, [
+    //       "clips",
+    //       "host",
+    //       "port",
+    //       "database",
+    //       "username",
+    //       "password",
+    //       "sshEnabled",
+    //       "sshHost",
+    //       "sshPort",
+    //       "sshUsername",
+    //       "sshPassword",
+    //       "sshKey",
+    //     ]),
+    //     {
+    //       enableCircularCheck: true,
+    //     }
+    //   )
+    // );
+
+    // console.log("connection", connection.edges?.[2]?.node);
+    return {
+      pageInfo: {
+        hasNextPage: false,
+        hasPreviousPage: false,
+        endCursor: "s",
+        startCursor: "s",
+      },
+      edges: [],
+    };
   }
 
   @Mutation(() => ID)
