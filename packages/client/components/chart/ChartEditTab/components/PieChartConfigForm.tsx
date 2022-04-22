@@ -36,7 +36,7 @@ export const PieChartConfigForm: FC<PieChartConfigFormProps> = ({
           allowClear
           placeholder="选择分类"
         >
-          {editOptionConfig?.keys.map((value) => (
+          {editOptionConfig?.keys?.map((value) => (
             <Option value={value} key={value}>
               {value}
             </Option>
@@ -55,7 +55,7 @@ export const PieChartConfigForm: FC<PieChartConfigFormProps> = ({
           allowClear
           placeholder="选择数值列"
         >
-          {editOptionConfig?.values.map((value) => (
+          {editOptionConfig?.values?.map((value) => (
             <Option value={value} key={value}>
               {value}
             </Option>

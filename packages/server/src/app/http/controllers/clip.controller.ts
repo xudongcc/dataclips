@@ -28,8 +28,6 @@ export class ClipController {
 
     const result = await this.clipService.fetchResult(clip.id);
 
-    console.log("result", result);
-
     if (!result) {
       throw new NotFoundException();
     }

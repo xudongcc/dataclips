@@ -36,7 +36,7 @@ export const BarChartConfigForm: FC<BarChartConfigFormProps> = ({
           allowClear
           placeholder="选择 x 轴"
         >
-          {editOptionConfig?.xCol.map((value) => (
+          {editOptionConfig?.xCol?.map((value) => (
             <Option value={value} key={value}>
               {value}
             </Option>
@@ -52,7 +52,7 @@ export const BarChartConfigForm: FC<BarChartConfigFormProps> = ({
           mode="multiple"
           placeholder="选择 y 轴"
         >
-          {editOptionConfig?.xCol.map((value) => (
+          {editOptionConfig?.xCol?.map((value) => (
             <Option value={value} key={value}>
               {value}
             </Option>

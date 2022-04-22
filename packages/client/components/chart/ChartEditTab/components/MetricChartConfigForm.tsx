@@ -16,7 +16,6 @@ interface MetricChartConfigFormProps {
 export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
   editOptionConfig,
 }) => {
-  console.log("editOptionConfig", editOptionConfig);
   return (
     <Space direction="vertical" size="middle" style={{ width: "100%" }}>
       <Row gutter={[16, 16]}>
