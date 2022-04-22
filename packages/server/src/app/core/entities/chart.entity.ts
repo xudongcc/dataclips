@@ -54,4 +54,7 @@ export class Chart {
 
   @ManyToOne()
   clip: IdentifiedReference<Clip>;
+
+  @Field(() => ID)
+  clipId: string;
 }

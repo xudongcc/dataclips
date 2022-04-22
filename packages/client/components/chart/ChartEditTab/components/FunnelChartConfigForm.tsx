@@ -3,8 +3,8 @@ import { Row, Col, Form, Select } from "antd";
 
 const { Option } = Select;
 export interface FunnelChartEditConfig {
-  groupCol: string[];
-  valueCol: string[];
+  groupCol?: string[];
+  valueCol?: string[];
 }
 
 interface FunnelChartConfigFormProps {
@@ -28,7 +28,7 @@ export const FunnelChartConfigForm: FC<FunnelChartConfigFormProps> = ({
             allowClear
             placeholder="选择分组列"
           >
-            {editOptionConfig?.groupCol.map((key) => (
+            {editOptionConfig?.groupCol?.map((key) => (
               <Option value={key} key={key}>
                 {key}
               </Option>
@@ -49,7 +49,7 @@ export const FunnelChartConfigForm: FC<FunnelChartConfigFormProps> = ({
             allowClear
             placeholder="选择数值列"
           >
-            {editOptionConfig?.valueCol.map((key) => (
+            {editOptionConfig?.valueCol?.map((key) => (
               <Option value={key} key={key}>
                 {key}
               </Option>

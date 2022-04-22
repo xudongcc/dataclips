@@ -48,6 +48,7 @@ export class SourceService extends mixinConnection(
     }
 
     const source = this.repository.create(input);
+
     await this.repository.persistAndFlush(source);
 
     return source;

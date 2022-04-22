@@ -44,7 +44,9 @@ export class DashboardResolver {
     @Args("id", { type: () => ID }) id: string,
     @Args("input") input: UpdateDashboardInput
   ): Promise<Dashboard> {
-    const dashboard = this.dashboardService.repository.findOneOrFail({ id });
+    const dashboard = await this.dashboardService.repository.findOneOrFail({
+      id,
+    });
 
     Object.entries(input).forEach(([key, value]) => {
       dashboard[key] = value;

@@ -62,6 +62,9 @@ export class Clip {
   @ManyToOne()
   source: IdentifiedReference<Source>;
 
+  @Field(() => ID)
+  sourceId: string;
+
   @OneToMany(() => Result, (result) => result.clip)
   results = new Collection<Result>(this);
 

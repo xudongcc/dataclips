@@ -10,8 +10,10 @@ import {
   ResolveField,
   Resolver,
 } from "@nestjs/graphql";
-import _ from "lodash";
+import _, { omit } from "lodash";
+import { SourceService } from "src/app/core/services/source.service";
 
+import { Source } from "../../core/entities/source.entity";
 import { Clip } from "../../core/entities/clip.entity";
 import { Result } from "../../core/entities/result.entity";
 import { ClipService } from "../../core/services/clip.service";
@@ -26,12 +28,13 @@ import { ClipConnection } from "../objects/clip-connection.object";
 export class ClipResolver {
   constructor(
     private readonly clipService: ClipService,
+    private readonly sourceService: SourceService,
     private readonly resultService: ResultService
   ) {}
 
   @Query(() => Clip)
   async clip(@Args("id", { type: () => ID }) id: string): Promise<Clip> {
-    return this.clipService.repository.findOne({ id });
+    return await this.clipService.repository.findOneOrFail({ id });
   }
 
   @Query(() => ClipConnection)
@@ -41,9 +44,13 @@ export class ClipResolver {
 
   @Mutation(() => Clip)
   async createClip(@Args("input") input: CreateClipInput): Promise<Clip> {
+    const source = await this.sourceService.repository.findOneOrFail({
+      id: input.sourceId,
+    });
+
     const clip = this.clipService.repository.create({
-      ...input,
-      source: { id: input.sourceId },
+      ...omit(input, ["sourceId"]),
+      source,
     });
 
     await this.clipService.repository.persistAndFlush(clip);
@@ -58,7 +65,16 @@ export class ClipResolver {
   ): Promise<Clip> {
     const clip = await this.clipService.repository.findOneOrFail({ id });
 
-    await this.clipService.query(id);
+    const source = await this.sourceService.repository.findOneOrFail({
+      id: input.sourceId,
+    });
+
+    this.clipService.repository.assign(clip, {
+      ...omit(input, ["sourceId"]),
+      source,
+    });
+
+    await this.clipService.repository.persistAndFlush(clip);
 
     return clip;
   }
@@ -68,7 +84,8 @@ export class ClipResolver {
     @Args("id", { type: () => ID }) id: string
   ): Promise<string> {
     const clip = await this.clipService.repository.findOneOrFail({ id });
-    await this.clipService.repository.persistAndFlush(clip);
+
+    await this.clipService.repository.removeAndFlush(clip);
     return id;
   }
 
@@ -81,5 +98,10 @@ export class ClipResolver {
         orderBy: { createdAt: QueryOrder.DESC },
       }
     );
+  }
+
+  @ResolveField(() => Source)
+  sourceId(@Parent() clip: Clip): string {
+    return clip.source.id;
   }
 }

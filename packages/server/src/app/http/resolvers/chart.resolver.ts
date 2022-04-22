@@ -1,6 +1,14 @@
 import { QueryConnectionArgs } from "@nest-boot/graphql";
 import { UseGuards } from "@nestjs/common";
-import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
+import {
+  Args,
+  ID,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from "@nestjs/graphql";
 import _ from "lodash";
 
 import { Chart } from "../../core/entities/chart.entity";
@@ -31,9 +39,11 @@ export class ChartResolver {
 
   @Mutation(() => Chart)
   async createChart(@Args("input") input: CreateChartInput): Promise<Chart> {
+    const clip = await this.clipService.repository.findOneOrFail(input.clipId);
+
     const chart = this.chartService.repository.create({
       ...input,
-      clip: { id: input.clipId },
+      clip,
     });
 
     await this.chartService.repository.persistAndFlush(chart);
@@ -72,5 +82,10 @@ export class ChartResolver {
     const chart = await this.chartService.repository.findOne({ id });
     await this.chartService.repository.removeAndFlush(chart);
     return chart.id;
+  }
+
+  @ResolveField(() => Chart)
+  clipId(@Parent() chart: Chart): any {
+    return chart.clip.id;
   }
 }

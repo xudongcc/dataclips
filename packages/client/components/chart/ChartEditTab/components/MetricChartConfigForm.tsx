@@ -16,6 +16,7 @@ interface MetricChartConfigFormProps {
 export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
   editOptionConfig,
 }) => {
+  console.log("editOptionConfig", editOptionConfig);
   return (
     <Space direction="vertical" size="middle" style={{ width: "100%" }}>
       <Row gutter={[16, 16]}>
@@ -31,7 +32,7 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
               allowClear
               placeholder="选择显示值"
             >
-              {editOptionConfig?.valueCol.map((value) => (
+              {editOptionConfig?.valueCol?.map((value) => (
                 <Option value={value} key={value}>
                   {value}
                 </Option>
@@ -52,7 +53,7 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
               allowClear
               placeholder="选择对比值"
             >
-              {editOptionConfig?.compareCol.map((value) => (
+              {editOptionConfig?.compareCol?.map((value) => (
                 <Option value={value} key={value}>
                   {value}
                 </Option>
