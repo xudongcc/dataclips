@@ -9,6 +9,7 @@ import {
 } from "@nestjs/graphql";
 import Bluebird from "bluebird";
 import _ from "lodash";
+import { ClipService } from "../../core/services/clip.service";
 
 import { Source } from "../../core/entities/source.entity";
 import { VirtualSourceTable } from "../../core/entities/virtual-source-table.entity";
@@ -25,7 +26,8 @@ import { VirtualSource } from "../objects/virtual-source.object";
 export class VirtualSourceResolver {
   constructor(
     private readonly sourceService: SourceService,
-    private readonly virtualSourceTableService: VirtualSourceTableService
+    private readonly virtualSourceTableService: VirtualSourceTableService,
+    private readonly clipService: ClipService
   ) {}
 
   @Mutation(() => VirtualSource)
@@ -44,10 +46,20 @@ export class VirtualSourceResolver {
       type: SourceType.VIRTUAL,
     });
 
-    source.tables.add(
-      ...input.tables.map((item) =>
-        this.virtualSourceTableService.repository.create(item)
-      )
+    await Bluebird.map(
+      input.tables,
+      async (table) => {
+        const clip = await this.clipService.repository.findOneOrFail(
+          table.clipId
+        );
+
+        await this.virtualSourceTableService.repository.create({
+          name: table.name,
+          clip,
+          source,
+        });
+      },
+      { concurrency: 5 }
     );
 
     await this.sourceService.repository.persistAndFlush(source);
