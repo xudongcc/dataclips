@@ -50,10 +50,10 @@ const ClipList = () => {
       width: 200,
     },
     {
-      title: "最后更新时间",
+      title: "最后编辑时间",
       align: "center",
-      dataIndex: "updatedAt",
-      key: "updatedAt",
+      dataIndex: "latestEditAt",
+      key: "latestEditAt",
       sorter: true,
       valueType: ValueType.DATE_TIME,
     },

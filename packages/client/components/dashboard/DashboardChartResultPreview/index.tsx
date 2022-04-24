@@ -12,8 +12,8 @@ import { Loading } from "../../common/Loading";
 interface DashboardChartResultPreviewProps {
   chartId: string;
   // 下面两个属性只是因为要在 card title 上显示 clip 最后更新时间暂时加的
-  setClipUpdateAtCollection?: Dispatch<SetStateAction<{}>>;
-  clipUpdateAtCollection?: Record<string, string>;
+  setClipLatestEditAtCollection?: Dispatch<SetStateAction<{}>>;
+  clipLatestEditAtCollection?: Record<string, string>;
   autoRefresh?: boolean;
 }
 
@@ -21,8 +21,8 @@ export const DashboardChartResultPreview: FC<
   DashboardChartResultPreviewProps
 > = ({
   chartId,
-  setClipUpdateAtCollection,
-  clipUpdateAtCollection,
+  setClipLatestEditAtCollection,
+  clipLatestEditAtCollection,
   autoRefresh = true,
 }) => {
   const { data, loading: chartLoading } = useChartQuery({
@@ -51,10 +51,10 @@ export const DashboardChartResultPreview: FC<
     skip: !data?.chart?.clipId,
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
-      if (data?.clip?.updatedAt) {
-        setClipUpdateAtCollection({
-          ...clipUpdateAtCollection,
-          [chartId]: data?.clip?.updatedAt,
+      if (data?.clip?.latestEditAt) {
+        setClipLatestEditAtCollection({
+          ...clipLatestEditAtCollection,
+          [chartId]: data?.clip?.latestEditAt,
         });
       }
     },

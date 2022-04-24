@@ -85,7 +85,9 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
   const [borderRadius] = useToken("radii", ["lg"]);
 
   // 获取 clip 最后更新时间的引用
-  const [clipUpdateAtCollection, setClipUpdateAtCollection] = useState({});
+  const [clipLatestEditAtCollection, setClipLatestEditAtCollection] = useState(
+    {}
+  );
 
   return (
     <Box
@@ -111,8 +113,10 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
       >
         {dragItems.map((item) => {
           if (item.type === DashboardItemType.CHART) {
-            const clipUpdateAt =
-              clipUpdateAtCollection?.[(item as DashboardChartItem)?.chart?.id];
+            const clipLatestEditAt =
+              clipLatestEditAtCollection?.[
+                (item as DashboardChartItem)?.chart?.id
+              ];
 
             return (
               <DashboardDragWrapper key={item?.position?.i}>
@@ -121,8 +125,8 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                     <>
                       {!item?.hiddenName && item?.name}{" "}
                       <span style={{ color: "#ababab" }}>
-                        {clipUpdateAt &&
-                          timeAgo.format(new Date(clipUpdateAt).valueOf())}
+                        {clipLatestEditAt &&
+                          timeAgo.format(new Date(clipLatestEditAt).valueOf())}
                       </span>
                     </>
                   }
@@ -193,8 +197,10 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                   }
                 >
                   <DashboardChartResultPreview
-                    setClipUpdateAtCollection={setClipUpdateAtCollection}
-                    clipUpdateAtCollection={clipUpdateAtCollection}
+                    setClipLatestEditAtCollection={
+                      setClipLatestEditAtCollection
+                    }
+                    clipLatestEditAtCollection={clipLatestEditAtCollection}
                     autoRefresh={autoRefresh}
                     chartId={(item as DashboardChartItem)?.chart?.id}
                   />

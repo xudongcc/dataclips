@@ -43,6 +43,7 @@ export class ClipResolver {
     return await this.clipService.create({
       ...input,
       source: { id: input.sourceId },
+      latestEditAt: new Date(),
     });
   }
 
@@ -56,6 +57,7 @@ export class ClipResolver {
       {
         ..._.omit(input, "sourceId"),
         ...(input.sourceId ? { source: { id: input.sourceId } } : {}),
+        latestEditAt: new Date(),
       }
     );
 

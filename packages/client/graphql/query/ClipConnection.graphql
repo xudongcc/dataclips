@@ -22,6 +22,7 @@ query ClipConnection(
         name
         createdAt
         updatedAt
+        latestEditAt
         tags
       }
     }
