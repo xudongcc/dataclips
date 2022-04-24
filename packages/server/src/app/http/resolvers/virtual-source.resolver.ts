@@ -88,16 +88,16 @@ export class VirtualSourceResolver {
       source[key] = value;
     });
 
-    const newTableIds = input.tables.map((item) => item.id);
+    const newTableIds = input.tables.map((item) => item.clipId);
 
     // 删除新表中不存在的项目
-    source.tables.remove((item) => !newTableIds.includes(item.id));
+    source.tables.remove((item) => !newTableIds.includes(item.clip.id));
 
     input.tables.forEach((newTable) => {
-      if (newTable.id) {
+      if (newTable.clipId) {
         const table = source.tables
           .getItems()
-          .find((oldTable) => oldTable.id === newTable.id);
+          .find((oldTable) => oldTable.clip.id === newTable.clipId);
 
         if (table) {
           Object.entries(newTable).forEach(([key, value]) => {
@@ -118,6 +118,12 @@ export class VirtualSourceResolver {
 
   @ResolveField(() => [VirtualSourceTable])
   async tables(@Parent() source: Source): Promise<VirtualSourceTable[]> {
-    return await this.virtualSourceTableService.repository.find({ source });
+    const res = await this.virtualSourceTableService.repository.find({
+      source: {
+        id: source.id,
+      },
+    });
+
+    return res;
   }
 }
