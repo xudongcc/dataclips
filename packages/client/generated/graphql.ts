@@ -507,11 +507,11 @@ export type ResultFragment = { __typename?: 'Result', id: string, name: string, 
 
 type Source_DatabaseSource_Fragment = { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null, tags: Array<string> };
 
-type Source_VirtualSource_Fragment = { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, createdAt: any, updatedAt: any }> };
+type Source_VirtualSource_Fragment = { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', name: string, createdAt: any, updatedAt: any, clip: { __typename?: 'Clip', id: string } }> };
 
 export type SourceFragment = Source_DatabaseSource_Fragment | Source_VirtualSource_Fragment;
 
-export type VirtualSourceFragment = { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, createdAt: any, updatedAt: any }> };
+export type VirtualSourceFragment = { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', name: string, createdAt: any, updatedAt: any, clip: { __typename?: 'Clip', id: string } }> };
 
 export type CreateChartMutationVariables = Exact<{
   input: CreateChartInput;
@@ -546,7 +546,7 @@ export type CreateVirtualSourceMutationVariables = Exact<{
 }>;
 
 
-export type CreateVirtualSourceMutation = { __typename?: 'Mutation', createVirtualSource: { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, createdAt: any, updatedAt: any }> } };
+export type CreateVirtualSourceMutation = { __typename?: 'Mutation', createVirtualSource: { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', name: string, createdAt: any, updatedAt: any, clip: { __typename?: 'Clip', id: string } }> } };
 
 export type DeleteChartMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -678,7 +678,7 @@ export type SourceQueryVariables = Exact<{
 }>;
 
 
-export type SourceQuery = { __typename?: 'Query', source: { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null, tags: Array<string> } | { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', id: string, name: string, createdAt: any, updatedAt: any }> } };
+export type SourceQuery = { __typename?: 'Query', source: { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null, tags: Array<string> } | { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', name: string, createdAt: any, updatedAt: any, clip: { __typename?: 'Clip', id: string } }> } };
 
 export type SourceConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
@@ -690,7 +690,7 @@ export type SourceConnectionQueryVariables = Exact<{
 }>;
 
 
-export type SourceConnectionQuery = { __typename?: 'Query', sourceConnection: { __typename?: 'SourceConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'SourceEdge', node: { __typename: 'DatabaseSource', id: string, name: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null, tags: Array<string>, typename: 'DatabaseSource' } | { __typename: 'VirtualSource', id: string, name: string, createdAt: any, updatedAt: any, tags: Array<string>, typename: 'VirtualSource', tables: Array<{ __typename?: 'VirtualSourceTable', name: string, clip: { __typename?: 'Clip', id: string } }> } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+export type SourceConnectionQuery = { __typename?: 'Query', sourceConnection: { __typename?: 'SourceConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'SourceEdge', node: { __typename: 'DatabaseSource', id: string, name: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null, tags: Array<string>, typename: 'DatabaseSource' } | { __typename: 'VirtualSource', id: string, name: string, createdAt: any, updatedAt: any, tags: Array<string>, typename: 'VirtualSource' } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export const ChartFragmentDoc = gql`
     fragment Chart on Chart {
@@ -763,10 +763,12 @@ export const VirtualSourceFragmentDoc = gql`
   id
   name
   tables {
-    id
     name
     createdAt
     updatedAt
+    clip {
+      id
+    }
   }
   tags
   createdAt
@@ -1607,12 +1609,6 @@ export const SourceConnectionDocument = gql`
           createdAt
           updatedAt
           tags
-          tables {
-            name
-            clip {
-              id
-            }
-          }
         }
       }
     }

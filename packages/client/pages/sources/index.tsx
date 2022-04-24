@@ -166,7 +166,7 @@ const SourceList = () => {
                         tables: (source as VirtualSource).tables.map(
                           (table) => ({
                             name: table.name,
-                            clipId: table.clipId,
+                            clipId: table.clip.id,
                             id: table.id,
                           })
                         ),
