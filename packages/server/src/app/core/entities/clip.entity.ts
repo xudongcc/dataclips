@@ -49,7 +49,7 @@ export class Clip {
 
   @Field()
   @Column({ type: "timestamp", precision: 3 })
-  latestEditAt: Date;
+  lastEditAt: Date;
 
   @Field()
   @CreateDateColumn()

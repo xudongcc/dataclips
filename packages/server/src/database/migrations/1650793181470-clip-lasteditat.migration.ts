@@ -1,14 +1,14 @@
 import { MigrationInterface, QueryRunner } from "@nest-boot/database";
 
-export class ClipLatesteditatMigration implements MigrationInterface {
-  name = "clip-latesteditat-1650792724186";
+export class ClipLasteditatMigration implements MigrationInterface {
+  name = "clip-lasteditat-1650793181470";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(/* SQL */ `
       ALTER TABLE
         "clip"
       ADD
-        "latest_edit_at" TIMESTAMP(3) NOT NULL
+        "last_edit_at" TIMESTAMP(3) NOT NULL
       DEFAULT CURRENT_TIMESTAMP
     `);
   }
@@ -16,7 +16,7 @@ export class ClipLatesteditatMigration implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(/* SQL */ `
       ALTER TABLE
-        "clip" DROP COLUMN "latest_edit_at"
+        "clip" DROP COLUMN "last_edit_at"
     `);
   }
 }

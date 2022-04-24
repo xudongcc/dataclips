@@ -52,8 +52,8 @@ const ClipList = () => {
     {
       title: "最后编辑时间",
       align: "center",
-      dataIndex: "latestEditAt",
-      key: "latestEditAt",
+      dataIndex: "lastEditAt",
+      key: "lastEditAt",
       sorter: true,
       valueType: ValueType.DATE_TIME,
     },

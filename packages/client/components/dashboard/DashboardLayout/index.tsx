@@ -85,9 +85,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
   const [borderRadius] = useToken("radii", ["lg"]);
 
   // 获取 clip 最后更新时间的引用
-  const [clipLatestEditAtCollection, setClipLatestEditAtCollection] = useState(
-    {}
-  );
+  const [clipLastEditAtCollection, setClipLastEditAtCollection] = useState({});
 
   return (
     <Box
@@ -114,7 +112,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
         {dragItems.map((item) => {
           if (item.type === DashboardItemType.CHART) {
             const clipLatestEditAt =
-              clipLatestEditAtCollection?.[
+              clipLastEditAtCollection?.[
                 (item as DashboardChartItem)?.chart?.id
               ];
 
@@ -197,10 +195,8 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                   }
                 >
                   <DashboardChartResultPreview
-                    setClipLatestEditAtCollection={
-                      setClipLatestEditAtCollection
-                    }
-                    clipLatestEditAtCollection={clipLatestEditAtCollection}
+                    setClipLastEditAtCollection={setClipLastEditAtCollection}
+                    clipLastEditAtCollection={clipLastEditAtCollection}
                     autoRefresh={autoRefresh}
                     chartId={(item as DashboardChartItem)?.chart?.id}
                   />
