@@ -1,18 +1,30 @@
-import { FC, useMemo } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useMemo } from "react";
 import { QueryObserverOptions } from "react-query";
-import { ResultFragment, useChartQuery } from "../../../generated/graphql";
+import {
+  ResultFragment,
+  useChartQuery,
+  useClipQuery,
+} from "../../../generated/graphql";
 import { useQueryResult } from "../../../hooks/useQueryResult";
 import { ChartResultPreview } from "../../chart/ChartResultPreview";
 import { Loading } from "../../common/Loading";
 
 interface DashboardChartResultPreviewProps {
   chartId: string;
+  // 下面两个属性只是因为要在 card title 上显示 clip 最后更新时间暂时加的
+  setClipUpdateAtCollection?: Dispatch<SetStateAction<{}>>;
+  clipUpdateAtCollection?: Record<string, string>;
   autoRefresh?: boolean;
 }
 
 export const DashboardChartResultPreview: FC<
   DashboardChartResultPreviewProps
-> = ({ chartId, autoRefresh = true }) => {
+> = ({
+  chartId,
+  setClipUpdateAtCollection,
+  clipUpdateAtCollection,
+  autoRefresh = true,
+}) => {
   const { data, loading: chartLoading } = useChartQuery({
     variables: { id: chartId },
   });
@@ -33,6 +45,20 @@ export const DashboardChartResultPreview: FC<
     data?.chart?.clipId,
     refreshConfig
   );
+
+  useClipQuery({
+    variables: { id: data?.chart?.clipId },
+    skip: !data?.chart?.clipId,
+    fetchPolicy: "no-cache",
+    onCompleted: (data) => {
+      if (data?.clip?.updatedAt) {
+        setClipUpdateAtCollection({
+          ...clipUpdateAtCollection,
+          [chartId]: data?.clip?.updatedAt,
+        });
+      }
+    },
+  });
 
   if (chartLoading || resultLoading) {
     return <Loading width="100%" />;

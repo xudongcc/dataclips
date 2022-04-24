@@ -1,8 +1,9 @@
 import GridLayout, { Layout, WidthProvider } from "react-grid-layout";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useState } from "react";
 import { DashboardDragWrapper } from "../DashboardDragWrapper";
-
 import { DashboardCard } from "../DashboardCard";
+import TimeAgo from "javascript-time-ago";
+import zh from "javascript-time-ago/locale/zh.json";
 import { Box, useToken } from "@chakra-ui/react";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
@@ -12,6 +13,9 @@ import { Markdown } from "../../chart/ChartResultPreview/components";
 import { Dropdown, Menu } from "antd";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
+
+TimeAgo.addLocale(zh);
+const timeAgo = new TimeAgo("zh-cn");
 
 export enum DashboardItemType {
   CHART = "chart",
@@ -80,6 +84,9 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
   const { dragItems = [], type, extraConfig, autoRefresh, ...rest } = props;
   const [borderRadius] = useToken("radii", ["lg"]);
 
+  // 获取 clip 最后更新时间的引用
+  const [clipUpdateAtCollection, setClipUpdateAtCollection] = useState({});
+
   return (
     <Box
       sx={{
@@ -104,10 +111,21 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
       >
         {dragItems.map((item) => {
           if (item.type === DashboardItemType.CHART) {
+            const clipUpdateAt =
+              clipUpdateAtCollection?.[(item as DashboardChartItem)?.chart?.id];
+
             return (
               <DashboardDragWrapper key={item?.position?.i}>
                 <DashboardCard
-                  title={!item?.hiddenName && item?.name}
+                  title={
+                    <>
+                      {!item?.hiddenName && item?.name}{" "}
+                      <span style={{ color: "#ababab" }}>
+                        {clipUpdateAt &&
+                          timeAgo.format(new Date(clipUpdateAt).valueOf())}
+                      </span>
+                    </>
+                  }
                   extra={
                     extraConfig?.extra ? (
                       extraConfig?.extra
@@ -175,6 +193,8 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                   }
                 >
                   <DashboardChartResultPreview
+                    setClipUpdateAtCollection={setClipUpdateAtCollection}
+                    clipUpdateAtCollection={clipUpdateAtCollection}
                     autoRefresh={autoRefresh}
                     chartId={(item as DashboardChartItem)?.chart?.id}
                   />

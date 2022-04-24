@@ -9,6 +9,7 @@ export const DashboardCard: FC<DashboardCardProps> = (props) => {
       size="small"
       bodyClassName="drag-item"
       bodyStyle={{ overflowY: "auto" }}
+      ellipsisHeader={false}
       {...props}
     />
   );
