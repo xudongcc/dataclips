@@ -95,7 +95,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
       <ResponsiveGridLayout
         draggableHandle=".drag-item"
         className="layout"
-        margin={[24, 24]}
+        margin={[12, 12]}
         rowHeight={50}
         cols={24}
         containerPadding={[0, 0]}
