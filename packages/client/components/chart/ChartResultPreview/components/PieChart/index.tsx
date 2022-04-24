@@ -40,8 +40,6 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
   result,
   config,
 }) => {
-  console.log("config", config);
-
   const data = useMemo(() => {
     if (!result?.error) {
       if (config?.key && config?.value) {
