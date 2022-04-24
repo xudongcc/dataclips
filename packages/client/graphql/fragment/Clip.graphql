@@ -7,4 +7,5 @@ fragment Clip on Clip {
   sourceId
   createdAt
   updatedAt
+  lastEditAt
 }
