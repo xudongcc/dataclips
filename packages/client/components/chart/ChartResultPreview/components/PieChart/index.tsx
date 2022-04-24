@@ -40,6 +40,8 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
   result,
   config,
 }) => {
+  console.log("config", config);
+
   const data = useMemo(() => {
     if (!result?.error) {
       if (config?.key && config?.value) {
@@ -147,7 +149,7 @@ export const PieChartPreview: FC<PieChartPreviewProps> = ({
               <span style={{ marginRight: 8 }}>{items[0].name}</span>{" "}
               <span>
                 数值：
-                {items[0].value}
+                {getFormatValue(items[0].value, config?.format)}
               </span>{" "}
               <span>占比：{formatPercent(items[0].data.percent)}</span>
             </Space>
