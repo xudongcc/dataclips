@@ -84,7 +84,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
   const { dragItems = [], type, extraConfig, autoRefresh, ...rest } = props;
   const [borderRadius] = useToken("radii", ["lg"]);
 
-  // 获取 clip 最后更新时间的引用
+  // 获取 clip 最后编辑时间的引用
   const [clipLastEditAtCollection, setClipLastEditAtCollection] = useState({});
 
   return (
