@@ -99,9 +99,4 @@ export class ClipResolver {
       }
     );
   }
-
-  @ResolveField(() => Source)
-  sourceId(@Parent() clip: Clip): string {
-    return clip.source.id;
-  }
 }
