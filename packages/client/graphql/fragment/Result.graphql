@@ -7,4 +7,5 @@ fragment Result on Result {
   duration
   startedAt
   finishedAt
+  updatedAt
 }

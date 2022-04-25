@@ -18,9 +18,12 @@ import { Loading } from "../../common/Loading";
 
 interface DashboardChartResultPreviewProps {
   chartId: string;
-  // 下面两个属性只是因为要在 card title 上显示 clip 最后更新时间暂时加的
-  setClipLastEditAtCollection?: Dispatch<SetStateAction<{}>>;
-  clipLastEditAtCollectionRef?: MutableRefObject<any>;
+  // 下面两个属性只是因为要在 card title 上显示 result 最后查询时间暂时加的
+  setResultFinishedAtCollection?: Dispatch<SetStateAction<{}>>;
+  resultFinishedAtCollectionRef?: MutableRefObject<any>;
+  // 下面两个属性只是因为要在 card 操作菜单 上显示 clip 里 sql 语句暂时加的
+  setClipSqlCollection?: Dispatch<SetStateAction<{}>>;
+  clipSqlCollectionRef?: MutableRefObject<any>;
   autoRefresh?: boolean;
 }
 
@@ -28,8 +31,10 @@ export const DashboardChartResultPreview: FC<
   DashboardChartResultPreviewProps
 > = ({
   chartId,
-  setClipLastEditAtCollection,
-  clipLastEditAtCollectionRef,
+  setResultFinishedAtCollection,
+  resultFinishedAtCollectionRef,
+  setClipSqlCollection,
+  clipSqlCollectionRef,
   autoRefresh = true,
 }) => {
   const { data, loading: chartLoading } = useChartQuery({
@@ -59,21 +64,39 @@ export const DashboardChartResultPreview: FC<
   });
 
   useEffect(() => {
-    if (clipData?.clip?.lastEditAt) {
-      clipLastEditAtCollectionRef.current = {
-        ...clipLastEditAtCollectionRef.current,
-        [chartId]: clipData?.clip?.lastEditAt,
+    if (clipData?.clip?.sql) {
+      clipSqlCollectionRef.current = {
+        ...clipSqlCollectionRef.current,
+        [chartId]: clipData?.clip?.sql,
       };
 
-      setClipLastEditAtCollection({
-        ...clipLastEditAtCollectionRef.current,
+      setClipSqlCollection({
+        ...clipSqlCollectionRef.current,
       });
     }
   }, [
     chartId,
-    clipData?.clip?.lastEditAt,
-    clipLastEditAtCollectionRef,
-    setClipLastEditAtCollection,
+    clipData?.clip?.sql,
+    clipSqlCollectionRef,
+    setClipSqlCollection,
+  ]);
+
+  useEffect(() => {
+    if (result?.finishedAt) {
+      resultFinishedAtCollectionRef.current = {
+        ...resultFinishedAtCollectionRef.current,
+        [chartId]: result?.finishedAt,
+      };
+
+      setResultFinishedAtCollection({
+        ...resultFinishedAtCollectionRef.current,
+      });
+    }
+  }, [
+    chartId,
+    result?.finishedAt,
+    resultFinishedAtCollectionRef,
+    setResultFinishedAtCollection,
   ]);
 
   if (chartLoading || resultLoading) {
