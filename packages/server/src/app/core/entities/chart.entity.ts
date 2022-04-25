@@ -53,6 +53,6 @@ export class Chart {
   updatedAt: Date = new Date();
 
   @Field(() => Clip)
-  @ManyToOne({ onDelete: "cascade" })
+  @ManyToOne()
   clip: IdentifiedReference<Clip>;
 }

@@ -57,6 +57,6 @@ export class Result {
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
 
-  @ManyToOne({ onDelete: "cascade" })
+  @ManyToOne()
   clip: IdentifiedReference<Clip>;
 }

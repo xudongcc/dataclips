@@ -34,9 +34,9 @@ export class VirtualSourceTable {
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
 
-  @ManyToOne({ onDelete: "cascade" })
+  @ManyToOne()
   source: IdentifiedReference<Source>;
 
-  @ManyToOne({ onDelete: "cascade" })
+  @ManyToOne()
   clip: IdentifiedReference<Clip>;
 }
