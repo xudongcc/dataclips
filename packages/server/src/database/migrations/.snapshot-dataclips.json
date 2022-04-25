@@ -444,12 +444,12 @@
         },
         "sql": {
           "name": "sql",
-          "type": "varchar(255)",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "string"
+          "mappedType": "text"
         },
         "last_viewed_at": {
           "name": "last_viewed_at",

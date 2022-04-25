@@ -41,7 +41,7 @@ export class Clip {
   token: string;
 
   @Field()
-  @Property()
+  @Property({ type: t.text })
   sql: string;
 
   @Field({ nullable: true })
