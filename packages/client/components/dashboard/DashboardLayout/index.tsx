@@ -1,5 +1,5 @@
 import GridLayout, { Layout, WidthProvider } from "react-grid-layout";
-import { FC, ReactNode, useState } from "react";
+import { FC, ReactNode, useRef, useState } from "react";
 import { DashboardDragWrapper } from "../DashboardDragWrapper";
 import { DashboardCard } from "../DashboardCard";
 import TimeAgo from "javascript-time-ago";
@@ -84,8 +84,9 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
   const { dragItems = [], type, extraConfig, autoRefresh, ...rest } = props;
   const [borderRadius] = useToken("radii", ["lg"]);
 
-  // 获取 clip 最后编辑时间的引用
   const [clipLastEditAtCollection, setClipLastEditAtCollection] = useState({});
+  // 获取 clip 最后编辑时间的引用
+  const clipLastEditAtCollectionRef = useRef({});
 
   return (
     <Box
@@ -196,7 +197,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                 >
                   <DashboardChartResultPreview
                     setClipLastEditAtCollection={setClipLastEditAtCollection}
-                    clipLastEditAtCollection={clipLastEditAtCollection}
+                    clipLastEditAtCollectionRef={clipLastEditAtCollectionRef}
                     autoRefresh={autoRefresh}
                     chartId={(item as DashboardChartItem)?.chart?.id}
                   />
