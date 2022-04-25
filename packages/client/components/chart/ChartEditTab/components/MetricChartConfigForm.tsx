@@ -189,6 +189,13 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
             其他
           </Divider>
           <Form.Item
+            rules={[
+              {
+                pattern:
+                  /^((http|https):\/\/)(([A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\.)+([A-Za-z]+)[/\?\:]?.*$/,
+                message: "请输入完整的链接格式",
+              },
+            ]}
             name={["metricConfig", "link"]}
             style={{ marginBottom: 0 }}
             label={
