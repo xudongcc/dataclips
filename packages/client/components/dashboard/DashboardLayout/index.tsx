@@ -227,6 +227,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                   }
                 >
                   <DashboardChartResultPreview
+                    dashboardType={type}
                     setResultFinishedAtCollection={
                       setResultFinishedAtCollection
                     }

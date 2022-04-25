@@ -1,6 +1,17 @@
 import { FC } from "react";
-import { Select, Row, Col, Form, Space, InputNumber } from "antd";
+import {
+  Select,
+  Row,
+  Col,
+  Form,
+  Space,
+  InputNumber,
+  Divider,
+  Input,
+  Tooltip,
+} from "antd";
 import { ComparisonOperator } from "../../../../types";
+import { InfoCircleOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 
@@ -172,6 +183,26 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
             );
           }}
         </Form.Item>
+
+        <Col span={24}>
+          <Divider style={{ marginTop: 0 }} orientation="left">
+            其他
+          </Divider>
+          <Form.Item
+            name={["metricConfig", "link"]}
+            style={{ marginBottom: 0 }}
+            label={
+              <Space>
+                外跳链接
+                <Tooltip title="在预览仪表盘时点击此卡片会触发链接跳转（如果填写了链接的话）">
+                  <InfoCircleOutlined />
+                </Tooltip>
+              </Space>
+            }
+          >
+            <Input placeholder="填写外跳链接"></Input>
+          </Form.Item>
+        </Col>
       </Row>
     </Space>
   );
