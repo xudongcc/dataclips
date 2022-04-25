@@ -15,13 +15,7 @@ import {
   GraphQLTableColumnType,
 } from "../../components/common/GraphQLTable";
 import { ValueType } from "../../components/common/SimpleTable";
-import { Space, Divider, Popover } from "antd";
-import { EyeOutlined } from "@ant-design/icons";
-import Editor, { loader } from "@monaco-editor/react";
-
-loader.config({
-  paths: { vs: "/editor" },
-});
+import { Space, Divider } from "antd";
 
 const ClipList = () => {
   const router = useRouter();
@@ -41,40 +35,9 @@ const ClipList = () => {
       key: "name",
       render: (name, record) => {
         return (
-          <Space>
-            <NextLink href={`/clips/${record?.id}`} passHref>
-              <Link color="blue.500">{name}</Link>
-            </NextLink>
-
-            <Popover
-              content={
-                record?.sql ? (
-                  <Editor
-                    height="500px"
-                    width="500px"
-                    defaultLanguage="sql"
-                    options={{
-                      contextmenu: false,
-                      readOnly: true,
-                      minimap: {
-                        enabled: false,
-                      },
-                      scrollbar: {
-                        verticalScrollbarSize: 16,
-                      },
-                    }}
-                    value={record?.sql}
-                  />
-                ) : (
-                  "无 sql 语句"
-                )
-              }
-              trigger={["click"]}
-              placement="right"
-            >
-              <EyeOutlined style={{ cursor: "pointer" }} />
-            </Popover>
-          </Space>
+          <NextLink href={`/clips/${record?.id}`} passHref>
+            <Link color="blue.500">{name}</Link>
+          </NextLink>
         );
       },
     },
