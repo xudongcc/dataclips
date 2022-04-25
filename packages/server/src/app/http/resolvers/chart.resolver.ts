@@ -87,9 +87,4 @@ export class ChartResolver {
     await this.chartService.repository.removeAndFlush(chart);
     return chart.id;
   }
-
-  @ResolveField(() => Chart)
-  clipId(@Parent() chart: Chart): any {
-    return chart.clip.id;
-  }
 }
