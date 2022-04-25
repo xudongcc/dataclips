@@ -1,4 +1,11 @@
-import { Dispatch, FC, SetStateAction, useEffect, useMemo } from "react";
+import {
+  Dispatch,
+  FC,
+  MutableRefObject,
+  SetStateAction,
+  useEffect,
+  useMemo,
+} from "react";
 import { QueryObserverOptions } from "react-query";
 import {
   ResultFragment,
@@ -13,7 +20,7 @@ interface DashboardChartResultPreviewProps {
   chartId: string;
   // 下面两个属性只是因为要在 card title 上显示 clip 最后更新时间暂时加的
   setClipLastEditAtCollection?: Dispatch<SetStateAction<{}>>;
-  clipLastEditAtCollection?: Record<string, string>;
+  clipLastEditAtCollectionRef?: MutableRefObject<any>;
   autoRefresh?: boolean;
 }
 
@@ -22,7 +29,7 @@ export const DashboardChartResultPreview: FC<
 > = ({
   chartId,
   setClipLastEditAtCollection,
-  clipLastEditAtCollection,
+  clipLastEditAtCollectionRef,
   autoRefresh = true,
 }) => {
   const { data, loading: chartLoading } = useChartQuery({
@@ -46,19 +53,28 @@ export const DashboardChartResultPreview: FC<
     refreshConfig
   );
 
-  useClipQuery({
+  const { data: clipData } = useClipQuery({
     variables: { id: data?.chart?.clipId },
     skip: !data?.chart?.clipId,
-    fetchPolicy: "no-cache",
-    onCompleted: (data) => {
-      if (data?.clip?.lastEditAt) {
-        setClipLastEditAtCollection({
-          ...clipLastEditAtCollection,
-          [chartId]: data?.clip?.lastEditAt,
-        });
-      }
-    },
   });
+
+  useEffect(() => {
+    if (clipData?.clip?.lastEditAt) {
+      clipLastEditAtCollectionRef.current = {
+        ...clipLastEditAtCollectionRef.current,
+        [chartId]: clipData?.clip?.lastEditAt,
+      };
+
+      setClipLastEditAtCollection({
+        ...clipLastEditAtCollectionRef.current,
+      });
+    }
+  }, [
+    chartId,
+    clipData?.clip?.lastEditAt,
+    clipLastEditAtCollectionRef,
+    setClipLastEditAtCollection,
+  ]);
 
   if (chartLoading || resultLoading) {
     return <Loading width="100%" />;
