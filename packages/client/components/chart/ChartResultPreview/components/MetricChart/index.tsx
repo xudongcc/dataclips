@@ -49,8 +49,9 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
   const isHighlightValue = useMemo(() => {
     if (
       config?.threshold?.condition &&
-      config?.threshold?.value &&
-      config?.threshold?.type
+      config?.threshold?.type &&
+      config?.threshold?.value !== undefined &&
+      config?.threshold?.value !== null
     ) {
       const formatValue = getFormatValue(value);
       const compareValue = config.threshold.value;
