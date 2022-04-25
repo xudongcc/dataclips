@@ -61,7 +61,7 @@ export class Clip {
   updatedAt: Date = new Date();
 
   @Field(() => DatabaseSource)
-  @ManyToOne()
+  @ManyToOne({ onDelete: "cascade" })
   source: IdentifiedReference<Source>;
 
   @OneToMany(() => Result, (result) => result.clip)

@@ -526,6 +526,7 @@
             "id"
           ],
           "referencedTableName": "public.source",
+          "deleteRule": "cascade",
           "updateRule": "cascade"
         }
       }
@@ -661,6 +662,7 @@
             "id"
           ],
           "referencedTableName": "public.clip",
+          "deleteRule": "cascade",
           "updateRule": "cascade"
         }
       }
@@ -749,6 +751,7 @@
             "id"
           ],
           "referencedTableName": "public.source",
+          "deleteRule": "cascade",
           "updateRule": "cascade"
         },
         "virtual_source_table_clip_id_foreign": {
@@ -761,6 +764,7 @@
             "id"
           ],
           "referencedTableName": "public.clip",
+          "deleteRule": "cascade",
           "updateRule": "cascade"
         }
       }
@@ -884,6 +888,7 @@
             "id"
           ],
           "referencedTableName": "public.clip",
+          "deleteRule": "cascade",
           "updateRule": "cascade"
         }
       }

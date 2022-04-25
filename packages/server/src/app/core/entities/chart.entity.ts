@@ -52,7 +52,7 @@ export class Chart {
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
 
-  @ManyToOne()
+  @ManyToOne({ onDelete: "cascade" })
   clip: IdentifiedReference<Clip>;
 
   @Field(() => ID)

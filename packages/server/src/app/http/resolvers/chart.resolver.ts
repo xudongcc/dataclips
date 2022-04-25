@@ -1,5 +1,5 @@
 import { QueryConnectionArgs } from "@nest-boot/graphql";
-import { UseGuards } from "@nestjs/common";
+import { NotFoundException, UseGuards } from "@nestjs/common";
 import {
   Args,
   ID,
@@ -29,7 +29,11 @@ export class ChartResolver {
 
   @Query(() => Chart)
   async chart(@Args("id", { type: () => ID }) id: string): Promise<Chart> {
-    return await this.chartService.repository.findOne({ id });
+    try {
+      return await this.chartService.repository.findOneOrFail({ id });
+    } catch (err) {
+      throw new NotFoundException("图表未创建或已被删除");
+    }
   }
 
   @Query(() => ChartConnection)

@@ -13,7 +13,6 @@ import {
 import _, { omit } from "lodash";
 import { SourceService } from "src/app/core/services/source.service";
 
-import { Source } from "../../core/entities/source.entity";
 import { Clip } from "../../core/entities/clip.entity";
 import { Result } from "../../core/entities/result.entity";
 import { ClipService } from "../../core/services/clip.service";
