@@ -129,7 +129,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
       >
         {dragItems.map((item) => {
           if (item.type === DashboardItemType.CHART) {
-            const clipLatestEditAt =
+            const resultFinishedAt =
               resultFinishedAtCollection?.[
                 (item as DashboardChartItem)?.chart?.id
               ];
@@ -141,8 +141,8 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                     <>
                       {!item?.hiddenName && item?.name}{" "}
                       <span style={{ color: "#ababab" }}>
-                        {clipLatestEditAt &&
-                          timeAgo.format(new Date(clipLatestEditAt).valueOf())}
+                        {resultFinishedAt &&
+                          timeAgo.format(new Date(resultFinishedAt).valueOf())}
                       </span>
                     </>
                   }
