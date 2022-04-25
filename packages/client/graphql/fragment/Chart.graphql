@@ -2,10 +2,12 @@ fragment Chart on Chart {
   id
   name
   token
-  clipId
   type
   tags
   config
   createdAt
   updatedAt
+  clip {
+    id
+  }
 }

@@ -114,6 +114,7 @@ const ChartEdit = () => {
               "updatedAt",
               "__typename",
             ]),
+            clipId: data?.chart?.clip?.id,
             [chartTypeToFormFieldMap[data?.chart?.type]]: data?.chart?.config,
           }}
         >
