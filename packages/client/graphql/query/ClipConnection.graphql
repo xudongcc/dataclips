@@ -23,6 +23,7 @@ query ClipConnection(
         createdAt
         updatedAt
         lastEditAt
+        sql
         tags
       }
     }
