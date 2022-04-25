@@ -20,6 +20,7 @@ import { AuthGuard } from "../guards/auth.guard";
 import { CreateVirtualSourceInput } from "../inputs/create-virtual-source.input";
 import { UpdateVirtualSourceInput } from "../inputs/update-virtual-source.input";
 import { VirtualSource } from "../objects/virtual-source.object";
+import { instanceToPlain } from "class-transformer";
 
 @UseGuards(AuthGuard)
 @Resolver(() => VirtualSource)
@@ -93,7 +94,7 @@ export class VirtualSourceResolver {
     // 删除新表中不存在的项目
     source.tables.remove((item) => !newTableIds.includes(item.clip.id));
 
-    input.tables.forEach((newTable) => {
+    input.tables.forEach(async (newTable) => {
       if (newTable.clipId) {
         const table = source.tables
           .getItems()
@@ -103,14 +104,22 @@ export class VirtualSourceResolver {
           Object.entries(newTable).forEach(([key, value]) => {
             table[key] = value;
           });
+        } else {
+          const clip = await this.clipService.repository.findOneOrFail({
+            id: newTable.clipId,
+          });
+
+          source.tables.add(
+            this.virtualSourceTableService.repository.create({
+              ..._.pick(newTable, ["name"]),
+              clip,
+            })
+          );
         }
-      } else {
-        source.tables.add(
-          this.virtualSourceTableService.repository.create(newTable)
-        );
       }
     });
 
+    // 无效
     await this.virtualSourceTableService.repository.flush();
 
     return source;

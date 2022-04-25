@@ -1,6 +1,6 @@
 import { QueryOrder } from "@mikro-orm/core";
 import { QueryConnectionArgs } from "@nest-boot/graphql";
-import { UseGuards } from "@nestjs/common";
+import { ForbiddenException, UseGuards } from "@nestjs/common";
 import {
   Args,
   ID,
@@ -11,7 +11,9 @@ import {
   Resolver,
 } from "@nestjs/graphql";
 import _, { omit } from "lodash";
-import { SourceService } from "src/app/core/services/source.service";
+import { SourceType } from "../../core/enums/source-type.enum";
+import { ChartService } from "../../core/services/chart.service";
+import { SourceService } from "../../core/services/source.service";
 
 import { Clip } from "../../core/entities/clip.entity";
 import { Result } from "../../core/entities/result.entity";
@@ -28,7 +30,8 @@ export class ClipResolver {
   constructor(
     private readonly clipService: ClipService,
     private readonly sourceService: SourceService,
-    private readonly resultService: ResultService
+    private readonly resultService: ResultService,
+    private readonly chartService: ChartService
   ) {}
 
   @Query(() => Clip)
@@ -82,10 +85,23 @@ export class ClipResolver {
   async deleteClip(
     @Args("id", { type: () => ID }) id: string
   ): Promise<string> {
-    const clip = await this.clipService.repository.findOneOrFail({ id });
+    try {
+      const clip = await this.clipService.repository.findOneOrFail({ id });
 
-    await this.clipService.repository.removeAndFlush(clip);
-    return id;
+      await this.clipService.repository.removeAndFlush(clip);
+      return id;
+    } catch (err) {
+      // 查找关联到此数据集的所有图表
+      const relationCharts = await this.chartService.repository.find({
+        clip: { id },
+      });
+
+      throw new ForbiddenException(
+        `需要修改或删除名称为 ${relationCharts
+          .map((chart) => chart.name)
+          .join("、")} 的图表后才能删除此数据集`
+      );
+    }
   }
 
   @ResolveField(() => [Result])
