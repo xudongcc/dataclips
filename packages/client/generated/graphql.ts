@@ -660,7 +660,7 @@ export type ClipConnectionQueryVariables = Exact<{
 }>;
 
 
-export type ClipConnectionQuery = { __typename?: 'Query', clipConnection: { __typename?: 'ClipConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ClipEdge', node: { __typename?: 'Clip', id: string, name: string, createdAt: any, updatedAt: any, lastEditAt: any, tags: Array<string> } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+export type ClipConnectionQuery = { __typename?: 'Query', clipConnection: { __typename?: 'ClipConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ClipEdge', node: { __typename?: 'Clip', id: string, name: string, createdAt: any, updatedAt: any, lastEditAt: any, sql: string, tags: Array<string> } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export type DashboardQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -1416,6 +1416,7 @@ export const ClipConnectionDocument = gql`
         createdAt
         updatedAt
         lastEditAt
+        sql
         tags
       }
     }
