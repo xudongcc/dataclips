@@ -54,7 +54,10 @@ const ChartList = () => {
       // filterType: FilterType.TAG,
       key: "tags",
       width: 200,
-      valueType: ValueType.TAG,
+      valueType: {
+        type: ValueType.TAG,
+        onClick: () => {},
+      },
     },
     {
       title: "最后更新时间",

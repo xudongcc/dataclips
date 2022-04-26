@@ -46,7 +46,10 @@ const ClipList = () => {
       dataIndex: "tags",
       // filterType: FilterType.TAG,
       key: "tags",
-      valueType: ValueType.TAG,
+      valueType: {
+        type: ValueType.TAG,
+        onClick: () => {},
+      },
       width: 200,
     },
     {
