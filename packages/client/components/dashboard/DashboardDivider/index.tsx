@@ -23,7 +23,7 @@ export const DashboardDivider: FC<DashboardDividerProps> = ({
   return (
     <Flex
       className="drag-item"
-      my="16px"
+      my="12px"
       fontWeight="bold"
       fontSize="20px"
       alignItems="center"
