@@ -20,7 +20,6 @@ import { AuthGuard } from "../guards/auth.guard";
 import { CreateVirtualSourceInput } from "../inputs/create-virtual-source.input";
 import { UpdateVirtualSourceInput } from "../inputs/update-virtual-source.input";
 import { VirtualSource } from "../objects/virtual-source.object";
-import { instanceToPlain } from "class-transformer";
 
 @UseGuards(AuthGuard)
 @Resolver(() => VirtualSource)
@@ -80,49 +79,61 @@ export class VirtualSourceResolver {
       throw new BadRequestException("存在重复的数据裁剪选项");
     }
 
-    const source = await this.sourceService.repository.findOneOrFail(
-      { id },
-      { populate: ["tables"] }
-    );
+    try {
+      const source = await this.sourceService.repository.findOneOrFail(
+        { id },
+        { populate: ["tables"] }
+      );
 
-    Object.entries(_.pick(input, ["name", "tags"])).forEach(([key, value]) => {
-      source[key] = value;
-    });
-
-    const newTableIds = input.tables.map((item) => item.clipId);
-
-    // 删除新表中不存在的项目
-    source.tables.remove((item) => !newTableIds.includes(item.clip.id));
-
-    input.tables.forEach(async (newTable) => {
-      if (newTable.clipId) {
-        const table = source.tables
-          .getItems()
-          .find((oldTable) => oldTable.clip.id === newTable.clipId);
-
-        if (table) {
-          Object.entries(newTable).forEach(([key, value]) => {
-            table[key] = value;
-          });
-        } else {
-          const clip = await this.clipService.repository.findOneOrFail({
-            id: newTable.clipId,
-          });
-
-          source.tables.add(
-            this.virtualSourceTableService.repository.create({
-              ..._.pick(newTable, ["name"]),
-              clip,
-            })
-          );
+      Object.entries(_.pick(input, ["name", "tags"])).forEach(
+        ([key, value]) => {
+          source[key] = value;
         }
-      }
-    });
+      );
 
-    // 无效
-    await this.virtualSourceTableService.repository.flush();
+      const newTableIds = input.tables.map((item) => item.clipId);
 
-    return source;
+      // 删除新表中不存在的项目
+      source.tables.remove((item) => !newTableIds.includes(item.clip.id));
+
+      await Bluebird.map(
+        input.tables,
+        async (newTable) => {
+          if (newTable.clipId) {
+            const table = source.tables
+              .getItems()
+              .find((oldTable) => oldTable.clip.id === newTable.clipId);
+
+            console.log("table", table);
+
+            if (table) {
+              Object.entries(newTable).forEach(([key, value]) => {
+                table[key] = value;
+              });
+            } else {
+              const clip = await this.clipService.repository.findOneOrFail({
+                id: newTable.clipId,
+              });
+
+              source.tables.add(
+                this.virtualSourceTableService.repository.create({
+                  ...newTable,
+                  clip,
+                  source,
+                })
+              );
+            }
+          }
+        },
+        { concurrency: 5 }
+      );
+
+      await this.virtualSourceTableService.repository.flush();
+
+      return source;
+    } catch (err) {
+      console.error("err", err);
+    }
   }
 
   @ResolveField(() => [VirtualSourceTable])
