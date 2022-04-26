@@ -16,6 +16,9 @@ import { useQueryResult } from "../../../hooks/useQueryResult";
 import { ChartType } from "../../../types";
 import { ChartResultPreview } from "../../chart/ChartResultPreview";
 import { Loading } from "../../common/Loading";
+import { Typography } from "antd";
+
+const { Text } = Typography;
 
 interface DashboardChartResultPreviewProps {
   chartId: string;
@@ -40,7 +43,11 @@ export const DashboardChartResultPreview: FC<
   autoRefresh = true,
   dashboardType = "edit",
 }) => {
-  const { data, loading: chartLoading } = useChartQuery({
+  const {
+    data,
+    loading: chartLoading,
+    error,
+  } = useChartQuery({
     variables: { id: chartId },
   });
 
@@ -117,11 +124,17 @@ export const DashboardChartResultPreview: FC<
       }}
       style={{ height: "inherit" }}
     >
-      <ChartResultPreview
-        result={result}
-        type={data?.chart?.type}
-        config={data?.chart?.config}
-      />
+      {error?.message ? (
+        <Text type="danger" strong>
+          {error?.message}
+        </Text>
+      ) : (
+        <ChartResultPreview
+          result={result}
+          type={data?.chart?.type}
+          config={data?.chart?.config}
+        />
+      )}
     </div>
   );
 };
