@@ -1,5 +1,5 @@
 import { QueryConnectionArgs } from "@nest-boot/graphql";
-import { ForbiddenException, UseGuards } from "@nestjs/common";
+import { BadRequestException, UseGuards } from "@nestjs/common";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { plainToInstance } from "class-transformer";
 
@@ -69,10 +69,13 @@ export class SourceResolver {
         source: { id },
       });
 
-      throw new ForbiddenException(
+      throw new BadRequestException(
         `需要修改或删除名称为 ${relationClips
+          .slice(0, 10)
           .map((chart) => chart.name)
-          .join("、")} 的数据集后才能删除此数据源`
+          .join("、")}${
+          relationClips.length > 10 ? " ..." : ""
+        } 的数据集后才能删除此数据源`
       );
     }
   }

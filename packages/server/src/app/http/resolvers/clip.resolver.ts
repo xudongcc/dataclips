@@ -1,6 +1,6 @@
 import { QueryOrder } from "@mikro-orm/core";
 import { QueryConnectionArgs } from "@nest-boot/graphql";
-import { ForbiddenException, UseGuards } from "@nestjs/common";
+import { BadRequestException, UseGuards } from "@nestjs/common";
 import {
   Args,
   ID,
@@ -98,10 +98,13 @@ export class ClipResolver {
         clip: { id },
       });
 
-      throw new ForbiddenException(
+      throw new BadRequestException(
         `需要修改或删除名称为 ${relationCharts
+          .slice(0, 10)
           .map((chart) => chart.name)
-          .join("、")} 的图表后才能删除此数据集`
+          .join("、")}${
+          relationCharts.length > 10 ? " ..." : ""
+        } 的图表后才能删除此数据集`
       );
     }
   }
