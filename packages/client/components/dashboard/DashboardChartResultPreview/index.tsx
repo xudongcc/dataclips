@@ -15,10 +15,12 @@ import {
 import { useQueryResult } from "../../../hooks/useQueryResult";
 import { ChartResultPreview } from "../../chart/ChartResultPreview";
 import { Loading } from "../../common/Loading";
+import { ChartType } from "../../../types";
 
 interface DashboardChartResultPreviewProps {
   chartId: string;
   autoRefresh?: boolean;
+  dashboardType?: "preview" | "edit";
   // 下面两个属性只是因为要在 card title 上显示 result 最后查询时间暂时加的
   setResultFinishedAtCollection?: Dispatch<SetStateAction<{}>>;
   resultFinishedAtCollectionRef?: MutableRefObject<any>;
@@ -35,6 +37,7 @@ export const DashboardChartResultPreview: FC<
   resultFinishedAtCollectionRef,
   setClipSqlCollection,
   clipSqlCollectionRef,
+  dashboardType = "edit",
   autoRefresh = true,
 }) => {
   const { data, loading: chartLoading } = useChartQuery({
@@ -104,10 +107,21 @@ export const DashboardChartResultPreview: FC<
   }
 
   return (
-    <ChartResultPreview
-      result={result}
-      type={data?.chart?.type}
-      config={data?.chart?.config}
-    />
+    <div
+      onClick={() => {
+        if (data?.chart?.type === ChartType.METRIC) {
+          if (data?.chart?.config?.link && dashboardType === "preview") {
+            window.open(data?.chart?.config?.link);
+          }
+        }
+      }}
+      style={{ height: "inherit" }}
+    >
+      <ChartResultPreview
+        result={result}
+        type={data?.chart?.type}
+        config={data?.chart?.config}
+      />
+    </div>
   );
 };
