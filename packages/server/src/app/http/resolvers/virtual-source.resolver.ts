@@ -104,8 +104,6 @@ export class VirtualSourceResolver {
               .getItems()
               .find((oldTable) => oldTable.clip.id === newTable.clipId);
 
-            console.log("table", table);
-
             if (table) {
               Object.entries(newTable).forEach(([key, value]) => {
                 table[key] = value;
@@ -138,12 +136,10 @@ export class VirtualSourceResolver {
 
   @ResolveField(() => [VirtualSourceTable])
   async tables(@Parent() source: Source): Promise<VirtualSourceTable[]> {
-    const res = await this.virtualSourceTableService.repository.find({
+    return await this.virtualSourceTableService.repository.find({
       source: {
         id: source.id,
       },
     });
-
-    return res;
   }
 }

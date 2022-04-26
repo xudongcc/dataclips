@@ -67,8 +67,6 @@ export class ClipService extends mixinConnection(
 
     clip.latestResultAt = finishedAt;
 
-    console.log("result", result);
-
     await this.resultService.repository.persistAndFlush(result);
 
     if (queryError && throwError) {
