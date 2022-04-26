@@ -11,7 +11,7 @@ import {
   useUpdateDashboardMutation,
   useChartLazyQuery,
 } from "../../../generated/graphql";
-import { cloneDeep, maxBy, omit } from "lodash";
+import { cloneDeep, omit } from "lodash";
 import { useCallback, useState, useEffect } from "react";
 import { Loading } from "../../../components/common/Loading";
 import { Page } from "../../../components/common/Page";
@@ -344,8 +344,8 @@ const DashBoardEdit: PC = () => {
                     variables: { id: item.chart?.id },
                   });
 
-                  if (data?.chart?.clipId) {
-                    router.push(`/clips/${data?.chart?.clipId}`);
+                  if (data?.chart?.clip?.id) {
+                    router.push(`/clips/${data?.chart?.clip?.id}`);
                   }
                 } catch (err) {
                   console.error("err", err);
@@ -424,9 +424,7 @@ const DashBoardEdit: PC = () => {
                   position: {
                     i: id,
                     x: 0,
-                    y:
-                      maxBy(dragItems, (item) => item?.position?.y)?.position
-                        ?.y || 0,
+                    y: Infinity,
                     w: 12,
                     h: 6,
                   },
@@ -567,9 +565,7 @@ const DashBoardEdit: PC = () => {
                 position: {
                   i: id,
                   x: 0,
-                  y:
-                    maxBy(dragItems, (item) => item?.position?.y)?.position
-                      ?.y || 0,
+                  y: Infinity,
                   w: 24,
                   h: 1,
                   maxH: 1,
@@ -627,8 +623,7 @@ const DashBoardEdit: PC = () => {
               position: {
                 i: id,
                 x: 0,
-                y:
-                  maxBy(dragItems, (item) => item.position.y)?.position?.y || 0,
+                y: Infinity,
                 w: 12,
                 h: 6,
               },
