@@ -1,6 +1,17 @@
-import { FC, useMemo } from "react";
+import {
+  Dispatch,
+  FC,
+  MutableRefObject,
+  SetStateAction,
+  useEffect,
+  useMemo,
+} from "react";
 import { QueryObserverOptions } from "react-query";
-import { ResultFragment, useChartQuery } from "../../../generated/graphql";
+import {
+  ResultFragment,
+  useChartQuery,
+  useClipQuery,
+} from "../../../generated/graphql";
 import { useQueryResult } from "../../../hooks/useQueryResult";
 import { ChartResultPreview } from "../../chart/ChartResultPreview";
 import { Loading } from "../../common/Loading";
@@ -8,11 +19,24 @@ import { Loading } from "../../common/Loading";
 interface DashboardChartResultPreviewProps {
   chartId: string;
   autoRefresh?: boolean;
+  // 下面两个属性只是因为要在 card title 上显示 result 最后查询时间暂时加的
+  setResultFinishedAtCollection?: Dispatch<SetStateAction<{}>>;
+  resultFinishedAtCollectionRef?: MutableRefObject<any>;
+  // 下面两个属性只是因为要在 card 操作菜单 上显示 clip 里 sql 语句暂时加的
+  setClipSqlCollection?: Dispatch<SetStateAction<{}>>;
+  clipSqlCollectionRef?: MutableRefObject<any>;
 }
 
 export const DashboardChartResultPreview: FC<
   DashboardChartResultPreviewProps
-> = ({ chartId, autoRefresh = true }) => {
+> = ({
+  chartId,
+  setResultFinishedAtCollection,
+  resultFinishedAtCollectionRef,
+  setClipSqlCollection,
+  clipSqlCollectionRef,
+  autoRefresh = true,
+}) => {
   const { data, loading: chartLoading } = useChartQuery({
     variables: { id: chartId },
   });
@@ -30,9 +54,50 @@ export const DashboardChartResultPreview: FC<
   }, [autoRefresh]);
 
   const { data: result, isLoading: resultLoading } = useQueryResult(
-    data?.chart?.clipId,
+    data?.chart?.clip?.id,
     refreshConfig
   );
+
+  const { data: clipData } = useClipQuery({
+    variables: { id: data?.chart?.clip?.id },
+    skip: !data?.chart?.clip?.id,
+  });
+
+  useEffect(() => {
+    if (clipData?.clip?.sql) {
+      clipSqlCollectionRef.current = {
+        ...clipSqlCollectionRef.current,
+        [chartId]: clipData?.clip?.sql,
+      };
+
+      setClipSqlCollection({
+        ...clipSqlCollectionRef.current,
+      });
+    }
+  }, [
+    chartId,
+    clipData?.clip?.sql,
+    clipSqlCollectionRef,
+    setClipSqlCollection,
+  ]);
+
+  useEffect(() => {
+    if (result?.finishedAt) {
+      resultFinishedAtCollectionRef.current = {
+        ...resultFinishedAtCollectionRef.current,
+        [chartId]: result?.finishedAt,
+      };
+
+      setResultFinishedAtCollection({
+        ...resultFinishedAtCollectionRef.current,
+      });
+    }
+  }, [
+    chartId,
+    result?.finishedAt,
+    resultFinishedAtCollectionRef,
+    setResultFinishedAtCollection,
+  ]);
 
   if (chartLoading || resultLoading) {
     return <Loading width="100%" />;

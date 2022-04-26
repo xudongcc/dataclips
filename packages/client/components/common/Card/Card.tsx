@@ -17,6 +17,7 @@ export interface CardProps extends BaseCardProps {
   primaryAction?: ButtonProps;
   bodyClassName?: string;
   secondaryActions?: ButtonProps[];
+  ellipsisHeader?: boolean;
 }
 
 export const Card: FC<CardProps> = (props) => {
@@ -29,6 +30,8 @@ export const Card: FC<CardProps> = (props) => {
     extra,
     children,
     bodyClassName,
+    title,
+    ellipsisHeader = true,
     ...rest
   } = props;
 
@@ -68,6 +71,13 @@ export const Card: FC<CardProps> = (props) => {
       }}
       headStyle={{ borderBottom: 0, ...headStyle }}
       bodyStyle={{ height: "inherit", ...bodyStyle }}
+      title={
+        ellipsisHeader ? (
+          title
+        ) : (
+          <div style={{ whiteSpace: "normal" }}>{title}</div>
+        )
+      }
       {...rest}
     >
       <div className={bodyClassName} style={{ height: "100%" }}>

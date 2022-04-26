@@ -75,6 +75,7 @@ export type Clip = {
   __typename?: 'Clip';
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
+  lastEditAt?: Maybe<Scalars['DateTime']>;
   lastViewedAt?: Maybe<Scalars['DateTime']>;
   latestResultAt?: Maybe<Scalars['DateTime']>;
   name: Scalars['String'];
@@ -497,13 +498,13 @@ export type VirtualSourceTable = {
 
 export type ChartFragment = { __typename?: 'Chart', id: string, name: string, token?: string | null, type: ChartType, tags: Array<string>, config: any, createdAt: any, updatedAt: any, clip: { __typename?: 'Clip', id: string } };
 
-export type ClipFragment = { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, createdAt: any, updatedAt: any, source: { __typename?: 'DatabaseSource', id: string } };
+export type ClipFragment = { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, lastEditAt?: any | null, createdAt: any, updatedAt: any, source: { __typename?: 'DatabaseSource', id: string } };
 
 export type DashboardFragment = { __typename?: 'Dashboard', id: string, name: string, tags: Array<string>, token?: string | null, config: any, createdAt: any, updatedAt: any };
 
 export type DatabaseSourceFragment = { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null, tags: Array<string> };
 
-export type ResultFragment = { __typename?: 'Result', id: string, name: string, error?: string | null, fields: Array<string>, values: Array<Array<string>>, duration: number, startedAt?: any | null, finishedAt?: any | null };
+export type ResultFragment = { __typename?: 'Result', id: string, name: string, error?: string | null, fields: Array<string>, values: Array<Array<string>>, duration: number, startedAt?: any | null, finishedAt?: any | null, updatedAt: any };
 
 type Source_DatabaseSource_Fragment = { __typename?: 'DatabaseSource', id: string, name: string, type: DatabaseType, host: string, port?: number | null, database?: string | null, username: string, createdAt: any, updatedAt: any, sshEnabled: boolean, sshHost?: string | null, sshPort?: number | null, sshUsername?: string | null, tags: Array<string> };
 
@@ -525,7 +526,7 @@ export type CreateClipMutationVariables = Exact<{
 }>;
 
 
-export type CreateClipMutation = { __typename?: 'Mutation', createClip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, createdAt: any, updatedAt: any, source: { __typename?: 'DatabaseSource', id: string } } };
+export type CreateClipMutation = { __typename?: 'Mutation', createClip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, lastEditAt?: any | null, createdAt: any, updatedAt: any, source: { __typename?: 'DatabaseSource', id: string } } };
 
 export type CreateDashboardMutationVariables = Exact<{
   input: CreateDashboardInput;
@@ -590,7 +591,7 @@ export type UpdateClipMutationVariables = Exact<{
 }>;
 
 
-export type UpdateClipMutation = { __typename?: 'Mutation', updateClip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, createdAt: any, updatedAt: any, source: { __typename?: 'DatabaseSource', id: string } } };
+export type UpdateClipMutation = { __typename?: 'Mutation', updateClip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, lastEditAt?: any | null, createdAt: any, updatedAt: any, source: { __typename?: 'DatabaseSource', id: string } } };
 
 export type UpdateDashboardMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -640,7 +641,7 @@ export type ClipQueryVariables = Exact<{
 }>;
 
 
-export type ClipQuery = { __typename?: 'Query', clip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, createdAt: any, updatedAt: any, source: { __typename?: 'DatabaseSource', id: string } } };
+export type ClipQuery = { __typename?: 'Query', clip: { __typename?: 'Clip', id: string, name: string, token?: string | null, sql: string, tags: Array<string>, lastEditAt?: any | null, createdAt: any, updatedAt: any, source: { __typename?: 'DatabaseSource', id: string } } };
 
 export type ClipConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
@@ -652,7 +653,7 @@ export type ClipConnectionQueryVariables = Exact<{
 }>;
 
 
-export type ClipConnectionQuery = { __typename?: 'Query', clipConnection: { __typename?: 'ClipConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ClipEdge', node: { __typename?: 'Clip', id: string, name: string, createdAt: any, updatedAt: any, tags: Array<string> } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
+export type ClipConnectionQuery = { __typename?: 'Query', clipConnection: { __typename?: 'ClipConnection', totalCount?: number | null, edges?: Array<{ __typename?: 'ClipEdge', node: { __typename?: 'Clip', id: string, name: string, createdAt: any, updatedAt: any, tags: Array<string>, lastEditAt?: any | null, sql: string } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean } } };
 
 export type DashboardQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -717,6 +718,7 @@ export const ClipFragmentDoc = gql`
   source {
     id
   }
+  lastEditAt
   createdAt
   updatedAt
 }
@@ -742,6 +744,7 @@ export const ResultFragmentDoc = gql`
   duration
   startedAt
   finishedAt
+  updatedAt
 }
     `;
 export const DatabaseSourceFragmentDoc = gql`
@@ -1407,6 +1410,8 @@ export const ClipConnectionDocument = gql`
         createdAt
         updatedAt
         tags
+        lastEditAt
+        sql
       }
     }
     pageInfo {

@@ -471,6 +471,16 @@
           "length": 6,
           "mappedType": "datetime"
         },
+        "last_edit_at": {
+          "name": "last_edit_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6,
+          "mappedType": "datetime"
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamptz(0)",

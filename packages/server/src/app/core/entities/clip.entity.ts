@@ -52,6 +52,10 @@ export class Clip {
   @Property({ nullable: true })
   latestResultAt: Date;
 
+  @Field({ nullable: true })
+  @Property({ nullable: true })
+  lastEditAt: Date;
+
   @Field()
   @Property()
   createdAt: Date = new Date();
