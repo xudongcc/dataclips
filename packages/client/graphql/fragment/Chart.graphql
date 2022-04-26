@@ -7,4 +7,7 @@ fragment Chart on Chart {
   config
   createdAt
   updatedAt
+  clip {
+    id
+  }
 }

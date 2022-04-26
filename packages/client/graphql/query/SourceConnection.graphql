@@ -35,12 +35,6 @@ query SourceConnection(
           createdAt
           updatedAt
           tags
-          tables {
-            name
-            clip {
-              id
-            }
-          }
         }
       }
     }

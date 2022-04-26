@@ -37,9 +37,9 @@ const ClipEdit = () => {
 
   const { data: sourceData } = useSourceQuery({
     variables: {
-      id: clip?.sourceId,
+      id: clip?.source.id,
     },
-    skip: !clip?.sourceId,
+    skip: !clip?.source.id,
   });
 
   const { data: { sourceConnection } = {}, loading: isSourcesLoading } =
@@ -76,7 +76,7 @@ const ClipEdit = () => {
     if (clip) {
       form.setFieldsValue({
         name: clip?.name,
-        sourceId: clip?.sourceId,
+        sourceId: clip?.source.id,
         tags: clip?.tags,
       });
     }

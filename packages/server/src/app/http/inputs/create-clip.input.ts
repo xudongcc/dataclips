@@ -11,6 +11,6 @@ export class CreateClipInput {
   @Field()
   sql: string;
 
-  @Field(() => ID, { nullable: true })
+  @Field(() => ID)
   sourceId: string;
 }

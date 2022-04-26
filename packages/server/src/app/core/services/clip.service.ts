@@ -30,7 +30,10 @@ export class ClipService extends mixinConnection(
   }
 
   async query(id: Clip["id"], throwError = false): Promise<Result> {
-    const clip = await this.repository.findOne({ id });
+    const clip = await this.repository.findOneOrFail(
+      { id },
+      { populate: ["source"] }
+    );
 
     let queryResult: [string[], (string | number | boolean | Date)[][]];
     let queryError: Error;
@@ -51,20 +54,20 @@ export class ClipService extends mixinConnection(
 
     const finishedAt = new Date();
 
-    const [result] = await Promise.all([
-      this.resultService.repository.create({
-        clip,
-        name: clip.name,
-        fields: queryResult?.[0] || [],
-        values: queryResult?.[1] || [],
-        error: queryError?.message,
-        duration: finishedAt.getTime() - startedAt.getTime(),
-        startedAt,
-        finishedAt,
-      }),
-    ]);
+    const result = this.resultService.repository.create({
+      clip,
+      name: clip.name,
+      fields: queryResult?.[0] || [],
+      values: queryResult?.[1] || [],
+      error: queryError?.message,
+      duration: finishedAt.getTime() - startedAt.getTime(),
+      startedAt,
+      finishedAt,
+    });
+
     clip.latestResultAt = finishedAt;
-    await this.resultService.repository.flush();
+
+    await this.resultService.repository.persistAndFlush(result);
 
     if (queryError && throwError) {
       throw queryError;

@@ -1,5 +1,5 @@
 import { QueryConnectionArgs } from "@nest-boot/graphql";
-import { UseGuards } from "@nestjs/common";
+import { ForbiddenException, UseGuards } from "@nestjs/common";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { plainToInstance } from "class-transformer";
 
@@ -10,11 +10,15 @@ import { DatabaseSource } from "../objects/database-source.object";
 import { SourceObject } from "../objects/source.object";
 import { SourceConnection } from "../objects/source-connection.object";
 import { VirtualSource } from "../objects/virtual-source.object";
+import { ClipService } from "src/app/core/services/clip.service";
 
 @UseGuards(AuthGuard)
 @Resolver(() => SourceObject)
 export class SourceResolver {
-  constructor(private readonly sourceService: SourceService) {}
+  constructor(
+    private readonly sourceService: SourceService,
+    private readonly clipService: ClipService
+  ) {}
 
   @Query(() => SourceObject)
   async source(
@@ -56,8 +60,20 @@ export class SourceResolver {
   async deleteSource(
     @Args("id", { type: () => ID }) id: string
   ): Promise<string> {
-    const source = await this.sourceService.repository.findOneOrFail({ id });
-    await this.sourceService.repository.removeAndFlush(source);
-    return id;
+    try {
+      const source = await this.sourceService.repository.findOneOrFail({ id });
+      await this.sourceService.repository.removeAndFlush(source);
+      return id;
+    } catch (err) {
+      const relationClips = await this.clipService.repository.find({
+        source: { id },
+      });
+
+      throw new ForbiddenException(
+        `需要修改或删除名称为 ${relationClips
+          .map((chart) => chart.name)
+          .join("、")} 的数据集后才能删除此数据源`
+      );
+    }
   }
 }

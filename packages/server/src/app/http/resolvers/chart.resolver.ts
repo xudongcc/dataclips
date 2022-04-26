@@ -1,6 +1,14 @@
 import { QueryConnectionArgs } from "@nest-boot/graphql";
-import { UseGuards } from "@nestjs/common";
-import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { NotFoundException, UseGuards } from "@nestjs/common";
+import {
+  Args,
+  ID,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from "@nestjs/graphql";
 import _ from "lodash";
 
 import { Chart } from "../../core/entities/chart.entity";
@@ -21,7 +29,11 @@ export class ChartResolver {
 
   @Query(() => Chart)
   async chart(@Args("id", { type: () => ID }) id: string): Promise<Chart> {
-    return await this.chartService.repository.findOne({ id });
+    try {
+      return await this.chartService.repository.findOneOrFail({ id });
+    } catch (err) {
+      throw new NotFoundException("图表未创建或已被删除");
+    }
   }
 
   @Query(() => ChartConnection)
@@ -31,9 +43,11 @@ export class ChartResolver {
 
   @Mutation(() => Chart)
   async createChart(@Args("input") input: CreateChartInput): Promise<Chart> {
+    const clip = await this.clipService.repository.findOneOrFail(input.clipId);
+
     const chart = this.chartService.repository.create({
       ...input,
-      clip: { id: input.clipId },
+      clip,
     });
 
     await this.chartService.repository.persistAndFlush(chart);

@@ -1,6 +1,6 @@
 import { QueryOrder } from "@mikro-orm/core";
 import { QueryConnectionArgs } from "@nest-boot/graphql";
-import { UseGuards } from "@nestjs/common";
+import { ForbiddenException, UseGuards } from "@nestjs/common";
 import {
   Args,
   ID,
@@ -10,7 +10,10 @@ import {
   ResolveField,
   Resolver,
 } from "@nestjs/graphql";
-import _ from "lodash";
+import _, { omit } from "lodash";
+import { SourceType } from "../../core/enums/source-type.enum";
+import { ChartService } from "../../core/services/chart.service";
+import { SourceService } from "../../core/services/source.service";
 
 import { Clip } from "../../core/entities/clip.entity";
 import { Result } from "../../core/entities/result.entity";
@@ -26,12 +29,14 @@ import { ClipConnection } from "../objects/clip-connection.object";
 export class ClipResolver {
   constructor(
     private readonly clipService: ClipService,
-    private readonly resultService: ResultService
+    private readonly sourceService: SourceService,
+    private readonly resultService: ResultService,
+    private readonly chartService: ChartService
   ) {}
 
   @Query(() => Clip)
   async clip(@Args("id", { type: () => ID }) id: string): Promise<Clip> {
-    return this.clipService.repository.findOne({ id });
+    return await this.clipService.repository.findOneOrFail({ id });
   }
 
   @Query(() => ClipConnection)
@@ -41,9 +46,13 @@ export class ClipResolver {
 
   @Mutation(() => Clip)
   async createClip(@Args("input") input: CreateClipInput): Promise<Clip> {
+    const source = await this.sourceService.repository.findOneOrFail({
+      id: input.sourceId,
+    });
+
     const clip = this.clipService.repository.create({
-      ...input,
-      source: { id: input.sourceId },
+      ...omit(input, ["sourceId"]),
+      source,
     });
 
     await this.clipService.repository.persistAndFlush(clip);
@@ -58,7 +67,16 @@ export class ClipResolver {
   ): Promise<Clip> {
     const clip = await this.clipService.repository.findOneOrFail({ id });
 
-    await this.clipService.query(id);
+    const source = await this.sourceService.repository.findOneOrFail({
+      id: input.sourceId,
+    });
+
+    this.clipService.repository.assign(clip, {
+      ...omit(input, ["sourceId"]),
+      source,
+    });
+
+    await this.clipService.repository.persistAndFlush(clip);
 
     return clip;
   }
@@ -67,9 +85,23 @@ export class ClipResolver {
   async deleteClip(
     @Args("id", { type: () => ID }) id: string
   ): Promise<string> {
-    const clip = await this.clipService.repository.findOneOrFail({ id });
-    await this.clipService.repository.persistAndFlush(clip);
-    return id;
+    try {
+      const clip = await this.clipService.repository.findOneOrFail({ id });
+
+      await this.clipService.repository.removeAndFlush(clip);
+      return id;
+    } catch (err) {
+      // 查找关联到此数据集的所有图表
+      const relationCharts = await this.chartService.repository.find({
+        clip: { id },
+      });
+
+      throw new ForbiddenException(
+        `需要修改或删除名称为 ${relationCharts
+          .map((chart) => chart.name)
+          .join("、")} 的图表后才能删除此数据集`
+      );
+    }
   }
 
   @ResolveField(() => [Result])

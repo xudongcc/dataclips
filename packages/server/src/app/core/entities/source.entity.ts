@@ -5,6 +5,7 @@ import {
   PrimaryKey,
   Property,
   t,
+  Cascade,
 } from "@mikro-orm/core";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { SnowflakeIdGenerator } from "snowflake-id-generator";
@@ -78,6 +79,9 @@ export class Source {
   @OneToMany(() => Clip, (clip) => clip.source)
   clips = new Collection<Clip>(this);
 
-  @OneToMany(() => VirtualSourceTable, (tables) => tables.source)
+  @OneToMany(() => VirtualSourceTable, (tables) => tables.source, {
+    cascade: [Cascade.ALL],
+    orphanRemoval: true,
+  })
   tables = new Collection<VirtualSourceTable>(this);
 }

@@ -86,10 +86,10 @@ const ChartEdit = () => {
   }, [chartId, form, router, toast, updateChart]);
 
   useEffect(() => {
-    if (data?.chart?.clipId) {
-      setSelectClipId(data?.chart?.clipId);
+    if (data?.chart?.clip?.id) {
+      setSelectClipId(data?.chart?.clip?.id);
     }
-  }, [data?.chart?.clipId]);
+  }, [data?.chart?.clip?.id]);
 
   if (chartId && loading) {
     return <Loading />;
@@ -114,6 +114,7 @@ const ChartEdit = () => {
               "updatedAt",
               "__typename",
             ]),
+            clipId: data?.chart?.clip?.id,
             [chartTypeToFormFieldMap[data?.chart?.type]]: data?.chart?.config,
           }}
         >
@@ -142,7 +143,7 @@ const ChartEdit = () => {
                         onChange={(clipId) => {
                           setSelectClipId(clipId);
 
-                          if (clipId === data?.chart?.clipId) {
+                          if (clipId === data?.chart?.clip) {
                             form.setFieldsValue(
                               omit(data?.chart, [
                                 "createdAt",

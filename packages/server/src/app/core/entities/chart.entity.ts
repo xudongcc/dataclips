@@ -52,6 +52,7 @@ export class Chart {
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
 
+  @Field(() => Clip)
   @ManyToOne()
   clip: IdentifiedReference<Clip>;
 }

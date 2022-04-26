@@ -31,7 +31,7 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
               allowClear
               placeholder="选择显示值"
             >
-              {editOptionConfig?.valueCol.map((value) => (
+              {editOptionConfig?.valueCol?.map((value) => (
                 <Option value={value} key={value}>
                   {value}
                 </Option>
@@ -52,7 +52,7 @@ export const MetricChartConfigForm: FC<MetricChartConfigFormProps> = ({
               allowClear
               placeholder="选择对比值"
             >
-              {editOptionConfig?.compareCol.map((value) => (
+              {editOptionConfig?.compareCol?.map((value) => (
                 <Option value={value} key={value}>
                   {value}
                 </Option>

@@ -166,7 +166,7 @@ const SourceList = () => {
                         tables: (source as VirtualSource).tables.map(
                           (table) => ({
                             name: table.name,
-                            clipId: table.clipId,
+                            clipId: table.clip.id,
                             id: table.id,
                           })
                         ),
@@ -203,14 +203,17 @@ const SourceList = () => {
     {
       title: "标签",
       dataIndex: "tags",
-      filterType: FilterType.TAG,
+      // filterType: FilterType.TAG,
       key: "tags",
-      valueType: ValueType.TAG,
+      valueType: {
+        type: ValueType.TAG,
+        onClick: () => {},
+      },
       width: 200,
     },
     {
       title: "最后更新时间",
-      sorter: true,
+      // sorter: true,
       align: "center",
       dataIndex: "updatedAt",
       key: "updatedAt",
