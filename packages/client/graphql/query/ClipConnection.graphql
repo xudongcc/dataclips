@@ -21,6 +21,8 @@ query ClipConnection(
         createdAt
         updatedAt
         tags
+        lastEditAt
+        sql
       }
     }
     pageInfo {

@@ -52,6 +52,7 @@ export class ClipResolver {
 
     const clip = this.clipService.repository.create({
       ...omit(input, ["sourceId"]),
+      lastEditAt: new Date(),
       source,
     });
 
@@ -73,6 +74,7 @@ export class ClipResolver {
 
     this.clipService.repository.assign(clip, {
       ...omit(input, ["sourceId"]),
+      lastEditAt: new Date(),
       source,
     });
 
