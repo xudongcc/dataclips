@@ -44,7 +44,7 @@ const ClipList = () => {
     {
       title: "标签",
       dataIndex: "tags",
-      filterType: FilterType.TAG,
+      // filterType: FilterType.TAG,
       key: "tags",
       valueType: ValueType.TAG,
       width: 200,
@@ -54,7 +54,7 @@ const ClipList = () => {
       align: "center",
       dataIndex: "updatedAt",
       key: "updatedAt",
-      sorter: true,
+      // sorter: true,
       valueType: ValueType.DATE_TIME,
     },
     {

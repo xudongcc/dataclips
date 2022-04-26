@@ -57,7 +57,7 @@ const DashBoardList: PC = () => {
     {
       title: "标签",
       dataIndex: "tags",
-      filterType: FilterType.TAG,
+      // filterType: FilterType.TAG,
       key: "tags",
       valueType: ValueType.TAG,
       width: 200,
@@ -66,7 +66,7 @@ const DashBoardList: PC = () => {
       title: "最后更新时间",
       align: "center",
       dataIndex: "updatedAt",
-      sorter: true,
+      // sorter: true,
       key: "updatedAt",
       valueType: ValueType.DATE_TIME,
     },

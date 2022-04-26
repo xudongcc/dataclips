@@ -203,14 +203,14 @@ const SourceList = () => {
     {
       title: "标签",
       dataIndex: "tags",
-      filterType: FilterType.TAG,
+      // filterType: FilterType.TAG,
       key: "tags",
       valueType: ValueType.TAG,
       width: 200,
     },
     {
       title: "最后更新时间",
-      sorter: true,
+      // sorter: true,
       align: "center",
       dataIndex: "updatedAt",
       key: "updatedAt",
