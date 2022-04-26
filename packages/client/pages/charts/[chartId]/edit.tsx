@@ -143,7 +143,7 @@ const ChartEdit = () => {
                         onChange={(clipId) => {
                           setSelectClipId(clipId);
 
-                          if (clipId === data?.chart?.clip) {
+                          if (clipId === data?.chart?.clip?.id) {
                             form.setFieldsValue(
                               omit(data?.chart, [
                                 "createdAt",

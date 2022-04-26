@@ -98,8 +98,8 @@ const DashboardPreview: PC = () => {
                     variables: { id: item.chart?.id },
                   });
 
-                  if (data?.chart?.clipId) {
-                    router.push(`/clips/${data?.chart?.clipId}`);
+                  if (data?.chart?.clip?.id) {
+                    router.push(`/clips/${data?.chart?.clip?.id}`);
                   }
                 } catch (err) {
                   console.log("err", err);

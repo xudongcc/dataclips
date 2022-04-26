@@ -47,7 +47,7 @@ const ChartPreview = () => {
   }, [autoRefreshEnabled]);
 
   const { data: result, isLoading } = useQueryResult(
-    data?.chart.clipId,
+    data?.chart?.clip?.id,
     refreshConfig
   );
 
