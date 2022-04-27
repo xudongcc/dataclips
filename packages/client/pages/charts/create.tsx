@@ -30,8 +30,10 @@ const ChartCreate = () => {
 
   const [selectClipId, setSelectClipId] = useState("");
 
-  const { data: clipsData } = useClipConnectionQuery({
+  const { data: clipsData, loading: clipsLoading } = useClipConnectionQuery({
     variables: { first: 100 },
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: "no-cache",
   });
 
   const [createChart, { loading: createChartLoading }] =
@@ -107,6 +109,7 @@ const ChartCreate = () => {
                       <Select
                         optionFilterProp="children"
                         showSearch
+                        loading={clipsLoading}
                         onChange={(clipId) => {
                           setSelectClipId(clipId);
 
