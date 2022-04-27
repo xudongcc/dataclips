@@ -29,7 +29,7 @@ const ProjectLayout: FC = ({ children }) => {
   const siderCollapsedRef = useRef(false);
 
   // 系统主题类型
-  const [systemTheme, setSystemTheme] = useState("");
+  const [systemTheme, setSystemTheme] = useState("light");
 
   // 侧边栏收起状态
   const [collapsed, setCollapsed] = useLocalStorage("collapsed", false);
@@ -160,6 +160,15 @@ const ProjectLayout: FC = ({ children }) => {
         .matchMedia("(prefers-color-scheme: dark)")
         .removeEventListener("change", handleSystemThemeChange);
     };
+  }, []);
+
+  // 主题初始化判断
+  useEffect(() => {
+    setSystemTheme(
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"
+    );
   }, []);
 
   if (session.status !== "authenticated") {
