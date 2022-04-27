@@ -28,6 +28,9 @@ const ProjectLayout: FC = ({ children }) => {
   const session = useSession();
   const siderCollapsedRef = useRef(false);
 
+  // 系统主题类型
+  const [systemTheme, setSystemTheme] = useState("");
+
   // 侧边栏收起状态
   const [collapsed, setCollapsed] = useLocalStorage("collapsed", false);
 
@@ -142,6 +145,23 @@ const ProjectLayout: FC = ({ children }) => {
     }
   }, [session, router]);
 
+  // 监听系统主题色变化
+  useEffect(() => {
+    const handleSystemThemeChange = (e) => {
+      setSystemTheme(e.matches ? "dark" : "light");
+    };
+
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", handleSystemThemeChange);
+
+    () => {
+      return window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .removeEventListener("change", handleSystemThemeChange);
+    };
+  }, []);
+
   if (session.status !== "authenticated") {
     return <Loading />;
   }
@@ -187,7 +207,7 @@ const ProjectLayout: FC = ({ children }) => {
               position: "relative",
               height: "100%",
               overflowY: "auto",
-              background: "#fff",
+              background: systemTheme === "light" ? "#fff" : "#141414",
             }}
           >
             <div
@@ -222,6 +242,7 @@ const ProjectLayout: FC = ({ children }) => {
                 alignItems: "center",
                 width: "100%",
                 cursor: "pointer",
+                color: systemTheme === "dark" ? "#fff" : undefined,
               }}
               onClick={() => {
                 setCollapsed(true);
@@ -241,7 +262,7 @@ const ProjectLayout: FC = ({ children }) => {
           <header style={{ height: 64 }} />
           <Header
             style={{
-              background: "#fff",
+              background: systemTheme === "light" ? "#fff" : "#141414",
               position: "fixed",
               padding: "0 24px",
               top: "0px",
