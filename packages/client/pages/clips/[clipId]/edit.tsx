@@ -43,7 +43,11 @@ const ClipEdit = () => {
   });
 
   const { data: { sourceConnection } = {}, loading: isSourcesLoading } =
-    useSourceConnectionQuery({ variables: { first: 20 } });
+    useSourceConnectionQuery({
+      variables: { first: 20 },
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "no-cache",
+    });
 
   const { data: result } = useQueryResult(clipId);
 
@@ -117,6 +121,7 @@ const ClipEdit = () => {
                         optionFilterProp="children"
                         showSearch
                         placeholder="请选择数据源"
+                        loading={isSourcesLoading}
                       >
                         {sourceConnection?.edges?.map(
                           ({ node: { id, name } }) => {

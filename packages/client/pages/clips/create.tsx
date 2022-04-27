@@ -22,7 +22,11 @@ const ClipCreate = () => {
   const [createClip, { loading: createClipLoading }] = useCreateClipMutation();
 
   const { data: { sourceConnection } = {}, loading: isSourcesLoading } =
-    useSourceConnectionQuery({ variables: { first: 50 } });
+    useSourceConnectionQuery({
+      variables: { first: 50 },
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "no-cache",
+    });
 
   const handleSubmit = useCallback(async () => {
     try {
@@ -80,6 +84,7 @@ const ClipCreate = () => {
                     <Select
                       optionFilterProp="children"
                       showSearch
+                      loading={isSourcesLoading}
                       placeholder="请选择数据源"
                     >
                       {sourceConnection?.edges?.map(
