@@ -75,9 +75,12 @@ const DashBoardEdit: PC = () => {
     skip: !dashboardId,
   });
 
-  const { data: chartConnectionData } = useChartConnectionQuery({
-    variables: { first: 100 },
-  });
+  const { data: chartConnectionData, loading: chartConnectionLoading } =
+    useChartConnectionQuery({
+      variables: { first: 100 },
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "no-cache",
+    });
 
   const [getChart, { loading: getChartLoading }] = useChartLazyQuery();
 
@@ -464,6 +467,7 @@ const DashBoardEdit: PC = () => {
               rules={[{ required: true, message: "请选择图表" }]}
             >
               <Select
+                loading={chartConnectionLoading}
                 optionFilterProp="children"
                 showSearch
                 placeholder="请选择图表"
