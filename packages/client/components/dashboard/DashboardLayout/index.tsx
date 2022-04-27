@@ -11,6 +11,7 @@ import { DashboardChartResultPreview } from "../DashboardChartResultPreview";
 import { DashboardDivider } from "../DashboardDivider";
 import { Markdown } from "../../chart/ChartResultPreview/components";
 import { Dropdown, Menu, Drawer } from "antd";
+import Embed from "react-embed";
 
 import Editor, { loader } from "@monaco-editor/react";
 
@@ -27,6 +28,7 @@ export enum DashboardItemType {
   CHART = "chart",
   DIVIDER = "divider",
   MARKDOWN = "markdown",
+  EMBED = "embed",
 }
 
 export interface DashboardItem {
@@ -55,11 +57,20 @@ export interface DashboardMarkdownItem extends DashboardItem {
     content?: string;
   };
 }
+
+export interface DashboardEmbedItem extends DashboardItem {
+  embed: {
+    url?: string;
+  };
+}
 interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
   type: "preview" | "edit";
   autoRefresh?: boolean;
   dragItems: Array<
-    DashboardChartItem | DashboardDividerItem | DashboardMarkdownItem
+    | DashboardChartItem
+    | DashboardDividerItem
+    | DashboardMarkdownItem
+    | DashboardEmbedItem
   >;
   extraConfig?: {
     extra?: ReactNode;
@@ -83,6 +94,12 @@ interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
       disabledDelete?: boolean;
       onEditBlockClick?: (markdown: DashboardMarkdownItem) => void;
       onDeleteClick?: (markdownId: string) => void;
+    };
+    embed?: {
+      disabledEditBlock?: boolean;
+      disabledDelete?: boolean;
+      onEditBlockClick?: (embed: DashboardEmbedItem) => void;
+      onDeleteClick?: (embedId: string) => void;
     };
   };
 }
@@ -118,6 +135,10 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
         },
       }}
     >
+      {/* 视频 */}
+      {/* <Embed url="https://www.youtube.com/watch?v=JX75a1MXkKA&ab_channel=EASMusicChannel"></Embed> */}
+      {/* <Embed url="https://www.youtube.com/watch?v=soICQ3B2kEk" />
+      <Embed url="https://twitter.com/hercuppacoffee/status/911958476678561792"></Embed> */}
       <ResponsiveGridLayout
         draggableHandle=".drag-item"
         className="layout"
@@ -313,6 +334,55 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                   <Markdown
                     content={(item as DashboardMarkdownItem).markdown?.content}
                   />
+                </DashboardCard>
+              </DashboardDragWrapper>
+            );
+          }
+
+          if (item.type === DashboardItemType.EMBED) {
+            return (
+              <DashboardDragWrapper key={item?.position?.i}>
+                <DashboardCard
+                  title={!item?.hiddenName && item?.name}
+                  extra={
+                    extraConfig?.extra ? (
+                      extraConfig?.extra
+                    ) : !extraConfig?.disabledExtra ? (
+                      <Dropdown
+                        trigger={["click"]}
+                        placement="bottomRight"
+                        overlay={
+                          <Menu>
+                            <Menu.Item
+                              disabled={extraConfig?.embed?.disabledEditBlock}
+                              onClick={() => {
+                                extraConfig?.embed?.onEditBlockClick?.(
+                                  item as DashboardEmbedItem
+                                );
+                              }}
+                            >
+                              编辑块
+                            </Menu.Item>
+                            <Menu.Item
+                              disabled={extraConfig?.embed?.disabledDelete}
+                              onClick={() => {
+                                extraConfig?.embed?.onDeleteClick?.(item.id);
+                              }}
+                              danger
+                            >
+                              删除
+                            </Menu.Item>
+                          </Menu>
+                        }
+                      >
+                        <div style={{ cursor: "pointer", fontWeight: "bold" }}>
+                          ⋮
+                        </div>
+                      </Dropdown>
+                    ) : undefined
+                  }
+                >
+                  <Embed url={(item as DashboardEmbedItem).embed?.url} />
                 </DashboardCard>
               </DashboardDragWrapper>
             );

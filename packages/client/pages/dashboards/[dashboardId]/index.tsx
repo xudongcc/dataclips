@@ -112,6 +112,10 @@ const DashboardPreview: PC = () => {
               disabledDelete: true,
               disabledEditBlock: true,
             },
+            embed: {
+              disabledDelete: true,
+              disabledEditBlock: true,
+            },
           }}
         />
       </Page>
