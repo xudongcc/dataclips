@@ -122,7 +122,13 @@ export const DashboardChartResultPreview: FC<
           }
         }
       }}
-      style={{ height: "inherit" }}
+      style={{
+        height: "inherit",
+        cursor:
+          data?.chart?.config?.link && dashboardType === "preview"
+            ? "pointer"
+            : undefined,
+      }}
     >
       {error?.message ? (
         <Text type="danger" strong>
