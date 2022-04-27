@@ -51,4 +51,12 @@ const nextConfig = {
 
 module.exports = withLess({
   ...nextConfig,
+  lessLoaderOptions: {
+    lessOptions: {
+      modifyVars: {
+        "primary-color": "#165dff",
+        "border-radius-base": "4px",
+      },
+    },
+  },
 });
