@@ -10,9 +10,41 @@ import "react-resizable/css/styles.css";
 import { DashboardChartResultPreview } from "../DashboardChartResultPreview";
 import { DashboardDivider } from "../DashboardDivider";
 import { Markdown } from "../../chart/ChartResultPreview/components";
-import { Dropdown, Menu, Drawer } from "antd";
+import { Dropdown, Menu, Drawer, Space } from "antd";
+import Embed from "react-embed";
+import styled from "styled-components";
+
+const DragIconWrapper = styled.div<{ type?: "preview" | "edit" }>`
+  cursor: ${(props) => (props?.type === "preview" ? "not-allowed" : "grab")};
+
+  ${(props) => {
+    if (props.type === "edit") {
+      return `
+        &:active {
+          cursor: grabbing;
+        }
+      `;
+    }
+  }}
+`;
+
+const EmbedWrapper = styled.div`
+  height: 100%;
+
+  & > div:first-child {
+    height: 100%;
+    width: 100% !important;
+  }
+
+  & iframe {
+    height: 100%;
+
+    width: 100%;
+  }
+`;
 
 import Editor, { loader } from "@monaco-editor/react";
+import { HolderOutlined } from "@ant-design/icons";
 
 loader.config({
   paths: { vs: "/editor" },
@@ -27,6 +59,7 @@ export enum DashboardItemType {
   CHART = "chart",
   DIVIDER = "divider",
   MARKDOWN = "markdown",
+  EMBED = "embed",
 }
 
 export interface DashboardItem {
@@ -55,11 +88,20 @@ export interface DashboardMarkdownItem extends DashboardItem {
     content?: string;
   };
 }
+
+export interface DashboardEmbedItem extends DashboardItem {
+  embed: {
+    url?: string;
+  };
+}
 interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
   type: "preview" | "edit";
   autoRefresh?: boolean;
   dragItems: Array<
-    DashboardChartItem | DashboardDividerItem | DashboardMarkdownItem
+    | DashboardChartItem
+    | DashboardDividerItem
+    | DashboardMarkdownItem
+    | DashboardEmbedItem
   >;
   extraConfig?: {
     extra?: ReactNode;
@@ -83,6 +125,12 @@ interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
       disabledDelete?: boolean;
       onEditBlockClick?: (markdown: DashboardMarkdownItem) => void;
       onDeleteClick?: (markdownId: string) => void;
+    };
+    embed?: {
+      disabledEditBlock?: boolean;
+      disabledDelete?: boolean;
+      onEditBlockClick?: (embed: DashboardEmbedItem) => void;
+      onDeleteClick?: (embedId: string) => void;
     };
   };
 }
@@ -312,6 +360,68 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                 >
                   <Markdown
                     content={(item as DashboardMarkdownItem).markdown?.content}
+                  />
+                </DashboardCard>
+              </DashboardDragWrapper>
+            );
+          }
+
+          if (item.type === DashboardItemType.EMBED) {
+            return (
+              <DashboardDragWrapper key={item?.position?.i}>
+                <DashboardCard
+                  title={!item?.hiddenName && item?.name}
+                  extra={
+                    extraConfig?.extra ? (
+                      extraConfig?.extra
+                    ) : !extraConfig?.disabledExtra ? (
+                      <Space>
+                        <DragIconWrapper type={type} className="drag-item">
+                          <HolderOutlined />
+                        </DragIconWrapper>
+
+                        <Dropdown
+                          trigger={["click"]}
+                          placement="bottomRight"
+                          overlay={
+                            <Menu>
+                              <Menu.Item
+                                disabled={extraConfig?.embed?.disabledEditBlock}
+                                onClick={() => {
+                                  extraConfig?.embed?.onEditBlockClick?.(
+                                    item as DashboardEmbedItem
+                                  );
+                                }}
+                              >
+                                编辑块
+                              </Menu.Item>
+                              <Menu.Item
+                                disabled={extraConfig?.embed?.disabledDelete}
+                                onClick={() => {
+                                  extraConfig?.embed?.onDeleteClick?.(item.id);
+                                }}
+                                danger
+                              >
+                                删除
+                              </Menu.Item>
+                            </Menu>
+                          }
+                        >
+                          <div
+                            style={{ cursor: "pointer", fontWeight: "bold" }}
+                          >
+                            ⋮
+                          </div>
+                        </Dropdown>
+                      </Space>
+                    ) : undefined
+                  }
+                >
+                  <Embed
+                    renderWrap={(children) => (
+                      <EmbedWrapper>{children}</EmbedWrapper>
+                    )}
+                    url={(item as DashboardEmbedItem).embed?.url}
                   />
                 </DashboardCard>
               </DashboardDragWrapper>

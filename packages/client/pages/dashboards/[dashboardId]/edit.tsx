@@ -21,6 +21,7 @@ import {
   DashboardChartItem,
   DashboardDividerItem,
   DashboardMarkdownItem,
+  DashboardEmbedItem,
 } from "../../../components/dashboard/DashboardLayout";
 import {
   Checkbox,
@@ -62,6 +63,8 @@ const DashBoardEdit: PC = () => {
   const [addOrEditCardForm] = Form.useForm();
   // 添加 markdown 的form
   const [mdForm] = Form.useForm();
+  // 添加 embed 的form
+  const [embedForm] = Form.useForm();
 
   // 当前表单弹窗的操作类型
   const [operation, setOperation] = useState<Operation>({
@@ -89,7 +92,12 @@ const DashBoardEdit: PC = () => {
 
   // 拖拽项
   const [dragItems, setDragItems] = useState<
-    Array<DashboardDividerItem | DashboardChartItem | DashboardMarkdownItem>
+    Array<
+      | DashboardDividerItem
+      | DashboardChartItem
+      | DashboardMarkdownItem
+      | DashboardEmbedItem
+    >
   >([]);
 
   // 创建或编辑卡片的弹窗
@@ -109,6 +117,10 @@ const DashBoardEdit: PC = () => {
 
   // markdown弹窗
   const [isAddOrEditMarkdownModalVisible, setIsAddOrEditMarkdownModalVisible] =
+    useState(false);
+
+  // embed弹窗
+  const [isAddOrEditEmbedModalVisible, setIsAddOrEditEmbedModalVisible] =
     useState(false);
 
   const handleCloseAddOrEditChartModal = useCallback(() => {
@@ -141,6 +153,14 @@ const DashBoardEdit: PC = () => {
       type: OperationType.ADD,
     });
   }, [mdForm]);
+
+  const handleCloseAddOrEditEmbedModal = useCallback(() => {
+    setIsAddOrEditEmbedModalVisible(false);
+    embedForm.resetFields();
+    setOperation({
+      type: OperationType.ADD,
+    });
+  }, [embedForm]);
 
   const handleUpdateDashboard = useCallback(
     async (goPreview?: boolean) => {
@@ -264,6 +284,13 @@ const DashBoardEdit: PC = () => {
                   }}
                 >
                   分割线
+                </Menu.Item>
+                <Menu.Item
+                  onClick={() => {
+                    setIsAddOrEditEmbedModalVisible(true);
+                  }}
+                >
+                  嵌入资源
                 </Menu.Item>
                 <Menu.Item
                   onClick={() => {
@@ -393,6 +420,33 @@ const DashBoardEdit: PC = () => {
                 });
 
                 setIsAddOrEditMarkdownModalVisible(true);
+              },
+            },
+            embed: {
+              onDeleteClick: (id) => {
+                const deleteDividerIndex = dragItems.findIndex(
+                  (dragItem) => dragItem.id === id
+                );
+
+                if (deleteDividerIndex !== -1) {
+                  dragItems.splice(deleteDividerIndex, 1);
+
+                  setDragItems([...dragItems]);
+                }
+              },
+              onEditBlockClick: (item) => {
+                embedForm.setFieldsValue({
+                  name: item?.name,
+                  url: item?.embed?.url,
+                  hiddenName: !!item?.hiddenName,
+                });
+
+                setOperation({
+                  type: OperationType.EDIT,
+                  key: item.id,
+                });
+
+                setIsAddOrEditEmbedModalVisible(true);
               },
             },
           }}
@@ -689,6 +743,81 @@ const DashBoardEdit: PC = () => {
                 </Form.Item>
               </Col>
             </Row>
+          </Form>
+        </Modal>
+
+        {/* 编辑仪表盘 embed 弹窗 */}
+        <Modal
+          title={`${
+            operation.type === OperationType.ADD ? "添加" : "编辑"
+          }嵌入资源`}
+          visible={isAddOrEditEmbedModalVisible}
+          onCancel={handleCloseAddOrEditEmbedModal}
+          onOk={async () => {
+            const values = await embedForm.validateFields();
+
+            const id = uuidv4();
+            const current = {
+              id,
+              type: DashboardItemType.EMBED,
+              hiddenName: values?.hiddenName || false,
+              name: values?.name,
+              embed: {
+                url: values?.url,
+              },
+              position: {
+                i: id,
+                x: 0,
+                y: Infinity,
+                w: 12,
+                h: 6,
+              },
+            };
+
+            if (operation.type === OperationType.ADD) {
+              setDragItems([...dragItems, current]);
+            } else {
+              const updateIndex = dragItems.findIndex(
+                (dragItem) => dragItem.id === operation?.key
+              );
+              if (updateIndex !== -1) {
+                dragItems[updateIndex] = {
+                  ...current,
+                  position: dragItems[updateIndex].position,
+                  id: dragItems[updateIndex].id,
+                };
+              }
+
+              setDragItems([...dragItems]);
+              setOperation({ type: OperationType.ADD });
+            }
+
+            handleCloseAddOrEditEmbedModal();
+          }}
+        >
+          <Form form={embedForm} layout="vertical">
+            <Form.Item label="嵌入资源名称" name="name">
+              <Input placeholder="输入嵌入资源名称" />
+            </Form.Item>
+
+            <Form.Item
+              name="url"
+              label="嵌入资源链接"
+              rules={[
+                {
+                  required: true,
+                  pattern:
+                    /^((http|https):\/\/)(([A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\.)+([A-Za-z]+)[/\?\:]?.*$/,
+                  message: "请输入完整的嵌入资源链接格式",
+                },
+              ]}
+            >
+              <Input placeholder="请输入嵌入资源链接" />
+            </Form.Item>
+
+            <Form.Item noStyle name="hiddenName" valuePropName="checked">
+              <Checkbox>是否隐藏标题</Checkbox>
+            </Form.Item>
           </Form>
         </Modal>
       </Page>
