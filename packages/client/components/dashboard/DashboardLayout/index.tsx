@@ -10,10 +10,41 @@ import "react-resizable/css/styles.css";
 import { DashboardChartResultPreview } from "../DashboardChartResultPreview";
 import { DashboardDivider } from "../DashboardDivider";
 import { Markdown } from "../../chart/ChartResultPreview/components";
-import { Dropdown, Menu, Drawer } from "antd";
+import { Dropdown, Menu, Drawer, Space } from "antd";
 import Embed from "react-embed";
+import styled from "styled-components";
+
+const DragIconWrapper = styled.div<{ type?: "preview" | "edit" }>`
+  cursor: ${(props) => (props?.type === "preview" ? "not-allowed" : "grab")};
+
+  ${(props) => {
+    if (props.type === "edit") {
+      return `
+        &:active {
+          cursor: grabbing;
+        }
+      `;
+    }
+  }}
+`;
+
+const EmbedWrapper = styled.div`
+  height: 100%;
+
+  & > div:first-child {
+    height: 100%;
+    width: 100% !important;
+  }
+
+  & iframe {
+    height: 100%;
+
+    width: 100%;
+  }
+`;
 
 import Editor, { loader } from "@monaco-editor/react";
+import { HolderOutlined } from "@ant-design/icons";
 
 loader.config({
   paths: { vs: "/editor" },
@@ -135,10 +166,6 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
         },
       }}
     >
-      {/* 视频 */}
-      {/* <Embed url="https://www.youtube.com/watch?v=JX75a1MXkKA&ab_channel=EASMusicChannel"></Embed> */}
-      {/* <Embed url="https://www.youtube.com/watch?v=soICQ3B2kEk" />
-      <Embed url="https://twitter.com/hercuppacoffee/status/911958476678561792"></Embed> */}
       <ResponsiveGridLayout
         draggableHandle=".drag-item"
         className="layout"
@@ -348,41 +375,54 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                     extraConfig?.extra ? (
                       extraConfig?.extra
                     ) : !extraConfig?.disabledExtra ? (
-                      <Dropdown
-                        trigger={["click"]}
-                        placement="bottomRight"
-                        overlay={
-                          <Menu>
-                            <Menu.Item
-                              disabled={extraConfig?.embed?.disabledEditBlock}
-                              onClick={() => {
-                                extraConfig?.embed?.onEditBlockClick?.(
-                                  item as DashboardEmbedItem
-                                );
-                              }}
-                            >
-                              编辑块
-                            </Menu.Item>
-                            <Menu.Item
-                              disabled={extraConfig?.embed?.disabledDelete}
-                              onClick={() => {
-                                extraConfig?.embed?.onDeleteClick?.(item.id);
-                              }}
-                              danger
-                            >
-                              删除
-                            </Menu.Item>
-                          </Menu>
-                        }
-                      >
-                        <div style={{ cursor: "pointer", fontWeight: "bold" }}>
-                          ⋮
-                        </div>
-                      </Dropdown>
+                      <Space>
+                        <DragIconWrapper type={type} className="drag-item">
+                          <HolderOutlined />
+                        </DragIconWrapper>
+
+                        <Dropdown
+                          trigger={["click"]}
+                          placement="bottomRight"
+                          overlay={
+                            <Menu>
+                              <Menu.Item
+                                disabled={extraConfig?.embed?.disabledEditBlock}
+                                onClick={() => {
+                                  extraConfig?.embed?.onEditBlockClick?.(
+                                    item as DashboardEmbedItem
+                                  );
+                                }}
+                              >
+                                编辑块
+                              </Menu.Item>
+                              <Menu.Item
+                                disabled={extraConfig?.embed?.disabledDelete}
+                                onClick={() => {
+                                  extraConfig?.embed?.onDeleteClick?.(item.id);
+                                }}
+                                danger
+                              >
+                                删除
+                              </Menu.Item>
+                            </Menu>
+                          }
+                        >
+                          <div
+                            style={{ cursor: "pointer", fontWeight: "bold" }}
+                          >
+                            ⋮
+                          </div>
+                        </Dropdown>
+                      </Space>
                     ) : undefined
                   }
                 >
-                  <Embed url={(item as DashboardEmbedItem).embed?.url} />
+                  <Embed
+                    renderWrap={(children) => (
+                      <EmbedWrapper>{children}</EmbedWrapper>
+                    )}
+                    url={(item as DashboardEmbedItem).embed?.url}
+                  />
                 </DashboardCard>
               </DashboardDragWrapper>
             );
