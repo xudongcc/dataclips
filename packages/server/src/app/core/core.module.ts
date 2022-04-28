@@ -1,3 +1,4 @@
+import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { LoggerModule } from "@nest-boot/common";
 import { DatabaseModule } from "@nest-boot/database";
@@ -52,7 +53,7 @@ const services = [
 
 const queues = [RefreshClipQueue];
 
-const DatabaseDynamicModule = DatabaseModule.forRoot();
+const DatabaseDynamicModule = MikroOrmModule.forRoot();
 
 const RedisDynamicModule = RedisModule.registerAsync({
   imports: [],

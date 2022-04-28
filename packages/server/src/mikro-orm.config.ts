@@ -14,5 +14,5 @@ export default {
     path: "dist/database/migrations",
     pathTs: "src/database/migrations",
   },
-  allowGlobalContext: true,
+  debug: true,
 };

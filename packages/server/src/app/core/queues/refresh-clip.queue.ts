@@ -1,3 +1,4 @@
+import { MikroORM, UseRequestContext } from "@mikro-orm/core";
 import { Logger } from "@nest-boot/common";
 import { BaseQueue, Job, Queue } from "@nest-boot/queue";
 import { forwardRef, Inject, OnModuleInit } from "@nestjs/common";
@@ -21,7 +22,8 @@ export class RefreshClipQueue extends BaseQueue implements OnModuleInit {
   constructor(
     readonly logger: Logger,
     @Inject(forwardRef(() => ClipService))
-    readonly clipService: ClipService
+    readonly clipService: ClipService,
+    private readonly orm: MikroORM
   ) {
     super();
     this.logger.setContext(this.constructor.name);
@@ -51,6 +53,7 @@ export class RefreshClipQueue extends BaseQueue implements OnModuleInit {
     );
   }
 
+  @UseRequestContext()
   async processor(
     job: RefreshClipScheduleJob | RefreshClipQueryJob
   ): Promise<void> {
