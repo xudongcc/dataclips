@@ -1,21 +1,17 @@
-import {
-  Flex,
-  Input,
-  InputGroup,
-  InputLeftAddon,
-  useToast,
-} from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useUrlSearchParams } from "use-url-search-params";
-import { TableOptions } from "react-table";
 
 import { ResultFragment } from "../../../generated/graphql";
 import { useDatabaseQuery } from "../../../hooks/useDatabaseQuery";
-import { Table } from "../../common/Table";
 import { DownloadButtonGroup } from "./components/DownloadButtonGroup";
 import { ResultError } from "./components/ResultError";
 import { StatResult } from "./components/StatResult";
 import { Card } from "../../common/Card";
+import { Table, Input, Space } from "antd";
+import { ColumnsType } from "antd/lib/table";
+import { getFormatValue } from "../../chart/ChartEditTab";
+import { formatPercent } from "../../../utils/formatPercent";
 
 export interface ResultPreviewProps {
   token?: string;
@@ -38,33 +34,44 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
 
   const [result, setResult] = useState<ResultFragment>(rawResult);
 
-  const tableProps = useMemo<TableOptions<any>>(() => {
-    const options: TableOptions<any> = {
-      columns: [],
-      data: [],
-    };
+  const columns = useMemo<ColumnsType<any>>(() => {
+    if (result?.fields?.length) {
+      return result?.fields?.map((field) => ({
+        title: (
+          <div style={{ whiteSpace: "nowrap", userSelect: "none" }}>
+            {field}
+          </div>
+        ),
+        dataIndex: field,
+        sorter: (a, b) => {
+          return getFormatValue(a?.[field]) - getFormatValue(b?.[field]);
+        },
+        showSorterTooltip: false,
+        width: formatPercent(1 / result?.fields?.length),
+        render: (value) => {
+          return <div style={{ whiteSpace: "nowrap" }}>{value}</div>;
+        },
+      }));
+    }
 
-    if (result?.values && result?.fields) {
-      // table 的所需要的数据
-      options.data = result.values.map((value) => {
+    return [];
+  }, [result]);
+
+  const tableData = useMemo(() => {
+    if (result?.fields?.length && result?.values?.length) {
+      return result.values.map((value) => {
         const item: Record<string, any> = {};
 
-        result.fields.forEach((key: string, index: number) => {
-          item[key] = value[index];
+        result?.fields.forEach((field, index) => {
+          item[field] = value[index];
         });
 
         return item;
       });
-
-      // 生成 columns
-      options.columns = result.fields.map((value: string) => ({
-        Header: value,
-        accessor: value,
-      }));
     }
 
-    return options;
-  }, [result]);
+    return [];
+  }, [result?.fields, result?.values]);
 
   const handleQuery = useCallback(async () => {
     try {
@@ -113,11 +120,9 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
         token ? <DownloadButtonGroup result={result} token={token} /> : null
       }
     >
-      <InputGroup mb={4}>
-        <InputLeftAddon>过滤</InputLeftAddon>
+      <Space size="large" direction="vertical" style={{ width: "100%" }}>
         <Input
-          fontFamily={'Menlo, Monaco, "Courier New", monospace'}
-          fontSize="xs"
+          addonBefore="过滤"
           value={where}
           onChange={(event) => setWhere(event.target.value)}
           onKeyDown={(event) => {
@@ -127,13 +132,15 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
             }
           }}
         />
-      </InputGroup>
 
-      <Table
-        mx={{ base: -4, md: -6 }}
-        mb={{ base: -4, md: -6 }}
-        {...tableProps}
-      />
+        <Table
+          bordered
+          dataSource={tableData}
+          columns={columns}
+          scroll={{ x: "auto" }}
+          pagination={false}
+        />
+      </Space>
     </Card>
   );
 };
