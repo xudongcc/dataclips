@@ -21,6 +21,8 @@ import { Page } from "../../../components/common/Page";
 import Head from "next/head";
 import { Col, Form, Row, Select, Button, Input } from "antd";
 import { Card } from "../../../components/common/Card";
+import useContextualSaveBarState from "../../../components/common/ContextualSaveBar/useContextualSaveBarState";
+import { ContextualSaveBar } from "../../../components/common/ContextualSaveBar";
 
 const { Option } = Select;
 
@@ -28,7 +30,7 @@ const ChartEdit = () => {
   const toast = useToast();
   const router = useRouter();
   const [form] = Form.useForm();
-
+  const [, setIsChange] = useContextualSaveBarState();
   const { chartId } = router.query as { chartId: string };
 
   const [selectClipId, setSelectClipId] = useState("");
@@ -81,11 +83,15 @@ const ChartEdit = () => {
         isClosable: true,
       });
 
-      router.push(`/charts/${chartId}`);
+      setIsChange(false);
+
+      setTimeout(() => {
+        router.push(`/charts/${chartId}`);
+      });
     } catch (err) {
       console.error(err);
     }
-  }, [chartId, form, router, toast, updateChart]);
+  }, [chartId, form, router, setIsChange, toast, updateChart]);
 
   useEffect(() => {
     if (data?.chart?.clip?.id) {
@@ -106,6 +112,9 @@ const ChartEdit = () => {
       <Page title={data?.chart?.name}>
         <Form
           form={form}
+          onValuesChange={() => {
+            setIsChange(true);
+          }}
           layout="vertical"
           initialValues={{
             ...omit(data?.chart, [
@@ -231,6 +240,18 @@ const ChartEdit = () => {
             </GridItem>
           </Grid>
         </Form>
+
+        <ContextualSaveBar
+          onCancel={() => {
+            router.push("/charts");
+          }}
+          okButtonProps={{
+            loading: updateChartLoading,
+          }}
+          onOK={() => {
+            handleSubmit();
+          }}
+        />
       </Page>
     </>
   );

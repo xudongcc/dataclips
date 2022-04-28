@@ -17,6 +17,8 @@ import { Page } from "../../../components/common/Page";
 import Head from "next/head";
 import { Row, Col, Form, Select, Input, Space, Button } from "antd";
 import { Card } from "../../../components/common/Card";
+import useContextualSaveBarState from "../../../components/common/ContextualSaveBar/useContextualSaveBarState";
+import { ContextualSaveBar } from "../../../components/common/ContextualSaveBar";
 
 const { Option } = Select;
 
@@ -24,6 +26,7 @@ const ClipEdit = () => {
   const toast = useToast();
   const router = useRouter();
   const [form] = Form.useForm();
+  const [, setIsChange] = useContextualSaveBarState();
   const { clipId } = router.query as { clipId: string };
 
   const [sqlValue, setSqlValue] = useState("");
@@ -64,11 +67,13 @@ const ClipEdit = () => {
           title: "保存成功",
           status: "success",
         });
+
+        setIsChange(false);
       }
     } catch (err) {
       console.error(err);
     }
-  }, [clipId, form, sqlValue, toast, updateClip]);
+  }, [clipId, form, setIsChange, sqlValue, toast, updateClip]);
 
   useEffect(() => {
     if (clip?.sql) {
@@ -94,7 +99,12 @@ const ClipEdit = () => {
 
       <Page title={result?.name}>
         <Space direction="vertical" size="large" style={{ display: "flex" }}>
-          <Form form={form}>
+          <Form
+            form={form}
+            onValuesChange={() => {
+              setIsChange(true);
+            }}
+          >
             <Card>
               <Space
                 direction="vertical"
@@ -185,6 +195,18 @@ const ClipEdit = () => {
             ) : null}
           </div>
         </Space>
+
+        <ContextualSaveBar
+          onCancel={() => {
+            router.push("/clips");
+          }}
+          okButtonProps={{
+            loading: updateClipLoading,
+          }}
+          onOK={() => {
+            handleSubmit();
+          }}
+        />
       </Page>
     </>
   );

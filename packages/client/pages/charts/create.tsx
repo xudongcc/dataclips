@@ -20,6 +20,8 @@ import Head from "next/head";
 import { Form, Select, Input, Button, Row, Col } from "antd";
 import { isEqual, omit } from "lodash";
 import { Card } from "../../components/common/Card";
+import useContextualSaveBarState from "../../components/common/ContextualSaveBar/useContextualSaveBarState";
+import { ContextualSaveBar } from "../../components/common/ContextualSaveBar";
 
 const { Option } = Select;
 
@@ -27,7 +29,7 @@ const ChartCreate = () => {
   const router = useRouter();
   const toast = useToast();
   const [form] = Form.useForm();
-
+  const [, setIsChange] = useContextualSaveBarState();
   const [selectClipId, setSelectClipId] = useState("");
 
   const { data: clipsData, loading: clipsLoading } = useClipConnectionQuery({
@@ -69,13 +71,18 @@ const ChartCreate = () => {
         status: "success",
         isClosable: true,
       });
+
+      setIsChange(false);
+
       if (result.data?.createChart.id) {
-        router.push(`/charts/${result.data?.createChart.id}/edit`);
+        setTimeout(() => {
+          router.push(`/charts/${result.data?.createChart.id}/edit`);
+        });
       }
     } catch (err) {
       console.log("err", err);
     }
-  }, [createChart, form, router, toast]);
+  }, [createChart, form, router, setIsChange, toast]);
 
   const { data: result } = useQueryResult(selectClipId);
 
@@ -86,7 +93,13 @@ const ChartCreate = () => {
       </Head>
 
       <Page title="创建图表">
-        <Form form={form} layout="vertical">
+        <Form
+          form={form}
+          onValuesChange={() => {
+            setIsChange(true);
+          }}
+          layout="vertical"
+        >
           <Grid templateColumns="repeat(3, 1fr)" gap={4} w="100%">
             <GridItem colSpan={3}>
               <Card>
@@ -184,6 +197,18 @@ const ChartCreate = () => {
             </GridItem>
           </Grid>
         </Form>
+
+        <ContextualSaveBar
+          onCancel={() => {
+            router.push("/charts");
+          }}
+          okButtonProps={{
+            loading: createChartLoading,
+          }}
+          onOK={() => {
+            handleSubmit();
+          }}
+        />
       </Page>
     </>
   );
