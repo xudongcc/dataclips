@@ -179,7 +179,7 @@ export const ContextualSaveBar: FC<ContextualSaveBarProps> = ({
           <Title level={4} style={{ color: "#fff", marginBottom: 0 }}>
             {title || "未保存的更改"}
           </Title>
-          <Space size={12}>
+          <Space size={8}>
             <Button
               size="large"
               {...cancelButtonProps}
