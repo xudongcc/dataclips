@@ -12,7 +12,7 @@ import {
   useChartLazyQuery,
 } from "../../../generated/graphql";
 import { cloneDeep, omit } from "lodash";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { Loading } from "../../../components/common/Loading";
 import { Page } from "../../../components/common/Page";
 import {
@@ -67,7 +67,10 @@ const DashBoardEdit: PC = () => {
   const [mdForm] = Form.useForm();
   // 添加 embed 的form
   const [embedForm] = Form.useForm();
-  const [isChange, setIsChange] = useContextualSaveBarState();
+  const [, setIsChange] = useContextualSaveBarState();
+
+  // 一开始会触发一次 handleLayoutChange 导致保存条出现
+  const isFirstLayoutChangeRef = useRef(true);
 
   // 当前表单弹窗的操作类型
   const [operation, setOperation] = useState<Operation>({
@@ -195,7 +198,9 @@ const DashBoardEdit: PC = () => {
         setIsChange(false);
 
         if (goPreview) {
-          router.push(`/dashboards/${dashboardId}`);
+          setTimeout(() => {
+            router.push(`/dashboards/${dashboardId}`);
+          });
         }
 
         return;
@@ -217,7 +222,7 @@ const DashBoardEdit: PC = () => {
   );
 
   // 布局发生变化时
-  const handleSetChartItemLayout = useCallback(
+  const handleLayoutChange = useCallback(
     (newLayout: Layout[]) => {
       const newDragItems = cloneDeep(dragItems);
 
@@ -241,9 +246,15 @@ const DashBoardEdit: PC = () => {
         }
       });
 
+      if (isFirstLayoutChangeRef.current) {
+        isFirstLayoutChangeRef.current = false;
+      } else {
+        setIsChange(true);
+      }
+
       setDragItems(newDragItems);
     },
-    [dragItems]
+    [dragItems, setIsChange]
   );
 
   // 获取和设置所有拖拽项
@@ -340,17 +351,9 @@ const DashBoardEdit: PC = () => {
           },
         ]}
       >
-        <Button
-          onClick={() => {
-            setIsChange(true);
-          }}
-        >
-          show
-        </Button>
-
         <DashboardLayout
           type="edit"
-          onLayoutChange={handleSetChartItemLayout}
+          onLayoutChange={handleLayoutChange}
           layout={dragItems.map((item) => item.position)}
           dragItems={dragItems}
           extraConfig={{
@@ -377,6 +380,7 @@ const DashBoardEdit: PC = () => {
                 if (deleteIndex !== -1) {
                   dragItems.splice(deleteIndex, 1);
                   setDragItems([...dragItems]);
+                  setIsChange(true);
                 }
               },
               onEditChartClick: (item) => {
@@ -406,6 +410,7 @@ const DashBoardEdit: PC = () => {
                   dragItems.splice(deleteDividerIndex, 1);
 
                   setDragItems([...dragItems]);
+                  setIsChange(true);
                 }
               },
             },
@@ -419,6 +424,7 @@ const DashBoardEdit: PC = () => {
                   dragItems.splice(deleteDividerIndex, 1);
 
                   setDragItems([...dragItems]);
+                  setIsChange(true);
                 }
               },
               onEditBlockClick: (item) => {
@@ -446,6 +452,7 @@ const DashBoardEdit: PC = () => {
                   dragItems.splice(deleteDividerIndex, 1);
 
                   setDragItems([...dragItems]);
+                  setIsChange(true);
                 }
               },
               onEditBlockClick: (item) => {
@@ -518,6 +525,7 @@ const DashBoardEdit: PC = () => {
                 }
               }
 
+              setIsChange(true);
               handleCloseAddOrEditChartModal();
             } catch (err) {
               console.error(err);
@@ -646,6 +654,7 @@ const DashBoardEdit: PC = () => {
               },
             ]);
 
+            setIsChange(true);
             handleCloseDividerModal();
           }}
         >
@@ -718,6 +727,7 @@ const DashBoardEdit: PC = () => {
               setOperation({ type: OperationType.ADD });
             }
 
+            setIsChange(true);
             handleCloseAddOrEditMarkdownModal();
           }}
           bodyStyle={{
@@ -806,6 +816,7 @@ const DashBoardEdit: PC = () => {
               setOperation({ type: OperationType.ADD });
             }
 
+            setIsChange(true);
             handleCloseAddOrEditEmbedModal();
           }}
         >

@@ -79,21 +79,6 @@ export const ContextualSaveBar: FC<ContextualSaveBarProps> = ({
 
   const [visible, setVisible] = useContextualSaveBarState();
 
-  useEffect(() => {
-    const listener = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = leaveConfirmModal?.content;
-    };
-
-    if (visible) {
-      window.addEventListener("beforeunload", listener);
-    }
-
-    return () => {
-      window.removeEventListener("beforeunload", listener);
-    };
-  }, [leaveConfirmModal?.content, visible]);
-
   const handleLeaveConfirm = (pathname: string) =>
     Modal.confirm({
       title: leaveConfirmModal?.title || "放弃所有未保存的更改",
@@ -140,26 +125,44 @@ export const ContextualSaveBar: FC<ContextualSaveBarProps> = ({
       },
     });
 
+  // 页面卸载监听
   useEffect(() => {
-    const a = (url) => {
+    const listener = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = leaveConfirmModal?.content;
+    };
+
+    if (visible) {
+      window.addEventListener("beforeunload", listener);
+    }
+
+    return () => {
+      window.removeEventListener("beforeunload", listener);
+    };
+  }, [leaveConfirmModal?.content, visible]);
+
+  // 编辑后监听路径发生变化
+  useEffect(() => {
+    const handleRouteChangeStart = (url) => {
+      console.log("url", url);
       if (url && visible) {
         router.events.emit("routeChangeError", url);
         throw "routeChange aborted.";
       }
     };
 
-    const b = (url) => {
+    const handleRouteChangeError = (url) => {
       handleLeaveConfirm(url);
     };
 
-    router.events.on("routeChangeStart", a);
+    router.events.on("routeChangeStart", handleRouteChangeStart);
 
-    router.events.on("routeChangeError", b);
+    router.events.on("routeChangeError", handleRouteChangeError);
 
     return () => {
-      router.events.off("routeChangeStart", a);
+      router.events.off("routeChangeStart", handleRouteChangeStart);
 
-      router.events.off("routeChangeError", b);
+      router.events.off("routeChangeError", handleRouteChangeError);
     };
   }, [visible, router]);
 
@@ -196,22 +199,6 @@ export const ContextualSaveBar: FC<ContextualSaveBarProps> = ({
           </Space>
         </Col>
       </Row>
-
-      {/* <m
-        when={visible}
-        // message={({ pathname, query }: any) => {
-        //   if (Object.keys(query).length > 0) {
-        //     handleLeaveConfirm(
-        //       `${pathname}?${new URLSearchParams(query).toString()}`
-        //     );
-        //   } else {
-        //     handleLeaveConfirm(pathname);
-        //   }
-        //   return false;
-        // }}
-      >
-        {() => Modal.confirm({ title: "123" })}
-      </m> */}
     </SaveBar>
   ) : null;
 };
