@@ -1,13 +1,27 @@
 import React, { FC, useEffect } from "react";
-// import { Prompt, useHistory } from "react-router";
-// import { useNavigate } from "react-router";
 import { useRouter } from "next/router";
 import { Modal } from "../Modal";
-import { Box, FlexProps, Flex } from "@chakra-ui/react";
-// import { ConfigContext } from "../config-provider";
 import useContextualSaveBarState from "./useContextualSaveBarState";
-import { Button, ButtonProps, Space } from "antd";
-import ReactRouterPrompt from "../ReactRouterPrompt";
+import { Button, ButtonProps, Col, Row, Space, Typography } from "antd";
+import styled from "styled-components";
+
+const { Title } = Typography;
+
+const SaveBar = styled.div`
+  display: flex;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  padding: 0 18px;
+  z-index: 9999;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgb(32, 33, 35);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+`;
 
 interface confirmModalType {
   /** 取消的二次确认标题 */
@@ -24,7 +38,7 @@ interface confirmModalType {
   cancelButtonProps?: ButtonProps;
 }
 
-export interface ContextualSaveBarProps extends FlexProps {
+export interface ContextualSaveBarProps {
   /** 左上角区域 */
   logo?: React.ReactNode;
   /** 保存条中间显示的文字 */
@@ -50,31 +64,20 @@ export interface ContextualSaveBarProps extends FlexProps {
 }
 
 export const ContextualSaveBar: FC<ContextualSaveBarProps> = ({
-  logo,
   title,
-  okText,
+  okText = "保存",
   okButtonProps,
-  cancelText,
+  cancelText = "取消",
   cancelButtonProps,
   cancelConfirmModal,
   leaveConfirmModal,
   onOK,
   onCancel,
   onLeave,
-  ...rest
 }) => {
   const router = useRouter();
 
-  //   const {
-  //     locale: { ContextualSaveBar: locale } = {
-  //       ContextualSaveBar: defaultLocale.ContextualSaveBar,
-  //     },
-  //     logo: globalLogo,
-  //   } = React.useContext(ConfigContext);
-
   const [visible, setVisible] = useContextualSaveBarState();
-
-  console.log("visible", visible);
 
   useEffect(() => {
     const listener = (e: BeforeUnloadEvent) => {
@@ -96,12 +99,13 @@ export const ContextualSaveBar: FC<ContextualSaveBarProps> = ({
       title: leaveConfirmModal?.title || "放弃所有未保存的更改",
       content:
         leaveConfirmModal?.content ||
-        "如果放弃更改，您将删除自上次保存以来所做的所有编辑。",
-      okText: leaveConfirmModal?.okText || "放弃更改",
+        "如果退出此页面，任何未保存的更改都将丢失。",
+      okText: leaveConfirmModal?.okText || "退出页面",
       okButtonProps: {
         danger: true,
         ...leaveConfirmModal?.okButtonProps,
       },
+      cancelText: "取消",
       cancelButtonProps: leaveConfirmModal?.cancelButtonProps,
       onOk: () => {
         setVisible(false);
@@ -136,49 +140,64 @@ export const ContextualSaveBar: FC<ContextualSaveBarProps> = ({
       },
     });
 
+  useEffect(() => {
+    const a = (url) => {
+      if (url && visible) {
+        router.events.emit("routeChangeError", url);
+        throw "routeChange aborted.";
+      }
+    };
+
+    const b = (url) => {
+      handleLeaveConfirm(url);
+    };
+
+    router.events.on("routeChangeStart", a);
+
+    router.events.on("routeChangeError", b);
+
+    return () => {
+      router.events.off("routeChangeStart", a);
+
+      router.events.off("routeChangeError", b);
+    };
+  }, [visible, router]);
+
   return visible ? (
-    <Flex
-      pos="fixed"
-      top={0}
-      left={0}
-      zIndex={999999}
-      align="center"
-      justify="space-between"
-      w="100%"
-      h="56px"
-      bg="rgb(32, 33, 35)"
-      boxShadow="0 2px 4px rgba(0, 0, 0, 0.1)"
-      {...rest}
-    >
-      <Box
-        display={{ base: "none", md: "flex" }}
-        p="0 16px"
-        color="#fff"
-        w={{ md: "240px" }}
-      >
-        {logo}
-      </Box>
-      <Flex
-        flex="1 1 auto"
-        align="center"
-        justify="space-between"
-        maxW="5xl"
-        m="0 auto"
-        px={{ base: 4, sm: 5, lg: 8 }}
-      >
-        <Box color="#fff" fontWeight={600} fontSize="16px">
-          {title}
-        </Box>
-        {/* <Space size={12}>
-          <Button {...cancelButtonProps} onClick={() => handleCancelConfirm()}>
-            {cancelText}
-          </Button>
-          <Button type="primary" {...okButtonProps} onClick={() => onOK?.()}>
-            {okText}
-          </Button>
-        </Space> */}
-      </Flex>
-      <ReactRouterPrompt
+    <SaveBar>
+      <Row style={{ width: "100%" }}>
+        <Col
+          span={24}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Title level={4} style={{ color: "#fff", marginBottom: 0 }}>
+            {title || "未保存的更改"}
+          </Title>
+          <Space size={12}>
+            <Button
+              size="large"
+              {...cancelButtonProps}
+              onClick={() => handleCancelConfirm()}
+            >
+              {cancelText}
+            </Button>
+            <Button
+              size="large"
+              type="primary"
+              {...okButtonProps}
+              onClick={() => onOK?.()}
+            >
+              {okText}
+            </Button>
+          </Space>
+        </Col>
+      </Row>
+
+      {/* <m
         when={visible}
         // message={({ pathname, query }: any) => {
         //   if (Object.keys(query).length > 0) {
@@ -192,7 +211,7 @@ export const ContextualSaveBar: FC<ContextualSaveBarProps> = ({
         // }}
       >
         {() => Modal.confirm({ title: "123" })}
-      </ReactRouterPrompt>
-    </Flex>
+      </m> */}
+    </SaveBar>
   ) : null;
 };

@@ -192,6 +192,8 @@ const DashBoardEdit: PC = () => {
 
         toast({ title: "保存成功" });
 
+        setIsChange(false);
+
         if (goPreview) {
           router.push(`/dashboards/${dashboardId}`);
         }
@@ -209,6 +211,7 @@ const DashBoardEdit: PC = () => {
       data?.dashboard?.config,
       dragItems,
       toast,
+      setIsChange,
       router,
     ]
   );
@@ -832,7 +835,17 @@ const DashBoardEdit: PC = () => {
           </Form>
         </Modal>
 
-        <ContextualSaveBar onCancel={() => {}} onOK={() => {}} />
+        <ContextualSaveBar
+          onCancel={() => {
+            router.push("/dashboards");
+          }}
+          okButtonProps={{
+            loading: updateDashboardLoading,
+          }}
+          onOK={() => {
+            handleUpdateDashboard(true);
+          }}
+        />
       </Page>
     </>
   );
