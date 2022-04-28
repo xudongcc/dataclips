@@ -36,6 +36,8 @@ import {
 } from "antd";
 import { Modal } from "../../../components/common/Modal";
 import { Markdown } from "../../../components/chart/ChartResultPreview/components";
+import useContextualSaveBarState from "../../../components/common/ContextualSaveBar/useContextualSaveBarState";
+import { ContextualSaveBar } from "../../../components/common/ContextualSaveBar";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -65,6 +67,7 @@ const DashBoardEdit: PC = () => {
   const [mdForm] = Form.useForm();
   // 添加 embed 的form
   const [embedForm] = Form.useForm();
+  const [isChange, setIsChange] = useContextualSaveBarState();
 
   // 当前表单弹窗的操作类型
   const [operation, setOperation] = useState<Operation>({
@@ -334,6 +337,14 @@ const DashBoardEdit: PC = () => {
           },
         ]}
       >
+        <Button
+          onClick={() => {
+            setIsChange(true);
+          }}
+        >
+          show
+        </Button>
+
         <DashboardLayout
           type="edit"
           onLayoutChange={handleSetChartItemLayout}
@@ -820,6 +831,8 @@ const DashBoardEdit: PC = () => {
             </Form.Item>
           </Form>
         </Modal>
+
+        <ContextualSaveBar onCancel={() => {}} onOK={() => {}} />
       </Page>
     </>
   );
