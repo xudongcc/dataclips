@@ -15,7 +15,7 @@ const SaveBar = styled.div`
   left: 0;
   right: 0;
   height: 64px;
-  padding: 0 18px;
+  padding: 0 24px;
   z-index: 9999;
   align-items: center;
   justify-content: space-between;
@@ -144,7 +144,6 @@ export const ContextualSaveBar: FC<ContextualSaveBarProps> = ({
   // 编辑后监听路径发生变化
   useEffect(() => {
     const handleRouteChangeStart = (url) => {
-      console.log("url", url);
       if (url && visible) {
         router.events.emit("routeChangeError", url);
         throw "routeChange aborted.";
