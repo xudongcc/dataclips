@@ -7,6 +7,7 @@ import { Box, FlexProps, Flex } from "@chakra-ui/react";
 // import { ConfigContext } from "../config-provider";
 import useContextualSaveBarState from "./useContextualSaveBarState";
 import { Button, ButtonProps, Space } from "antd";
+import ReactRouterPrompt from "../ReactRouterPrompt";
 
 interface confirmModalType {
   /** 取消的二次确认标题 */
@@ -177,19 +178,21 @@ export const ContextualSaveBar: FC<ContextualSaveBarProps> = ({
           </Button>
         </Space> */}
       </Flex>
-      {/* <Prompt
+      <ReactRouterPrompt
         when={visible}
-        message={({ pathname, query }: any) => {
-          if (Object.keys(query).length > 0) {
-            handleLeaveConfirm(
-              `${pathname}?${new URLSearchParams(query).toString()}`
-            );
-          } else {
-            handleLeaveConfirm(pathname);
-          }
-          return false;
-        }}
-      /> */}
+        // message={({ pathname, query }: any) => {
+        //   if (Object.keys(query).length > 0) {
+        //     handleLeaveConfirm(
+        //       `${pathname}?${new URLSearchParams(query).toString()}`
+        //     );
+        //   } else {
+        //     handleLeaveConfirm(pathname);
+        //   }
+        //   return false;
+        // }}
+      >
+        {() => Modal.confirm({ title: "123" })}
+      </ReactRouterPrompt>
     </Flex>
   ) : null;
 };
