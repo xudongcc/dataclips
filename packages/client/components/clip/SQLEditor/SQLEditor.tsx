@@ -1,7 +1,7 @@
-import { Box, useColorModeValue, useToken } from "@chakra-ui/react";
 import Editor, { loader } from "@monaco-editor/react";
-import { FC, useCallback, useEffect, useRef } from "react";
+import { FC, useCallback, useContext, useEffect, useRef } from "react";
 import { format } from "prettier-sql";
+import { SystemThemeContext } from "../../../context";
 
 loader.config({
   paths: { vs: "/editor" },
@@ -18,15 +18,9 @@ export const SQLEditor: FC<SQLEditorProps> = ({
   onChange,
   formatType = "mysql",
 }) => {
-  const theme = useColorModeValue("dataclips-light", "dataclips-dark");
   const editorRef = useRef(null);
 
-  const [
-    lightBackground,
-    lightLineHighlightBackground,
-    darkBackground,
-    darkLineHighlightBackground,
-  ] = useToken("colors", ["white", "gray.200", "gray.900", "gray.700"]);
+  const systemTheme = useContext(SystemThemeContext);
 
   const handleChange = useCallback(
     (newValue) => {
@@ -35,35 +29,27 @@ export const SQLEditor: FC<SQLEditorProps> = ({
     [onChange]
   );
 
-  const handleBeforeMount = useCallback(
-    (monaco) => {
-      monaco.editor.defineTheme("dataclips-light", {
-        base: "vs",
-        inherit: true,
-        rules: [],
-        colors: {
-          "editor.background": lightBackground,
-          "editor.lineHighlightBackground": lightLineHighlightBackground,
-        },
-      });
+  const handleBeforeMount = useCallback((monaco) => {
+    monaco.editor.defineTheme("light", {
+      base: "vs",
+      inherit: true,
+      rules: [],
+      colors: {
+        "editor.background": "#fff",
+        "editor.lineHighlightBackground": "#fff",
+      },
+    });
 
-      monaco.editor.defineTheme("dataclips-dark", {
-        base: "vs-dark",
-        inherit: true,
-        rules: [],
-        colors: {
-          "editor.background": darkBackground,
-          "editor.lineHighlightBackground": darkLineHighlightBackground,
-        },
-      });
-    },
-    [
-      lightBackground,
-      lightLineHighlightBackground,
-      darkBackground,
-      darkLineHighlightBackground,
-    ]
-  );
+    monaco.editor.defineTheme("dark", {
+      base: "vs-dark",
+      inherit: true,
+      rules: [],
+      colors: {
+        "editor.background": "#1d1d1d",
+        "editor.lineHighlightBackground": "#1d1d1d",
+      },
+    });
+  }, []);
 
   // 监听保存按键，格式化 sql 语句
   useEffect(() => {
@@ -101,10 +87,10 @@ export const SQLEditor: FC<SQLEditorProps> = ({
   }, [formatType]);
 
   return (
-    <Box h="200px">
+    <div style={{ height: 250 }}>
       <Editor
         height="100%"
-        theme={theme}
+        theme={systemTheme}
         defaultLanguage="sql"
         options={{
           contextmenu: false,
@@ -123,6 +109,6 @@ export const SQLEditor: FC<SQLEditorProps> = ({
         }}
         beforeMount={handleBeforeMount}
       />
-    </Box>
+    </div>
   );
 };
