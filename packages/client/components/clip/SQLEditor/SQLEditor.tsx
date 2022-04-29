@@ -1,6 +1,6 @@
 import Editor, { loader } from "@monaco-editor/react";
 import { FC, useCallback, useContext, useEffect, useRef } from "react";
-import { format } from "prettier-sql";
+import { format } from "sql-formatter";
 import { SystemThemeContext } from "../../../context";
 
 loader.config({
