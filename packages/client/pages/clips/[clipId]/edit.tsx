@@ -17,6 +17,9 @@ import { Page } from "../../../components/common/Page";
 import Head from "next/head";
 import { Row, Col, Form, Select, Input, Space, Button } from "antd";
 import { Card } from "../../../components/common/Card";
+import useContextualSaveBarState from "../../../components/common/ContextualSaveBar/useContextualSaveBarState";
+import { ContextualSaveBar } from "../../../components/common/ContextualSaveBar";
+import { isEqual } from "lodash";
 
 const { Option } = Select;
 
@@ -24,6 +27,7 @@ const ClipEdit = () => {
   const toast = useToast();
   const router = useRouter();
   const [form] = Form.useForm();
+  const [, setIsChange] = useContextualSaveBarState();
   const { clipId } = router.query as { clipId: string };
 
   const [sqlValue, setSqlValue] = useState("");
@@ -64,11 +68,34 @@ const ClipEdit = () => {
           title: "保存成功",
           status: "success",
         });
+
+        setIsChange(false);
       }
     } catch (err) {
       console.error(err);
     }
-  }, [clipId, form, sqlValue, toast, updateClip]);
+  }, [clipId, form, setIsChange, sqlValue, toast, updateClip]);
+
+  // 新值旧值判断
+  const handleFormDataIsEqual = useCallback(
+    (newValues) => {
+      if (
+        isEqual(
+          {
+            name: clip?.name,
+            sourceId: clip?.source?.id,
+            tags: clip?.tags,
+          },
+          newValues
+        )
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    [clip?.name, clip?.source?.id, clip?.tags]
+  );
 
   useEffect(() => {
     if (clip?.sql) {
@@ -94,7 +121,16 @@ const ClipEdit = () => {
 
       <Page title={result?.name}>
         <Space direction="vertical" size="large" style={{ display: "flex" }}>
-          <Form form={form}>
+          <Form
+            form={form}
+            onValuesChange={(_, values) => {
+              if (!handleFormDataIsEqual(values)) {
+                setIsChange(true);
+              } else if (sqlValue === clip?.sql) {
+                setIsChange(false);
+              }
+            }}
+          >
             <Card>
               <Space
                 direction="vertical"
@@ -171,6 +207,11 @@ const ClipEdit = () => {
                     }
                     value={sqlValue}
                     onChange={(value) => {
+                      if (value !== clip?.sql) {
+                        setIsChange(true);
+                      } else if (handleFormDataIsEqual(form.getFieldsValue())) {
+                        setIsChange(false);
+                      }
                       setSqlValue(value);
                     }}
                   />
@@ -185,6 +226,18 @@ const ClipEdit = () => {
             ) : null}
           </div>
         </Space>
+
+        <ContextualSaveBar
+          onCancel={() => {
+            router.push("/clips");
+          }}
+          okButtonProps={{
+            loading: updateClipLoading,
+          }}
+          onOK={() => {
+            handleSubmit();
+          }}
+        />
       </Page>
     </>
   );

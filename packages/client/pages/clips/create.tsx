@@ -9,6 +9,8 @@ import { Page } from "../../components/common/Page";
 import Head from "next/head";
 import { Row, Col, Form, Input, Select, Button, Space } from "antd";
 import { Card } from "../../components/common/Card";
+import useContextualSaveBarState from "../../components/common/ContextualSaveBar/useContextualSaveBarState";
+import { ContextualSaveBar } from "../../components/common/ContextualSaveBar";
 
 const { Option } = Select;
 
@@ -16,7 +18,7 @@ const ClipCreate = () => {
   const toast = useToast();
   const router = useRouter();
   const [form] = Form.useForm();
-
+  const [, setIsChange] = useContextualSaveBarState();
   const [sqlValue, setSqlValue] = useState("");
 
   const [createClip, { loading: createClipLoading }] = useCreateClipMutation();
@@ -45,11 +47,15 @@ const ClipCreate = () => {
         status: "success",
       });
 
-      router.push(`/clips/${data?.createClip.id}/edit`);
+      setIsChange(false);
+
+      setTimeout(() => {
+        router.push(`/clips/${data?.createClip.id}/edit`);
+      });
     } catch (err) {
       //
     }
-  }, [createClip, form, router, sqlValue, toast]);
+  }, [createClip, form, router, setIsChange, sqlValue, toast]);
 
   return (
     <>
@@ -58,7 +64,12 @@ const ClipCreate = () => {
       </Head>
 
       <Page title="创建数据集">
-        <Form form={form}>
+        <Form
+          form={form}
+          onValuesChange={() => {
+            setIsChange(true);
+          }}
+        >
           <Card>
             <Space
               direction="vertical"
@@ -136,6 +147,18 @@ const ClipCreate = () => {
             </Space>
           </Card>
         </Form>
+
+        <ContextualSaveBar
+          onCancel={() => {
+            router.push("/clips");
+          }}
+          okButtonProps={{
+            loading: createClipLoading,
+          }}
+          onOK={() => {
+            handleSubmit();
+          }}
+        />
       </Page>
     </>
   );
