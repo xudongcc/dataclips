@@ -25,7 +25,11 @@ export const AutoComplete: FC<AutoCompleteProps<any, BaseOptionType>> = (
         onChange(val, _option);
       }}
       onChange={(val, _option) => {
-        onChange(val, _option);
+        if (!val) {
+          onChange(undefined, _option);
+        } else {
+          onChange(val, _option);
+        }
       }}
       {...rest}
     />
