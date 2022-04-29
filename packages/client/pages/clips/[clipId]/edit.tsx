@@ -19,7 +19,7 @@ import { Row, Col, Form, Select, Input, Space, Button } from "antd";
 import { Card } from "../../../components/common/Card";
 import useContextualSaveBarState from "../../../components/common/ContextualSaveBar/useContextualSaveBarState";
 import { ContextualSaveBar } from "../../../components/common/ContextualSaveBar";
-import { isEqual, omit } from "lodash";
+import { isEqual } from "lodash";
 
 const { Option } = Select;
 
