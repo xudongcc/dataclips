@@ -5,7 +5,7 @@ export default {
   host: process.env.DATABASE_HOST,
   port: process.env.DATABASE_PORT,
   dbName: process.env.DATABASE_NAME,
-  name: process.env.DATABASE_USER,
+  name: process.env.DATABASE_USERNAME,
   password: process.env.DATABASE_PASSWORD,
   metadataProvider: TsMorphMetadataProvider,
   entities: ["dist/app/core/entities/**/*.js"],
