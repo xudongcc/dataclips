@@ -93,6 +93,8 @@ const ChartEdit = () => {
     }
   }, [chartId, form, router, setIsChange, toast, updateChart]);
 
+  console.log("data", data);
+
   useEffect(() => {
     if (data?.chart?.clip?.id) {
       setSelectClipId(data?.chart?.clip?.id);
@@ -112,8 +114,27 @@ const ChartEdit = () => {
       <Page title={data?.chart?.name}>
         <Form
           form={form}
-          onValuesChange={() => {
-            setIsChange(true);
+          onValuesChange={(_, values) => {
+            // 不使用 setTimeout 会获取上次的值，待查
+            setTimeout(() => {
+              if (
+                !isEqual(
+                  {
+                    name: data?.chart?.name,
+                    tags: data?.chart?.tags,
+                    type: data?.chart?.type,
+                    clipId: data?.chart?.clip?.id,
+                    [chartTypeToFormFieldMap[data?.chart?.type]]:
+                      data?.chart?.config,
+                  },
+                  form.getFieldsValue()
+                )
+              ) {
+                setIsChange(true);
+              } else {
+                setIsChange(false);
+              }
+            });
           }}
           layout="vertical"
           initialValues={{

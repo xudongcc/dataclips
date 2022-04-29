@@ -11,7 +11,7 @@ import {
   useUpdateDashboardMutation,
   useChartLazyQuery,
 } from "../../../generated/graphql";
-import { cloneDeep, omit } from "lodash";
+import { cloneDeep, omit, isEqual } from "lodash";
 import { useCallback, useState, useEffect, useRef } from "react";
 import { Loading } from "../../../components/common/Loading";
 import { Page } from "../../../components/common/Page";

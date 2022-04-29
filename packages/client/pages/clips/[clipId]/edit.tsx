@@ -19,6 +19,7 @@ import { Row, Col, Form, Select, Input, Space, Button } from "antd";
 import { Card } from "../../../components/common/Card";
 import useContextualSaveBarState from "../../../components/common/ContextualSaveBar/useContextualSaveBarState";
 import { ContextualSaveBar } from "../../../components/common/ContextualSaveBar";
+import { isEqual, omit } from "lodash";
 
 const { Option } = Select;
 
@@ -75,6 +76,27 @@ const ClipEdit = () => {
     }
   }, [clipId, form, setIsChange, sqlValue, toast, updateClip]);
 
+  // 新值旧值判断
+  const handleFormDataIsEqual = useCallback(
+    (newValues) => {
+      if (
+        !isEqual(
+          {
+            name: clip?.name,
+            sourceId: clip?.source?.id,
+            tags: clip?.tags,
+          },
+          newValues
+        )
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    [clip?.name, clip?.source?.id, clip?.tags]
+  );
+
   useEffect(() => {
     if (clip?.sql) {
       setSqlValue(clip.sql);
@@ -101,8 +123,12 @@ const ClipEdit = () => {
         <Space direction="vertical" size="large" style={{ display: "flex" }}>
           <Form
             form={form}
-            onValuesChange={() => {
-              setIsChange(true);
+            onValuesChange={(_, values) => {
+              if (handleFormDataIsEqual(values)) {
+                setIsChange(true);
+              } else if (sqlValue === clip?.sql) {
+                setIsChange(false);
+              }
             }}
           >
             <Card>
@@ -181,6 +207,13 @@ const ClipEdit = () => {
                     }
                     value={sqlValue}
                     onChange={(value) => {
+                      if (value !== clip?.sql) {
+                        setIsChange(true);
+                      } else if (
+                        !handleFormDataIsEqual(form.getFieldsValue())
+                      ) {
+                        setIsChange(false);
+                      }
                       setSqlValue(value);
                     }}
                   />
