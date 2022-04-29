@@ -26,7 +26,7 @@ WORKDIR /app
 
 # 安装全局工具
 RUN npm install @nest-boot/command -g
-RUN npm install  @mikro-orm/cli -g
+RUN npm install @mikro-orm/cli -g
 
 # 复制文件
 COPY --from=builder /app/dist/ ./dist/
