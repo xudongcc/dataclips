@@ -80,7 +80,7 @@ const ClipEdit = () => {
   const handleFormDataIsEqual = useCallback(
     (newValues) => {
       if (
-        !isEqual(
+        isEqual(
           {
             name: clip?.name,
             sourceId: clip?.source?.id,
@@ -124,7 +124,7 @@ const ClipEdit = () => {
           <Form
             form={form}
             onValuesChange={(_, values) => {
-              if (handleFormDataIsEqual(values)) {
+              if (!handleFormDataIsEqual(values)) {
                 setIsChange(true);
               } else if (sqlValue === clip?.sql) {
                 setIsChange(false);
@@ -209,9 +209,7 @@ const ClipEdit = () => {
                     onChange={(value) => {
                       if (value !== clip?.sql) {
                         setIsChange(true);
-                      } else if (
-                        !handleFormDataIsEqual(form.getFieldsValue())
-                      ) {
+                      } else if (handleFormDataIsEqual(form.getFieldsValue())) {
                         setIsChange(false);
                       }
                       setSqlValue(value);

@@ -93,8 +93,6 @@ const ChartEdit = () => {
     }
   }, [chartId, form, router, setIsChange, toast, updateChart]);
 
-  console.log("data", data);
-
   useEffect(() => {
     if (data?.chart?.clip?.id) {
       setSelectClipId(data?.chart?.clip?.id);
