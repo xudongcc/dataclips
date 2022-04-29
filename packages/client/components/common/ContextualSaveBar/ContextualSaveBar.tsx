@@ -160,7 +160,6 @@ export const ContextualSaveBar: FC<ContextualSaveBarProps> = ({
 
     return () => {
       router.events.off("routeChangeStart", handleRouteChangeStart);
-
       router.events.off("routeChangeError", handleRouteChangeError);
     };
 
