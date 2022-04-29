@@ -27,12 +27,14 @@ WORKDIR /app
 # 安装全局工具
 RUN npm install @nest-boot/command -g
 RUN npm install @mikro-orm/cli -g
+RUN npm install @mikro-orm/postgresql -g
 
 # 复制文件
 COPY --from=builder /app/dist/ ./dist/
 COPY --from=builder /app/node_modules/ ./node_modules/
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/yarn.lock ./
+COPY --from=builder /app/tsconfig.json ./
 
 # 暴露端口
 EXPOSE 80
