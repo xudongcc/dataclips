@@ -1,7 +1,6 @@
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { LoggerModule } from "@nest-boot/common";
-import { DatabaseModule } from "@nest-boot/database";
 import { QueueModule } from "@nest-boot/queue";
 import { RedisModule } from "@nest-boot/redis";
 import { SearchModule } from "@nest-boot/search";
@@ -91,7 +90,7 @@ const providers = [...services, ...queues];
     ConfigModule.forRoot({ isGlobal: true, expandVariables: true }),
     CryptoModule,
     LoggerModule.register(),
-    DatabaseModule.forFeature(Object.values(entities)),
+    MikroOrmModule.forFeature(Object.values(entities)),
     RedisDynamicModule,
     SearchDynamicModule,
     QueueDynamicModule,

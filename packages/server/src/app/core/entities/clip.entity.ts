@@ -11,8 +11,8 @@ import {
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { nanoid } from "nanoid";
 import { SnowflakeIdGenerator } from "snowflake-id-generator";
-import { DatabaseSource } from "src/app/http/objects/database-source.object";
 
+import { DatabaseSource } from "../../http/objects/database-source.object";
 import { Chart } from "./chart.entity";
 import { Result } from "./result.entity";
 import { Source } from "./source.entity";
