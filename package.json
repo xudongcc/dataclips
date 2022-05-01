@@ -6,9 +6,9 @@
   "license": "MIT",
   "scripts": {
     "start:server": "node dist/main.js",
-    "dev:client": "cd packages/client && npm run dev",
-    "dev:server": "cd packages/server && npm run dev:server",
-    "dev:worker": "cd packages/server && npm run dev:worker",
+    "dev:client": "cd packages/client && yarn dev",
+    "dev:server": "cd packages/server && yarn dev:server",
+    "dev:worker": "cd packages/server && yarn dev:worker",
     "lint": "eslint packages/*/src --fix",
     "semantic-release": "semantic-release"
   },
