@@ -18,6 +18,7 @@ import { Result } from "./entities/result.entity";
 import { Source } from "./entities/source.entity";
 import { User } from "./entities/user.entity";
 import { VirtualSourceTable } from "./entities/virtual-source-table.entity";
+import { BullQueueModule } from "./queues/bull.module";
 import { RefreshClipQueue } from "./queues/refresh-clip.queue";
 import { ChartService } from "./services/chart.service";
 import { ClipService } from "./services/clip.service";
@@ -95,6 +96,7 @@ const providers = [...services, ...queues];
     SearchDynamicModule,
     QueueDynamicModule,
     DatabaseDynamicModule,
+    BullQueueModule,
   ],
   providers,
   exports: [...providers],

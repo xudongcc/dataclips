@@ -2,7 +2,9 @@ import { QueryOrder } from "@mikro-orm/core";
 import { createEntityService } from "@nest-boot/database";
 import { mixinConnection } from "@nest-boot/graphql";
 import { mixinSearchable } from "@nest-boot/search";
+import { InjectQueue } from "@nestjs/bull";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { Queue } from "bull";
 import moment from "moment";
 
 import { Clip } from "../entities/clip.entity";
@@ -24,12 +26,16 @@ export class ClipService extends mixinConnection(
     private readonly sourceService: SourceService,
     private readonly resultService: ResultService,
     @Inject(forwardRef(() => RefreshClipQueue))
-    private readonly refreshClipQueue: RefreshClipQueue
+    private readonly refreshClipQueue: RefreshClipQueue,
+    @InjectQueue("testBullQueue")
+    private testBullQueue: Queue
   ) {
     super();
   }
 
   async query(id: Clip["id"], throwError = false): Promise<Result> {
+    await this.testBullQueue.add("query", { clipId: id });
+
     const clip = await this.repository.findOneOrFail(
       { id },
       { populate: ["source"] }
