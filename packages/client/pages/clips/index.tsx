@@ -57,7 +57,7 @@ const ClipList = () => {
       align: "center",
       dataIndex: "lastEditAt",
       key: "lastEditAt",
-      // sorter: true,
+      sorter: true,
       valueType: ValueType.DATE_TIME,
     },
     {
