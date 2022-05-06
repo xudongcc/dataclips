@@ -110,7 +110,6 @@ const providers = [...services, ...queues];
       name: "RefreshClipQueue",
       defaultJobOptions: {
         timeout: ms("30m"),
-        jobId: "1",
         removeOnComplete: true,
         removeOnFail: true,
         repeat: { every: ms("15m") },
