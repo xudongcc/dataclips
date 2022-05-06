@@ -20,7 +20,7 @@ import { Result } from "./entities/result.entity";
 import { Source } from "./entities/source.entity";
 import { User } from "./entities/user.entity";
 import { VirtualSourceTable } from "./entities/virtual-source-table.entity";
-import { TestBullQueueConsumer } from "./queues/test-bull-queue-consumer.service";
+import { RefreshClipQueue } from "./queues/refresh-clip.queue";
 import { ChartService } from "./services/chart.service";
 import { ClipService } from "./services/clip.service";
 import { DashboardService } from "./services/dashboard.service";
@@ -52,7 +52,7 @@ const services = [
   UserService,
 ];
 
-const queues = [TestBullQueueConsumer];
+const queues = [RefreshClipQueue];
 
 const DatabaseDynamicModule = MikroOrmModule.forRoot();
 
@@ -107,7 +107,7 @@ const providers = [...services, ...queues];
       inject: [ConfigService],
     }),
     BullModule.registerQueue({
-      name: "testBullQueue",
+      name: "refreshClipQueue",
       defaultJobOptions: {
         timeout: ms("30m"),
         jobId: "1",

@@ -24,24 +24,17 @@ export class ClipService extends mixinConnection(
     @Inject(forwardRef(() => SourceService))
     private readonly sourceService: SourceService,
     private readonly resultService: ResultService,
-    @InjectQueue("testBullQueue")
-    private testBullQueue: Queue
+    @InjectQueue("RefreshClipQueue")
+    private refreshClipQueue: Queue
   ) {
     super();
   }
 
   async query(id: Clip["id"], throwError = false): Promise<Result> {
-    let clip;
-
-    try {
-      clip = await this.repository.findOneOrFail(
-        { id },
-        { populate: ["source"] }
-      );
-    } catch (err) {
-      console.log(22222);
-      console.error(err);
-    }
+    const clip = await this.repository.findOneOrFail(
+      { id },
+      { populate: ["source"] }
+    );
 
     let queryResult: [string[], (string | number | boolean | Date)[][]];
     let queryError: Error;
@@ -93,7 +86,7 @@ export class ClipService extends mixinConnection(
     );
 
     if (!result || moment().subtract(1, "m").isAfter(result.finishedAt)) {
-      await this.testBullQueue.add("query", { clipId: id });
+      await this.refreshClipQueue.add("query", { clipId: id });
     }
 
     return result;
@@ -111,7 +104,7 @@ export class ClipService extends mixinConnection(
       },
       { limit: 500 },
       async (clips) => {
-        await this.testBullQueue.addBulk(
+        await this.refreshClipQueue.addBulk(
           clips.map((clip) => ({
             name: "query",
             data: { clipId: clip.id },

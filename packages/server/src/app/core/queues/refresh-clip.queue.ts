@@ -5,8 +5,8 @@ import { Job } from "bull";
 
 import { ClipService } from "../services/clip.service";
 
-@Processor("testBullQueue")
-export class TestBullQueueConsumer {
+@Processor("RefreshClipQueue")
+export class RefreshClipQueue {
   constructor(
     @Inject(forwardRef(() => ClipService))
     private readonly clipService: ClipService,
