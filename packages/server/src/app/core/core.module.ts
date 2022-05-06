@@ -108,13 +108,13 @@ const providers = [...services, ...queues];
     }),
     BullModule.registerQueue({
       name: "testBullQueue",
-      // defaultJobOptions: {
-      //   timeout: ms("30m"),
-      //   jobId: "1",
-      //   removeOnComplete: true,
-      //   removeOnFail: true,
-      //   repeat: { every: ms("15m") },
-      // },
+      defaultJobOptions: {
+        timeout: ms("30m"),
+        jobId: "1",
+        removeOnComplete: true,
+        removeOnFail: true,
+        repeat: { every: ms("15m") },
+      },
     }),
   ],
   providers,
