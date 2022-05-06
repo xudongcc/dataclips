@@ -107,7 +107,7 @@ const providers = [...services, ...queues];
       inject: [ConfigService],
     }),
     BullModule.registerQueue({
-      name: "refreshClipQueue",
+      name: "RefreshClipQueue",
       defaultJobOptions: {
         timeout: ms("30m"),
         jobId: "1",
