@@ -5,9 +5,11 @@ import { QueueModule } from "@nest-boot/queue";
 import { RedisModule } from "@nest-boot/redis";
 import { SearchModule } from "@nest-boot/search";
 import { PostgresqlSearchEngine } from "@nest-boot/search-engine-postgresql";
+import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { DiscoveryService } from "@nestjs/core";
+import ms from "ms";
 
 import { CryptoModule } from "../../crypto";
 import { Chart } from "./entities/chart.entity";
@@ -18,8 +20,7 @@ import { Result } from "./entities/result.entity";
 import { Source } from "./entities/source.entity";
 import { User } from "./entities/user.entity";
 import { VirtualSourceTable } from "./entities/virtual-source-table.entity";
-import { BullQueueModule } from "./queues/bull.module";
-import { RefreshClipQueue } from "./queues/refresh-clip.queue";
+import { TestBullQueueConsumer } from "./queues/test-bull-queue-consumer.service";
 import { ChartService } from "./services/chart.service";
 import { ClipService } from "./services/clip.service";
 import { DashboardService } from "./services/dashboard.service";
@@ -51,7 +52,7 @@ const services = [
   UserService,
 ];
 
-const queues = [RefreshClipQueue];
+const queues = [TestBullQueueConsumer];
 
 const DatabaseDynamicModule = MikroOrmModule.forRoot();
 
@@ -96,7 +97,25 @@ const providers = [...services, ...queues];
     SearchDynamicModule,
     QueueDynamicModule,
     DatabaseDynamicModule,
-    BullQueueModule,
+    BullModule.forRootAsync({
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get("REDIS_HOST", "localhost"),
+          port: +configService.get("REDIS_PORT", "6379"),
+        },
+      }),
+      inject: [ConfigService],
+    }),
+    BullModule.registerQueue({
+      name: "testBullQueue",
+      // defaultJobOptions: {
+      //   timeout: ms("30m"),
+      //   jobId: "1",
+      //   removeOnComplete: true,
+      //   removeOnFail: true,
+      //   repeat: { every: ms("15m") },
+      // },
+    }),
   ],
   providers,
   exports: [...providers],

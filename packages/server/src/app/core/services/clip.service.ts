@@ -9,7 +9,6 @@ import moment from "moment";
 
 import { Clip } from "../entities/clip.entity";
 import { Result } from "../entities/result.entity";
-import { RefreshClipQueue } from "../queues/refresh-clip.queue";
 import { ResultService } from "./result.service";
 import { SourceService } from "./source.service";
 
@@ -25,8 +24,6 @@ export class ClipService extends mixinConnection(
     @Inject(forwardRef(() => SourceService))
     private readonly sourceService: SourceService,
     private readonly resultService: ResultService,
-    @Inject(forwardRef(() => RefreshClipQueue))
-    private readonly refreshClipQueue: RefreshClipQueue,
     @InjectQueue("testBullQueue")
     private testBullQueue: Queue
   ) {
@@ -34,12 +31,17 @@ export class ClipService extends mixinConnection(
   }
 
   async query(id: Clip["id"], throwError = false): Promise<Result> {
-    await this.testBullQueue.add("query", { clipId: id });
+    let clip;
 
-    const clip = await this.repository.findOneOrFail(
-      { id },
-      { populate: ["source"] }
-    );
+    try {
+      clip = await this.repository.findOneOrFail(
+        { id },
+        { populate: ["source"] }
+      );
+    } catch (err) {
+      console.log(22222);
+      console.error(err);
+    }
 
     let queryResult: [string[], (string | number | boolean | Date)[][]];
     let queryError: Error;
@@ -91,7 +93,7 @@ export class ClipService extends mixinConnection(
     );
 
     if (!result || moment().subtract(1, "m").isAfter(result.finishedAt)) {
-      await this.refreshClipQueue.add("query", { clipId: id });
+      await this.testBullQueue.add("query", { clipId: id });
     }
 
     return result;
@@ -109,7 +111,7 @@ export class ClipService extends mixinConnection(
       },
       { limit: 500 },
       async (clips) => {
-        await this.refreshClipQueue.addBulk(
+        await this.testBullQueue.addBulk(
           clips.map((clip) => ({
             name: "query",
             data: { clipId: clip.id },
