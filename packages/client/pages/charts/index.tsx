@@ -1,6 +1,5 @@
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useRouter } from "next/router";
-import { useToast, Link } from "@chakra-ui/react";
 import NextLink from "next/link";
 import {
   useChartConnectionLazyQuery,
@@ -11,16 +10,14 @@ import { Page } from "../../components/common/Page";
 import Head from "next/head";
 import { Modal } from "../../components/common/Modal";
 import {
-  FilterType,
   GraphQLTable,
   GraphQLTableColumnType,
 } from "../../components/common/GraphQLTable";
 import { ValueType } from "../../components/common/SimpleTable";
-import { Divider, Space } from "antd";
+import { Divider, Space, Button, notification } from "antd";
 
 const ChartList = () => {
   const router = useRouter();
-  const toast = useToast();
 
   const [getCharts, { data, loading, refetch }] = useChartConnectionLazyQuery({
     notifyOnNetworkStatusChange: true,
@@ -37,7 +34,9 @@ const ChartList = () => {
       render: (name, record) => {
         return (
           <NextLink href={`/charts/${record?.id}`} passHref>
-            <Link color="blue.500">{name}</Link>
+            <Button type="link" style={{ padding: 0 }}>
+              {name}
+            </Button>
           </NextLink>
         );
       },
@@ -75,18 +74,22 @@ const ChartList = () => {
       render: (_, record) => {
         return (
           <Space>
-            <Link
-              color="blue.500"
+            <Button
+              type="link"
+              style={{ padding: 0 }}
               onClick={() => {
                 router.push(`/charts/${record?.id}/edit`);
               }}
             >
               编辑
-            </Link>
+            </Button>
 
             <Divider type="vertical" />
 
-            <Link
+            <Button
+              type="link"
+              style={{ padding: 0 }}
+              danger
               onClick={() => {
                 const modal = Modal.confirm({
                   title: "删除图表",
@@ -104,10 +107,9 @@ const ChartList = () => {
 
                       modal.update({ okButtonProps: { loading: false } });
 
-                      toast({
-                        description: "删除成功",
-                        status: "success",
-                        isClosable: true,
+                      notification.success({
+                        message: "删除成功",
+                        placement: "bottom",
                       });
 
                       await refetch();
@@ -120,7 +122,7 @@ const ChartList = () => {
               color="red.500"
             >
               删除
-            </Link>
+            </Button>
           </Space>
         );
       },

@@ -1,6 +1,5 @@
 import ProjectLayout from "../../../layouts/ProjectLayout";
 import { useRouter } from "next/router";
-import { useToast } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import {
   useUpdateClipMutation,
@@ -15,7 +14,16 @@ import { ResultPreview } from "../../../components/clip/ResultPreview";
 import { SQLEditor } from "../../../components/clip/SQLEditor";
 import { Page } from "../../../components/common/Page";
 import Head from "next/head";
-import { Row, Col, Form, Select, Input, Space, Button } from "antd";
+import {
+  Row,
+  Col,
+  Form,
+  Select,
+  Input,
+  Space,
+  Button,
+  notification,
+} from "antd";
 import { Card } from "../../../components/common/Card";
 import useContextualSaveBarState from "../../../components/common/ContextualSaveBar/useContextualSaveBarState";
 import { ContextualSaveBar } from "../../../components/common/ContextualSaveBar";
@@ -24,7 +32,6 @@ import { isEqual } from "lodash";
 const { Option } = Select;
 
 const ClipEdit = () => {
-  const toast = useToast();
   const router = useRouter();
   const [form] = Form.useForm();
   const [, setIsChange] = useContextualSaveBarState();
@@ -64,17 +71,14 @@ const ClipEdit = () => {
           variables: { id: clipId, input: { ...values, sql: sqlValue } },
         });
 
-        toast({
-          title: "保存成功",
-          status: "success",
-        });
+        notification.success({ message: "保存成功", placement: "bottom" });
 
         setIsChange(false);
       }
     } catch (err) {
       console.error(err);
     }
-  }, [clipId, form, setIsChange, sqlValue, toast, updateClip]);
+  }, [clipId, form, setIsChange, sqlValue, updateClip]);
 
   // 新值旧值判断
   const handleFormDataIsEqual = useCallback(

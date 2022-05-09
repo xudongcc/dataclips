@@ -1,6 +1,27 @@
-import { DeleteIcon } from "@chakra-ui/icons";
-import { Box, Flex, Text } from "@chakra-ui/react";
 import { FC } from "react";
+import { Typography } from "antd";
+import styled from "styled-components";
+import { DeleteOutlined } from "@ant-design/icons";
+
+const DividerWrapper = styled.div`
+  margin: 12px 0;
+  font-weight: bold;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  user-select: none;
+`;
+
+const DividerBeforeLine = styled.div<{ widthPercent: string }>`
+  border-top: 1px solid transparent;
+  border-top-color: inherit;
+  width: ${(props) => props.widthPercent};
+`;
+
+const DividerAfterLine = styled(DividerBeforeLine)``;
+
+const { Text } = Typography;
 
 interface DashboardDividerProps {
   orientation?: "left" | "center" | "right";
@@ -21,39 +42,25 @@ export const DashboardDivider: FC<DashboardDividerProps> = ({
   ].find((item) => item.orientation === orientation);
 
   return (
-    <Flex
-      className="drag-item"
-      my="12px"
-      fontWeight="bold"
-      fontSize="20px"
-      alignItems="center"
-      whiteSpace="nowrap"
-      userSelect="none"
-    >
-      <Box
-        borderTop="1px solid transparent"
-        borderTopColor="inherit"
-        w={orientationWidth.beforeWidth}
-      />
-      {children && <Text px={4}>{children}</Text>}
+    <DividerWrapper className="drag-item">
+      <DividerBeforeLine widthPercent={orientationWidth.beforeWidth} />
 
-      <Box
-        borderTop="1px solid transparent"
-        borderTopColor="inherit"
-        w={orientationWidth.afterWidth}
-      />
+      {children && (
+        <Text style={{ marginLeft: 16, marginRight: 16 }}>{children}</Text>
+      )}
+
+      <DividerAfterLine widthPercent={orientationWidth.afterWidth} />
 
       {hasDelete && (
-        <Box px={4}>
-          <DeleteIcon
+        <div style={{ marginLeft: 16, marginRight: 16 }}>
+          <DeleteOutlined
             onClick={() => {
               onDelete?.();
             }}
-            cursor="pointer"
-            color="gray.500"
+            style={{ color: "#718096", cursor: "pointer" }}
           />
-        </Box>
+        </div>
       )}
-    </Flex>
+    </DividerWrapper>
   );
 };

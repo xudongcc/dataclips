@@ -1,4 +1,3 @@
-import { useToast } from "@chakra-ui/react";
 import Head from "next/head";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
@@ -11,10 +10,11 @@ import {
   useUpdateDashboardMutation,
   useChartLazyQuery,
 } from "../../../generated/graphql";
-import { cloneDeep, omit, isEqual } from "lodash";
+import { cloneDeep, omit } from "lodash";
 import { useCallback, useState, useEffect, useRef } from "react";
 import { Loading } from "../../../components/common/Loading";
 import { Page } from "../../../components/common/Page";
+import { notification } from "antd";
 import {
   DashboardItemType,
   DashboardLayout,
@@ -53,7 +53,6 @@ interface Operation {
 }
 
 const DashBoardEdit: PC = () => {
-  const toast = useToast();
   const router = useRouter();
   // 编辑仪表盘名称的 form
   const [editDashboardNameForm] = Form.useForm();
@@ -193,7 +192,7 @@ const DashBoardEdit: PC = () => {
           },
         });
 
-        toast({ title: "保存成功" });
+        notification.success({ message: "保存成功", placement: "bottom" });
 
         setIsChange(false);
 
@@ -215,7 +214,6 @@ const DashBoardEdit: PC = () => {
       dashboardId,
       data?.dashboard?.config,
       dragItems,
-      toast,
       setIsChange,
       router,
     ]

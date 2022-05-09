@@ -1,6 +1,5 @@
 import ProjectLayout from "../../../layouts/ProjectLayout";
 import { useRouter } from "next/router";
-import { Box, Grid, GridItem, useToast } from "@chakra-ui/react";
 import {
   useClipConnectionQuery,
   useChartQuery,
@@ -19,7 +18,7 @@ import {
 import { ChartResultPreview } from "../../../components/chart/ChartResultPreview";
 import { Page } from "../../../components/common/Page";
 import Head from "next/head";
-import { Col, Form, Row, Select, Button, Input } from "antd";
+import { Col, Form, Row, Select, Button, Input, notification } from "antd";
 import { Card } from "../../../components/common/Card";
 import useContextualSaveBarState from "../../../components/common/ContextualSaveBar/useContextualSaveBarState";
 import { ContextualSaveBar } from "../../../components/common/ContextualSaveBar";
@@ -27,7 +26,6 @@ import { ContextualSaveBar } from "../../../components/common/ContextualSaveBar"
 const { Option } = Select;
 
 const ChartEdit = () => {
-  const toast = useToast();
   const router = useRouter();
   const [form] = Form.useForm();
   const [, setIsChange] = useContextualSaveBarState();
@@ -77,11 +75,8 @@ const ChartEdit = () => {
           input,
         },
       });
-      toast({
-        description: "保存成功",
-        status: "success",
-        isClosable: true,
-      });
+
+      notification.success({ message: "保存成功", placement: "bottom" });
 
       setIsChange(false);
 
@@ -91,7 +86,7 @@ const ChartEdit = () => {
     } catch (err) {
       console.error(err);
     }
-  }, [chartId, form, router, setIsChange, toast, updateChart]);
+  }, [chartId, form, router, setIsChange, updateChart]);
 
   useEffect(() => {
     if (data?.chart?.clip?.id) {
@@ -148,8 +143,8 @@ const ChartEdit = () => {
             [chartTypeToFormFieldMap[data?.chart?.type]]: data?.chart?.config,
           }}
         >
-          <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-            <GridItem colSpan={3}>
+          <Row gutter={[16, 16]}>
+            <Col span={24}>
               <Card>
                 <Row gutter={[16, 16]} justify="space-between">
                   <Col span={8}>
@@ -216,10 +211,10 @@ const ChartEdit = () => {
                   </Col>
                 </Row>
               </Card>
-            </GridItem>
+            </Col>
 
-            <GridItem colSpan={2}>
-              <Box h="500px">
+            <Col span={16}>
+              <div style={{ height: 500 }}>
                 <Card>
                   {result && (
                     <Form.Item
@@ -250,14 +245,14 @@ const ChartEdit = () => {
                     </Form.Item>
                   )}
                 </Card>
-              </Box>
-            </GridItem>
-            <GridItem colSpan={1}>
+              </div>
+            </Col>
+            <Col span={8}>
               <Card>
                 <ChartEditTab result={result} />
               </Card>
-            </GridItem>
-          </Grid>
+            </Col>
+          </Row>
         </Form>
 
         <ContextualSaveBar

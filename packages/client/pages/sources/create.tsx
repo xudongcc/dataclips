@@ -1,6 +1,5 @@
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useRouter } from "next/router";
-import { useToast } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { DataSourceForm } from "../../components/source/DataSourceForm";
 import { VirtualSourceForm } from "../../components/source/VirtualSourceForm";
@@ -8,7 +7,7 @@ import { useCreateVirtualSourceMutation } from "../../hooks/useCreateVirtualSour
 import { useCreateDatabaseSourceMutation } from "../../hooks/useCreateDatabaseSourceMutation";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
-import { Form, Select, Button, Steps, Space, Row } from "antd";
+import { Form, Select, Button, Steps, Space, Row, notification } from "antd";
 import { Card } from "../../components/common/Card";
 
 const { Option } = Select;
@@ -17,7 +16,6 @@ const { Step } = Steps;
 const steps = ["数据源", "配置"];
 
 const SourceCreate = () => {
-  const toast = useToast();
   const router = useRouter();
   const [form] = Form.useForm();
 
@@ -65,11 +63,7 @@ const SourceCreate = () => {
         });
       }
 
-      toast({
-        description: "创建成功",
-        status: "success",
-        isClosable: true,
-      });
+      notification.success({ message: "创建成功", placement: "bottom" });
 
       router.push(`/sources`);
     } catch (err) {
@@ -81,7 +75,6 @@ const SourceCreate = () => {
     currentSourceType,
     form,
     router,
-    toast,
   ]);
 
   return (

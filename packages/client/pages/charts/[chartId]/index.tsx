@@ -2,7 +2,6 @@ import { ResultFragment, useChartQuery } from "../../../generated/graphql";
 import { useRouter } from "next/router";
 import { useQueryResult } from "../../../hooks/useQueryResult";
 import { Loading } from "../../../components/common/Loading";
-import { Box } from "@chakra-ui/react";
 import { ChartResultPreview } from "../../../components/chart/ChartResultPreview";
 import { useCallback, useMemo, useState } from "react";
 import { ChartType } from "../../../types";
@@ -139,7 +138,7 @@ const ChartPreview = () => {
         }
       >
         {data?.chart.type && data?.chart.config && result && (
-          <Box h="800px">
+          <div style={{ height: 800 }}>
             <Card>
               <ChartResultPreview
                 type={data.chart.type}
@@ -147,7 +146,7 @@ const ChartPreview = () => {
                 result={result}
               />
             </Card>
-          </Box>
+          </div>
         )}
       </Page>
     </>
