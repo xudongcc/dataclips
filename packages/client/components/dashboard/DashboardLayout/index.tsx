@@ -97,6 +97,7 @@ export interface DashboardEmbedItem extends DashboardItem {
 interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
   type: "preview" | "edit";
   autoRefresh?: boolean;
+  snapshotTime?: moment.Moment;
   dragItems: Array<
     | DashboardChartItem
     | DashboardDividerItem
