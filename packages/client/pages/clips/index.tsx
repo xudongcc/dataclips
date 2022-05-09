@@ -1,4 +1,3 @@
-import { useToast, Link } from "@chakra-ui/react";
 import NextLink from "next/link";
 import Head from "next/head";
 import {
@@ -10,16 +9,14 @@ import { useRouter } from "next/router";
 import { Page } from "../../components/common/Page";
 import { Modal } from "../../components/common/Modal";
 import {
-  FilterType,
   GraphQLTable,
   GraphQLTableColumnType,
 } from "../../components/common/GraphQLTable";
 import { ValueType } from "../../components/common/SimpleTable";
-import { Space, Divider } from "antd";
+import { Space, Divider, notification, Button } from "antd";
 
 const ClipList = () => {
   const router = useRouter();
-  const toast = useToast();
 
   const [getClips, { data, loading, refetch }] = useClipConnectionLazyQuery({
     notifyOnNetworkStatusChange: true,
@@ -36,7 +33,9 @@ const ClipList = () => {
       render: (name, record) => {
         return (
           <NextLink href={`/clips/${record?.id}`} passHref>
-            <Link color="blue.500">{name}</Link>
+            <Button type="link" style={{ padding: 0 }}>
+              {name}
+            </Button>
           </NextLink>
         );
       },
@@ -68,18 +67,22 @@ const ClipList = () => {
       render: (_, record) => {
         return (
           <Space>
-            <Link
-              color="blue.500"
+            <Button
+              type="link"
+              style={{ padding: 0 }}
               onClick={() => {
                 router.push(`/clips/${record?.id}/edit`);
               }}
             >
               编辑
-            </Link>
+            </Button>
 
             <Divider type="vertical" />
 
-            <Link
+            <Button
+              type="link"
+              danger
+              style={{ padding: 0 }}
               onClick={() => {
                 const modal = Modal.confirm({
                   title: "删除数据集",
@@ -97,10 +100,9 @@ const ClipList = () => {
 
                       modal.update({ okButtonProps: { loading: false } });
 
-                      toast({
-                        description: "删除成功",
-                        status: "success",
-                        isClosable: true,
+                      notification.success({
+                        message: "删除成功",
+                        placement: "bottom",
                       });
 
                       refetch();
@@ -113,7 +115,7 @@ const ClipList = () => {
               color="red.500"
             >
               删除
-            </Link>
+            </Button>
           </Space>
         );
       },

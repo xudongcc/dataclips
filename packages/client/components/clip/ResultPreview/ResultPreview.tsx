@@ -1,4 +1,3 @@
-import { useToast } from "@chakra-ui/react";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useUrlSearchParams } from "use-url-search-params";
 
@@ -8,7 +7,7 @@ import { DownloadButtonGroup } from "./components/DownloadButtonGroup";
 import { ResultError } from "./components/ResultError";
 import { StatResult } from "./components/StatResult";
 import { Card } from "../../common/Card";
-import { Table, Input, Space } from "antd";
+import { Table, Input, Space, notification } from "antd";
 import { ColumnsType } from "antd/lib/table";
 import { getFormatValue } from "../../chart/ChartEditTab";
 import { formatPercent } from "../../../utils/formatPercent";
@@ -22,8 +21,6 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
   token,
   result: rawResult,
 }) => {
-  const toast = useToast();
-
   const databaseQuery = useDatabaseQuery();
 
   const [searchParams, setSearchParams] = useUrlSearchParams();
@@ -93,13 +90,9 @@ export const ResultPreview: FC<ResultPreviewProps> = ({
     } catch (err: any) {
       console.error(err);
 
-      toast({
-        title: "查询错误",
-        status: "error",
-        description: err.message,
-      });
+      notification.error({ message: "查询错误", placement: "bottom" });
     }
-  }, [databaseQuery, rawResult, searchParams?.where, toast]);
+  }, [databaseQuery, rawResult, searchParams?.where]);
 
   useEffect(() => {
     handleQuery();

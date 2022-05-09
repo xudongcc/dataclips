@@ -1,5 +1,4 @@
 import ProjectLayout from "../../layouts/ProjectLayout";
-import { useToast, Link } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import {
@@ -19,9 +18,8 @@ import { VirtualSourceForm } from "../../components/source/VirtualSourceForm";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
 import { Modal } from "../../components/common/Modal";
-import { Form } from "antd";
+import { Form, Button, notification } from "antd";
 import {
-  FilterType,
   GraphQLTable,
   GraphQLTableColumnType,
 } from "../../components/common/GraphQLTable";
@@ -29,7 +27,6 @@ import { ValueType } from "../../components/common/SimpleTable";
 
 const SourceList = () => {
   const router = useRouter();
-  const toast = useToast();
   const [form] = Form.useForm();
 
   const [getSources, { data, loading, refetch }] = useSourceConnectionLazyQuery(
@@ -93,11 +90,8 @@ const SourceList = () => {
         setSelectedSource(undefined);
 
         form.resetFields();
-        toast({
-          description: "更新成功",
-          status: "success",
-          isClosable: true,
-        });
+
+        notification.success({ message: "更新成功", placement: "bottom" });
 
         refetch();
       }
@@ -109,7 +103,6 @@ const SourceList = () => {
     refetch,
     selectedSource?.id,
     selectedSource?.type,
-    toast,
     updateDatabaseSource,
     updateVirtualSource,
   ]);
@@ -121,7 +114,8 @@ const SourceList = () => {
       key: "name",
       render: (name, record) => {
         return (
-          <Link
+          <Button
+            style={{ padding: 0 }}
             onClick={async () => {
               setSelectedSource({ id: record?.id, type: record?.typename });
               setEditModalVisible(true);
@@ -178,10 +172,10 @@ const SourceList = () => {
                 console.log("err", err);
               }
             }}
-            color="blue.500"
+            type="link"
           >
             {name}
-          </Link>
+          </Button>
         );
       },
     },
@@ -226,7 +220,9 @@ const SourceList = () => {
       key: "operation",
       render: (_, record) => {
         return (
-          <Link
+          <Button
+            type="link"
+            danger
             onClick={() => {
               const modal = Modal.confirm({
                 title: "删除数据源",
@@ -244,10 +240,9 @@ const SourceList = () => {
 
                     modal.update({ okButtonProps: { loading: false } });
 
-                    toast({
-                      description: "删除成功",
-                      status: "success",
-                      isClosable: true,
+                    notification.success({
+                      message: "删除成功",
+                      placement: "bottom",
                     });
 
                     refetch();
@@ -260,7 +255,7 @@ const SourceList = () => {
             color="red.500"
           >
             删除
-          </Link>
+          </Button>
         );
       },
     },

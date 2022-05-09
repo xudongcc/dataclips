@@ -1,4 +1,3 @@
-import { useToast, Box, Grid, GridItem } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import {
   ChartEditTab,
@@ -17,7 +16,7 @@ import { useRouter } from "next/router";
 import { useCreateChartMutation } from "../../hooks/useCreateChartMutation";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
-import { Form, Select, Input, Button, Row, Col } from "antd";
+import { Form, Select, Input, Button, Row, Col, notification } from "antd";
 import { isEqual, omit } from "lodash";
 import { Card } from "../../components/common/Card";
 import useContextualSaveBarState from "../../components/common/ContextualSaveBar/useContextualSaveBarState";
@@ -27,7 +26,6 @@ const { Option } = Select;
 
 const ChartCreate = () => {
   const router = useRouter();
-  const toast = useToast();
   const [form] = Form.useForm();
   const [, setIsChange] = useContextualSaveBarState();
   const [selectClipId, setSelectClipId] = useState("");
@@ -66,11 +64,8 @@ const ChartCreate = () => {
           input,
         },
       });
-      toast({
-        description: "创建成功",
-        status: "success",
-        isClosable: true,
-      });
+
+      notification.success({ message: "创建成功", placement: "bottom" });
 
       setIsChange(false);
 
@@ -82,7 +77,7 @@ const ChartCreate = () => {
     } catch (err) {
       console.log("err", err);
     }
-  }, [createChart, form, router, setIsChange, toast]);
+  }, [createChart, form, router, setIsChange]);
 
   const { data: result } = useQueryResult(selectClipId);
 
@@ -100,8 +95,8 @@ const ChartCreate = () => {
           }}
           layout="vertical"
         >
-          <Grid templateColumns="repeat(3, 1fr)" gap={4} w="100%">
-            <GridItem colSpan={3}>
+          <Row gutter={[16, 16]}>
+            <Col span={24}>
               <Card>
                 <Row gutter={[16, 16]} justify="space-between">
                   <Col span={8}>
@@ -157,9 +152,9 @@ const ChartCreate = () => {
                   </Col>
                 </Row>
               </Card>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <Box h="500px">
+            </Col>
+            <Col span={16}>
+              <div style={{ height: 500 }}>
                 <Card>
                   {result && (
                     <Form.Item
@@ -188,14 +183,14 @@ const ChartCreate = () => {
                     </Form.Item>
                   )}
                 </Card>
-              </Box>
-            </GridItem>
-            <GridItem colSpan={1}>
+              </div>
+            </Col>
+            <Col span={8}>
               <Card>
                 <ChartEditTab result={result} />
               </Card>
-            </GridItem>
-          </Grid>
+            </Col>
+          </Row>
         </Form>
 
         <ContextualSaveBar

@@ -1,4 +1,3 @@
-import { Box, Grid, Text } from "@chakra-ui/react";
 import {
   Annotation,
   Axis,
@@ -82,34 +81,47 @@ export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
   );
 
   return (
-    <Box overflow="hidden" height="inherit">
+    <div style={{ overflow: "hidden", height: "inherit" }}>
       <Chart data={funnelData} padding={[20, 150, 50]} autoFit>
         <Tooltip showTitle={false}>
           {(title, items) => {
             return (
-              <Box py={12}>
-                <Grid gap={8} templateColumns="10px 1fr">
-                  <Box bg={items?.[0].color} borderRadius="50%" h={10} w={10} />
-                  <Box>
-                    <Text>{title}</Text>
+              <div style={{ paddingTop: 12, paddingBottom: 12 }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gap: 8,
+                    gridTemplateColumns: "10px 1fr",
+                  }}
+                >
+                  <div
+                    style={{
+                      background: items?.[0].color,
+                      borderRadius: "50%",
+                      height: 10,
+                      width: 10,
+                    }}
+                  />
+                  <div>
+                    <div>{title}</div>
 
-                    <Box key={items?.[0]?.data?.key} mt={4}>
-                      <Text>
+                    <div key={items?.[0]?.data?.key} style={{ marginTop: 4 }}>
+                      <div>
                         {config?.valueCol}:{" "}
                         {getFormatValue(
                           items?.[0]?.data?.value,
                           config?.format
                         )}
-                      </Text>
+                      </div>
 
-                      <Text my={4}>总占比: {items?.[0]?.data?.percent}</Text>
-                      <Text>
-                        上一级占比: {items?.[0]?.data?.previousPercent}
-                      </Text>
-                    </Box>
-                  </Box>
-                </Grid>
-              </Box>
+                      <div style={{ marginTop: 4, marginBottom: 4 }}>
+                        总占比: {items?.[0]?.data?.percent}
+                      </div>
+                      <div>上一级占比: {items?.[0]?.data?.previousPercent}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             );
           }}
         </Tooltip>
@@ -166,6 +178,6 @@ export const FunnelChartPreview: FC<FunnelChartPreviesProps> = ({
           ]}
         />
       </Chart>
-    </Box>
+    </div>
   );
 };

@@ -1,13 +1,21 @@
 import ProjectLayout from "../../layouts/ProjectLayout";
 import { useRouter } from "next/router";
-import { useToast } from "@chakra-ui/react";
 import { useSourceConnectionQuery } from "../../generated/graphql";
 import { useCallback, useState } from "react";
 import { SQLEditor } from "../../components/clip/SQLEditor";
 import { useCreateClipMutation } from "../../hooks/useCreateClipMutation";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
-import { Row, Col, Form, Input, Select, Button, Space } from "antd";
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Select,
+  Button,
+  Space,
+  notification,
+} from "antd";
 import { Card } from "../../components/common/Card";
 import useContextualSaveBarState from "../../components/common/ContextualSaveBar/useContextualSaveBarState";
 import { ContextualSaveBar } from "../../components/common/ContextualSaveBar";
@@ -15,7 +23,6 @@ import { ContextualSaveBar } from "../../components/common/ContextualSaveBar";
 const { Option } = Select;
 
 const ClipCreate = () => {
-  const toast = useToast();
   const router = useRouter();
   const [form] = Form.useForm();
   const [, setIsChange] = useContextualSaveBarState();
@@ -42,10 +49,8 @@ const ClipCreate = () => {
           },
         },
       });
-      toast({
-        title: "创建成功",
-        status: "success",
-      });
+
+      notification.success({ message: "创建成功", placement: "bottom" });
 
       setIsChange(false);
 
@@ -55,7 +60,7 @@ const ClipCreate = () => {
     } catch (err) {
       //
     }
-  }, [createClip, form, router, setIsChange, sqlValue, toast]);
+  }, [createClip, form, router, setIsChange, sqlValue]);
 
   return (
     <>

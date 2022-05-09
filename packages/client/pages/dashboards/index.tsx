@@ -1,4 +1,3 @@
-import { Link, useToast } from "@chakra-ui/react";
 import Head from "next/head";
 import NextLink from "next/link";
 import { Page } from "../../components/common/Page";
@@ -11,11 +10,10 @@ import {
   useDeleteDashboardMutation,
   useCreateDashboardMutation,
 } from "../../generated/graphql";
-import { Form, Input, Divider, Space } from "antd";
+import { Form, Input, Divider, Space, notification, Button } from "antd";
 import { Modal } from "../../components/common/Modal";
 
 import {
-  FilterType,
   GraphQLTable,
   GraphQLTableColumnType,
 } from "../../components/common/GraphQLTable";
@@ -23,7 +21,6 @@ import { ValueType } from "../../components/common/SimpleTable";
 
 const DashBoardList: PC = () => {
   const router = useRouter();
-  const toast = useToast();
   const [form] = Form.useForm();
 
   // 创建仪表盘的弹窗
@@ -49,7 +46,9 @@ const DashBoardList: PC = () => {
       render: (name, record) => {
         return (
           <NextLink href={`/dashboards/${record?.id}`} passHref>
-            <Link color="blue.500">{name}</Link>
+            <Button style={{ padding: 0 }} type="link">
+              {name}
+            </Button>
           </NextLink>
         );
       },
@@ -81,18 +80,19 @@ const DashBoardList: PC = () => {
       render: (_, record) => {
         return (
           <Space>
-            <Link
-              color="blue.500"
+            <Button
+              type="link"
+              style={{ padding: 0 }}
               onClick={() => {
                 router.push(`/dashboards/${record?.id}/edit`);
               }}
             >
               编辑
-            </Link>
+            </Button>
 
             <Divider type="vertical" />
 
-            <Link
+            <Button
               onClick={() => {
                 const modal = Modal.confirm({
                   title: "删除仪表盘",
@@ -110,10 +110,9 @@ const DashBoardList: PC = () => {
 
                       modal.update({ okButtonProps: { loading: false } });
 
-                      toast({
-                        description: "删除成功",
-                        status: "success",
-                        isClosable: true,
+                      notification.success({
+                        message: "删除成功",
+                        placement: "bottom",
                       });
 
                       refetch();
@@ -123,10 +122,12 @@ const DashBoardList: PC = () => {
                   },
                 });
               }}
-              color="red.500"
+              type="link"
+              style={{ padding: 0 }}
+              danger
             >
               删除
-            </Link>
+            </Button>
           </Space>
         );
       },
@@ -192,10 +193,9 @@ const DashBoardList: PC = () => {
 
               await handleCreateDashboard();
 
-              toast({
-                description: "创建成功",
-                status: "success",
-                isClosable: true,
+              notification.success({
+                message: "创建成功",
+                placement: "bottom",
               });
 
               handleCloseCreateDashboardModal();
