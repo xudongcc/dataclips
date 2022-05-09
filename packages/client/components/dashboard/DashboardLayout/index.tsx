@@ -137,7 +137,14 @@ interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
 }
 
 export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
-  const { dragItems = [], type, extraConfig, autoRefresh, ...rest } = props;
+  const {
+    dragItems = [],
+    type,
+    extraConfig,
+    autoRefresh,
+    snapshotTime,
+    ...rest
+  } = props;
   const [borderRadius] = useToken("radii", ["lg"]);
 
   const [resultFinishedAtCollection, setResultFinishedAtCollection] = useState(
@@ -277,6 +284,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                   }
                 >
                   <DashboardChartResultPreview
+                    snapshotTime={snapshotTime}
                     dashboardType={type}
                     setResultFinishedAtCollection={
                       setResultFinishedAtCollection

@@ -76,9 +76,9 @@ export class ClipService extends mixinConnection(
     return result;
   }
 
-  async fetchResult(id: Clip["id"], sync = false) {
+  async fetchResult(id: Clip["id"], filterQuery?: Record<string, any>) {
     const result = await this.resultService.repository.findOne(
-      { clip: { id } },
+      { clip: { id }, ...filterQuery, updatedAt: "2022-05-09 09:25:57" },
       {
         orderBy: { startedAt: QueryOrder.DESC },
       }

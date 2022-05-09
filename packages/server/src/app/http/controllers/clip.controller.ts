@@ -4,11 +4,13 @@ import {
   Header,
   NotFoundException,
   Param,
+  Query,
   Res,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
 import { Response } from "express";
+import moment from "moment";
 import xlsx from "node-xlsx";
 import Papa from "papaparse";
 
@@ -23,10 +25,18 @@ export class ClipController {
   constructor(private readonly clipService: ClipService) {}
 
   @Get(":id(\\d+).json")
-  async json(@Param("id") id: string) {
+  async json(@Param("id") id: string, @Query("time") time: string) {
     const clip = await this.clipService.repository.findOneOrFail({ id });
 
-    const result = await this.clipService.fetchResult(clip.id);
+    const filterQuery: Record<string, any> = {};
+
+    if (time) {
+      filterQuery.finishedAt = moment(time).format("YYYY-MM-DD HH:mm:ss");
+    }
+
+    console.log(11111, "filterQuery", filterQuery);
+
+    const result = await this.clipService.fetchResult(clip.id, {});
 
     if (!result) {
       throw new NotFoundException();
