@@ -54,6 +54,26 @@ export class SourceService extends mixinConnection(
     return source;
   }
 
+  async update(id: string, input: Partial<Source>): Promise<Source> {
+    const source = await this.repository.findOneOrFail({ id });
+
+    if (input.password) {
+      // eslint-disable-next-line no-param-reassign
+      input.password = this.cryptoService.encrypt(input.password);
+    }
+
+    if (input.sshPassword) {
+      // eslint-disable-next-line no-param-reassign
+      input.sshPassword = this.cryptoService.encrypt(input.sshPassword);
+    }
+
+    this.repository.assign(source, input);
+
+    await this.repository.persistAndFlush(source);
+
+    return source;
+  }
+
   async query(
     source: Source,
     sql: string
