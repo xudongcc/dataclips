@@ -36,6 +36,10 @@ export class SourceService extends mixinConnection(
     super();
   }
 
+  async checkConnect(input: Partial<Source>): Promise<boolean> {
+    return false;
+  }
+
   async create(input: Partial<Source>): Promise<Source> {
     if (input.password) {
       // eslint-disable-next-line no-param-reassign

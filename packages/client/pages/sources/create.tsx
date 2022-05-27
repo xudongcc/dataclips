@@ -8,8 +8,14 @@ import { useCreateVirtualSourceMutation } from "../../hooks/useCreateVirtualSour
 import { useCreateDatabaseSourceMutation } from "../../hooks/useCreateDatabaseSourceMutation";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
+import { useCheckConnectDatabaseSourceMutation } from "../../generated/graphql";
 import { Form, Select, Button, Steps, Space, Row } from "antd";
 import { Card } from "../../components/common/Card";
+import {
+  CheckOutlined,
+  CloseOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 
 const { Option } = Select;
 const { Step } = Steps;
@@ -28,6 +34,14 @@ const SourceCreate = () => {
     useCreateDatabaseSourceMutation();
   const [createVirtualSource, { loading: createVirtualSourceLoading }] =
     useCreateVirtualSourceMutation();
+
+  const [
+    checkConnectDatabaseSource,
+    {
+      loading: checkConnectDatabaseSourceLoading,
+      data: checkConnectDatabaseSourceData,
+    },
+  ] = useCheckConnectDatabaseSourceMutation();
 
   const getSourceForm = useCallback(
     (type: "DatabaseSource" | "VirtualSource") => {
@@ -90,7 +104,46 @@ const SourceCreate = () => {
         <title>创建 - 数据源</title>
       </Head>
 
-      <Page title="创建数据源">
+      <Page
+        title="创建数据源"
+        primaryAction={
+          current === 1 && {
+            text: "创建",
+            onClick: () => handleSubmit(),
+            loading: createDataBaseSourceLoading || createVirtualSourceLoading,
+          }
+        }
+        secondaryActions={
+          current === 1 && [
+            {
+              text: "测试连接",
+              type: "ghost",
+              loading: checkConnectDatabaseSourceLoading,
+              icon: checkConnectDatabaseSourceData?.checkConnectDatabaseSource ? (
+                <CheckOutlined style={{ color: "#53c31b" }} />
+              ) : checkConnectDatabaseSourceData?.checkConnectDatabaseSource ===
+                false ? (
+                <CloseOutlined style={{ color: "#ff4d4e" }} />
+              ) : undefined,
+              onClick: async () => {
+                try {
+                  const values = await form.validateFields();
+
+                  await checkConnectDatabaseSource({
+                    variables: {
+                      input: {
+                        ...values.dataSource,
+                      },
+                    },
+                  });
+                } catch (err) {
+                  console.log("err", err);
+                }
+              },
+            },
+          ]
+        }
+      >
         <Form form={form}>
           <Card>
             <Steps
@@ -149,25 +202,6 @@ const SourceCreate = () => {
               ) : (
                 <div style={{ marginTop: 16 }}>
                   {getSourceForm(form.getFieldValue("type"))}
-
-                  <Row justify="center">
-                    <Button
-                      style={{
-                        marginTop:
-                          currentSourceType === "VirtualSource"
-                            ? 16
-                            : undefined,
-                      }}
-                      loading={
-                        createDataBaseSourceLoading ||
-                        createVirtualSourceLoading
-                      }
-                      type="primary"
-                      onClick={handleSubmit}
-                    >
-                      创建
-                    </Button>
-                  </Row>
                 </div>
               )}
             </div>
