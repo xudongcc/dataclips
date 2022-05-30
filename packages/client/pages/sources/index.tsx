@@ -63,6 +63,7 @@ const SourceList = () => {
     {
       loading: checkConnectDatabaseSourceLoading,
       data: checkConnectDatabaseSourceData,
+      error: checkConnectDatabaseSourceError,
       reset: checkConnectReset,
     },
   ] = useCheckConnectDatabaseSourceMutation();
@@ -318,16 +319,15 @@ const SourceList = () => {
             <Row gutter={8}>
               <Col>
                 <Button
-                  disabled={selectedSource.type === "VirtualSource"}
+                  danger={!!checkConnectDatabaseSourceError}
+                  disabled={selectedSource?.type === "VirtualSource"}
                   icon={
                     checkConnectDatabaseSourceData?.checkConnectDatabaseSource ? (
                       <CheckOutlined style={{ color: "#53c31b" }} />
-                    ) : checkConnectDatabaseSourceData?.checkConnectDatabaseSource ===
-                      false ? (
+                    ) : checkConnectDatabaseSourceError ? (
                       <CloseOutlined style={{ color: "#ff4d4e" }} />
                     ) : undefined
                   }
-                  type="ghost"
                   loading={checkConnectDatabaseSourceLoading}
                   onClick={async () => {
                     try {

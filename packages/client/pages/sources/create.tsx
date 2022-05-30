@@ -36,6 +36,7 @@ const SourceCreate = () => {
     {
       loading: checkConnectDatabaseSourceLoading,
       data: checkConnectDatabaseSourceData,
+      error: checkConnectDatabaseSourceError,
     },
   ] = useCheckConnectDatabaseSourceMutation();
 
@@ -114,12 +115,11 @@ const SourceCreate = () => {
           currentSourceType === "DatabaseSource" && [
             {
               text: "测试连接",
-              type: "ghost",
+              danger: !!checkConnectDatabaseSourceError,
               loading: checkConnectDatabaseSourceLoading,
               icon: checkConnectDatabaseSourceData?.checkConnectDatabaseSource ? (
                 <CheckOutlined style={{ color: "#53c31b" }} />
-              ) : checkConnectDatabaseSourceData?.checkConnectDatabaseSource ===
-                false ? (
+              ) : checkConnectDatabaseSourceError ? (
                 <CloseOutlined style={{ color: "#ff4d4e" }} />
               ) : undefined,
               onClick: async () => {
