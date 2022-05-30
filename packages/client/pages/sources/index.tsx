@@ -318,6 +318,7 @@ const SourceList = () => {
             <Row gutter={8}>
               <Col>
                 <Button
+                  disabled={selectedSource.type === "VirtualSource"}
                   icon={
                     checkConnectDatabaseSourceData?.checkConnectDatabaseSource ? (
                       <CheckOutlined style={{ color: "#53c31b" }} />

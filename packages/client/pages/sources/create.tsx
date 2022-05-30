@@ -110,7 +110,8 @@ const SourceCreate = () => {
           }
         }
         secondaryActions={
-          current === 1 && [
+          current === 1 &&
+          currentSourceType === "DatabaseSource" && [
             {
               text: "测试连接",
               type: "ghost",
