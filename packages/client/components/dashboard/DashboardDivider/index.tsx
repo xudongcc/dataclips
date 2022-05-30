@@ -1,5 +1,6 @@
 import { DeleteIcon } from "@chakra-ui/icons";
 import { Box, Flex, Text } from "@chakra-ui/react";
+import { Col, Row, Typography } from "antd";
 import { FC } from "react";
 
 interface DashboardDividerProps {
@@ -21,39 +22,61 @@ export const DashboardDivider: FC<DashboardDividerProps> = ({
   ].find((item) => item.orientation === orientation);
 
   return (
-    <Flex
-      className="drag-item"
-      my="12px"
-      fontWeight="bold"
-      fontSize="20px"
-      alignItems="center"
-      whiteSpace="nowrap"
-      userSelect="none"
-    >
-      <Box
-        borderTop="1px solid transparent"
-        borderTopColor="inherit"
-        w={orientationWidth.beforeWidth}
+    <Row align="middle" className="drag-item" gutter={16} wrap={false}>
+      <Col
+        style={{
+          width: orientationWidth.beforeWidth,
+          backgroundColor: "inherit",
+        }}
       />
-      {children && <Text px={4}>{children}</Text>}
-
-      <Box
-        borderTop="1px solid transparent"
-        borderTopColor="inherit"
-        w={orientationWidth.afterWidth}
-      />
+      <Col>
+        {children && (
+          <Typography.Title level={3} style={{ marginBottom: 0 }}>
+            {children}
+          </Typography.Title>
+        )}
+      </Col>
+      <Col flex="auto" style={{ background: "#fff" }}></Col>
 
       {hasDelete && (
-        <Box px={4}>
-          <DeleteIcon
-            onClick={() => {
-              onDelete?.();
-            }}
-            cursor="pointer"
-            color="gray.500"
-          />
-        </Box>
+        <Col>
+          <Typography.Text>删除</Typography.Text>
+        </Col>
       )}
-    </Flex>
+    </Row>
+    // <Flex
+    //   className="drag-item"
+    //   my="12px"
+    //   fontWeight="bold"
+    //   fontSize="20px"
+    //   alignItems="center"
+    //   whiteSpace="nowrap"
+    //   userSelect="none"
+    // >
+    //   <Box
+    //     borderTop="1px solid transparent"
+    //     borderTopColor="inherit"
+    //     w={orientationWidth.beforeWidth}
+    //   />
+    //   {children && <Text px={4}>{children}</Text>}
+
+    //   <Box
+    //     borderTop="1px solid transparent"
+    //     borderTopColor="inherit"
+    //     w={orientationWidth.afterWidth}
+    //   />
+
+    //   {hasDelete && (
+    //     <Box px={4}>
+    //       <DeleteIcon
+    //         onClick={() => {
+    //           onDelete?.();
+    //         }}
+    //         cursor="pointer"
+    //         color="gray.500"
+    //       />
+    //     </Box>
+    //   )}
+    // </Flex>
   );
 };
