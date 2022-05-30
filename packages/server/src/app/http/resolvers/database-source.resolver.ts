@@ -27,4 +27,12 @@ export class DatabaseSourceResolver {
   ): Promise<Source> {
     return await this.sourceService.update(id, input);
   }
+
+  @Mutation(() => Boolean)
+  async checkConnectDatabaseSource(
+    @Args("input") input: CreateDatabaseSourceInput,
+    @Args("id", { type: () => ID, nullable: true }) id?: string
+  ): Promise<boolean> {
+    return await this.sourceService.checkConnect(input, id);
+  }
 }

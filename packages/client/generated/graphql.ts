@@ -200,6 +200,7 @@ export enum DatabaseType {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  checkConnectDatabaseSource: Scalars['Boolean'];
   createChart: Chart;
   createClip: Clip;
   createDashboard: Dashboard;
@@ -214,6 +215,12 @@ export type Mutation = {
   updateDashboard: Dashboard;
   updateDatabaseSource: DatabaseSource;
   updateVirtualSource: VirtualSource;
+};
+
+
+export type MutationCheckConnectDatabaseSourceArgs = {
+  id?: InputMaybe<Scalars['ID']>;
+  input: CreateDatabaseSourceInput;
 };
 
 
@@ -514,6 +521,14 @@ export type SourceFragment = Source_DatabaseSource_Fragment | Source_VirtualSour
 
 export type VirtualSourceFragment = { __typename?: 'VirtualSource', id: string, name: string, tags: Array<string>, createdAt: any, updatedAt: any, tables: Array<{ __typename?: 'VirtualSourceTable', name: string, createdAt: any, updatedAt: any, clip: { __typename?: 'Clip', id: string } }> };
 
+export type CheckConnectDatabaseSourceMutationVariables = Exact<{
+  input: CreateDatabaseSourceInput;
+  id?: InputMaybe<Scalars['ID']>;
+}>;
+
+
+export type CheckConnectDatabaseSourceMutation = { __typename?: 'Mutation', checkConnectDatabaseSource: boolean };
+
 export type CreateChartMutationVariables = Exact<{
   input: CreateChartInput;
 }>;
@@ -789,6 +804,38 @@ export const SourceFragmentDoc = gql`
 }
     ${DatabaseSourceFragmentDoc}
 ${VirtualSourceFragmentDoc}`;
+export const CheckConnectDatabaseSourceDocument = gql`
+    mutation CheckConnectDatabaseSource($input: CreateDatabaseSourceInput!, $id: ID) {
+  checkConnectDatabaseSource(input: $input, id: $id)
+}
+    `;
+export type CheckConnectDatabaseSourceMutationFn = Apollo.MutationFunction<CheckConnectDatabaseSourceMutation, CheckConnectDatabaseSourceMutationVariables>;
+
+/**
+ * __useCheckConnectDatabaseSourceMutation__
+ *
+ * To run a mutation, you first call `useCheckConnectDatabaseSourceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCheckConnectDatabaseSourceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [checkConnectDatabaseSourceMutation, { data, loading, error }] = useCheckConnectDatabaseSourceMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useCheckConnectDatabaseSourceMutation(baseOptions?: Apollo.MutationHookOptions<CheckConnectDatabaseSourceMutation, CheckConnectDatabaseSourceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CheckConnectDatabaseSourceMutation, CheckConnectDatabaseSourceMutationVariables>(CheckConnectDatabaseSourceDocument, options);
+      }
+export type CheckConnectDatabaseSourceMutationHookResult = ReturnType<typeof useCheckConnectDatabaseSourceMutation>;
+export type CheckConnectDatabaseSourceMutationResult = Apollo.MutationResult<CheckConnectDatabaseSourceMutation>;
+export type CheckConnectDatabaseSourceMutationOptions = Apollo.BaseMutationOptions<CheckConnectDatabaseSourceMutation, CheckConnectDatabaseSourceMutationVariables>;
 export const CreateChartDocument = gql`
     mutation CreateChart($input: CreateChartInput!) {
   createChart(input: $input) {
