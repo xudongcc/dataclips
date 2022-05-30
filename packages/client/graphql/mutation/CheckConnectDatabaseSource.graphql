@@ -1,3 +1,6 @@
-mutation CheckConnectDatabaseSource($input: CreateDatabaseSourceInput!) {
-  checkConnectDatabaseSource(input: $input)
+mutation CheckConnectDatabaseSource(
+  $input: CreateDatabaseSourceInput!
+  $id: ID
+) {
+  checkConnectDatabaseSource(input: $input, id: $id)
 }

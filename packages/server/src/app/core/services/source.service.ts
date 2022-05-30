@@ -6,6 +6,7 @@ import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import Bluebird, { promisify } from "bluebird";
 import _ from "lodash";
 import mysql, { FieldPacket, RowDataPacket } from "mysql2";
+import pMysql from "mysql2/promise";
 import pg, { QueryArrayResult } from "pg";
 import initSqlJs from "sql.js";
 import tunnelSSH from "tunnel-ssh";
@@ -36,7 +37,73 @@ export class SourceService extends mixinConnection(
     super();
   }
 
-  async checkConnect(input: Partial<Source>): Promise<boolean> {
+  async checkConnect(input: Partial<Source>, id?: string): Promise<boolean> {
+    if (id) {
+      const source = await this.repository.findOneOrFail({ id });
+
+      if (source.password) {
+        // eslint-disable-next-line no-param-reassign
+        input.password =
+          input.password || this.cryptoService.decrypt(source.password);
+      }
+
+      if (source.sshPassword) {
+        // eslint-disable-next-line no-param-reassign
+        input.sshPassword =
+          input.password || this.cryptoService.decrypt(source.sshPassword);
+      }
+    }
+
+    const localHost = "localhost";
+    const localPort = _.random(30000, 60000);
+
+    const host = input.sshEnabled ? localHost : input.host;
+
+    const port = input.sshEnabled ? localPort : input.port;
+
+    const { database, username, password } = input;
+
+    if (input.type === SourceType.MYSQL) {
+      let mysqlConnection: pMysql.Connection;
+
+      try {
+        mysqlConnection = await pMysql.createConnection({
+          host,
+          port,
+          user: username,
+          password,
+          database,
+          rowsAsArray: true,
+        });
+
+        return true;
+      } catch (err) {
+        throw new Error("测试连接失败，请检查所填写的信息是否正确");
+      } finally {
+        await mysqlConnection?.end();
+      }
+    }
+
+    if (input.type === SourceType.POSTGRESQL) {
+      const pgClient = new pg.Client({
+        host,
+        port,
+        user: username,
+        password,
+        database,
+      });
+
+      try {
+        await pgClient.connect();
+
+        return true;
+      } catch (err) {
+        throw new Error("测试连接失败，请检查所填写的信息是否正确");
+      } finally {
+        await pgClient.end();
+      }
+    }
+
     return false;
   }
 

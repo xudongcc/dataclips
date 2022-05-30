@@ -11,11 +11,7 @@ import Head from "next/head";
 import { useCheckConnectDatabaseSourceMutation } from "../../generated/graphql";
 import { Form, Select, Button, Steps, Space, Row } from "antd";
 import { Card } from "../../components/common/Card";
-import {
-  CheckOutlined,
-  CloseOutlined,
-  LoadingOutlined,
-} from "@ant-design/icons";
+import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 const { Step } = Steps;

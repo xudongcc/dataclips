@@ -219,6 +219,7 @@ export type Mutation = {
 
 
 export type MutationCheckConnectDatabaseSourceArgs = {
+  id?: InputMaybe<Scalars['ID']>;
   input: CreateDatabaseSourceInput;
 };
 
@@ -522,6 +523,7 @@ export type VirtualSourceFragment = { __typename?: 'VirtualSource', id: string, 
 
 export type CheckConnectDatabaseSourceMutationVariables = Exact<{
   input: CreateDatabaseSourceInput;
+  id?: InputMaybe<Scalars['ID']>;
 }>;
 
 
@@ -803,8 +805,8 @@ export const SourceFragmentDoc = gql`
     ${DatabaseSourceFragmentDoc}
 ${VirtualSourceFragmentDoc}`;
 export const CheckConnectDatabaseSourceDocument = gql`
-    mutation CheckConnectDatabaseSource($input: CreateDatabaseSourceInput!) {
-  checkConnectDatabaseSource(input: $input)
+    mutation CheckConnectDatabaseSource($input: CreateDatabaseSourceInput!, $id: ID) {
+  checkConnectDatabaseSource(input: $input, id: $id)
 }
     `;
 export type CheckConnectDatabaseSourceMutationFn = Apollo.MutationFunction<CheckConnectDatabaseSourceMutation, CheckConnectDatabaseSourceMutationVariables>;
@@ -823,6 +825,7 @@ export type CheckConnectDatabaseSourceMutationFn = Apollo.MutationFunction<Check
  * const [checkConnectDatabaseSourceMutation, { data, loading, error }] = useCheckConnectDatabaseSourceMutation({
  *   variables: {
  *      input: // value for 'input'
+ *      id: // value for 'id'
  *   },
  * });
  */
