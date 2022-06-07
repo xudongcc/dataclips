@@ -85,7 +85,11 @@ const DashboardPreview: PC = () => {
               showTime
               value={snapshotTime as any}
               disabledDate={(current) => {
-                return current && current > moment().endOf("day");
+                return (
+                  current &&
+                  (current > moment().endOf("day") ||
+                    current < moment().subtract(1, "month").startOf("day"))
+                );
               }}
               showNow={false}
               onChange={(current) => {
