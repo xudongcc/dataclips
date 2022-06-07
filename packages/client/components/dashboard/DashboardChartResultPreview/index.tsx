@@ -72,7 +72,7 @@ export const DashboardChartResultPreview: FC<
     isLoading: resultLoading,
     refetch,
   } = useQueryResult(data?.chart?.clip?.id, {
-    queryParams: { time: snapshotTime.format() },
+    queryParams: snapshotTime ? { time: snapshotTime.format() } : undefined,
     ...refreshConfig,
   });
 
