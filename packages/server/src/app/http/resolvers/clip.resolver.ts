@@ -11,14 +11,14 @@ import {
   Resolver,
 } from "@nestjs/graphql";
 import _, { omit } from "lodash";
-import { SourceType } from "../../core/enums/source-type.enum";
-import { ChartService } from "../../core/services/chart.service";
-import { SourceService } from "../../core/services/source.service";
 
 import { Clip } from "../../core/entities/clip.entity";
 import { Result } from "../../core/entities/result.entity";
+import { SourceType } from "../../core/enums/source-type.enum";
+import { ChartService } from "../../core/services/chart.service";
 import { ClipService } from "../../core/services/clip.service";
 import { ResultService } from "../../core/services/result.service";
+import { SourceService } from "../../core/services/source.service";
 import { AuthGuard } from "../guards/auth.guard";
 import { CreateClipInput } from "../inputs/create-clip.input";
 import { UpdateClipInput } from "../inputs/update-clip.input";
@@ -111,7 +111,7 @@ export class ClipResolver {
 
   @ResolveField(() => [Result])
   async results(@Parent() clip: Clip): Promise<Result[]> {
-    return this.resultService.repository.find(
+    return await this.resultService.repository.find(
       { clip },
       {
         limit: 10,

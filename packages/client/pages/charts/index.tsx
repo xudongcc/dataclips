@@ -144,8 +144,8 @@ const ChartList = () => {
       >
         <GraphQLTable
           id="charts"
-          pageSize={100}
-          // pageInfo={data?.clipConnection?.pageInfo}
+          pageSize={50}
+          pageInfo={data?.chartConnection?.pageInfo}
           options={false}
           onVariablesChange={(variables) => {
             getCharts({ variables });
