@@ -1,9 +1,11 @@
+import { FilterQuery } from "@mikro-orm/core";
 import {
   Controller,
   Get,
   Header,
   NotFoundException,
   Param,
+  Query,
   Res,
   UseGuards,
   UseInterceptors,
@@ -12,6 +14,7 @@ import { Response } from "express";
 import xlsx from "node-xlsx";
 import Papa from "papaparse";
 
+import { Result } from "../../core/entities/result.entity";
 import { ClipService } from "../../core/services/clip.service";
 import { AuthGuard } from "../guards/auth.guard";
 import { ClipViewLoggingInterceptor } from "../interceptors/clip-view-logging.interceptor";
@@ -23,10 +26,16 @@ export class ClipController {
   constructor(private readonly clipService: ClipService) {}
 
   @Get(":id(\\d+).json")
-  async json(@Param("id") id: string) {
+  async json(@Param("id") id: string, @Query("time") time: string) {
     const clip = await this.clipService.repository.findOneOrFail({ id });
 
-    const result = await this.clipService.fetchResult(clip.id);
+    const filterQuery: FilterQuery<Result> = {};
+
+    if (time) {
+      filterQuery.finishedAt = time;
+    }
+
+    const result = await this.clipService.fetchResult(clip.id, filterQuery);
 
     if (!result) {
       throw new NotFoundException();

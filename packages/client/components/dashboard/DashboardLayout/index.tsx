@@ -13,6 +13,7 @@ import { Markdown } from "../../chart/ChartResultPreview/components";
 import { Dropdown, Menu, Drawer, Space } from "antd";
 import Embed from "react-embed";
 import styled from "styled-components";
+import moment from "moment";
 
 const DragIconWrapper = styled.div<{ type?: "preview" | "edit" }>`
   cursor: ${(props) => (props?.type === "preview" ? "not-allowed" : "grab")};
@@ -97,6 +98,7 @@ export interface DashboardEmbedItem extends DashboardItem {
 interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
   type: "preview" | "edit";
   autoRefresh?: boolean;
+  snapshotTime?: moment.Moment;
   dragItems: Array<
     | DashboardChartItem
     | DashboardDividerItem
@@ -136,7 +138,14 @@ interface DashboardLayoutProps extends GridLayout.ReactGridLayoutProps {
 }
 
 export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
-  const { dragItems = [], type, extraConfig, autoRefresh, ...rest } = props;
+  const {
+    dragItems = [],
+    type,
+    extraConfig,
+    autoRefresh,
+    snapshotTime,
+    ...rest
+  } = props;
   const [borderRadius] = useToken("radii", ["lg"]);
 
   const [resultFinishedAtCollection, setResultFinishedAtCollection] = useState(
@@ -276,6 +285,7 @@ export const DashboardLayout: FC<DashboardLayoutProps> = (props) => {
                   }
                 >
                   <DashboardChartResultPreview
+                    snapshotTime={snapshotTime}
                     dashboardType={type}
                     setResultFinishedAtCollection={
                       setResultFinishedAtCollection

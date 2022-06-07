@@ -1,8 +1,9 @@
-import { QueryOrder } from "@mikro-orm/core";
+import { FilterQuery, QueryOrder } from "@mikro-orm/core";
 import { createEntityService } from "@nest-boot/database";
 import { mixinConnection } from "@nest-boot/graphql";
 import { mixinSearchable } from "@nest-boot/search";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { omit } from "lodash";
 import moment from "moment";
 
 import { Clip } from "../entities/clip.entity";
@@ -76,13 +77,24 @@ export class ClipService extends mixinConnection(
     return result;
   }
 
-  async fetchResult(id: Clip["id"], sync = false) {
-    const result = await this.resultService.repository.findOne(
-      { clip: { id } },
-      {
-        orderBy: { startedAt: QueryOrder.DESC },
-      }
-    );
+  async fetchResult(id: Clip["id"], filterQuery?: FilterQuery<Result>) {
+    let where: FilterQuery<Result> = {
+      clip: { id },
+      ...(filterQuery as object),
+    };
+
+    if ((filterQuery as Partial<Result>)?.finishedAt) {
+      where = {
+        ...omit(where, ["finishedAt"]),
+        finishedAt: {
+          $lte: (filterQuery as Partial<Result>).finishedAt,
+        },
+      };
+    }
+
+    const result = await this.resultService.repository.findOne(where, {
+      orderBy: { startedAt: QueryOrder.DESC },
+    });
 
     if (!result || moment().subtract(1, "m").isAfter(result.finishedAt)) {
       await this.refreshClipQueue.add("query", { clipId: id });

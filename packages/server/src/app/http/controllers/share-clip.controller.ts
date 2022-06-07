@@ -1,9 +1,11 @@
+import { FilterQuery } from "@mikro-orm/core";
 import {
   Controller,
   Get,
   Header,
   NotFoundException,
   Param,
+  Query,
   Res,
   UseInterceptors,
 } from "@nestjs/common";
@@ -11,6 +13,7 @@ import { Response } from "express";
 import xlsx from "node-xlsx";
 import Papa from "papaparse";
 
+import { Result } from "../../core/entities/result.entity";
 import { ClipService } from "../../core/services/clip.service";
 import { ClipViewLoggingInterceptor } from "../interceptors/clip-view-logging.interceptor";
 
@@ -20,14 +23,16 @@ export class ShareClipController {
   constructor(private readonly clipService: ClipService) {}
 
   @Get(":token.json")
-  async json(@Param("token") token: string) {
+  async json(@Param("token") token: string, @Query("time") time: string) {
     const clip = await this.clipService.repository.findOneOrFail({ token });
 
-    if (!clip) {
-      throw new NotFoundException();
+    const filterQuery: FilterQuery<Result> = {};
+
+    if (time) {
+      filterQuery.finishedAt = time;
     }
 
-    const result = await this.clipService.fetchResult(clip.id);
+    const result = await this.clipService.fetchResult(clip.id, filterQuery);
 
     if (!result) {
       throw new NotFoundException();

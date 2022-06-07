@@ -17,6 +17,8 @@ import { ChartResultPreview } from "../../chart/ChartResultPreview";
 import { Loading } from "../../common/Loading";
 import { ChartType } from "../../../types";
 import { Typography } from "antd";
+import { useUpdateEffect } from "react-use";
+import moment from "moment";
 
 const { Text } = Typography;
 
@@ -30,6 +32,7 @@ interface DashboardChartResultPreviewProps {
   // 下面两个属性只是因为要在 card 操作菜单 上显示 clip 里 sql 语句暂时加的
   setClipSqlCollection?: Dispatch<SetStateAction<{}>>;
   clipSqlCollectionRef?: MutableRefObject<any>;
+  snapshotTime?: moment.Moment;
 }
 
 export const DashboardChartResultPreview: FC<
@@ -42,6 +45,7 @@ export const DashboardChartResultPreview: FC<
   clipSqlCollectionRef,
   dashboardType = "edit",
   autoRefresh = true,
+  snapshotTime,
 }) => {
   const {
     data,
@@ -63,15 +67,25 @@ export const DashboardChartResultPreview: FC<
     return {};
   }, [autoRefresh]);
 
-  const { data: result, isLoading: resultLoading } = useQueryResult(
-    data?.chart?.clip?.id,
-    refreshConfig
-  );
+  const {
+    data: result,
+    isLoading: resultLoading,
+    refetch,
+  } = useQueryResult(data?.chart?.clip?.id, {
+    queryParams: snapshotTime ? { time: snapshotTime.format() } : undefined,
+    ...refreshConfig,
+  });
 
   const { data: clipData } = useClipQuery({
     variables: { id: data?.chart?.clip?.id },
     skip: !data?.chart?.clip?.id,
   });
+
+  useUpdateEffect(() => {
+    if (snapshotTime) {
+      refetch();
+    }
+  }, [refetch, snapshotTime]);
 
   useEffect(() => {
     if (clipData?.clip?.sql) {

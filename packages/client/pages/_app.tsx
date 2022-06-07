@@ -13,6 +13,7 @@ import { queryClient } from "../lib/queryClient";
 import { ConfigProvider as AntdConfigProvider } from "antd";
 import "../style/index.less";
 import { ThemeProvider } from "styled-components";
+import zhCN from "antd/lib/locale/zh_CN";
 
 const App: FC<AppProps & { Component: PC }> = ({
   Component,
@@ -27,7 +28,7 @@ const App: FC<AppProps & { Component: PC }> = ({
     <>
       <ChakraProvider theme={theme}>
         <ThemeProvider theme={{}}>
-          <AntdConfigProvider>
+          <AntdConfigProvider locale={zhCN}>
             <SessionProvider session={session}>
               <ApolloProvider client={getApolloClient(null, apolloState)}>
                 <QueryClientProvider client={queryClient}>

@@ -15,7 +15,8 @@ import {
   DashboardDividerItem,
   DashboardMarkdownItem,
 } from "../../../components/dashboard/DashboardLayout";
-import { Switch } from "antd";
+import { Switch, DatePicker } from "antd";
+import moment from "moment";
 
 const DashboardPreview: PC = () => {
   const router = useRouter();
@@ -31,6 +32,8 @@ const DashboardPreview: PC = () => {
 
   // 请求根据设定的间隔自动重新获取
   const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(false);
+
+  const [snapshotTime, setSnapshotTime] = useState(moment());
 
   const [dragItems, setDragItems] = useState<
     Array<DashboardDividerItem | DashboardChartItem | DashboardMarkdownItem>
@@ -69,14 +72,32 @@ const DashboardPreview: PC = () => {
           },
         }}
         extra={
-          <Switch
-            onChange={(checked) => {
-              setAutoRefreshEnabled(checked);
-            }}
-            checked={autoRefreshEnabled}
-            checkedChildren="自动刷新"
-            unCheckedChildren="自动刷新"
-          />
+          <>
+            <Switch
+              onChange={(checked) => {
+                setAutoRefreshEnabled(checked);
+              }}
+              checked={autoRefreshEnabled}
+              checkedChildren="自动刷新"
+              unCheckedChildren="自动刷新"
+            />
+            <DatePicker
+              showTime
+              value={snapshotTime as any}
+              disabledDate={(current) => {
+                return (
+                  current &&
+                  (current > moment().endOf("day") ||
+                    current < moment().subtract(1, "month").startOf("day"))
+                );
+              }}
+              showNow={false}
+              onChange={(current) => {
+                setAutoRefreshEnabled(false);
+                setSnapshotTime(current);
+              }}
+            />
+          </>
         }
       >
         <DashboardLayout
@@ -87,6 +108,7 @@ const DashboardPreview: PC = () => {
             static: true,
           }))}
           dragItems={dragItems}
+          snapshotTime={snapshotTime}
           extraConfig={{
             chart: {
               onEditChartClick: (item) => {
