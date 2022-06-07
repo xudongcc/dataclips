@@ -1,9 +1,4 @@
-import {
-  FilterQuery,
-  FindOneOptions,
-  ObjectQuery,
-  QueryOrder,
-} from "@mikro-orm/core";
+import { FilterQuery, QueryOrder } from "@mikro-orm/core";
 import { createEntityService } from "@nest-boot/database";
 import { mixinConnection } from "@nest-boot/graphql";
 import { mixinSearchable } from "@nest-boot/search";
