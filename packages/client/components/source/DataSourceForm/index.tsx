@@ -72,7 +72,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
           },
         ]}
       >
-        <Input type="password" placeholder="请输入密码" />
+        <Input.Password visibilityToggle placeholder="请输入密码" />
       </Form.Item>
 
       <Form.Item name={["dataSource", "tags"]}>
@@ -125,8 +125,8 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
                   ]}
                   name={["dataSource", "sshPassword"]}
                 >
-                  <Input
-                    type="password"
+                  <Input.Password
+                    visibilityToggle
                     name="dataSource.sshPassword"
                     placeholder="请输入 ssh 密码"
                   />

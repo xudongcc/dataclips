@@ -115,13 +115,7 @@ export const MetricChartPreview: FC<MetricChartPreviewProps> = ({
   }, [value, compareValue]);
 
   return (
-    <Flex
-      h="full"
-      align="center"
-      px={{ base: "4", md: "6" }}
-      py={{ base: "5", md: "6" }}
-      borderRadius="lg"
-    >
+    <Flex h="full" align="center" borderRadius="lg">
       <Stack>
         <Stack spacing="4">
           <Heading

@@ -169,8 +169,8 @@ const DashBoardList: PC = () => {
       >
         <GraphQLTable
           id="dashboards"
-          pageSize={100}
-          // pageInfo={data?.clipConnection?.pageInfo}
+          pageSize={50}
+          pageInfo={data?.dashboardConnection?.pageInfo}
           options={false}
           onVariablesChange={(variables) => {
             getDashboards({ variables });

@@ -11,6 +11,7 @@ import {
   VirtualSource,
   useSourceConnectionLazyQuery,
   useDeleteSourceMutation,
+  useCheckConnectDatabaseSourceMutation,
 } from "../../generated/graphql";
 import { omit } from "lodash";
 import { useCallback } from "react";
@@ -19,13 +20,14 @@ import { VirtualSourceForm } from "../../components/source/VirtualSourceForm";
 import { Page } from "../../components/common/Page";
 import Head from "next/head";
 import { Modal } from "../../components/common/Modal";
-import { Form } from "antd";
+import { Button, Col, Form, Row } from "antd";
 import {
   FilterType,
   GraphQLTable,
   GraphQLTableColumnType,
 } from "../../components/common/GraphQLTable";
 import { ValueType } from "../../components/common/SimpleTable";
+import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 
 const SourceList = () => {
   const router = useRouter();
@@ -55,6 +57,16 @@ const SourceList = () => {
 
   const [updateVirtualSource, { loading: updateVirtualSourceLoading }] =
     useUpdateVirtualSourceMutation();
+
+  const [
+    checkConnectDatabaseSource,
+    {
+      loading: checkConnectDatabaseSourceLoading,
+      data: checkConnectDatabaseSourceData,
+      error: checkConnectDatabaseSourceError,
+      reset: checkConnectReset,
+    },
+  ] = useCheckConnectDatabaseSourceMutation();
 
   const handleSubmit = useCallback(async () => {
     try {
@@ -282,9 +294,9 @@ const SourceList = () => {
         }}
       >
         <GraphQLTable
-          id="clips"
-          pageSize={100}
-          // pageInfo={data?.clipConnection?.pageInfo}
+          id="sources"
+          pageSize={50}
+          pageInfo={data?.sourceConnection?.pageInfo}
           options={false}
           onVariablesChange={(variables) => {
             getSources({ variables });
@@ -298,17 +310,71 @@ const SourceList = () => {
         <Modal
           visible={editModalVisible}
           title="编辑数据源"
-          okButtonProps={{
-            loading:
-              updateDatabaseSourceLoading ||
-              sourceLoading ||
-              updateVirtualSourceLoading,
-          }}
           onCancel={() => {
             setEditModalVisible(false);
             form.resetFields();
+            checkConnectReset();
           }}
-          onOk={handleSubmit}
+          footer={
+            <Row gutter={8}>
+              <Col>
+                <Button
+                  danger={!!checkConnectDatabaseSourceError}
+                  disabled={selectedSource?.type === "VirtualSource"}
+                  icon={
+                    checkConnectDatabaseSourceData?.checkConnectDatabaseSource ? (
+                      <CheckOutlined style={{ color: "#53c31b" }} />
+                    ) : checkConnectDatabaseSourceError ? (
+                      <CloseOutlined style={{ color: "#ff4d4e" }} />
+                    ) : undefined
+                  }
+                  loading={checkConnectDatabaseSourceLoading}
+                  onClick={async () => {
+                    try {
+                      const values = await form.validateFields();
+
+                      await checkConnectDatabaseSource({
+                        variables: {
+                          input: {
+                            ...values.dataSource,
+                          },
+                          id: selectedSource.id,
+                        },
+                      });
+                    } catch (err) {
+                      console.log("err", err);
+                    }
+                  }}
+                >
+                  测试连接
+                </Button>
+              </Col>
+              <Col flex="auto">
+                <Button
+                  onClick={() => {
+                    setEditModalVisible(false);
+                    form.resetFields();
+                    checkConnectReset;
+                  }}
+                >
+                  取消
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    handleSubmit();
+                  }}
+                  loading={
+                    updateDatabaseSourceLoading ||
+                    sourceLoading ||
+                    updateVirtualSourceLoading
+                  }
+                >
+                  确定
+                </Button>
+              </Col>
+            </Row>
+          }
         >
           <Form form={form}>
             {selectedSource?.type === "DatabaseSource" && (
