@@ -19,7 +19,6 @@ import { ChartType } from "../../../types";
 import { Typography } from "antd";
 import { useUpdateEffect } from "react-use";
 import moment from "moment";
-import momentTz from "moment-timezone";
 
 const { Text } = Typography;
 
@@ -73,7 +72,7 @@ export const DashboardChartResultPreview: FC<
     isLoading: resultLoading,
     refetch,
   } = useQueryResult(data?.chart?.clip?.id, {
-    queryParams: { time: momentTz.tz(snapshotTime, "Asia/Shanghai").format() },
+    queryParams: { time: snapshotTime.format() },
     ...refreshConfig,
   });
 
