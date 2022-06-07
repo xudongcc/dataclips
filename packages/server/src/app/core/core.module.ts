@@ -5,9 +5,11 @@ import { QueueModule } from "@nest-boot/queue";
 import { RedisModule } from "@nest-boot/redis";
 import { SearchModule } from "@nest-boot/search";
 import { PostgresqlSearchEngine } from "@nest-boot/search-engine-postgresql";
+import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { DiscoveryService } from "@nestjs/core";
+import ms from "ms";
 
 import { CryptoModule } from "../../crypto";
 import { Chart } from "./entities/chart.entity";
@@ -95,6 +97,24 @@ const providers = [...services, ...queues];
     SearchDynamicModule,
     QueueDynamicModule,
     DatabaseDynamicModule,
+    BullModule.forRootAsync({
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get("REDIS_HOST", "localhost"),
+          port: +configService.get("REDIS_PORT", "6379"),
+        },
+      }),
+      inject: [ConfigService],
+    }),
+    BullModule.registerQueue({
+      name: "RefreshClipQueue",
+      defaultJobOptions: {
+        timeout: ms("30m"),
+        removeOnComplete: true,
+        removeOnFail: true,
+        repeat: { every: ms("15m") },
+      },
+    }),
   ],
   providers,
   exports: [...providers],

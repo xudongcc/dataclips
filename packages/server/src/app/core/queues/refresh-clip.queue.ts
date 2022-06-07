@@ -1,69 +1,35 @@
 import { MikroORM, UseRequestContext } from "@mikro-orm/core";
-import { Logger } from "@nest-boot/common";
-import { BaseQueue, Job, Queue } from "@nest-boot/queue";
-import { forwardRef, Inject, OnModuleInit } from "@nestjs/common";
-import Bluebird from "bluebird";
-import ms from "ms";
+import { Process, Processor } from "@nestjs/bull";
+import { forwardRef, Inject } from "@nestjs/common";
+import { Job } from "bull";
 
 import { ClipService } from "../services/clip.service";
 
-type RefreshClipQueryJob = Job<{ clipId: string }, void, "query">;
-type RefreshClipScheduleJob = Job<{}, void, "schedule">;
-
-@Queue({
-  concurrency: 10,
-  defaultJobOptions: {
-    timeout: ms("30m"),
-    removeOnComplete: true,
-    removeOnFail: true,
-  },
-})
-export class RefreshClipQueue extends BaseQueue implements OnModuleInit {
+@Processor("RefreshClipQueue")
+export class RefreshClipQueue {
   constructor(
-    readonly logger: Logger,
     @Inject(forwardRef(() => ClipService))
-    readonly clipService: ClipService,
+    private readonly clipService: ClipService,
     private readonly orm: MikroORM
-  ) {
-    super();
-    this.logger.setContext(this.constructor.name);
+  ) {}
+
+  @Process("query")
+  async query(job: Job<any>) {
+    await this.clipServiceQuery(job.data.clipId);
   }
 
-  async onModuleInit() {
-    const name = "schedule";
-    const jobId = "1";
-    const every = ms("15m");
-
-    await this.add(name, {}, { jobId, repeat: { every } });
-
-    await Bluebird.map(
-      await this.getRepeatableJobs(),
-      async (repeatableJob) => {
-        if (
-          repeatableJob.name === name &&
-          repeatableJob.id === jobId &&
-          repeatableJob.cron === `${every}`
-        ) {
-          await this.removeRepeatableByKey(repeatableJob.key);
-        }
-      },
-      {
-        concurrency: 5,
-      }
-    );
+  @Process("schedule")
+  async schedule() {
+    await this.clipServiceSchedule();
   }
 
   @UseRequestContext()
-  async processor(
-    job: RefreshClipScheduleJob | RefreshClipQueryJob
-  ): Promise<void> {
-    switch (job.name) {
-      case "schedule":
-        await this.clipService.schedule();
-        break;
-      case "query":
-        await this.clipService.query(job.data.clipId);
-        break;
-    }
+  async clipServiceQuery(clipId: string) {
+    await this.clipService.query(clipId);
+  }
+
+  @UseRequestContext()
+  async clipServiceSchedule() {
+    await this.clipService.schedule();
   }
 }
