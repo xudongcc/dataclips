@@ -9,11 +9,16 @@ interface Config extends QueryObserverOptions<ResultFragment> {
 
 export const useQueryResult = (idOrToken?: string, config?: Config) => {
   let baseUrl = `/clips/${idOrToken}.json`;
+  let restConfig = {};
 
-  const { queryParams = {}, ...restConfig } = config;
+  if (config) {
+    const { queryParams = {}, ...rest } = config;
 
-  if (!isEmpty(queryParams)) {
-    baseUrl += `?${qs.stringify(queryParams)}`;
+    if (!isEmpty(queryParams)) {
+      baseUrl += `?${qs.stringify(queryParams)}`;
+    }
+
+    restConfig = rest;
   }
 
   return useQuery(
