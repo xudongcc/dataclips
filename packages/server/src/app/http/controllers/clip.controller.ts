@@ -1,3 +1,4 @@
+import { FilterQuery } from "@mikro-orm/core";
 import {
   Controller,
   Get,
@@ -14,6 +15,7 @@ import moment from "moment";
 import xlsx from "node-xlsx";
 import Papa from "papaparse";
 
+import { Result } from "../../core/entities/result.entity";
 import { ClipService } from "../../core/services/clip.service";
 import { AuthGuard } from "../guards/auth.guard";
 import { ClipViewLoggingInterceptor } from "../interceptors/clip-view-logging.interceptor";
@@ -28,15 +30,13 @@ export class ClipController {
   async json(@Param("id") id: string, @Query("time") time: string) {
     const clip = await this.clipService.repository.findOneOrFail({ id });
 
-    const filterQuery: Record<string, any> = {};
+    const filterQuery: FilterQuery<Result> = {};
 
     if (time) {
-      filterQuery.finishedAt = moment(time).format("YYYY-MM-DD HH:mm:ss");
+      filterQuery.finishedAt = new Date(time);
     }
 
-    console.log(11111, "filterQuery", filterQuery);
-
-    const result = await this.clipService.fetchResult(clip.id, {});
+    const result = await this.clipService.fetchResult(clip.id, filterQuery);
 
     if (!result) {
       throw new NotFoundException();

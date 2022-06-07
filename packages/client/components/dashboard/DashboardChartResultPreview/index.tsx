@@ -69,7 +69,7 @@ export const DashboardChartResultPreview: FC<
   const { data: result, isLoading: resultLoading } = useQueryResult(
     data?.chart?.clip?.id,
     {
-      queryParams: { time: snapshotTime.toString() },
+      queryParams: { time: moment(snapshotTime).format("YYYY-MM-DD HH:mm:ss") },
       ...refreshConfig,
     }
   );
