@@ -11,7 +11,6 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { Response } from "express";
-import moment from "moment";
 import xlsx from "node-xlsx";
 import Papa from "papaparse";
 
@@ -33,7 +32,7 @@ export class ClipController {
     const filterQuery: FilterQuery<Result> = {};
 
     if (time) {
-      filterQuery.finishedAt = new Date(time);
+      filterQuery.finishedAt = time;
     }
 
     const result = await this.clipService.fetchResult(clip.id, filterQuery);

@@ -13,6 +13,7 @@ import { Markdown } from "../../chart/ChartResultPreview/components";
 import { Dropdown, Menu, Drawer, Space } from "antd";
 import Embed from "react-embed";
 import styled from "styled-components";
+import moment from "moment";
 
 const DragIconWrapper = styled.div<{ type?: "preview" | "edit" }>`
   cursor: ${(props) => (props?.type === "preview" ? "not-allowed" : "grab")};

@@ -17,7 +17,9 @@ import { ChartResultPreview } from "../../chart/ChartResultPreview";
 import { Loading } from "../../common/Loading";
 import { ChartType } from "../../../types";
 import { Typography } from "antd";
+import { useUpdateEffect } from "react-use";
 import moment from "moment";
+import momentTz from "moment-timezone";
 
 const { Text } = Typography;
 
@@ -66,18 +68,25 @@ export const DashboardChartResultPreview: FC<
     return {};
   }, [autoRefresh]);
 
-  const { data: result, isLoading: resultLoading } = useQueryResult(
-    data?.chart?.clip?.id,
-    {
-      queryParams: { time: moment(snapshotTime).format("YYYY-MM-DD HH:mm:ss") },
-      ...refreshConfig,
-    }
-  );
+  const {
+    data: result,
+    isLoading: resultLoading,
+    refetch,
+  } = useQueryResult(data?.chart?.clip?.id, {
+    queryParams: { time: momentTz.tz(snapshotTime, "Asia/Shanghai").format() },
+    ...refreshConfig,
+  });
 
   const { data: clipData } = useClipQuery({
     variables: { id: data?.chart?.clip?.id },
     skip: !data?.chart?.clip?.id,
   });
+
+  useUpdateEffect(() => {
+    if (snapshotTime) {
+      refetch();
+    }
+  }, [refetch, snapshotTime]);
 
   useEffect(() => {
     if (clipData?.clip?.sql) {

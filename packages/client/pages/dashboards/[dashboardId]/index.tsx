@@ -1,6 +1,6 @@
 import { PC } from "../../../interfaces/PageComponent";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useChartLazyQuery,
   useDashboardQuery,
@@ -38,15 +38,6 @@ const DashboardPreview: PC = () => {
   const [dragItems, setDragItems] = useState<
     Array<DashboardDividerItem | DashboardChartItem | DashboardMarkdownItem>
   >([]);
-
-  // 获取一个范围
-  const range = useCallback((start, end) => {
-    const result = [];
-    for (let i = start; i < end; i++) {
-      result.push(i);
-    }
-    return result;
-  }, []);
 
   useEffect(() => {
     if (data?.dashboard?.config?.blocks?.length) {
@@ -95,22 +86,6 @@ const DashboardPreview: PC = () => {
               value={snapshotTime as any}
               disabledDate={(current) => {
                 return current && current > moment().endOf("day");
-              }}
-              disabledTime={(current) => {
-                return {
-                  disabledHours: () =>
-                    moment(current).endOf("day") < moment().endOf("day")
-                      ? []
-                      : range(0, 24).splice(moment().hours() + 1),
-                  disabledMinutes: () =>
-                    moment(current).endOf("day") < moment().endOf("day")
-                      ? []
-                      : range(0, 60).splice(moment().minutes() + 1),
-                  disabledSeconds: () =>
-                    moment(current).endOf("day") < moment().endOf("day")
-                      ? []
-                      : range(0, 60).splice(moment().seconds()),
-                };
               }}
               showNow={false}
               onChange={(current) => {
