@@ -294,9 +294,9 @@ const SourceList = () => {
         }}
       >
         <GraphQLTable
-          id="clips"
-          pageSize={100}
-          // pageInfo={data?.clipConnection?.pageInfo}
+          id="sources"
+          pageSize={50}
+          pageInfo={data?.sourceConnection?.pageInfo}
           options={false}
           onVariablesChange={(variables) => {
             getSources({ variables });

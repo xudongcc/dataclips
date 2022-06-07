@@ -143,7 +143,9 @@ export const Pagination: FC<PaginationProps> = ({
 
       setLocalStorageValue(newQueryParams);
 
-      onVariablesChange(tempVariables);
+      setTimeout(() => {
+        onVariablesChange(tempVariables);
+      });
     }
   }, [
     onVariablesChange,
@@ -179,7 +181,9 @@ export const Pagination: FC<PaginationProps> = ({
 
       setLocalStorageValue(newQueryParams);
 
-      onVariablesChange(tempVariables);
+      setTimeout(() => {
+        onVariablesChange(tempVariables);
+      });
     }
   }, [
     onVariablesChange,

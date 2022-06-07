@@ -137,8 +137,8 @@ const ClipList = () => {
       >
         <GraphQLTable
           id="clips"
-          pageSize={100}
-          // pageInfo={data?.clipConnection?.pageInfo}
+          pageInfo={data?.clipConnection?.pageInfo}
+          pageSize={50}
           options={false}
           onVariablesChange={(variables) => {
             getClips({ variables });

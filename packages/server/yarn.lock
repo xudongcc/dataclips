@@ -855,10 +855,10 @@
     prettier "^2.6.2"
     sql-formatter "^4.0.2"
 
-"@nest-boot/graphql@^2.0.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@nest-boot/graphql/-/graphql-2.1.0.tgz#9e6d0edbd45d8a54105566ad059d45d71414d33c"
-  integrity sha512-SM2Q4oz0sBVL21VILsDdBgISTyc0dWcVjMN2lYfHL5T5gyZtcPyOeTd16Z5clFxyyEtHo+f5kvDBjPk1me4F8w==
+"@nest-boot/graphql@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@nest-boot/graphql/-/graphql-2.1.1.tgz#cbe8d5674a5e2d2384e7a585d4ddd1c0b1c085c7"
+  integrity sha512-tKqbe1nCYn9xiadtiDurTwnywpQPPkp/ErDakJgUxoZE9An4r850PjmVwpctAAzxCwWA9lfQc7EXS+1na7UV6A==
   dependencies:
     graphql-query-complexity "^0.11.0"
     lodash "^4.17.21"
@@ -881,10 +881,10 @@
   resolved "https://registry.yarnpkg.com/@nest-boot/search-engine-postgresql/-/search-engine-postgresql-1.1.0.tgz#2070d45643ee35235e4ee699f3cf750a827be285"
   integrity sha512-cBN1pR6YZ2EaSb/8thMqFmfZPRnGI3MuZ6jP0uLpq1qyVneO+8bthu+Dkb/fa2xwjw9xr5MCV8WcXP5901TPuw==
 
-"@nest-boot/search@^2.0.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@nest-boot/search/-/search-2.1.0.tgz#21ec87d5f58f0f68fa3a954cb4fa9c0564a21ced"
-  integrity sha512-V4PCpu0vfILJeSi1MSlJtjxaFbQ+JIQoXdebZk0HYDD6p9AU8nbVB9m8djh5Qr2XWkdIBl8k53nukvGYS3+w7Q==
+"@nest-boot/search@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@nest-boot/search/-/search-2.1.2.tgz#714f38b1dc99082351a22b4f0882a4d9ebf5e7b6"
+  integrity sha512-DpyJPteSS1SjCFz4nmKRwfTGsFfW4S7ig4pMhiAVCFXv419WSs+XDlvupy72//D35teZqtahnhWxXk3Ntsru/A==
 
 "@nestjs/apollo@^10.0.6":
   version "10.0.9"
