@@ -86,7 +86,7 @@ const DashBoardEdit: PC = () => {
 
   const { data: chartConnectionData, loading: chartConnectionLoading } =
     useChartConnectionQuery({
-      variables: { first: 100 },
+      variables: { first: 250 },
       notifyOnNetworkStatusChange: true,
       fetchPolicy: "no-cache",
     });

@@ -25,7 +25,7 @@ const ClipCreate = () => {
 
   const { data: { sourceConnection } = {}, loading: isSourcesLoading } =
     useSourceConnectionQuery({
-      variables: { first: 50 },
+      variables: { first: 250 },
       notifyOnNetworkStatusChange: true,
       fetchPolicy: "no-cache",
     });

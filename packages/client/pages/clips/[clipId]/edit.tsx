@@ -48,7 +48,7 @@ const ClipEdit = () => {
 
   const { data: { sourceConnection } = {}, loading: isSourcesLoading } =
     useSourceConnectionQuery({
-      variables: { first: 20 },
+      variables: { first: 250 },
       notifyOnNetworkStatusChange: true,
       fetchPolicy: "no-cache",
     });
