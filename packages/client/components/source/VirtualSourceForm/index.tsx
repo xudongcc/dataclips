@@ -6,7 +6,10 @@ import { MinusOutlined } from "@ant-design/icons";
 const { Option } = Select;
 
 export const VirtualSourceForm: FC = () => {
-  const { data } = useClipConnectionQuery({ variables: { first: 100 } });
+  const { data } = useClipConnectionQuery({
+    variables: { first: 250 },
+    fetchPolicy: "no-cache",
+  });
 
   const clipIds = useMemo(() => {
     if (data?.clipConnection.edges?.length) {

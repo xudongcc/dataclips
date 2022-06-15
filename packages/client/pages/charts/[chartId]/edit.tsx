@@ -36,7 +36,7 @@ const ChartEdit = () => {
   const [selectClipId, setSelectClipId] = useState("");
 
   const { data: clipsData, loading: clipsLoading } = useClipConnectionQuery({
-    variables: { first: 100 },
+    variables: { first: 250 },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "no-cache",
   });
