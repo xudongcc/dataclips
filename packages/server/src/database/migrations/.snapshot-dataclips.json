@@ -164,12 +164,12 @@
         },
         "password": {
           "name": "password",
-          "type": "varchar(255)",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "mappedType": "string"
+          "mappedType": "text"
         },
         "ssh_enabled": {
           "name": "ssh_enabled",
@@ -210,12 +210,12 @@
         },
         "ssh_password": {
           "name": "ssh_password",
-          "type": "varchar(255)",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "mappedType": "string"
+          "mappedType": "text"
         },
         "ssh_key": {
           "name": "ssh_key",

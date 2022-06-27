@@ -1,11 +1,11 @@
 import {
+  Cascade,
   Collection,
   Entity,
   OneToMany,
   PrimaryKey,
   Property,
   t,
-  Cascade,
 } from "@mikro-orm/core";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { SnowflakeIdGenerator } from "snowflake-id-generator";
@@ -47,7 +47,7 @@ export class Source {
   @Property({ nullable: true })
   username: string;
 
-  @Property({ nullable: true })
+  @Property({ nullable: true, type: t.text })
   password?: string;
 
   @Property({ default: false })
@@ -62,7 +62,7 @@ export class Source {
   @Property({ nullable: true })
   sshUsername?: string;
 
-  @Property({ nullable: true })
+  @Property({ nullable: true, type: t.text })
   sshPassword?: string;
 
   @Property({ nullable: true })
