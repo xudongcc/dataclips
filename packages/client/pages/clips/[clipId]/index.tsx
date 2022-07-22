@@ -7,13 +7,18 @@ import ProjectLayout from "../../../layouts/ProjectLayout";
 import Head from "next/head";
 import { useMemo, useState } from "react";
 import { QueryObserverOptions } from "react-query";
-import { ResultFragment } from "../../../generated/graphql";
+import { ResultFragment, useClipQuery } from "../../../generated/graphql";
 import { Switch } from "antd";
 
 const ClipPreview = () => {
   const router = useRouter();
 
   const { clipId } = router.query as { clipId: string };
+
+  const { data: { clip } = {} } = useClipQuery({
+    variables: { id: clipId! },
+    skip: !clipId,
+  });
 
   // 请求根据设定的间隔自动重新获取
   const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(false);
@@ -39,11 +44,11 @@ const ClipPreview = () => {
   return (
     <>
       <Head>
-        <title>{result?.name} - 预览 - 数据集</title>
+        <title>{clip?.name} - 预览 - 数据集</title>
       </Head>
 
       <Page
-        title={result?.name}
+        title={clip?.name}
         primaryAction={{
           text: "编辑",
           onClick: () => {
