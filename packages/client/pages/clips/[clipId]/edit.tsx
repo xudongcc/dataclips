@@ -116,10 +116,10 @@ const ClipEdit = () => {
   return (
     <>
       <Head>
-        <title>{result?.name} - 编辑 - 数据集</title>
+        <title>{clip?.name} - 编辑 - 数据集</title>
       </Head>
 
-      <Page title={result?.name}>
+      <Page title={clip?.name}>
         <Space direction="vertical" size="large" style={{ display: "flex" }}>
           <Form
             form={form}
