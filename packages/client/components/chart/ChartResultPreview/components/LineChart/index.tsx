@@ -153,7 +153,7 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
             }
           },
         ]}
-        shape="line"
+        shape="smooth"
         point
         area
         position="x*y"
@@ -168,7 +168,7 @@ export const LineChartPreview: FC<LineChartPreviewProps> = ({
 
       {/* 双 y 轴 */}
       <LineAdvance
-        shape="line"
+        shape="smooth"
         point
         area
         tooltip={false}
