@@ -63,6 +63,23 @@ export class SourceService extends mixinConnection(
 
     const { database, username, password } = input;
 
+    if (input.type !== SourceType.VIRTUAL && input.sshEnabled) {
+      const tunnel = await createTunnel({
+        host: input.sshHost,
+        port: input.sshPort,
+        username: input.sshUsername,
+        password: input.sshPassword,
+        dstHost: input.host,
+        dstPort: input.port,
+        localHost,
+        localPort,
+      });
+
+      tunnel.on("error", (err) => {
+        this.logger.error("SSH tunnel error", { err, sourceId: input.id });
+      });
+    }
+
     if (input.type === SourceType.MYSQL) {
       let mysqlConnection: pMysql.Connection;
 
@@ -195,7 +212,6 @@ export class SourceService extends mixinConnection(
       try {
         result = await mysqlConnection.query(sql);
       } catch (err) {
-        await mysqlConnection.end();
         throw new Error(`[${err.sqlState}][${err.errno}] ${err.message}`);
       } finally {
         await mysqlConnection.end();
@@ -222,7 +238,6 @@ export class SourceService extends mixinConnection(
       try {
         result = await pgClient.query({ rowMode: "array", text: sql });
       } catch (err) {
-        await pgClient.end();
         throw new Error(
           `[${err.code}] ERROR: ${err.message}\n位置：${err.position}`
         );
